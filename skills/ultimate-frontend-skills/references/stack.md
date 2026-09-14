@@ -16,7 +16,7 @@ free, CDN-loadable, and needs no build step.
 | Layout transitions (a card becoming a page) | **GSAP Flip** | ~8 KB |
 | SVG morph / draw-on | **GSAP MorphSVG / DrawSVG** | ~5 KB |
 | Timeline choreography without GSAP | **anime.js v4** | ~10 KB gz |
-| A real 3D object, exploded view, product turn | **three.js** | ~160 KB gz |
+| A real 3D object, exploded view, product turn | **three.js** | 191-370 KB gz (`three.md` §2) |
 | Bloom / DOF / film grain over a 3D scene | **postprocessing** | ~40 KB gz |
 | Tiny WebGL (one shader, no scene graph) | **ogl** | ~10 KB gz |
 | 2D WebGL: particles, displacement, filters at scale | **pixi.js** | ~120 KB gz |

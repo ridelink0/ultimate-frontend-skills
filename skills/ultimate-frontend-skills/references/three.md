@@ -1114,7 +1114,11 @@ requirement and not a variant - and reports:
 | type | distinct computed sizes (budget 8) and measure in characters (45-80). |
 
 Run it against the page you just built. Real output, from the proof page written
-for this file - a deliberately minimal three@0.186.0 scene:
+for this file - a deliberately minimal three@0.186.0 scene, on the plain import
+map before the core was remapped. **The 392 KB over 4 requests is the number
+that caught §2's missing second file**: nothing on that page was 392 KB, and
+`three.core.js` is the fourth request. Re-run with the map §2 now prints and it
+is 192 KB over 3.
 
 ```
   1440px, normal motion

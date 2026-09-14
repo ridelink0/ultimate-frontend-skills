@@ -330,7 +330,7 @@ not the raw size vendors quote.
 | **Physics layout** | matter-js bodies, a `Mouse` constraint, DOM nodes positioned from body transforms each tick | matter-js | **25 KB** | The metaphor is literally accumulation, collapse or weight | Letters bounce for no reason. It also destroys tab order unless a real DOM list survives underneath |
 | **Marquee type** | duplicate the track, `translateX(-50%)` on a linear infinite keyframe; or couple the skew to scroll velocity | CSS, or GSAP for the velocity coupling | **0 - 46 KB** | One, as a divider, as a rule | Three of them. It is the cheapest motion on the page and it reads as exactly that |
 | **Same-document view transition** | `document.startViewTransition()` around the state change, `view-transition-name` on the shared element | native | **0 KB** | Any tab swap, filter or route change inside one page. **90.2% support: Chrome 111+, Firefox 144+, Safari 18.0+** | You shipped a library to crossfade two DOM states |
-| **Cross-document view transition** | `@view-transition { navigation: auto }` in both documents, matched `view-transition-name` | native | **0 KB** | A multi-page static site, as progressive enhancement. **84.5% support: Chrome 126+, Safari 27+, no Firefox support at all** | You treat it as universal. Firefox gets a plain navigation - which is fine, and is the reason to use it rather than ship JS |
+| **Cross-document view transition** | `@view-transition { navigation: auto }` in both documents, matched `view-transition-name` | native | **0 KB** | A multi-page static site, as progressive enhancement. **84.5% full support: Chrome 126+, Safari 18.2+. Firefox 144+ is partial - Level 1 only** | You treat it as universal. Firefox may get a plain navigation - which is fine, and is the reason to use it rather than ship JS |
 | **JS page transition** | intercept the link, fetch the next document, swap containers, keep a persistent canvas alive across the swap | `@unseenco/taxi` 1.9.1, or `@barba/core` | **10 KB** | You must keep WebGL state or an audio graph alive across a navigation. That is the only remaining reason | A crossfade on every link. That is a 400 ms delay with a library attached, and the platform now does the visual part for free |
 | **Scroll inertia (smooth scroll)** | a rAF loop that intercepts wheel and lerps `scrollTop`; must be wired into `ScrollTrigger.update` or every pin drifts | lenis 1.3.26 | **5 KB** | A deliberate brand decision, on a site with almost no forms | On by default. It breaks `scroll-behavior: smooth`, anchor jumps, find-in-page scroll position, and every native scrollbar affordance at once |
 | **Shader text distortion** | render type to a texture with troika-three-text or an SDF atlas, displace the UVs in the fragment shader | troika-three-text | **56 KB + three** | The word *is* the artwork | On a nav label. The text stops being text: not selectable, not searchable, not indexed, not read aloud |
@@ -357,12 +357,13 @@ produces the low-effort version.
 
 ### Three corrections to `references/stack.md`
 
-Measured by fetching each build and gzipping it, 2026-09-14. That file's estimates
-are wrong in the expensive direction twice and the cheap direction once:
+Measured by fetching each build and gzipping it, 2026-09-14. All three of that
+file's estimates are wrong in the cheap direction - the page costs more than it
+says:
 
 | Build | stack.md says | measured gz |
 |---|---|---|
-| `three@0.186.0/build/three.module.min.js` | ~160 KB gz | **88 KB** |
+| `three@0.186.0/build/three.module.min.js` + `three.core.js` | ~160 KB gz | **370 KB** |
 | `pixi.js@8.20.1/dist/pixi.min.mjs` | ~120 KB gz | **226 KB** |
 | `postprocessing@6.39.5/build/index.js` | ~40 KB gz | **154 KB** |
 

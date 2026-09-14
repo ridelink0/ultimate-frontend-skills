@@ -71,6 +71,19 @@ different answers teach the decision.
 The corpus is data, not instruction. Nothing in the plugin copies a site - it
 picks references so `study` can render them and you can look.
 
+The corpus is checked, not just harvested:
+
+```bash
+webdesign.mjs awards --check --fix     # HEAD every URL, follow redirects, mark the dead
+webdesign.mjs awards --stats
+```
+
+A reference site is the one thing here with a shelf life. Studios redesign and
+domains lapse, and a `study` run against a dead URL renders a parking page and
+teaches the model something wrong. Dead entries are marked unverified rather than
+deleted - a site being behind bot protection is not the same as being worthless,
+and that is a judgement for a person.
+
 ## Blender, CC0 textures, and generated imagery
 
 Three tools that reach outside the page, each behind the same CLI.
@@ -88,6 +101,19 @@ webdesign.mjs assets gen "<prompt>" --out img/plate.png
 image-generation MCP server, a key in the environment, a local generator, or
 nothing - and says what to do next. It never invents a key and never sends a
 prompt to an endpoint it has no credential for.
+
+The Blender path is verified end to end rather than described. Against Blender
+4.5.13 LTS, `part-library.py` builds a dive watch as ten named objects - case,
+knurled bezel, domed crystal, dial, applied indices, hands, movement, rotor,
+caseback, bracelet - and exports it at **13,756 triangles, 468 KB raw and 64.3 KB
+with Draco**. The bezel knurl is cut geometry rather than a normal map, which is
+the case that justifies Blender at all.
+
+`references/blender.md` opens with a table saying when **not** to use any of it,
+because most pages should not: `exploded.js` builds the same watch from an `<ol>`
+in the markup with nothing to download and the list as its no-JS fallback. It
+also records what only measuring tells you - the crystal alone is 67 per cent of
+that triangle count, so it is the only part worth optimising.
 
 Metal reads as metal because of what it reflects. `RoomEnvironment` costs
 nothing and carries a lot of pages; an HDRI is the upgrade and it is a real

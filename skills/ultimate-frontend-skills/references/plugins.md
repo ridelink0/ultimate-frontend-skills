@@ -304,14 +304,16 @@ patterns attributed to the sites they were taken from.
 
 The implementation here is different rather than better-by-assertion. That
 plugin stores its patterns as prose headings in a markdown file, with the
-source named in a parenthetical; the attributions concentrate on a handful of
-sites. This repo stores the same idea as structured data in
-`data/awards.json` - each entry carrying `name, url, studio, year, award,
-source, kind, stack, techniques, palette, type, motion, why, verified` - so it
-can be queried by the problem (`awards --pick object --n 3`, `awards --technique
-X`) and rendered into contact sheets (`study --awards`). Run `awards --stats`
-for what the corpus currently holds. Prose cannot be queried and cannot be
-rendered; that is the whole of the difference.
+source named in a parenthetical on the heading itself: in
+`skills/web-designer/design-patterns.md`, 30 of 49 headings carry a `(from X)`
+and they name 18 distinct sites, so a third of the patterns are attached to
+nothing you can go and look at. This repo stores the same idea as structured
+data in `data/awards.json` - 388 entries, each carrying `name, url, studio,
+year, award, source, kind, stack, techniques, palette, type, motion, why,
+verified` - so it can be queried by the problem (`awards --pick object --n 3`,
+`awards --technique X`) and rendered into contact sheets (`study --awards
+<query>`). Run `awards --stats` for what the corpus currently holds. Prose
+cannot be queried and cannot be rendered; that is the whole of the difference.
 
 ## When not to
 

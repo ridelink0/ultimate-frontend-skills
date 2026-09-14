@@ -366,7 +366,7 @@ And the rule underneath all three: **anything that must be lit gets a measured
 material.** There are 860 textures on Poly Haven and 2010 on ambientCG, free, in
 one command.
 
-### Deriving normals from a flat albedo does not work
+### Deriving normals from a flat albedo costs more than it buys
 
 The standard advice is to take luminance as height, Sobel it, and call the result
 a normal map. Measured against ground truth - Poly Haven ships a real
