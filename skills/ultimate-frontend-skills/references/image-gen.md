@@ -16,7 +16,7 @@ here come from asking a generator for the first thing.
 |---|---|---|---|
 | A photograph | Unsplash, Pexels, Wikimedia, museum IIIF | no | `references/imagery.md` |
 | A surface that must respond to light | **Poly Haven**, then ambientCG | no | `assets textures <slug> --res 1k` |
-| Light for a 3D scene, cheapest possible | `RoomEnvironment` - zero bytes, no network | no | see below |
+| Light for a 3D scene, cheapest possible | `RoomEnvironment` - 4960 bytes of JS, no image, no network | no | see below |
 | Light with a specific mood or a visible sky | Poly Haven HDRI | no | `assets hdri <slug> --res 1k` |
 | A 3D model to start from | Poly Haven models (CC0 glTF/blend) | no | `assets search <query>` |
 | A cut-out subject on transparency | a photograph plus rembg, locally | no | `webdesign.mjs cut <photo>` |
@@ -33,9 +33,9 @@ the assets. Counts measured on 2026-09-14.
 
 | | Poly Haven | ambientCG |
 |---|---|---|
-| Catalogue | 859 textures, 995 HDRIs, 521 models | 2010 materials, 427 HDRIs |
+| Catalogue | 860 textures, 995 HDRIs, 521 models | 2010 materials, 427 HDRIs |
 | API | `api.polyhaven.com`, JSON, `ACAO: *` | `ambientcg.com/api/v2/full_json`, JSON |
-| Delivery | **one file per map**, hotlinkable, `ACAO: *` | **zip only**, one per resolution |
+| Delivery | **one file per map**, hotlinkable, `ACAO: *` | **zip only**, one per resolution and filetype (`1K-JPG` ... `16K-PNG`) |
 | Integrity | md5 per file in the manifest | none published |
 | Packed ARM map | yes | no |
 | Real-world tile size | millimetres, in `/info` | centimetres, often 0 |
@@ -54,10 +54,13 @@ GET https://api.polyhaven.com/files/{id}                 -> THE DOWNLOAD MANIFES
 
 `/files/{id}` is shaped `map -> resolution -> format -> {size, url, md5}`, with
 resolutions `1k 2k 4k 8k` and formats `jpg png exr`. The URLs are regular enough
-to look derivable. **Do not derive them.** Assets are missing maps - `Metal`
-only exists on metals, some have no `Displacement` - and the manifest is the only
-statement of what is actually there. The md5 in it matches the bytes you get, so
-use it: `assets textures` verifies every file and prints `md5 ok`.
+to look derivable. **Do not derive them.** Assets are missing maps, and the
+manifest is the only statement of what is actually there. Across a stratified
+sample of 100 of the 860 textures: every one carried `arm` and `nor_gl`, 99
+carried `Displacement` (`fabric_pattern_07` does not), and only 5 carried
+`Metal` - it exists on metals and almost nowhere else. The md5 in the manifest
+matches the bytes you get, so use it: `assets textures` verifies every file and
+prints `md5 ok`.
 
 ambientCG's search is a plain query parameter and its downloads are inside
 `downloadFolders.default.downloadFiletypeCategories.zip.downloads[]`, each
@@ -81,17 +84,20 @@ thing with its own terms, sent as a `Terms-Of-Service:` response header:
 ### Sources not to use
 
 - **ShareTextures** calls itself CC0 in its marketing, its titles and its
-  metadata. Its actual licence page says "custom CC0 with specific
-  restrictions", and the restrictions include **no automated downloads, no
-  hotlinking, no embedding direct downloads in third-party apps**, and no
-  redistribution. An agent fetching it is explicitly prohibited. This is the trap
-  case: the homepage is never the licence.
+  metadata. Its actual licence page, `sharetextures.com/p/license`, says "Custom
+  CC0 (Creative Commons Zero) license with specific restrictions", and the
+  restrictions include **no automated downloads, hotlinking, or embedding direct
+  downloads in third-party apps**, and no redistribution. An agent fetching it is
+  explicitly prohibited. This is the trap case: the homepage is never the licence.
 - **cgbookcase** - UNVERIFIED. The site is up but `/license`, `/about` and `/faq`
-  all 404 and nothing on it states a licence. Do not treat it as CC0.
-- **3dtextures.me** is real CC0 but is a WordPress blog with no API and per-post
-  zips. Fine for a human, not worth automating.
-- `cc0textures.com` and `hdrihaven.com` are 301 redirects to ambientCG and Poly
-  Haven. They are the same two libraries under old names, not extra sources.
+  all 404 and nothing on it states a licence. The only CC0 strings on the
+  homepage are outbound links to CC0 Textures, not a claim about its own assets.
+  Do not treat it as CC0.
+- **3dtextures.me** is real CC0 - stated at `3dtextures.me/about/`, not at a
+  `/license` path - but it is a WordPress blog with no API and per-post zips.
+  Fine for a human, not worth automating.
+- `cc0textures.com` 301s to ambientCG and `hdrihaven.com` 302s to Poly Haven.
+  They are the same two libraries under old names, not extra sources.
 
 ## Wiring a material into three.js
 
@@ -139,15 +145,15 @@ const material = new THREE.MeshStandardMaterial({
 });
 ```
 
-`assets textures` prints exactly this, filled in for the asset you fetched,
-including the real tile size from the manifest.
+`assets textures` prints this material, filled in for the asset you fetched,
+including the real tile size from the manifest, plus the two footnotes below it.
 
 **ARM is three downloads collapsed into one.** three.js reads `aoMap` from red,
-`roughnessMap` from green and `metalnessMap` from blue by convention, so one
-image feeds all three slots. Measured on `wood_floor_deck` at 1k: AO plus
-roughness as separate files is 1.21 MB and gives you no metalness; the ARM map
-is 703 KB and gives you all three. Poly Haven ships one for most textures;
-ambientCG never does.
+`roughnessMap` from green and `metalnessMap` from blue, in the shader chunks
+themselves, so one image feeds all three slots. Measured on `wood_floor_deck` at
+1k: AO plus roughness as separate files is 1.21 MB and gives you no metalness;
+the ARM map is 703 KB and gives you all three. Poly Haven ships one for every
+texture in a 100-asset sample; ambientCG never does.
 
 **`nor_gl`, never `nor_dx`.** three.js, glTF and OpenGL all want green-up.
 DirectX convention is green-down and using it silently inverts lighting on one
@@ -187,14 +193,19 @@ a number you guessed.
 An equirectangular HDR cannot be assigned to `scene.environment` and work. PBR
 needs a prefiltered roughness mip chain, which is what `PMREMGenerator` builds.
 
-**`RoomEnvironment` is the default and it costs nothing.** It is 4960 bytes of
-geometry and emissive materials - no image, no network, no CORS - and PMREM turns
-it into a clean neutral studio IBL.
+**`RoomEnvironment` is the default and it costs almost nothing.** It is 4960
+bytes of geometry and emissive materials - no image, no network, no CORS - and
+PMREM turns it into a clean neutral studio IBL.
 
 ```js
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
 scene.environment = new THREE.PMREMGenerator(renderer)
-  .fromScene(new RoomEnvironment(), 0.04).texture
+  .fromScene(new RoomEnvironment(), 0.04).texture;
 ```
+
+`RoomEnvironment` is an addon, not a `THREE.*` export - without that import the
+line is a `ReferenceError`.
 
 Reach for a real HDRI only when the environment is meant to be *seen*, or when
 the scene needs a specific time of day. For "make the metal look like metal",
@@ -227,11 +238,15 @@ ARM, which is the smallest genuinely complete material.
 | 8k | 47.77 MB | 45.54 MB | 42.96 MB | **136.27 MB** |
 
 These are archival-quality JPEGs and none of those numbers is a web asset.
-**Re-encode.** WebP q82 puts a full 1k material at roughly 250-400 KB, a cut of
-about 6x, and the normal map survives it: measured against the source, q82 costs
-under one degree of angular deviation on both a smooth and a high-frequency
-normal map, which is invisible in a lit render. Go to 2k only for a hero surface
-the visitor will be nose-to-nose with.
+**Re-encode.** Measured here with libwebp at q82: the `wood_floor_deck` 1k trio
+goes from 2.20 MB to 338 KB, a 6.7x cut. The normal map survives it - angular
+deviation against the source averages 1.8 degrees on `wood_floor_deck`'s
+`nor_gl` and 1.0 degrees on `concrete_wall_008`'s, with 99th percentiles of 6.8
+and 5.1 degrees. That is invisible in a lit render, but it is not lossless:
+lossy WebP is always YUV420, so the X and Y in the red and green channels get
+chroma-subsampled. If a normal map ever has to be exact, encode that one
+lossless. Go to 2k only for a hero surface the visitor will be nose-to-nose
+with.
 
 HDRI, `blocky_photo_studio`:
 
@@ -242,7 +257,7 @@ HDRI, `blocky_photo_studio`:
 | 4k | 23.37 MB | 16.54 MB |
 | 8k | 90.53 MB | 63.20 MB |
 
-.exr is 25-30% smaller but needs the 86 KB `EXRLoader` against `HDRLoader`'s
+.exr is 23-30% smaller but needs the 86 KB `EXRLoader` against `HDRLoader`'s
 12 KB, and RGBE is fine for lighting. **1k .hdr is the ceiling for a runtime
 fetch. Never ship 4k+ to a browser; 23 MB for lighting is indefensible.**
 
@@ -256,8 +271,8 @@ against 23.37 MB for a 4k `.hdr`. Poly Haven does not serve UltraHDR (`hdr` and
 the `.jpg`. The conversion tool named in UltraHDRLoader's own source is
 https://gainmap-creator.monogrid.com/.
 
-Poly Haven's `tonemapped` sibling file is an LDR preview JPEG. It is not
-UltraHDR and it is useless as an IBL.
+Poly Haven's `tonemapped` sibling file is a full-resolution LDR JPEG - 28.5 MB
+for `blocky_photo_studio`. It is not UltraHDR and it is useless as an IBL.
 
 ## Generating an image
 
@@ -295,28 +310,35 @@ downscales** - request 1024x1024 and a 768x768 file comes back, no error. The
 Latency swung between 2.9 s and 44 s for the same 768px request on this machine.
 JPEG means no alpha, so a generated "object" is not usable as a foreground plane
 until `webdesign.mjs cut` has taken the background off. Its output licence is
-**UNVERIFIED** - no legal page was read - so keep it off paying client work.
+**UNVERIFIED**: `pollinations.ai/terms` exists but renders only under
+JavaScript, so its position on generated output was not read, and the MIT licence
+in its repository covers the code, not the images. Keep it off paying client
+work.
 
 Every key-gated free tier was probed anonymously and refuses: Cloudflare Workers
-AI 404 (the account id is in the path), Hugging Face 401, Together 401, Google AI
-Studio 400, Replicate 401. Cloudflare publishes a free allocation of **10,000
-Neurons per day** with FLUX.1-schnell at **4.80 neurons per 512x512 tile**, which
-is the only current free-tier number verified from a primary source here. The
-others are UNVERIFIED and must not be quoted.
+AI 404 (the account id is in the path), Hugging Face 401 on
+`router.huggingface.co` (the old `api-inference.huggingface.co` no longer
+resolves at all), Together 401, Google AI Studio 403, Replicate 401. Cloudflare
+publishes a free allocation of **10,000 Neurons per day** with
+`@cf/black-forest-labs/flux-1-schnell` at **4.80 neurons per 512x512 tile**,
+which is the only current free-tier number verified from a primary source here.
+The others are UNVERIFIED and must not be quoted.
 
-Local weights, single-file sizes from the HuggingFace API:
+Local weights, single-file sizes from the HuggingFace API, in the decimal GB the
+HuggingFace UI itself shows:
 
 | Model | Licence | Gated | One file |
 |---|---|---|---|
-| FLUX.1-schnell | apache-2.0 | yes (`auto`) | 22.15 GB |
-| SDXL-Turbo fp16 | `other` - `sai-nc-community` | no | 6.46 GB |
-| Depth-Anything-V2-**Small** | apache-2.0 | no | 0.09 GB |
-| Depth-Anything-V2-Base / Large | **cc-by-nc-4.0** | no | 1.25 GB (Large) |
+| FLUX.1-schnell | apache-2.0 | yes (`auto`) | 23.78 GB |
+| SDXL-Turbo fp16 | `other` - `sai-nc-community` | no | 6.94 GB |
+| Depth-Anything-V2-**Small** | apache-2.0 | no | 0.10 GB |
+| Depth-Anything-V2-Base / Large | **cc-by-nc-4.0** | no | 1.34 GB (Large) |
 
-**SDXL-Turbo output is not free for commercial work** - its card points at a
-Stability membership. FLUX.1-schnell is genuinely Apache-2.0 but gated behind an
-account and 22 GB. Neither is a reasonable default for building a website; they
-are something a user opts into, not something to install mid-build.
+**SDXL-Turbo output is not free for commercial work** - its card sends you to
+`stability.ai/membership` for commercial use. FLUX.1-schnell is genuinely
+Apache-2.0 but gated behind an account and 24 GB. Neither is a reasonable default
+for building a website; they are something a user opts into, not something to
+install mid-build.
 
 ## The relighting problem
 
@@ -341,7 +363,7 @@ Three workarounds, in order of honesty.
    `depth.js` and the cut-out planes already do.
 
 And the rule underneath all three: **anything that must be lit gets a measured
-material.** There are 859 textures on Poly Haven and 2010 on ambientCG, free, in
+material.** There are 860 textures on Poly Haven and 2010 on ambientCG, free, in
 one command.
 
 ### Deriving normals from a flat albedo does not work
@@ -349,21 +371,34 @@ one command.
 The standard advice is to take luminance as height, Sobel it, and call the result
 a normal map. Measured against ground truth - Poly Haven ships a real
 photogrammetry `nor_gl` for `concrete_wall_008`, so the derived map can be
-compared to the true one as mean angular error:
+compared to the true one as mean angular error. Method, so it can be re-run:
+Rec.709 luminance of the 1k `Diffuse` as height, a 3x3 Sobel divided by 6,
+normal = normalize(-gx * strength, +/- gy * strength, 1), compared against the
+decoded `nor_gl`. The sign on gy is the whole GL-versus-DX question again, so
+both are reported. "Detail" is the 0.6% of pixels where the true normal is more
+than 10 degrees off flat.
 
-| Method | all pixels | pixels with >10 deg of real relief |
-|---|---|---|
-| Flat map - do nothing | 1.06 deg | 15.17 deg |
-| Derived, strength 2 | 2.10 deg | 16.66 deg |
-| Derived, strength 5 | 4.38 deg | 20.64 deg |
-| Derived, strength 8 | 6.71 deg | 25.31 deg |
-| Derived, strength 15 | 11.88 deg | 35.32 deg |
-| Derived, strength 30 | 21.29 deg | 50.04 deg |
+| Method | all px, GL | all px, DX | >10 deg, GL | >10 deg, DX |
+|---|---|---|---|---|
+| Flat map - do nothing | 1.06 | 1.06 | 15.17 | 15.17 |
+| Derived, strength 2 | 1.88 | 2.11 | **12.74** | 16.46 |
+| Derived, strength 5 | 4.13 | 4.43 | **13.04** | 20.37 |
+| Derived, strength 8 | 6.47 | 6.79 | 16.05 | 25.05 |
+| Derived, strength 15 | 11.69 | 12.02 | 24.73 | 35.02 |
+| Derived, strength 30 | 21.20 | 21.54 | 38.93 | 49.64 |
 
-**At every strength, on both metrics, the derived normal is further from the
-truth than doing nothing**, and the error grows monotonically. The detail-pixel
-column is there so the result cannot be dismissed as a mostly-flat wall averaging
-well; the conclusion holds there too.
+**Over the map as a whole, at every strength and under either sign convention,
+the derived normal is further from the truth than doing nothing**, and the error
+grows monotonically. That is the number that governs how the surface reads,
+because 99.4% of the wall is close to flat and the derived map puts invented
+relief across all of it.
+
+The detail column is the honest qualifier. Get the green sign right and a *weak*
+derived map - strength 2 to 5 - is a couple of degrees closer than flat on the
+pixels that genuinely have relief. Get it wrong, or push the strength past 8, and
+it is worse on both counts. So the most a derived normal can buy is a small
+improvement on 0.6% of the pixels, bought by degrading the other 99.4%, and only
+if the convention happens to match.
 
 The mechanism is the point: **albedo-derived normals recover pigment, not
 geometry**. A stain on flat concrete becomes a dent. A painted line becomes a
@@ -386,7 +421,7 @@ less sensitive to wrong roughness than to wrong normals.
 **Depth is different.** Relative depth ordering *is* recoverable from a single
 image in a way that surface micro-normals are not, so Depth Anything V2 for
 parallax and layering is sound - that is what `data-depthmap` in `depth.js`
-consumes. Use the **Small** variant: it is Apache-2.0 at 90 MB, where Base and
+consumes. Use the **Small** variant: it is Apache-2.0 at 99 MB, where Base and
 Large are CC-BY-NC-4.0 and cannot go near paying client work.
 
 ## Licence discipline
@@ -410,5 +445,9 @@ Large are CC-BY-NC-4.0 and cannot go near paying client work.
    `<slug>.provenance.json` next to the files with the source, the author, the
    licence, the URLs and the md5s, because the person answering "where did this
    texture come from" in eighteen months is not the agent that downloaded it.
-7. **Never redistribute a library as a bundle.** Even CC0 sources dislike it and
-   the others prohibit it outright.
+7. **Redistribution is a per-source question, and the CC0 two say yes.** Poly
+   Haven's licence page says "You can redistribute them"; 3dtextures.me says the
+   same. ShareTextures forbids it without written permission. What is not
+   permitted anywhere is scraping a whole catalogue: Poly Haven ToS 2.6 rules out
+   anything that degrades the API for other users, and a bulk mirror is exactly
+   that. Take the assets a page needs, not the library.

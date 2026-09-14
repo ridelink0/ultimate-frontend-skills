@@ -12,8 +12,8 @@
    never a reason to interrupt a build and tell the user to go and install
    something.
 
-   node tools.mjs [detect] [--json] [--no-probe] [--port 8188]
-   node tools.mjs mcp                 the live MCP picture, via `claude mcp list`
+   node tools.mjs [detect|bench] [--json] [--no-probe] [--port 8188]
+   node tools.mjs mcp [--json]        the live MCP picture, via `claude mcp list`
 
    Secrets: this reads config files that can hold API keys next to the parts it
    wants. It carries out NAMES ONLY - plugin ids, skill ids, marketplace names,
@@ -40,8 +40,10 @@ export const SELF = ['ultimate-frontend-skills', 'ultimate-website-skills'];
 /* One line each on what this plugin does DIFFERENTLY because the thing is
    there. Not a description of the other tool - a change to this build. A
    plugin with no entry here gets no line, because most plugins change nothing
-   about a website and saying so at length is noise. `absent` rows are printed
-   only for the ids that carry one, so the output says what was looked for. */
+   about a website and saying so at length is noise. Only `frontend-design`
+   carries an `absent` string, because it is the only id whose absence changes
+   who owns the design; the plugin list separately prints one hard-coded
+   `absent` row for `web-designer`, so the output says what was looked for. */
 export const NOTES = {
   'frontend-design': {
     role: 'direction',
@@ -73,9 +75,10 @@ export const NOTES = {
   'web-designer': {
     role: 'overlap',
     live: 'A third catalogue of the same AI tells, after this plugin\'s tells.md and frontend-design\'s clusters. Read ONE.\n'
-      + 'Its font-pairing formulas name Fontshare faces (Satoshi, Clash Display, General Sans, Cabinet Grotesk) with no\n'
-      + '@font-face rule, so a page built from them falls back silently. Take its pre-code brief and its "do not converge"\n'
-      + 'rule; leave its type scale, which duplicates core.css at different numbers.',
+      + 'Its font-pairing formulas name Fontshare faces (Satoshi, Clash Display, General Sans, Cabinet Grotesk) as bare\n'
+      + 'font-family values with no webfont URL and no @font-face of their own, so a page built straight off a formula\n'
+      + 'falls back silently. Take its pre-code brief and its "do not converge" rule; leave its clamp() type scale,\n'
+      + 'which duplicates core.css at different numbers.',
   },
   'skill-creator': { role: 'other', live: 'For building a skill or an eval, not a site. Nothing changes here.' },
   'claude-md-management': { role: 'other', live: 'Nothing changes for a website build.' },
@@ -214,9 +217,11 @@ export function codexBench({ home = homedir() } = {}) {
 
 /* --------------------------------------------------------------- MCP ----- */
 
-/* Plugin-provided servers arrive in three shapes and all three are live on
-   this machine: a path string in the manifest, an inline object, and an EMPTY
-   manifest object beside a root .mcp.json that the host still honours. Reading
+/* Plugin-provided servers arrive in three shapes: a path string in the
+   manifest (computer-use: "./.mcp.json"), an inline object, and an EMPTY
+   manifest object beside a root .mcp.json that the host still honours (ecc).
+   The first and third are live on this machine; the inline-object branch is
+   written from the schema, since no plugin installed here uses it. Reading
    only the manifest misses the third. Names only - an env block under any of
    these can hold a key, and nothing here reads one. */
 export function mcpNames({ home = homedir(), cwd = process.cwd(), plugins = [] } = {}) {
@@ -286,11 +291,12 @@ function onPath(binary, { env = process.env, platform = process.platform } = {})
   return null;
 }
 
-/* Stage 4's modelling route. blender.mjs owns the real probe; if it is in this
-   install, ask it rather than keeping two searches that can disagree. Its
+/* Stage 4's modelling route. blender.mjs owns the real probe; it ships in this
+   install, so ask it rather than keeping two searches that can disagree - and
+   `via: 'blender.mjs probe'` in the output is the normal answer here. Its
    output shape is not fixed yet, so this reads it forgivingly and falls back
-   to its own search on anything unexpected - which is also what runs today,
-   since blender.mjs is not part of this install. */
+   to its own search on anything unexpected, which is also the path taken under
+   --no-probe and in an install that does not carry blender.mjs. */
 export function findBlender({ env = process.env, platform = process.platform, probe = true } = {}) {
   const helper = join(HERE, 'blender.mjs');
   if (probe && existsSync(helper)) {
@@ -518,7 +524,8 @@ export function formatBench(bench) {
   if (!bench.mcp.length) line('    none');
   for (const server of bench.mcp) line('    ' + pad(server.name, 27) + 'from ' + server.from);
   line('    The claude.ai connectors are in no file. `node tools.mjs mcp` asks the host - it health-checks every');
-  line('    server over the network and takes fifteen to twenty seconds, so it is not on this path.');
+  line('    server over the network and takes tens of seconds (one slow server can hold it at its connect');
+  line('    timeout), so it is not on this path.');
   line('');
 
   line('  assets and 3D');
@@ -581,7 +588,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
 
   if (command !== 'detect' && command !== 'bench') {
     console.error('ultimate-frontend-skills: unknown command "' + command + '"');
-    console.error('Usage: node tools.mjs [detect] [--json] [--no-probe] [--port 8188]\n       node tools.mjs mcp');
+    console.error('Usage: node tools.mjs [detect|bench] [--json] [--no-probe] [--port 8188]\n       node tools.mjs mcp [--json]');
     process.exit(1);
   }
 

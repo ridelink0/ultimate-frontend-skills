@@ -38,34 +38,48 @@ teaches the decision. The registers are fixed in `awards.mjs`:
 | `3d` | `3d` | the technique is the brief |
 | `editorial` | `editorial` | long-form type |
 
-Anything else is treated as a free-text query, so `awards --pick "dive watch"`
-works and just is not diversified by register.
+Anything else is treated as a free-text query and is not diversified by register.
+Free text goes through the ordinary query path, where **every term must appear
+somewhere in the row**, so one word works and two rarely do: `awards --pick
+"watch"` returns three sites, `awards --pick "dive watch"` returns
+`no matching reference sites`.
 
-Real run, verbatim:
+Real run, 2026-09-14, trimmed where marked `...` and transliterated to ASCII:
 
 ```
 $ node scripts/webdesign.mjs awards --pick object --n 3
-Cartier Watches & Wonders 2025  -  Immersive Garden, with 60fps and Mooders (sound)
-  https://cartier-waw-0225.dev.60fps.fr/
-  2025 / sotd / brand / awwwards
-  technique  six discrete three.js scenes, one alcove per emblematic watch, ...
-  stack      three.js, gsap, lenis, blender
-  take       treating the whole site as architecture - discrete rooms you walk
-             between - rather than a stack of hero sections ...
+Warhol Arts  -  BL/S(R) + Serhii Polyvanyi
+  https://warhol-arts.webflow.io/
+  2025 / sotd / experiment / fwa
+  technique  WebGL canvas, GSAP scroll/timeline animation, inertia scroll (Lenis), ...
+  stack      gsap, lenis, webgl, lottie, webflow
+  take       An American artist, producer, designer, writer, ...
 
-How to Build Cinematic 3D Scroll Experiences with GSAP
-  https://tympanus.net/Tutorials/Cinematic3DScroll/
-  2025 / developer / experiment / codrops
+Bruno Simon Portfolio  -  Bruno Simon
+  https://bruno-simon.com
+  2026 / developer / 3d / awwwards
+  technique  a drivable 3D car as the primary navigation device ...
+  stack      three.js, webgpu, blender, rapier
+  take       using a single palette texture across the whole scene, rather than
+             individually textured props, is the specific trick that lets an
+             entire drivable open world stay light enough to run in a browser tab
+
+Apple Vision Pro
+  https://www.apple.com/apple-vision-pro/
+  2026 / product / editorial
   ...
-Explore Primland  -  Primland
-  https://explore.ownprimland.com
-  2026 / showcase / brand / editorial
-  ...
-3 sites. Render them before you build: study https://cartier-waw-0225.dev.60fps.fr/ ...
+3 sites. Render them before you build: study https://warhol-arts.webflow.io/ ...
 ```
 
 Three sources, three studios, no shared technique. The command ends by printing
 the next command; that is the handoff.
+
+Two things that run are visible in that output and are worth reading as warnings.
+The Warhol row's `take` is an artist biography, not a craft move - a harvest
+miss the schema cannot catch, because `why` is free prose. And `--pick` is the
+only diversified path: `study --awards "scrub" --n 3` goes through the plain
+query and today returns three Apple product pages, one publisher, one technique.
+Diversity is a property of `--pick`, not of the corpus.
 
 ### The rest of the surface
 
@@ -122,30 +136,51 @@ as well as pictures - overlap, overflow, contrast, at `--widths 1440,390` and
 and 2 if there is no browser installed. Point `look` at a directory and it
 serves it first; point it at a URL and it just loads it.
 
-### The `wall` verdict usually means a preloader
+### The `wall` verdict does not mean what it says
 
 `study` calls a site a wall and drops it from the sheet when any capture has
 fewer than 12 text elements (`webdesign.mjs`, in `cmdStudy`). It waits a
-hardcoded **4200 ms** before capturing and exposes no `--wait` flag. So a site
-with a long intro gate gets captured mid-preloader, reads as textless, and is
-thrown away as if it were bot-walled. Reproduced:
+hardcoded **4200 ms** before capturing and exposes no `--wait` flag. The message
+it prints - "blocked, or a JS-only page" - is a guess, and on the case measured
+here both halves of the guess are wrong. Reproduced:
 
 ```
 $ node scripts/webdesign.mjs study https://www.gionatannese.com/ --scroll 0
   wall  https://www.gionatannese.com/  (almost no text rendered - blocked, or a JS-only page)
-ultimate-frontend-skills: nothing rendered
+ultimate-frontend-skills: nothing rendered      (exit 1)
 
-$ curl -sA "<browser UA>" https://www.gionatannese.com/ | <strip tags>
-HTTP 200  plain text chars: 1579
+$ curl -sA "<browser UA>" https://www.gionatannese.com/ | <strip script/style, strip tags>
+HTTP 200  plain text chars: 1565
 Gionatan Nese - Multi-Disciplinary Designer ... Projects 2 About 3 ...
 ```
 
-The server returns a full page. The gate is simply longer than 4.2 seconds. When
-you get `wall` on a portfolio or a 3D site, re-render it with `debug --wait 12000`
-or capture it by hand before concluding you were blocked. A real bot wall looks
-different: it renders fast and it renders a challenge page.
+Waiting longer does not fix it. `textElements` measured through `inspect()` at
+1440 wide, same page, on 2026-09-14:
 
-That gate is also a finding in its own right. See the dated section.
+```
+4200 ms  9      12000 ms  5      30000 ms  5
+8000 ms  9      20000 ms  5                    (30000 is inspect's hard ceiling)
+```
+
+The count **falls** as the entrance animation runs. Probing the live DOM at
+12 s explains why: 29 elements carry their own text and `document.body.innerText`
+is 1,500 characters, but the probe drops 20 of them for measuring under 2px in
+either axis and 4 more for sitting under a `fixed` or `sticky` ancestor, leaving
+5. The same run reports `ERROR collapsed to zero size but has text:
+div.absolute.bottom-5 "View Case"`, and the screenshot is a near-blank page.
+
+So this is not a preloader and it is not a bot wall. It is **content invisible at
+rest** - the from-state of a reveal authored in CSS and never animated out under
+a headless capture - which `references/tells.md` already calls the most
+consequential code-level tell. `debug --wait 12000` does **not** rescue it; it
+renders the same near-blank page and exits 0, which is worse, because it looks
+like success.
+
+When you get `wall`, read it as "this page has almost no text a layout probe can
+see" and nothing more. Check it by hand. A real bot wall renders fast and renders
+a challenge page; a site like this one renders slowly and renders nothing.
+
+That failure is also a finding in its own right. See the dated section.
 
 ### What a row holds
 
@@ -154,21 +189,28 @@ harvested in chunks under `data/awards/` and merged by `awards --build`.
 
 | field | type | what it is for |
 |---|---|---|
-| `id` | string | slug from name or URL, lowercased, max 60 chars |
-| `name` | string | the site |
+| `id` | string | slug from `id`, else name, else URL; lowercased, max 60 chars |
+| `name` | string | the site; falls back to `id` |
 | `url` | string | must look like a URL or the row is dropped, not repaired |
 | `studio` | string or null | used to stop `--pick` returning one studio twice |
-| `year` | number | 0 if absent or implausible |
-| `award` | string | `sotd`, `sotm`, `soty`, `honourable`, `showcase`, `developer`, `fwa`, `reference` |
-| `source` | string | `awwwards`, `codrops`, `editorial`, `fwa`, `threejs` |
+| `year` | number | 0 unless it parses and lands strictly between 2000 and 2100 |
+| `award` | string | lowercased, **not validated**; defaults to `reference` |
+| `source` | string | lowercased, **not validated**; defaults to `editorial` |
 | `kind` | string | one of the seven kinds; anything else becomes `editorial` |
-| `stack` | string[] | libraries, as named by the source |
+| `stack` | string[] | libraries, as named by the source; provenance notes stripped |
 | `techniques` | string[] | **sentences**, not tags - the mechanism is the point |
 | `palette` | string | prose, with hexes where the source gave them |
 | `type` | string | the typographic decision, in prose |
 | `motion` | string | what moves and what drives it |
 | `why` | string | the one transferable move. This is the payload |
-| `verified` | boolean | true only if the URL was actually fetched |
+| `verified` | boolean | strictly `row.verified === true`; a harvest convention, not a check the code performs |
+
+`kind` is the only enumerated field. `award` and `source` are whatever the
+harvester wrote, lowercased - which is why `--stats` is the only honest list of
+what is in either. Today `award` holds `sotd`, `sotm`, `soty`, `honourable`,
+`showcase`, `developer`, `fwa` and `reference`; `source` holds twelve values, not
+the five the harvest started with. `palette`, `type`, `motion` and `why` are run
+through a whitespace collapse, so a multi-line note arrives as one line.
 
 `why` is the model of what a good extraction reads like - a mechanism and a
 reason, never "clean modern layout":
@@ -179,20 +221,32 @@ reason, never "clean modern layout":
 
 Two consequences of the schema worth knowing before you search.
 
-**`techniques` is free prose, so every string is unique.** Measured on the
-current corpus: 320 technique strings across 135 entries, 320 of them distinct.
-Searching for an exact technique string will never work. Substring search is the
-only way in, and `awards --techniques` is the index to read first - it counts a
-fixed vocabulary of build-out-of-it terms against the prose, so it tells you
-what the corpus can be asked for rather than what it happens to say.
+**`techniques` is free prose, so all but a handful of strings are unique.**
+Measured on 2026-09-14: 860 technique strings across 388 entries, 818 of them
+distinct - the 42 repeats are short generic ones like `webgl`, not sentences.
+Searching for an exact technique string is therefore useless. Substring search is
+the only way in, and `awards --techniques` is the index to read first: it counts
+a fixed vocabulary of build-out-of-it terms against the prose, so it tells you
+what the corpus can be asked for rather than what it happens to say. It returned
+52 terms today, led by `three.js 86`, `webgl 84`, `carousel 42`, `gsap 41`.
 
 **`--build` is deterministic and destructive in one direction.** It merges every
 `*.json` under `data/awards/` in sorted filename order, keys on URL, keeps the
 richer record when two harvesters found the same site, and writes the whole file.
 A chunk that is missing from the directory is simply absent from the rebuild.
+Rebuilding the shipped corpus reproduces it byte for byte:
+
+```
+$ node scripts/webdesign.mjs awards --build
+{ "files": 12, "read": 12, "entries": 388, "duplicates": 17, "dropped": [] }
+```
+
 Run `awards --stats` for live counts rather than trusting any number written down
-here; on 2026-09-14 it read 135 entries, 109 verified, sources
-`awwwards 71 / codrops 37 / editorial 25 / fwa 1 / threejs 1`.
+here; on 2026-09-14 it read **388 entries, 343 verified**, across twelve sources
+- `awwwards 122 / editorial 114 / fwa 39 / codrops 37 / cssda 18 / siteinspire 14
+/ minimalgallery 14 / httpster 14 / lapaninja 10 / webby 3 / bwg 2 / threejs 1` -
+and awards `sotd 94 / showcase 85 / reference 76 / honourable 52 / developer 49 /
+sotm 25 / soty 6 / fwa 1`.
 
 ### The method
 
@@ -209,20 +263,21 @@ is a moodboard, and a moodboard is how you get the tell.
 
 ## The sources
 
-Status column is HTTP as of 2026-09-14, from curl with a browser user agent.
+Status column is the HTTP code returned for that exact URL as of 2026-09-14,
+from curl with a browser user agent and **without** following redirects.
 
 | Source | Status | Machine-readable index | What it is actually good for |
 |---|---|---|---|
 | `awwwards.com` | 200 | none; `robots.txt` disallows `/feed` | The scored corpus. Only SOTD/SOTM/SOTY detail pages publish numbers |
-| `tympanus.net/codrops/webzibition/` | 200 | none | **2,376 hand-picked sites**, each linking straight to the live site. The best harvest target here: no detail-page hop, no bot wall, curation that matches this skill's technique class |
+| `tympanus.net/codrops/webzibition/` | 200 | none | **2,378 hand-picked sites** (its own printed count, which climbs daily), each linking straight to the live site. The best harvest target here: no detail-page hop, no bot wall, curation that matches this skill's technique class |
 | `tympanus.net/codrops/` | 200 | `/feed/` and `/wp-json/wp/v2/posts` | Where the technique is explained before it reaches an award page |
 | `threejs.org/examples/files.json` | 200 | **yes - a real index, 607 entries** | Runnable technique, versioned, free. Not usually called a showcase; it is the most useful one on this list |
-| `webdesignawards.io` | 200 | none | The only platform found that publishes criterion **weights** rewarding what Awwwards underweights (see below) |
-| `cssdesignawards.com` | 403 to curl, detail pages readable via a rendering fetch | none | Per-judge score breakdowns, which Awwwards does not publish |
+| `webdesignawards.io` | 308 to `www.`, then 200 | none | The only platform found that publishes criterion **weights** rewarding what Awwwards underweights. They are on `/judging-rubric`, not the home page (see below) |
+| `cssdesignawards.com` | 200 to curl | none | Per-judge score breakdowns, which Awwwards does not publish. Winner pages route on the trailing numeric id and ignore the slug |
 | `winners.webbyawards.com` | 200 | none; listing is JS-rendered | Criteria definitions, not a harvest target |
 | `onepagelove.com` | 200 | `/feed` RSS, live | Single-page structure. Taxonomies: genre, style, section, tech, platform |
 | `minimal.gallery` | 200 | `/feed/` and `/wp-json/wp/v2/posts` | Restraint as a register, with tool and platform tags |
-| `lapa.ninja` | 200 | `/rss.xml` | Landing pages, filterable by colour and year |
+| `lapa.ninja` | 301 to `www.`, then 200 | `/rss.xml` on the `www.` host | Landing pages, filterable by colour and year |
 | `httpster.net` | 200 | no feed (`/feed/` 404s) | Faceted counts off its own nav - the best free read on what a large catalogue actually contains |
 | `recent.design` | 200 | none | Where `godly.website` now redirects. A general design feed - branding, print, packaging - not just web |
 | `siiimple.com`, `csswinner.com` | 200 | none | Volume. One line each |
@@ -232,7 +287,9 @@ Status column is HTTP as of 2026-09-14, from curl with a browser user agent.
 | `thefwa.com` | 200, `/sitemap.xml` **500** | none | Client-rendered SPA; every href in source is an asset. Award tiers and criteria could not be confirmed |
 | `bestwebsite.gallery` | 200, feed rebuilds daily | `/feed` RSS | **Dead.** Newest item is dated 18 November 2024. The feed's freshness is a lie the channel tells, not the items |
 
-Awwwards URL shapes, all confirmed 200:
+Awwwards URL shapes, every one confirmed 200 on 2026-09-14. Retry before you
+believe a failure: `/websites/typography/` returned 502 on one pass and 200 on
+the next two, from the same client, seconds apart.
 
 ```
 /websites/sites_of_the_day/     /websites/sites_of_the_month/
@@ -272,7 +329,7 @@ not the raw size vendors quote.
 | **Custom cursor** | a fixed div lerped toward the pointer, `mix-blend-mode: difference`, scaled on hover targets | none | **~0** | The site's whole register is a gallery | It lags the native cursor by even 60 ms, or it hides the real one anywhere near a form field |
 | **Physics layout** | matter-js bodies, a `Mouse` constraint, DOM nodes positioned from body transforms each tick | matter-js | **25 KB** | The metaphor is literally accumulation, collapse or weight | Letters bounce for no reason. It also destroys tab order unless a real DOM list survives underneath |
 | **Marquee type** | duplicate the track, `translateX(-50%)` on a linear infinite keyframe; or couple the skew to scroll velocity | CSS, or GSAP for the velocity coupling | **0 - 46 KB** | One, as a divider, as a rule | Three of them. It is the cheapest motion on the page and it reads as exactly that |
-| **Same-document view transition** | `document.startViewTransition()` around the state change, `view-transition-name` on the shared element | native | **0 KB** | Any tab swap, filter or route change inside one page. **90.2% support: Chrome 111+, Firefox 144+, Safari 27+** | You shipped a library to crossfade two DOM states |
+| **Same-document view transition** | `document.startViewTransition()` around the state change, `view-transition-name` on the shared element | native | **0 KB** | Any tab swap, filter or route change inside one page. **90.2% support: Chrome 111+, Firefox 144+, Safari 18.0+** | You shipped a library to crossfade two DOM states |
 | **Cross-document view transition** | `@view-transition { navigation: auto }` in both documents, matched `view-transition-name` | native | **0 KB** | A multi-page static site, as progressive enhancement. **84.5% support: Chrome 126+, Safari 27+, no Firefox support at all** | You treat it as universal. Firefox gets a plain navigation - which is fine, and is the reason to use it rather than ship JS |
 | **JS page transition** | intercept the link, fetch the next document, swap containers, keep a persistent canvas alive across the swap | `@unseenco/taxi` 1.9.1, or `@barba/core` | **10 KB** | You must keep WebGL state or an audio graph alive across a navigation. That is the only remaining reason | A crossfade on every link. That is a 400 ms delay with a library attached, and the platform now does the visual part for free |
 | **Scroll inertia (smooth scroll)** | a rAF loop that intercepts wheel and lerps `scrollTop`; must be wired into `ScrollTrigger.update` or every pin drifts | lenis 1.3.26 | **5 KB** | A deliberate brand decision, on a site with almost no forms | On by default. It breaks `scroll-behavior: smooth`, anchor jumps, find-in-page scroll position, and every native scrollbar affordance at once |

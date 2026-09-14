@@ -25,14 +25,14 @@ that already worked.
    plays", that is a video.
 5. **Does it survive reduced motion and a dead GPU?** You owe both a real path,
    not a blank canvas. See §9.
-6. **Is one hero worth 88 KB gz plus a model plus a 1-second lighting bake?**
+6. **Is one hero worth 191 KB gz plus a model plus a 1-second lighting bake?**
    Sometimes. Not usually.
 
 | Want | Build | Cost |
 |---|---|---|
 | The object turns as you scroll | canvas image sequence | 60-90 WebP frames, 40-80 KB each |
 | Parts separate on scroll, one fixed camera | image sequence, still | same |
-| Reader turns it themselves, any angle | three.js | 88 KB gz + model |
+| Reader turns it themselves, any angle | three.js | 191 KB gz + model |
 | Camera moves through the object | three.js | same |
 | Parts separate AND the reader can stop anywhere and inspect | three.js | same |
 | The material is the point (metal, glass, lacquer) | three.js | same |
@@ -49,15 +49,17 @@ harness, zero console errors, `gl.getError() === 0`, one draw call.
 
 ```html
 <!doctype html><meta charset="utf-8">
-<!-- The importmap MUST come before any module script. BOTH keys must be the
-     SAME version or you load two copies of three and every instanceof fails.
-     The addons key needs the trailing slash on the key AND the value. -->
+<!-- The importmap MUST come before any module script. Every version here must
+     match, or a page that reaches three two ways gets two copies and every
+     instanceof fails. The addons key needs the trailing slash on the key AND
+     the value. The third entry is a URL key, not a bare one, and it is not
+     decoration: see "the second file" below. -->
 <script type="importmap">
 {"imports":{
   "three":         "https://cdn.jsdelivr.net/npm/three@0.186.0/build/three.module.min.js",
   "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.0/examples/jsm/",
-  "three/webgpu":  "https://cdn.jsdelivr.net/npm/three@0.186.0/build/three.webgpu.js",
-  "three/tsl":     "https://cdn.jsdelivr.net/npm/three@0.186.0/build/three.tsl.js"
+  "https://cdn.jsdelivr.net/npm/three@0.186.0/build/three.core.js":
+                   "https://cdn.jsdelivr.net/npm/three@0.186.0/build/three.core.min.js"
 }}</script>
 <script type="module">
 import * as THREE from 'three';
@@ -65,22 +67,59 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 </script>
 ```
 
-Drop the `webgpu` and `tsl` keys unless you use them - an unused import-map
-entry costs nothing, but it invites someone to reach for §3's warning.
+Add `"three/webgpu"` and `"three/tsl"` (pointed at `build/three.webgpu.js` and
+`build/three.tsl.js`, which is what the package's own `exports` field says) only
+if you use them - `three.tsl.js` imports the bare specifier `three/webgpu`, so
+tsl without the webgpu key fails to resolve. Before adding either, read the
+WebGPU subsection at the end of this section.
 
 Import maps are Baseline: Chrome 89, Firefox 108, Safari 16.4. No shim.
 
-**Payload, measured with `Accept-Encoding: gzip` - real transfer bytes:**
+### The second file: three is not one module
 
-| file | gz |
-|---|---|
-| `three@0.186.0/build/three.module.min.js` | **88.3 KB** |
-| `three@0.186.0/build/three.module.js` (unminified) | 128.4 KB |
-| `three@0.186.0/build/three.webgpu.min.js` | 201.0 KB |
-| `gsap/3.15.0/gsap.min.js` + `ScrollTrigger.min.js` | 27.6 + 17.6 = 45.2 KB |
-| `lenis@1.3.26/dist/lenis.min.js` | 5.3 KB |
+**`build/three.module.min.js` is an entry shell. Its first line imports
+`./three.core.js` as a sibling, and that file is not minified.** Gzipping the
+entry alone - which is what every "three is 88 KB" claim does, including the one
+this file used to make - measures about a quarter of what the page fetches.
+Measured in the harness (`quality`, which reads `transferSize`): a minimal
+r186 scene is **4 requests, 351 KB**, and 260 KB of it is `three.core.js`.
 
-`stack.md`'s "three.js ~160 KB gz" is wrong. Minified and gzipped it is 88 KB.
+The third import-map entry above fixes it. Import maps remap URL-like
+specifiers, not only bare ones, so mapping the core's own URL to the minified
+core redirects the sibling import. Verified in headless Chromium: same 1 draw
+call, same `gl.getError() === 0`, transfer drops **350.8 KB to 192.6 KB**.
+UNVERIFIED: only Chromium was tested. URL keys are in the import-maps spec, so
+Firefox and Safari should behave the same, but neither was run here.
+
+**Payload, measured with `Accept-Encoding: gzip` - real transfer bytes.** A
+browser negotiates brotli on top and the harness measured the default pair at
+348.6 KB rather than 369.5.
+
+| file | gz | with its core |
+|---|---|---|
+| `three@0.186.0/build/three.module.min.js` | 88.3 KB | |
+| ` + three.core.js` (default sibling) | 281.2 KB | **369.5 KB** |
+| ` + three.core.min.js` (remapped, above) | 102.8 KB | **191.1 KB** |
+| `three@0.186.0/build/three.module.js` (unminified entry) | 128.4 KB | 409.6 KB |
+| `three@0.186.0/build/three.webgpu.min.js` | 201.0 KB | 482.2 KB |
+| `gsap/3.15.0/gsap.min.js` + `ScrollTrigger.min.js` | 27.6 + 17.6 = 45.2 KB | |
+| `lenis@1.3.26/dist/lenis.min.js` | 5.3 KB | |
+
+**Every `.min.js` here is generated by the CDN on request.** The npm package
+ships only `three.module.js`, `three.core.js`, `three.webgpu.js`,
+`three.tsl.js` and `three.cjs`; jsDelivr says so in the file header it prepends
+and warns against SRI on dynamically generated files. So the minified path
+cannot carry a stable integrity hash, and `webdesign.mjs security` warns
+"import map pulls modules from a CDN with no `integrity` block" on the map
+above - checked, that is the only finding it raises. If that warning has to go,
+take the npm-shipped pair (`three.module.js` + `three.core.js`, 409.6 KB gz),
+which is byte-stable and hashable, and add the `"integrity"` block
+`security.md` describes. 191 KB unhashable against 410 KB hashable is the
+actual trade; pick it deliberately rather than by default.
+
+`stack.md`'s "three.js ~160 KB gz" is wrong, and so was this file's first
+correction to it. The number to budget is **191 KB gz with the core remapped,
+370 KB without**.
 
 ### Rules for the specifier
 
@@ -89,12 +128,22 @@ Import maps are Baseline: Chrome 89, Firefox 108, Safari 16.4. No shim.
    is 200; `three.js/0.186.0/examples/jsm/environments/RoomEnvironment.js` is
    **404**. Any real product page needs `GLTFLoader` and `RoomEnvironment`, so
    use jsDelivr for both map entries.
-3. **Do not mix hosts.** cdnjs's `three.module.min.js` relative-imports
-   `./three.core.min.js` as a sibling; jsDelivr's does not. Half of each is two
-   copies of three.
+3. **Mixing hosts is safe; mixing entry URLs is not.** Both hosts' builds
+   relative-import `./three.core.js`, so the core always arrives from whichever
+   host served the entry. Addons import the bare specifier `three`, so
+   `"three"` on cdnjs with `"three/addons/"` on jsDelivr loads one copy and
+   `instanceof` holds - tested, three requests, `RoomEnvironment` is a
+   `THREE.Scene`. What does give you two copies is importing a build by full
+   URL somewhere in the page while the map points `three` at a different one.
+   The reason to stay on jsDelivr is rule 2, not duplication.
 4. **`RGBELoader` is a deprecated stub at r186** - the whole file extends
    `HDRLoader` and warns. Import `three/addons/loaders/HDRLoader.js`.
-   `RGBMLoader` was removed in r180.
+   `RGBMLoader` was removed in r180 (200 at 0.179.0, 404 at 0.180.0).
+5. **The rest of this plugin pins `three@0.185.1`** - `stack.md`, `motion.md`,
+   `security.md`, `fable-showcase.md` and the `webdesign.mjs new` scaffold all
+   print that version. This file is measured on 0.186.0, which is the current
+   release. Either is fine; one page must not use both, and `retroreflectivity`
+   and `Object3D.dispose()` exist only on 0.186.0.
 
 Addon paths verified 200 on jsDelivr at 0.186.0:
 `environments/RoomEnvironment.js`, `controls/OrbitControls.js`,
@@ -122,13 +171,16 @@ Verbatim consequences from the three.js migration guide, for this page type:
 with `{ forceWebGL: true }` it gives a `WebGLBackend` and renders a frame clean.
 The async story is settled - `renderAsync`/`computeAsync`/`clearAsync` are
 deprecated since r181, you `await renderer.init()` and call the sync methods,
-and `waitForGPU()` is gone.
+and `waitForGPU()` was removed at r181 - the method is still on the prototype,
+but calling it only logs "has been removed".
 
 Do not use it for a product page, for three reasons that are numbers:
 
-1. **201 KB gz against 88 KB gz.** 113 KB more on a page whose point is arriving.
+1. **113 KB gz more.** The webgpu build imports the same `three.core.js`, so
+   the core cancels and the honest comparison is entry against entry: 201.0 KB
+   against 88.3 KB, on a page whose point is arriving.
 2. **The node-material path is a second API surface.** Every `onBeforeCompile`
-   recipe - the dissolve in §7 - has to be rewritten in TSL.
+   recipe - the dissolve in §6 - has to be rewritten in TSL.
 3. **Nothing here is compute-bound.** One object, 1-3 draw calls, a fragment
    shader measuring 0.1-0.4 ms at 1024². WebGPU wins draw-call throughput,
    compute, and storage buffers. You have none of those problems.
@@ -221,9 +273,12 @@ new THREE.MeshPhysicalMaterial({
 
 Roughness below ~0.15 makes anisotropy invisible - there is no lobe left to
 stretch. 0.25-0.35 is the band where it reads. On an imported mesh check
-`geometry.attributes.tangent` exists or call
-`BufferGeometryUtils.computeTangents`; on a cylinder the default tangent basis
-is already the circumferential brush you want.
+`geometry.attributes.tangent` exists or call `geometry.computeTangents()` -
+that is a `BufferGeometry` method, and it needs `index`, `position`, `normal`
+and `uv`. `BufferGeometryUtils` has no `computeTangents`; what it exports is
+`computeMikkTSpaceTangents`, which needs the MikkTSpace WASM module passed in.
+On a cylinder the default tangent basis is already the circumferential brush
+you want.
 
 **Clearcoat - lacquer, anodised aluminium, a painted casing.**
 
@@ -723,7 +778,10 @@ reads as a default.
 
 ### The projection, and the guard
 
-Same camera (z=4, near 0.1), same point, guarded and unguarded:
+Same camera both times - `PerspectiveCamera(35, 800/600, 0.1, 100)` at z=4, an
+800 × 600 canvas - same point, guarded and unguarded. The fov and the canvas
+size are what turn NDC into the pixel figures below; reproduce them or the
+first row will not match.
 
 ```
 point (0.5, 0.5, 0) in front   -> guarded: { x: 518.9, y: 181.1, ndcz: 0.952 }   correct
@@ -895,8 +953,11 @@ shadowMap.enabled = true      calls: 3   triangles: 25,602
 The default `light.shadow.mapSize` is 512 × 512, which looks like a 2008 game.
 Making it acceptable means 2048² and 4x the shadow-pass fill. For a product page
 on a plain ground, a baked contact-shadow plane - one transparent texture, two
-triangles - looks better and is free. `PCFSoftShadowMap` is deprecated on
-`WebGLRenderer` since r182; use `PCFShadowMap`, which is now soft.
+triangles - looks better and is free. `PCFSoftShadowMap` was deprecated on
+`WebGLRenderer` at r182 and by r186 it is gone: set it and `WebGLShadowMap`
+logs "PCFSoftShadowMap has been removed. Using PCFShadowMap instead" and
+silently uses `PCFShadowMap`, which is now soft. The constant is still
+exported, so nothing throws - it just stops meaning anything.
 
 **4. Draw calls, not triangles.** 200 boxes, identical geometry and material:
 
@@ -916,11 +977,15 @@ never move relative to each other.
 **5. Transmission.** §3. A second full opaque pass. Set
 `transmissionResolutionScale = 0.5`.
 
-**6. Per-frame allocation - 1.16x, smaller than the folklore.** 200,000
+**6. Per-frame allocation - too noisy to put a number on.** 200,000
 `new THREE.Vector3().normalize()` against 200,000 `.set().normalize()` on one
-hoisted vector: 10.9 ms against 9.4 ms. V8's young-generation allocation is
-nearly free and at a realistic 50-200 allocations per frame the throughput
-difference is unmeasurable. **The real cost is the major GC the garbage
+hoisted vector. Five alternating runs in one page gave ratios of 1.44, 1.86,
+0.93, 2.22 and 3.43 - the allocating loop was once *faster*. An earlier run of
+this file reported 1.16x as if it were a finding; it is not, the spread is the
+finding. V8's young-generation allocation is nearly free, the JIT and the
+nursery dominate the measurement, and at a realistic 50-200 allocations per
+frame the throughput difference is unmeasurable. **The real cost is the major GC
+the garbage
 eventually triggers, which lands as one dropped frame at an unpredictable
 moment.** So still hoist your scratch `Vector3`/`Quaternion`/`Matrix4` - but
 because it removes a class of stutter, not because the arithmetic is slow. Do
@@ -954,10 +1019,10 @@ for `MeshBasicMaterial` and a dispersive transmissive one. Use
 | typical phone | 390 × 844 | 3 | 2,962,440 | 740,610 | 329,160 |
 | typical laptop | 1440 × 900 | 2 | 5,184,000 | 2,916,000 | 1,296,000 |
 
-A phone at raw DPR 3 shades 2.96 M pixels - 2.3x a 1440×900 laptop at DPR 1.5 -
-on a GPU with a fraction of the throughput and a thermal budget measured in
-seconds. Clamping to 1.5 cuts it 4x. That line is worth more than every other
-mobile optimisation combined.
+A phone at raw DPR 3 shades 2.96 M pixels - 2.3x a 1440×900 laptop at DPR 1.0,
+and within 2% of that same laptop at DPR 1.5 - on a GPU with a fraction of the
+throughput and a thermal budget measured in seconds. Clamping to 1.5 cuts it
+4x. That line is worth more than every other mobile optimisation combined.
 
 ```js
 const isPhone = matchMedia('(max-width: 768px), (pointer: coarse)').matches;

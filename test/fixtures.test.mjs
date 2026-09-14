@@ -67,6 +67,24 @@ const raises = (r, ...expected) => {
   expected.forEach((re, i) => assert.match(got[i], re, 'fixture raised ' + JSON.stringify(got, null, 1)));
 };
 
+// Findings whose trigger is a duration rather than a count. These fire or do
+// not fire depending on what else the machine is doing, so a fixture that
+// deliberately does something expensive cannot assert a complete finding set:
+// on an idle laptop the long task lands under the threshold and on a busy one
+// it does not, and neither outcome says anything about the code under test.
+const TIMING_DERIVED = /^warn: longest main-thread task \d+ ms$/;
+
+// For those fixtures: every named finding must be present, and nothing may
+// appear beyond them EXCEPT a timing-derived warning. The control page in the
+// same test still uses the strict `raises`, which is what actually guards
+// against a check that measures the machine rather than the page.
+const raisesAllowingTiming = (r, ...expected) => {
+  const got = findings(r);
+  const solid = got.filter((f) => !TIMING_DERIVED.test(f));
+  assert.equal(solid.length, expected.length, 'fixture raised ' + JSON.stringify(got, null, 1));
+  expected.forEach((re, i) => assert.match(solid[i], re, 'fixture raised ' + JSON.stringify(got, null, 1)));
+};
+
 test('text overlapping text is caught, and only on the page that has it', { skip, timeout: 30000 }, async () => {
   raises(await measured('overlap.html'), /^layout: text over text$/);
   raises(await measured('clean-basic.html'));
@@ -153,7 +171,10 @@ test('a read-then-write scroll handler is caught, and the identical page without
   const bad = await measured('thrash-on-scroll.html');
   // Judged on the layout COUNT, which is a property of the code and reproduces
   // on any machine. Every millisecond figure is detail, never the trigger.
-  raises(bad, /^error: scrolling forces \d+(\.\d+)? layouts per scroll event \(budget 4\)$/);
+  // A page that forces 300 layouts per scroll event also blocks the main
+  // thread; that warning is a true positive and its threshold is a duration,
+  // so it is tolerated rather than asserted. The layout COUNT is the trigger.
+  raisesAllowingTiming(bad, /^error: scrolling forces \d+(\.\d+)? layouts per scroll event \(budget 4\)$/);
   const error = judge(bad.measured).find((f) => f.level === 'error');
   // Check 5: attribution is a detail line on this finding, not a finding of
   // its own. It must name the file and the invoker LoAF actually reported.

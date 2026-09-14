@@ -42,7 +42,7 @@ support ticket.
 | Palette, named hexes | theirs | `typography.md`, derived from the hero photograph |
 | Type faces, scale intent | theirs | `typography.md` |
 | Hero form, what the first screen is | theirs | `pipeline.md` stage 0 |
-| Copy voice, CTA verbs, empty states | theirs | `checklist.md` |
+| Copy voice, CTA verbs, empty states | theirs | `pipeline.md` stage 6 and `checklist.md` Content. Empty states are not covered here at all |
 | Preset choice (`bone`/`ink`/`cinema`/`fable`) | not offered | this plugin picks |
 | Grid, chassis, tokens, responsive floor | `core.css` | `core.css` |
 | Motion, scroll choreography, 3D | `motion.md`, `stack.md`, `exploded.js` | same |
@@ -61,9 +61,12 @@ damage.
    optical sizes, an asymmetric grid, varying section padding, ink-derived
    hairlines, an accent taken from the photograph, layered depth.
 2. **The single accented word.** `frontend-design` bans accenting one word in a
-   headline outright. This plugin permits exactly one rhetorical italic per
-   page and the audit fails the build at two ("One is a voice; four is a
-   costume").
+   headline outright ("Accenting just a single word or phrase in a headline").
+   This plugin permits exactly one rhetorical italic per page and the audit
+   errors at two - `audit.mjs` counts `<em>`/`<i>` elements plus other elements
+   carrying the `it` class, and fires above one.
+   `tells.md` is where the ration is argued: "One is a voice; four is a
+   costume."
 
 **Demote both to notes while `frontend-design` is live, and say in the finding
 which layer owns the call.** A false failure is worse than a missed tell here,
@@ -78,13 +81,13 @@ hard-code what the skill says. On the machine this was written on, eleven
 copies sit in the plugin cache and the file is not stable text:
 
 ```
-022b3c274938  current   SKILL.md = 9390 bytes
-e18ff5086423  orphaned  SKILL.md = 8260 bytes
-ed404106fcd8  orphaned  SKILL.md = 8260 bytes
+022b3c274938  current   SKILL.md = 9390 bytes   (dir mtime 2026-09-13)
+e18ff5086423  orphaned  SKILL.md = 8260 bytes   (dir mtime 2026-09-01)
+ed404106fcd8  orphaned  SKILL.md = 8260 bytes   (dir mtime 2026-09-01)
 (eight more orphaned copies, all 9390)
 ```
 
-Twelve days, 1130 bytes of substantive change. Anything that quotes it rots.
+Twelve days, 1130 bytes of net growth. Anything that quotes it rots.
 
 There is also a licence reason: the skill ships Apache-2.0
 (`skills/frontend-design/LICENSE.txt`) and this repo is MIT. Defer to it; do
@@ -97,8 +100,8 @@ file is a normal answer, never an error.
 
 | Surface | Path | What it gives |
 |---|---|---|
-| Installed plugins | `~/.claude/plugins/installed_plugins.json` (`"version": 2`) | id, scope, version, installPath per plugin |
-| Marketplaces | `~/.claude/plugins/known_marketplaces.json` | source (`github` / `git` / `directory`), installLocation |
+| Installed plugins | `~/.claude/plugins/installed_plugins.json` (`"version": 2`) | per entry: `scope`, `version`, `installPath`, `installedAt`, `lastUpdated`, sometimes `gitCommitSha`. The plugin id is the map key and carries the marketplace after an `@` |
+| Marketplaces | `~/.claude/plugins/known_marketplaces.json` | `source.source` (`github` with a `repo`, or `directory` with a `path`), `installLocation`, `lastUpdated`, sometimes `autoUpdate`. `tools.mjs` does **not** read this file - the marketplace name is already in the plugin id, and nothing in the route depends on where it came from |
 | Enablement | `settings.json` and `settings.local.json`, user then project | `enabledPlugins` map |
 | Personal skills | `~/.claude/skills/<name>/SKILL.md` | skills that are not in any plugin |
 | Project skills | `<cwd>/.claude/skills/<name>/SKILL.md` | same, repo-scoped |
@@ -106,7 +109,8 @@ file is a normal answer, never an error.
 | File-configured MCP | `<cwd>/.mcp.json`, then `~/.mcp.json` | server names |
 | Codex | `~/.codex/config.toml`, `~/.codex/plugins/cache/` | `[plugins."<id>"] enabled`, `[marketplaces.*]`, `[mcp_servers.*]` |
 
-Six traps, all observed on this machine:
+Six traps. The first five were observed on this machine; the sixth is a rule
+whose edge case is marked unverified:
 
 1. **The value in `installed_plugins.json` is an array**, one entry per scope.
    Take the last, or filter by scope.
@@ -132,8 +136,11 @@ Six traps, all observed on this machine:
    `claude plugin disable` writes `false` or deletes the key - nothing is
    disabled on this machine to observe.)
 
-Plugin-provided MCP servers arrive in three shapes and all three are live here,
-so read them in this order:
+Plugin-provided MCP servers arrive in three shapes. Two of them are live on
+this machine - `computer-use` declares the path string, `ecc` declares `{}` and
+puts the servers in a root `.mcp.json` - and no installed plugin here declares
+an inline object, so that branch is written from the schema rather than from an
+observation. Read them in this order:
 
 ```js
 const manifest = readJson(join(dir, '.claude-plugin', 'plugin.json')) || {};
@@ -153,26 +160,33 @@ Reading only the manifest misses the third shape outright.
 
 ### What is not on disk
 
-The claude.ai connectors are in no file. The only on-disk trace is a
-`claudeAiMcpEverConnected` list of display names, which is history with no auth
-state attached, and reporting it as the present is a lie with a citation. The
-live picture, connectors included, comes from the host:
+The claude.ai connectors are in no file `tools.mjs` reads. The only on-disk
+trace is `claudeAiMcpEverConnected`, a top-level array of display names in
+`~/.claude.json` - history with no auth state attached, and reporting it as the
+present is a lie with a citation. The live picture, connectors included, comes
+from the host:
 
 ```bash
 node "${CLAUDE_PLUGIN_ROOT}/scripts/tools.mjs" mcp
 ```
 
 That shells out to `claude mcp list`, which health-checks every server over the
-network. Measured here: 17.3 s. It is a separate subcommand for that reason.
+network. It is a separate subcommand for that reason. Its cost is set by the
+slowest server, not by the number of them: measured at 17.3 s before `ecc` was
+installed and 41.9 s after, because `chrome-devtools` is an `npx -y` server that
+hits the host's own 30 s connect timeout. Treat it as tens of seconds, and
+re-measure rather than quoting a figure.
 
 ### What each route costs
 
+Three runs each, this machine, 2026-09-14.
+
 | Route | Measured here | Gives |
 |---|---|---|
-| read the JSON and TOML files | `tools --no-probe`, 0.18 s end to end | everything in the table above, offline |
-| `tools` (files plus local probes) | 0.26 s | the above, plus Blender, Python, rembg, a local generator |
-| `claude plugin list --json` | 1.4 s | `id, version, scope, enabled, installPath, installedAt, lastUpdated`, plus `mcpServers` on the rows that have them - the three shapes already resolved |
-| `claude mcp list` | 17.3 s | the only view of the claude.ai connectors, with auth state |
+| read the JSON and TOML files | `tools --no-probe`, 0.27-0.31 s end to end | everything in the table above, offline |
+| `tools` (files plus local probes) | 0.93-1.01 s | the above, plus Blender, Python, rembg, a local generator. The extra second is subprocesses: `blender.mjs probe`, `python --version`, the `rembg` `find_spec` |
+| `claude plugin list --json` | 1.1-1.8 s | `id, version, scope, enabled, installPath, installedAt, lastUpdated`, plus `mcpServers` on the rows that have them - the three shapes already resolved |
+| `claude mcp list` | 41.9 s | the only view of the claude.ai connectors, with auth state |
 
 `claude plugin list --json` is the better call if a subprocess is acceptable
 and you want the MCP resolution done for you. The file route is the same
@@ -190,8 +204,9 @@ text on the one route that carries host output through, `tools mcp`.
 
 ## The rest of the bench
 
-Hand off when the row's condition is true. All of these were verified installed
-on the machine this was written on unless the row says otherwise.
+Hand off when the row's condition is true. All of these were verified present on
+the machine this was written on - installed plugin, built-in skill, or connected
+connector as the row says.
 
 | Collaborator | Hand off when |
 |---|---|
@@ -207,7 +222,7 @@ on the machine this was written on unless the row says otherwise.
 | `claude.ai bloom` MCP | Stage 4 with a real brand: logo, palette, typography and on-brand imagery instead of stock |
 | `claude.ai Figma`, `Canva`, `Notion`, `Lovable`, `Replit`, `Stripe` | Reported by `claude mcp list` as needing authentication in this environment. Do not plan a route through one without saying that first |
 
-Two rows deserve their own sentence.
+Two more deserve their own sentence, neither of them a row above.
 
 **The id collision.** This plugin has shipped under two ids -
 `ultimate-frontend-skills` and `ultimate-website-skills` - and the older one is
@@ -223,26 +238,43 @@ Read one. Worth taking from it: the fixed six-field pre-code brief
 artefact rather than said to the user, and its "do not converge" rule - if you
 designed something recently in this conversation, deliberately pick a different
 direction now. Not worth taking: its font-pairing formulas name Fontshare faces
-(Satoshi, Clash Display, General Sans, Cabinet Grotesk) with no `@font-face`
-rule, so a page built from them falls back silently; and its `clamp()` scales
-duplicate `core.css` at different numbers, which is worse than one scale.
+(Satoshi, Clash Display, General Sans, Cabinet Grotesk) as bare
+`--font-display` / `--font-body` values with no webfont URL and no `@font-face`
+of their own - the file's only `@font-face` is a placeholder in a separate
+font-loading snippet - so a page built straight off a formula falls back
+silently; and its `clamp()` scales (`--text-xs` through `--text-5xl`, 1.25
+ratio) duplicate `core.css`'s `--step--2` through `--step-7` at different
+numbers, which is worse than one scale.
 
 ## Claude Design
 
-`references/claude-design.md` is the full account. Four corrections and one
-addition, all read off this machine on 2026-09-14, host `claude` 2.1.263:
+`references/claude-design.md` is the full account. Five notes on top of it, all
+read off this machine on 2026-09-14, host `claude` 2.1.263. The first two
+correct an earlier draft of *this* file, not that one:
 
-1. **There is no `/design import`, `/design export` or `/design status`.**
-   Enumerating the design command strings in the shipped binary gives
-   `/design-login` (42 hits), `/design login` (21), `/design-sync` (11),
-   `/design consent` (11), `/design revoke` (7), `/design projects` (4),
-   `/design project` (2), `/design sync` (1), `/design settings` (1),
-   `/design design-system` (1). `design export`, `design import` and
-   `design status` are zero hits each. UNVERIFIED: whether `/design projects`
-   and `/design settings` are user-facing commands or internal route strings -
-   neither was run.
-2. **Print `/design login`, spaced.** Both spellings ship, but the host's own
-   error strings use the spaced form.
+1. **`/design import`, `/design export` and `/design status` do exist.**
+   `claude-design.md` is right and an earlier draft here was wrong. Counting
+   literal strings in the binary gives `design import`, `design export` and
+   `design status` zero hits each - which is what a naive grep sees, and it is
+   the wrong test. The `/design` command declares
+   `argumentHint: "[sync|login|consent|revoke|import|export|status|<prompt>]"`,
+   its completion list carries `{value:"import",description:"Pull a Claude
+   Design project into the working directory"}`, `{value:"export",...}` and
+   `{value:"status",description:"Show design-system auth and available design
+   systems"}`, and its prompt's dispatch table has an `import`, an `export` and
+   a `status` row. The command is gated (`isEnabled`), so availability in a
+   given session is still not something to assume. Do not enumerate command
+   strings to decide what a host supports. (UNVERIFIED: `/design projects`,
+   `/design settings` and `/design design-system` are present as strings but
+   absent from that argument list, which is evidence they are internal route
+   strings rather than user-facing commands. None was run.)
+2. **Both spellings are live; the hyphenated one is the dedicated surface.**
+   `sync` and `login` are rows in the `/design` dispatch table that route to
+   standalone commands, and the binary maps them explicitly -
+   `{sync:"design-sync",login:"design-login",consent:"design-consent",revoke:"design-revoke"}`.
+   Both forms appear in the host's own error strings ("Run /design login to
+   authorize Claude Design"; "Run /design-login and retry"), so neither is the
+   canonical one. `claude-design.md` prints the hyphenated form; leave it.
 3. **`seed-canvas.mjs` has a third mode: `--check`.** Its own usage line, from
    running it with no arguments: `need --template, --out, --title and at least
    one --artboard (or --extract <page> --to <fresh dir>, or --check <page>)`.
@@ -284,8 +316,9 @@ rendered; that is the whole of the difference.
 ## When not to
 
 - Do not run `tools` per page. Once per project, at stage 1.
-- Do not run `tools mcp` on a whim. It is seventeen seconds of network health
-  checks, and the file-based picture answers almost every question.
+- Do not run `tools mcp` on a whim. It is tens of seconds of network health
+  checks - 41.9 s here - and the file-based picture answers almost every
+  question.
 - Do not install, enable, register or authorise anything on the user's behalf.
   Every command in this file reports; the ones that change an account or an
   environment are the user's to run.

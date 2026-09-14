@@ -20,13 +20,25 @@ let N = ["Made with", o, r].filter(Boolean).join(" ")   // o = "Fable", r = "5.1
 
 server-rendered into `<span class="...credit">Made with Fable 5.1</span>`.
 
-**The announcement makes no front-end claim.** The article extracts to 35,435
-characters; `front-end`, `frontend`, `three.js`, `Blender` and `WebGL` each
-return zero hits. "design" appears 47 times and every occurrence is protein
-design or "designed to". None of the 22 partner testimonials mentions UI, CSS,
-a web page or 3D. The platform docs list six capability areas - agentic coding,
-knowledge work, research and search, vision, long context, computer use - and
-no design item. No eval on the page touches web or visual work.
+**The announcement makes no front-end claim.** Measured on this bench: the page
+is 450,512 bytes of HTML, over which `front-end`, `frontend`, `three.js`,
+`Blender` and `WebGL` each return zero hits. Stripping tags leaves 37,455
+characters of article text, in which "design" appears 20 times (a raw
+case-sensitive grep over the HTML returns 47, the rest being markup and
+navigation). Seventeen of the twenty are protein or molecular design, or
+"designed to/for". The three that are not: one testimonial using it for
+software architecture ("a novel and extensible design", MongoDB), a footnote
+naming a binder `design_7`, and the "Claude Design" product link in the page
+footer. None of the twenty refers to front-end or visual design as a model
+capability. None of the 22 partner testimonials mentions UI, CSS, a web page or
+3D - each of those four returns zero across the whole article text. The
+platform docs carry no design capability either: the features overview
+organises the API into
+five areas (model capabilities, tools, tool infrastructure, context management,
+files and assets), the docs intro lists two key capabilities (text and code
+generation, vision), and the Fable 5.1 model page carries a specification table
+rather than a capability list. No eval on the page measures front-end or
+visual-design work.
 
 So the page is not evidence that one model is better at front-end. The page is
 the only front-end artefact shipped with the model, and it is worth reading for
@@ -37,7 +49,7 @@ part that transfers.
 |---|---|
 | three.js r182, raw, no postprocessing/fiber/drei | verified in the bundle |
 | The hero is a real-time scene, not a photograph or a video | verified |
-| The wordmark in the `<h1>` is a font ligature, not an image | verified in the woff2 |
+| The wordmark in the `<h1>` is a font ligature, not an image | verified: the `<h1>` holds the literal text `:Claude:`, and its span carries `font-feature-settings: "liga" on, "dlig" on` |
 | 0.99 MB of procedural scene vs 10.26 MB of generated PNGs for the same brief | both measured |
 | The page was authored against reference footage with measured colour targets | strongly evidenced by surviving source comments |
 | Blender was in the loop for the bird | **UNVERIFIED** - see below |
@@ -72,11 +84,12 @@ Read `fable.md` first; then fix these four before you act on it.
    vignette -> film grain -> gamma 2.2. ACES is after the glow, and it is
    hand-written GLSL: `renderer.toneMapping = NoToneMapping`,
    `outputColorSpace = LinearSRGBColorSpace`, and the curve in the shader.
-3. **The tree seed is not random per build.** There are two hand-picked desktop
-   seeds and four portrait seeds baked into the module, and the page passes no
-   seed override, so it picks one of two curated silhouettes per load. The
-   lesson is *generate, then allowlist the seeds that came out good* - not
-   `Math.random()` across the whole space.
+3. **The tree seed is not random across the space.** Two hand-picked desktop
+   seeds and four portrait seeds are baked into the module as two literal
+   arrays, and the page passes no seed override, so each load takes
+   `Math.random()` *within* the curated list - one of two silhouettes on
+   desktop, one of four in portrait. The lesson is *generate, then allowlist
+   the seeds that came out good*, not `Math.random()` across the whole space.
 4. **The GSAP waste is specific and worse than described.** The header's
    `LogoWordmark` fires an unconditional `requestIdleCallback(..., {timeout:
    2000})` (or first scroll) and `await Promise.all([...])` of four chunks:
@@ -158,9 +171,11 @@ with `easeOutCubic`, `lerp`, an rAF `ticking` flag, and a
 | Generated PNG stack (`haute-horlogerie`, 7 PNGs) | **10,760,854 B** | one camera, one light, forever |
 | Procedural scene (Fable hero, everything) | **1,042,455 B** | re-lights, turns, responds to the pointer |
 
-`hero-tilted.png` alone is 2,554,767 B. Same brief; the procedural route costs
-one tenth and does more. That is the argument for stage 3 of the pipeline, with
-numbers.
+`hero-tilted.png` alone is 2,554,767 B. The procedural figure is the whole hero
+and reconciles exactly: 609,129 (three.js r182) + 89,886 (the scene and its
+GLSL) + 212,028 (`tit.glb`) + 131,412 (five webp textures - two bark, three
+bird) = 1,042,455. Same brief; the procedural route costs one tenth and does
+more. That is the argument for stage 3 of the pipeline, with numbers.
 
 ## The judging criteria, in checkable terms
 
@@ -171,7 +186,7 @@ unfalsifiable. Here is each one as something you can run or look at.
 |---|---|
 | **Taste** | No font on the `tells.md` list. No indigo/violet CTA. Body text over 4.5:1. Type scale has at most five steps and uses all of them. Section padding varies with content weight rather than one `py-24`. Exactly one italic accent phrase in the page (`webdesign.mjs audit` fails at two). Copy contains no number you cannot source. |
 | **Motion choreography** | Scrub down and back up at three speeds: nothing jumps, nothing desyncs, callouts anchor to the right part at every position. Every scrubbed transform is `linear`; every entrance decelerates. One orchestrated moment, not four. Stagger total under ~600 ms. `prefers-reduced-motion` renders one static, complete frame rather than nothing. |
-| **Craft** | `webdesign.mjs quality <dir> --record 4000` holds 60 fps under scroll. `verify` exits 0 at 1440 and 390. Zero libraries loaded and never called. No per-frame allocation in the rAF loop. The page works with JS off - the parts list is still a list. Labels never give the document a horizontal scrollbar. |
+| **Craft** | `webdesign.mjs quality <dir> --record 4000` reports no frame-rate finding under scroll (the tool's budget is 55 fps; the brief asks for 60). `verify` exits 0 at 1440 and 390. Zero libraries loaded and never called. No per-frame allocation in the rAF loop. The page works with JS off - the parts list is still a list. Labels never give the document a horizontal scrollbar. |
 
 ## Getting this with Opus or Sonnet
 
@@ -242,7 +257,8 @@ steel:   { color: 0xd9dce1, metalness: 1, roughness: 0.26 }
 brushed: { color: 0xb8bcc3, metalness: 1, roughness: 0.5  }
 lacquer: { color: 0x0b0c0e, metalness: 0, roughness: 0.22, clearcoat: 1, clearcoatRoughness: 0.08 }
 glass:   { color: 0xffffff, metalness: 0, roughness: 0.03, transmission: 0.55, thickness: 0.3,
-           ior: 1.5, transparent: true, opacity: 0.6, clearcoat: 1, envMapIntensity: 1.6 }
+           ior: 1.5, transparent: true, opacity: 0.6, clearcoat: 1, clearcoatRoughness: 0.02,
+           envMapIntensity: 1.6 }
 ```
 
 Two upgrades available in 0.185.1, both verified present in the build:
@@ -307,19 +323,23 @@ about forty lines:
 
 ```js
 const track = root.closest('[data-explode-track]') || root.parentElement;
-let target = 0, eased = 0, running = false;
+let target = 0, eased = 0, running = false, last = 0;
+const EASE_K = num(root.dataset.ease, 7);  // per second, not per frame
 const read = () => {                       // listener: measure only, never write
   const r = track.getBoundingClientRect();
   const total = r.height - innerHeight;
   target = total <= 0
     ? Math.min(1, Math.max(0, 1 - (r.top + r.height) / (innerHeight + r.height)))
     : Math.min(1, Math.max(0, -r.top / total));
-  if (!running) { running = true; requestAnimationFrame(frame); }
+  if (!running) { running = true; last = 0; requestAnimationFrame(frame); }
 };
 addEventListener('scroll', read, { passive: true });
 
-function frame() {                         // loop: write only, one place
-  eased += (target - eased) * 0.11;
+function frame(now) {                      // loop: write only, one place
+  const t = typeof now === 'number' ? now : (last || 0);
+  const dt = last ? Math.min(0.1, (t - last) / 1000) : 1 / 60;
+  last = t;
+  eased += (target - eased) * (1 - Math.exp(-dt * EASE_K));
   ...
   if (Math.abs(target - eased) > 0.0004) requestAnimationFrame(frame);
   else running = false;                    // settle, then stop burning frames
@@ -327,7 +347,7 @@ function frame() {                         // loop: write only, one place
 renderer.compileAsync(scene, camera).then(read).catch(read);
 ```
 
-Four things in there that are not obvious:
+Five things in there that are not obvious:
 
 1. The listener measures and the loop writes. Never alternate
    `getBoundingClientRect()` and a style write in one pass.
@@ -339,11 +359,13 @@ Four things in there that are not obvious:
 4. `root.classList.add('is-live')` - which hides the fallback list - happens
    only *after* a frame has actually rendered. Claim it up front and a shader
    failure leaves an empty box where the content was.
+5. The easing constant is per **second**, not per frame. `dt` is clamped to
+   0.1 s so a tab-switch stall cannot teleport the scene on the next frame.
 
-If you use GSAP instead, `scrub: 0.8` is the premium feel, `true` is 1:1 and
-reads mechanical, above 2 reads like lag. Add `invalidateOnRefresh: true`
-whenever start/end depend on live DOM, and `anticipatePin: 1` to kill the flash
-on a fast scroll into a pin.
+If you use GSAP instead, `scrub: 1` is the premium feel (`motion.md` has the
+same number), 0.5 is tight, `true` is 1:1 and reads mechanical, 2 and above
+reads like lag. Add `invalidateOnRefresh: true` whenever start/end depend on
+live DOM, and `anticipatePin: 1` to kill the flash on a fast scroll into a pin.
 
 ### 6. Timing curves
 
@@ -355,9 +377,13 @@ on a fast scroll into a pin.
 | A snap-back | `cubic-bezier(0.34, 1.56, 0.64, 1)` | overshoot belongs here and nowhere else |
 | Two states crossfading in a scene | `THREE.MathUtils.smoothstep(t, a, b)` per state, with the ranges overlapping | a hard swap at 0.5 pops; overlapping smoothsteps dissolve |
 
-`exploded.js` uses the plain `* 0.11` lerp, which is tuned for 60 Hz and runs
-faster on a 120 Hz display. If you author your own loop, use `damp` with a
-`dt` clamped to about 1/30 s so a tab-switch stall does not teleport the scene.
+`exploded.js` eases per second rather than per frame: `1 - Math.exp(-dt *
+EASE_K)` with `EASE_K` of 7, which reproduces the familiar `* 0.11` per-frame
+feel at 60 Hz exactly (`1 - exp(-7/60) = 0.1109`) without arriving nearly three
+times faster on a 144 Hz laptop than on a 50 Hz external display. Its `dt` is
+clamped to 0.1 s so a tab-switch stall cannot teleport the scene. Write the
+per-frame form instead and the choreography becomes a different piece of work
+depending on the monitor.
 
 The reference hero snaps when it is within 0.001 of target rather than chasing
 forever. Do the same, or your loop never sleeps.
@@ -372,7 +398,7 @@ if (!ag || e - on < ("cross" === ts || "out" === ts || "in" === ts ? 4 : 30)) re
 
 A minimum 30 ms between rendered frames - about 33 fps - dropping to 4 ms only
 while the bird is entering, crossing or leaving. A slow, heavy, film-grained
-scene does not need 60 fps, and refusing to render at 60 is how a 609 KB scene
+scene does not need 60 fps, and refusing to render at 60 is how a 1.02 MB hero
 with 72-tap depth of field stays affordable on a laptop.
 
 That is a choice for an ambient hero. **It is the wrong choice for a
@@ -411,10 +437,12 @@ the choreography. Budget the other way instead:
    emits every one. Use `EdgesGeometry(geometry, thresholdAngle)` - a real
    constructor in 0.185.1, threshold in degrees between adjoining face normals -
    so you get the silhouette and the chamfer break, not a tin of noodles.
-7. **Ties in `data-y` decide the explode order silently.** In the shipped
-   `exploded-3d` section, `Case` and `Bracelet` both sit at `data-y="0"`, so the
-   sort puts the bracelet between the caseback and the case and it pulls apart
-   *through* the middle of the stack. Give every part a distinct axis position.
+7. **Ties in `data-y` decide the explode order silently.** Parts are sorted by
+   axis position, so two parts sharing a value are ordered arbitrarily and one
+   can pull apart *through* the middle of the stack. The shipped `exploded-3d`
+   section avoids this - its nine parts carry nine distinct values, `0.36` down
+   to `-0.30` - and that is the property to preserve when you edit the numbers.
+   Give every part its own axis position.
 8. **Claiming `is-live` before a frame renders.** Covered above, and it is the
    failure that passes every static check while showing the visitor nothing.
 

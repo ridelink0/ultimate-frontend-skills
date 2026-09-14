@@ -120,7 +120,11 @@ const ACG_SLOTS = [
   { key: 'NormalGL', file: 'normal', slots: ['normalMap'], web: true },
   { key: 'Roughness', file: 'rough', slots: ['roughnessMap'], web: true },
   { key: 'AmbientOcclusion', file: 'ao', slots: ['aoMap'], web: true },
-  { key: 'Metalness', file: 'metal', slots: ['metalnessMap'] },
+  /* Metalness is in the web set because ambientCG ships no ARM, and Poly Haven's
+     web set carries metalness inside it. Without this the two sources disagree:
+     a steel from ambientCG would come back with metalness 0 and read as plastic.
+     Only metals ship the map at all, so nothing else pays for it. */
+  { key: 'Metalness', file: 'metal', slots: ['metalnessMap'], web: true },
   { key: 'Displacement', file: 'disp', slots: ['displacementMap'] },
 ];
 
@@ -357,6 +361,10 @@ async function cmdTextures() {
     if (info && !source) source = 'polyhaven';
   }
   if (info && info.type === 0) die(`${slug} is an HDRI, not a texture. Run: assets hdri ${slug} --res 1k`);
+  /* Models keep their maps inside the glTF/blend package, not as top-level map
+     keys, so phPlan finds nothing and the resolution list it prints reads as
+     nonsense. Say what it actually is instead. */
+  if (info && info.type === 2) die(`${slug} is a 3D model, not a texture. Its maps ship inside the glTF/blend - download it from polyhaven.com/a/${slug} and see references/three.md.`);
   if (!info && source === 'polyhaven') die(`polyhaven has no asset called "${slug}". Run \`assets search ${slug}\`.`);
   if (!source) source = 'ambientcg';
 
@@ -439,9 +447,9 @@ async function cmdTextures() {
   console.log(`  ${'provenance'.padEnd(38)} ${basename(provenance)}`);
   console.log(`\n${bytes(totalBytes)} written to ${dir}`);
   if (totalBytes > 1_500_000) {
-    console.log(`These are archival-quality JPEGs. Re-encode before shipping: at 1k, WebP q82 puts a`);
-    console.log(`full material around 250-400 KB, and the normal map survives it - measured under one`);
-    console.log(`degree of deviation, which is invisible in a lit render.`);
+    console.log(`These are archival-quality JPEGs. Re-encode before shipping: at 1k, WebP q82 takes a`);
+    console.log(`full material from about 2.2 MB to about 340 KB, and the normal map survives it -`);
+    console.log(`measured at one to two degrees of mean deviation, invisible in a lit render.`);
   }
   console.log(`\n${snippet}`);
 }
@@ -484,7 +492,9 @@ async function cmdHdri() {
   const loader = fmt === 'hdr' ? 'HDRLoader' : 'EXRLoader';
   const snippet = [
     `import * as THREE from 'three';`,
-    `// RGBELoader has been a deprecation shim since r180. HDRLoader is the real one.`,
+    fmt === 'hdr'
+      ? `// RGBELoader has been a deprecation shim since r180. HDRLoader is the real one.`
+      : `// EXRLoader is 86 KB against HDRLoader's 12 KB. Worth it only if you need the .exr.`,
     `import { ${loader} } from 'three/addons/loaders/${loader}.js';`,
     ``,
     `const pmrem = new THREE.PMREMGenerator(renderer);`,
@@ -666,7 +676,7 @@ async function cmdGen() {
     console.log(`   Not probed (--no-probe).`);
   } else {
     console.log(`   Nothing listening on 127.0.0.1:8188 (ComfyUI) or :7860 (A1111-style).`);
-    console.log(`   Weights are 6-22 GB and licences differ per model - do not install one mid-build.`);
+    console.log(`   Weights are 7-24 GB and licences differ per model - do not install one mid-build.`);
   }
   console.log('');
   console.log(`4  KEY-FREE HTTP: pollinations.ai.`);

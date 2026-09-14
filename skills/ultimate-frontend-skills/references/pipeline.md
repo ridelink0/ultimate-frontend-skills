@@ -199,7 +199,7 @@ material-slot wiring, the file-size budgets, and the licence discipline.
 ### Generated imagery
 
 ```bash
-webdesign.mjs assets gen "<prompt>" --out img/plate.png
+webdesign.mjs assets gen "<prompt>" --out img/plate.jpg
 ```
 
 It detects what this machine can actually do and tells you; it never invents a

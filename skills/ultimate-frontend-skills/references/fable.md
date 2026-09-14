@@ -5,11 +5,12 @@ not from looking at it. Every number here came out of the code.
 
 ## The hero is not a photograph
 
-It is a **three.js r182 WebGL scene** (`"REVISION","182"` in
-`_next/static/chunks/43wzyymewd7k8.js`, 609 KB), code-split behind a dynamic
-import and only fetched once the hero component mounts. Roughly 90 KB of
-hand-written GLSL and scene code sits alongside it. Raw three.js - no
-`postprocessing`, no fiber, no drei.
+It is a **three.js r182 WebGL scene**: `_next/static/chunks/43wzyymewd7k8.js` is
+609,129 bytes and carries `"REVISION",0,"182"` in its export table. It is
+code-split behind a dynamic import and only fetched once the hero component
+mounts, as a pair with `14c8frmb4u5hu.js` - 89,886 bytes of hand-written GLSL
+and scene code, which is where every shader quoted below lives. Raw three.js -
+no `postprocessing`, no fiber, no drei.
 
 **`references/fable-showcase.md` corrects four things in this file** - the
 bokeh kernel, the post order, the tree seeds and the size of the GSAP waste -
