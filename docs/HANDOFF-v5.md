@@ -42,9 +42,9 @@ here needs a decision from Gev; it was all agreed in the goal for this session.
   (count scroll FRAMES or cap the denominator at the gesture's event budget),
   then the test holds under load without touching it.
 - UI gaps from the ui.md/craft.md analysis. DONE: mobile nav, 404.html in the
-  scaffold, <main> landmark note, explicit input types. STILL OPEN: a status
-  colour ramp (error/success/warning derived in OKLCH so a junior does not
-  break the hue rule), loading/skeleton/empty/error state patterns, data-table
+  scaffold, <main> landmark note, explicit input types. DONE 2026-09-14 pm: status colour ramp (--danger/--success in core.css,
+  computed values from ui.md, no warning colour by design) and --accent-fill.
+  STILL OPEN: loading/skeleton/empty/error state patterns, data-table
   accessibility past the two-column spec table, form validation wiring
   (aria-describedby, aria-invalid, error summary). Full list in the workflow
   result at ...tasks/w499yppa4.output while it exists.
