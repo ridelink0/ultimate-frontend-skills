@@ -170,7 +170,7 @@ function cmdNew() {
     if (needs.exploded) engines.push('<script type="module" src="exploded.js"></script>');
   }
 
-  const html = `<!doctype html>
+  const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
 ${head}
