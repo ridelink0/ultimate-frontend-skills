@@ -392,8 +392,8 @@
     <form style="grid-column:span 7 / content-end" class="stack" name="contact" method="POST"
           data-netlify="true" netlify-honeypot="company">
       <input type="hidden" name="form-name" value="contact">
-      <p hidden><label>Leave blank <input name="company"></label></p>
-      <div class="field"><label for="f-name">Name</label><input id="f-name" name="name" required autocomplete="name"></div>
+      <p hidden><label>Leave blank <input type="text" name="company" tabindex="-1" autocomplete="off"></label></p>
+      <div class="field"><label for="f-name">Name</label><input type="text" id="f-name" name="name" required autocomplete="name"></div>
       <div class="field"><label for="f-mail">Email</label><input id="f-mail" name="email" type="email" required autocomplete="email"></div>
       <div class="field"><label for="f-msg">What is happening</label><textarea id="f-msg" name="message" rows="4" required></textarea></div>
       <p><button class="btn" type="submit">Send it</button></p>

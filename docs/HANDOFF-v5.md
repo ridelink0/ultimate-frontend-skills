@@ -32,9 +32,15 @@ here needs a decision from Gev; it was all agreed in the goal for this session.
 
 ## Still open as of 2026-09-14 afternoon (the 9:55 relay never ran - argv cap)
 
-- test 47 in test/fixtures.test.mjs fails under load and the CONTROL page gets
-  flagged; reproduce on an idle machine before deciding whether it is a real
-  false positive in measure.mjs. Do NOT silence it like 31 and 33.
+- test 47 in test/fixtures.test.mjs PASSES when run alone (verified 2026-09-14
+  afternoon) and fails only under load, where the CONTROL page gets flagged with
+  '300 layouts per scroll event'. So it is not a false positive on a quiet
+  machine, but the mechanism is different from 31/33 and the fix is not a test
+  tolerance: measure.mjs's layoutsPerScroll divides a layout count by a
+  scroll-event count, and under load the browser coalesces scroll events so the
+  denominator collapses and the ratio inflates. Make the measurement robust
+  (count scroll FRAMES or cap the denominator at the gesture's event budget),
+  then the test holds under load without touching it.
 - ~25 UI gaps from the ui.md/craft.md analysis: status colour ramp, 404.html in
   the scaffold, loading/empty/error patterns, data-table accessibility.
 - stack.md pins superseded versions and its KB figures are wrong.
