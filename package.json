@@ -1,0 +1,63 @@
+{
+  "name": "ultimate-frontend-skills",
+  "version": "5.0.0",
+  "description": "Ultimate Frontend Skills (UFS) for Claude Code and Codex. One route from brief to shipped page: a corpus of award-winning reference sites to decide against, WebGL gradients, real three-plane parallax, procedural and Blender-modelled three.js exploded views, CC0 PBR materials and HDRI lighting, scroll choreography, and an audit that fails the usual AI-generated tells.",
+  "keywords": [
+    "claude",
+    "claude-code",
+    "claude-plugin",
+    "claude-skills",
+    "codex",
+    "web-design",
+    "frontend",
+    "website",
+    "landing-page",
+    "three.js",
+    "webgl",
+    "gsap",
+    "scroll-animation",
+    "parallax",
+    "blender",
+    "awwwards",
+    "design-system",
+    "typography",
+    "css",
+    "3d",
+    "ai-agent"
+  ],
+  "homepage": "https://github.com/ridelink0/ultimate-frontend-skills",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ridelink0/ultimate-frontend-skills.git"
+  },
+  "bugs": "https://github.com/ridelink0/ultimate-frontend-skills/issues",
+  "license": "MIT",
+  "author": "Gev (https://github.com/ridelink0)",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "bin": {
+    "ultimate-frontend-skills": "scripts/install.mjs",
+    "ufs": "scripts/webdesign.mjs"
+  },
+  "files": [
+    "scripts/",
+    "skills/",
+    "commands/",
+    "hooks/",
+    ".claude-plugin/",
+    ".codex-plugin/",
+    "AGENTS.md",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "audit": "node scripts/webdesign.mjs audit",
+    "verify": "node scripts/webdesign.mjs verify",
+    "awards": "node scripts/webdesign.mjs awards",
+    "bench": "node scripts/webdesign.mjs tools",
+    "corpus": "node scripts/webdesign.mjs awards --build"
+  }
+}

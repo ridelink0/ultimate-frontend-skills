@@ -51,8 +51,10 @@ hooks/                          UserPromptSubmit nudge
 
 Constraints:
 
-- **Zero dependencies.** Node 18+, built-ins only. Do not add a package.json
-  dependency block.
+- **Zero dependencies.** Node 18+, built-ins only. There is a `package.json`,
+  but it carries metadata, `bin` entries and script aliases only - do not add a
+  dependency block to it. `type: module` is set, which is why every runnable
+  file here is `.mjs` or `.cjs` rather than `.js`.
 - `core.css` and `motion.js` are copied verbatim into user projects. A change
   there lands in every site built afterwards, so treat them as public API.
 - `inspect.mjs` talks to Chrome/Edge/Chromium over the DevTools protocol using
