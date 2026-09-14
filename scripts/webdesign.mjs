@@ -315,11 +315,17 @@ async function cmdLook() {
   let url = target;
   let server = null;
   if (!/^https?:\/\//.test(target)) {
-    const dir = resolve(target);
+    // A single page is a legitimate target - a 404.html, a one-off landing
+    // page - and rooting the server at the FILE served nothing at all. Root it
+    // at the directory and open the file by name.
+    const given = resolve(target);
+    const isFile = existsSync(given) && statSync(given).isFile();
+    const dir = isFile ? dirname(given) : given;
+    const page = isFile ? basename(given) : '';
     if (!existsSync(dir)) die(`no such path: ${dir}`);
     const port = 4400 + Math.floor(Math.random() * 900);
     server = startServer(dir, port);
-    url = `http://127.0.0.1:${port}/`;
+    url = `http://127.0.0.1:${port}/${page}`;
   }
 
   try {
@@ -730,7 +736,7 @@ switch (cmd) {
   sections                        list section ids and presets
   add <id> [--to <file>]          print a section, or insert it before </main>
   audit <dir|file>                source check: copy, semantics, the tells
-  look <dir|url> [--widths 1440,390] [--scroll 0,600] [--out DIR] [--no-shot]
+  look <dir|file|url> [--widths 1440,390] [--scroll 0,600] [--out DIR] [--no-shot]
                                   RENDER it: overlap, overflow, contrast, PNGs
   cut <photo> [--out DIR] [--name base] [--model isnet-general-use|u2net] [--alpha-matting]
                                   one photograph into parallax planes (rembg, local)
