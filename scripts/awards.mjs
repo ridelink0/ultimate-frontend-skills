@@ -283,6 +283,106 @@ export function techniqueIndex(corpus) {
     .map(([technique, count]) => ({ technique, count }));
 }
 
+/* Does the corpus still point at real pages?
+
+   A reference site is the one thing in this plugin with a shelf life. Studios
+   redesign, domains lapse, award pages move, and a `study` run against a dead
+   URL renders a parking page and teaches the model nothing - worse, it teaches
+   it something wrong, because a 404 with a bit of styling still tiles into the
+   contact sheet. Harvesters set `verified` at harvest time; this is how that
+   claim stays true afterwards.
+
+   HEAD first, because most of these pages are heavy, and a GET on four hundred
+   award-winning sites is a lot of bandwidth to prove a thing a header already
+   said. Falling back to a ranged GET matters: plenty of sites answer HEAD with
+   405 and are perfectly alive. */
+export async function checkCorpus(options = {}) {
+  const rows = (options.corpus || loadCorpus()).slice(0, options.limit ? Number(options.limit) : undefined);
+  const concurrency = Math.max(1, Math.min(16, Number(options.concurrency) || 8));
+  const timeoutMs = Number(options.timeoutMs) || 15000;
+  const results = [];
+  let cursor = 0;
+
+  async function probe(entry) {
+    const attempt = async (method, headers) => {
+      const control = new AbortController();
+      const timer = setTimeout(() => control.abort(), timeoutMs);
+      try {
+        const res = await fetch(entry.url, {
+          method,
+          redirect: 'follow',
+          signal: control.signal,
+          headers: Object.assign({
+            // A default Node user-agent is blocked by a good share of these
+            // sites, and reporting that as "dead" would be a lie about them.
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0 Safari/537.36',
+            accept: 'text/html,application/xhtml+xml',
+          }, headers || {}),
+        });
+        return { status: res.status, url: res.url };
+      } finally {
+        clearTimeout(timer);
+      }
+    };
+    try {
+      let r = await attempt('HEAD');
+      if (r.status === 405 || r.status === 403 || r.status === 501) {
+        r = await attempt('GET', { range: 'bytes=0-2047' });
+      }
+      const moved = r.url && r.url.replace(/\/+$/, '') !== entry.url.replace(/\/+$/, '');
+      return {
+        id: entry.id, url: entry.url, status: r.status,
+        ok: r.status >= 200 && r.status < 400,
+        movedTo: moved ? r.url : null,
+      };
+    } catch (err) {
+      return { id: entry.id, url: entry.url, status: 0, ok: false, error: String(err && err.message || err).slice(0, 80) };
+    }
+  }
+
+  async function worker() {
+    while (cursor < rows.length) {
+      const entry = rows[cursor++];
+      const result = await probe(entry);
+      results.push(result);
+      if (options.onResult) options.onResult(result, results.length, rows.length);
+    }
+  }
+
+  await Promise.all(Array.from({ length: concurrency }, worker));
+  const dead = results.filter((r) => !r.ok);
+  return {
+    checked: results.length,
+    alive: results.length - dead.length,
+    dead,
+    moved: results.filter((r) => r.ok && r.movedTo),
+  };
+}
+
+/* Write the check back into the corpus, so a dead entry stops being offered.
+   It is marked rather than deleted: a studio's site being down for a day is not
+   the same as the reference being worthless, and a human should decide which. */
+export function applyCheck(report) {
+  const all = loadCorpus();
+  const byId = new Map(all.map((e) => [e.id, e]));
+  let changed = 0;
+  for (const row of report.dead) {
+    const entry = byId.get(row.id);
+    if (!entry) continue;
+    entry.verified = false;
+    entry.dead = { status: row.status, at: report.stampedAt || null };
+    changed++;
+  }
+  for (const row of report.moved) {
+    const entry = byId.get(row.id);
+    if (!entry || !row.movedTo) continue;
+    entry.url = row.movedTo;
+    changed++;
+  }
+  if (changed) writeFileSync(CORPUS, JSON.stringify(all, null, 1) + '\n');
+  return changed;
+}
+
 export function corpusStats() {
   const all = loadCorpus();
   const tally = (key) => all.reduce((m, e) => (m[e[key]] = (m[e[key]] || 0) + 1, m), {});

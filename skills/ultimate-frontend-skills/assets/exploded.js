@@ -111,7 +111,7 @@ function build(li) {
     case 'disc': case 'cylinder': add(new THREE.CylinderGeometry(r, r, h, 96)); break;
     case 'ring': add(ring(r, r2, h, num(li.dataset.bevel, 0))); break;
     case 'dome': add(dome(r, h)); break;
-    case 'torus': add(new THREE.TorusGeometry(r, num(li.dataset.tube, 0.08), 24, 128)).rotation.x = Math.PI / 2; h = num(li.dataset.tube, 0.08) * 2; radial = r + num(li.dataset.tube, 0.08); break;
+    case 'torus': add(new THREE.TorusGeometry(r, num(li.dataset.tube, 0.08), 24, 128, num(li.dataset.arc, 1) * Math.PI * 2)).rotation.x = Math.PI / 2; h = num(li.dataset.tube, 0.08) * 2; radial = r + num(li.dataset.tube, 0.08); break;
     case 'sphere': add(new THREE.SphereGeometry(r, 48, 32)); h = r * 2; break;
     case 'cone': add(new THREE.ConeGeometry(r, h, 64)); break;
     case 'hands': {
@@ -360,20 +360,33 @@ for (const root of roots) {
   else addEventListener('resize', resize, { passive: true });
 
   const track = root.closest('[data-explode-track]') || root.parentElement;
-  let target = 0, eased = 0, running = false;
+  let target = 0, eased = 0, running = false, last = 0;
+  // Per second, not per frame. See the note in frame().
+  const EASE_K = num(root.dataset.ease, 7);
   const read = () => {
     const r = track.getBoundingClientRect();
     const total = r.height - innerHeight;
     target = total <= 0
       ? Math.min(1, Math.max(0, 1 - (r.top + r.height) / (innerHeight + r.height)))
       : Math.min(1, Math.max(0, -r.top / total));
-    if (!running) { running = true; requestAnimationFrame(frame); }
+    if (!running) { running = true; last = 0; requestAnimationFrame(frame); }
   };
   addEventListener('scroll', read, { passive: true });
   addEventListener('resize', read, { passive: true });
 
-  function frame() {
-    eased += (target - eased) * 0.11;
+  function frame(now) {
+    // Frame-rate independent easing. `eased += (target - eased) * 0.11` is the
+    // shape everybody writes, and it is wrong: 0.11 PER FRAME means the object
+    // arrives nearly three times faster on a 144 Hz laptop than on a 50 Hz
+    // external display, so the choreography is a different piece of work
+    // depending on the monitor. `1 - exp(-dt * k)` is the same curve expressed
+    // per SECOND, which is the unit the timing was authored in.
+    //
+    // k = 7 reproduces the old feel at 60 Hz exactly: 1 - exp(-7/60) = 0.1109.
+    const t = typeof now === 'number' ? now : (last || 0);
+    const dt = last ? Math.min(0.1, (t - last) / 1000) : 1 / 60;
+    last = t;
+    eased += (target - eased) * (1 - Math.exp(-dt * EASE_K));
     const spread = Math.min(1, eased / 0.55);          // pull apart first
     const turn = Math.max(0, (eased - 0.4) / 0.6);     // then show the edges
     for (const p of layers) p.group.position.y = p.home + (p.apart - p.home) * spread;

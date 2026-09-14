@@ -1,6 +1,6 @@
 export function parseArgs(argv) {
-  const values = new Set(['preset', 'name', 'sections', 'to', 'port', 'widths', 'scroll', 'out', 'list', 'model', 'actions', 'wait', 'motion', 'frames', 'record', 'travel', 'design', 'frame', 'kind', 'source', 'award', 'year', 'since', 'stack', 'technique', 'limit', 'n', 'pick', 'awards', 'res', 'count', 'prompt']);
-  const flags = new Set(['no-shot', 'alpha-matting', 'measure', 'expect-depth', 'json', 'no-probe', 'build', 'stats', 'techniques', 'verbose', 'urls', 'verified']);
+  const values = new Set(['preset', 'name', 'sections', 'to', 'port', 'widths', 'scroll', 'out', 'list', 'model', 'actions', 'wait', 'motion', 'frames', 'record', 'travel', 'design', 'frame', 'kind', 'source', 'award', 'year', 'since', 'stack', 'technique', 'limit', 'n', 'pick', 'awards', 'res', 'count', 'prompt', 'concurrency', 'exe']);
+  const flags = new Set(['no-shot', 'alpha-matting', 'measure', 'expect-depth', 'json', 'no-probe', 'build', 'stats', 'techniques', 'verbose', 'urls', 'verified', 'check', 'fix', 'no-draco']);
   const options = {}, positional = [];
   for (let i = 1; i < argv.length; i++) {
     const arg = argv[i];

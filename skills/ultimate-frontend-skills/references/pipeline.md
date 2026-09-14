@@ -217,7 +217,7 @@ you can name.
 
 ```bash
 webdesign.mjs new <dir> --preset bone --name "Subject Name" \
-  --sections nav,hero-split,blueprint,exploded,spec,materials,cta,footer
+  --sections nav,hero-split,blueprint,exploded,spec,services,cta,footer
 ```
 
 Sections by register, not by taste - the table is in `SKILL.md`. If a Claude

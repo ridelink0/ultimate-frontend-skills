@@ -2,7 +2,7 @@
  {
   "id": "11-mois-sans-toit-cssda",
   "name": "11 mois sans toi(t)",
-  "url": "https://www.11moissanstoit.com/",
+  "url": "https://11moissanstoit.com/",
   "studio": null,
   "year": 2026,
   "award": "honourable",
@@ -139,7 +139,7 @@
  {
   "id": "akqa-agency",
   "name": "AKQA",
-  "url": "https://akqa.com",
+  "url": "https://www.akqa.com/",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -183,7 +183,7 @@
  {
   "id": "andluca",
   "name": "Andluca",
-  "url": "https://andluca.com",
+  "url": "https://www.andluca.com/",
   "studio": null,
   "year": 2026,
   "award": "showcase",
@@ -207,7 +207,7 @@
  {
   "id": "antinomy-studio",
   "name": "Antinomy Studio",
-  "url": "https://antinomy.studio",
+  "url": "https://www.antinomy.studio/",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -275,7 +275,7 @@
  {
   "id": "apple-iphone-17-pro",
   "name": "iPhone 17 Pro",
-  "url": "https://www.apple.com/iphone-17-pro/",
+  "url": "https://www.apple.com/iphone/",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -395,7 +395,7 @@
  {
   "id": "arcteryx",
   "name": "Arc'teryx",
-  "url": "https://arcteryx.com",
+  "url": "https://arcteryx.com/us/en",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -486,7 +486,7 @@
  {
   "id": "arup-webby",
   "name": "Arup",
-  "url": "https://www.arup.com",
+  "url": "https://www.arup.com/en-us/",
   "studio": null,
   "year": 2026,
   "award": "honourable",
@@ -571,7 +571,7 @@
  {
   "id": "b-reel-agency",
   "name": "B-Reel",
-  "url": "https://b-reel.com",
+  "url": "https://www.b-reel.com/",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -595,7 +595,7 @@
  {
   "id": "bang-olufsen",
   "name": "Bang & Olufsen",
-  "url": "https://www.bang-olufsen.com",
+  "url": "https://www.bang-olufsen.com/en/us",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -619,7 +619,7 @@
  {
   "id": "base31-ca",
   "name": "Base31",
-  "url": "https://base31.ca",
+  "url": "https://www.base31.ca/",
   "studio": "Signifly",
   "year": 2026,
   "award": "honourable",
@@ -657,7 +657,7 @@
  {
   "id": "bornfight-studio",
   "name": "Bornfight",
-  "url": "https://bornfight.com",
+  "url": "https://www.bornfight.com/",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -677,7 +677,7 @@
  {
   "id": "bose",
   "name": "Bose",
-  "url": "https://www.bose.com",
+  "url": "https://www.bose.com/home",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -700,7 +700,7 @@
  {
   "id": "breems-bram-van-vugt",
   "name": "Breems",
-  "url": "https://bramvanvugt.com",
+  "url": "https://www.bramvanvugt.com/",
   "studio": "Bram van Vugt",
   "year": 2026,
   "award": "honourable",
@@ -814,7 +814,7 @@
  {
   "id": "cartier-watches-and-wonders",
   "name": "Cartier Watches & Wonders",
-  "url": "https://www.cartier.com/en-us/watches-and-wonders",
+  "url": "https://www.cartier.com/en-us/watches-and-wonders-2/",
   "studio": "Immersive Garden",
   "year": 2026,
   "award": "showcase",
@@ -858,7 +858,11 @@
   "type": "refined sans-serif luxury type, subordinate to product photography and 3D renders",
   "motion": "an immersive journey through the brand's watch 'worlds', built on three.js/GLSL scenes rather than DOM sections.",
   "why": "shows a luxury house committing to a from-scratch three.js microsite every single year rather than reskinning a template - the bar for what 'seasonal campaign site' can mean.",
-  "verified": true
+  "verified": false,
+  "dead": {
+   "status": 404,
+   "at": "2026-09-14T10:22:04.995Z"
+  }
  },
  {
   "id": "casa-gay",
@@ -931,7 +935,7 @@
  {
   "id": "cctype-foundry",
   "name": "CcType",
-  "url": "https://cctype.com",
+  "url": "https://cctype.com/typefaces/cc-timeline",
   "studio": "CcType",
   "year": 2026,
   "award": "reference",
@@ -1838,7 +1842,11 @@
   "type": "UNVERIFIED",
   "motion": "UNVERIFIED - the fetch attempt was refused by the server (403); listed on the CSSDA Special Kudos roll but not confirmed here.",
   "why": "UNVERIFIED - real listing, but the site actively blocked automated fetching, so no craft claim can be made.",
-  "verified": false
+  "verified": false,
+  "dead": {
+   "status": 403,
+   "at": "2026-09-14T10:22:04.995Z"
+  }
  },
  {
   "id": "discord",
@@ -1965,7 +1973,7 @@
  {
   "id": "era-residence-2026",
   "name": "ERA Residence",
-  "url": "https://era-residence.com",
+  "url": "https://www.era-residence.com/",
   "studio": "The First The Last",
   "year": 2026,
   "award": "sotm",
@@ -1986,7 +1994,7 @@
  {
   "id": "etq-amsterdam",
   "name": "ETQ Amsterdam",
-  "url": "https://etq-amsterdam.com",
+  "url": "https://www.etq-amsterdam.com/en-us",
   "studio": null,
   "year": 2026,
   "award": "showcase",
@@ -2246,7 +2254,7 @@
  {
   "id": "giant-ant-studio",
   "name": "Giant Ant",
-  "url": "https://giantant.ca",
+  "url": "https://www.giantant.ca/",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -2363,7 +2371,7 @@
  {
   "id": "gopro",
   "name": "GoPro",
-  "url": "https://www.gopro.com",
+  "url": "https://gopro.com/en/us/",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -2502,7 +2510,7 @@
  {
   "id": "hearst-exhibit-2026",
   "name": "Hearst Exhibit 2026 - ELLE & Esquire: The New Hollywood",
-  "url": "https://hollywoodexhibit2026.com",
+  "url": "https://www.hollywoodexhibit2026.com/",
   "studio": "OSMOS",
   "year": 2026,
   "award": "sotd",
@@ -2560,7 +2568,11 @@
   "type": "hierarchical text organization with the agency name repeated as the sole recurring visual anchor",
   "motion": "the whole site is built around getting a visitor to the \"Get Capabilities Deck\" button rather than around a spectacle sequence",
   "why": "a two-color agency site that still won a 3D-tagged award shows the bar has moved to restraint and execution, not just render budget",
-  "verified": true
+  "verified": false,
+  "dead": {
+   "status": 403,
+   "at": "2026-09-14T10:22:04.995Z"
+  }
  },
  {
   "id": "honda-wing-mark-history-cssda",
@@ -2586,7 +2598,7 @@
  {
   "id": "hpi-real-estate",
   "name": "HPI Real Estate",
-  "url": "https://hpitx.com",
+  "url": "https://www.hpitx.com/",
   "studio": null,
   "year": 2026,
   "award": "showcase",
@@ -2719,7 +2731,7 @@
  {
   "id": "instrument-agency",
   "name": "Instrument",
-  "url": "https://instrument.com",
+  "url": "https://www.instrument.com/",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -2740,7 +2752,7 @@
  {
   "id": "interiorglobe",
   "name": "Interiorglobe",
-  "url": "https://interiorglobe.co",
+  "url": "https://www.interiorglobe.co/",
   "studio": "UNFOUND STUDIO",
   "year": 2026,
   "award": "honourable",
@@ -2932,7 +2944,7 @@
  {
   "id": "kurppa-hosk-studio",
   "name": "Kurppa Hosk",
-  "url": "https://kurppahosk.com",
+  "url": "https://www.kurppahosk.com/",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -2999,7 +3011,7 @@
  {
   "id": "lightweight-wheels",
   "name": "Lightweight",
-  "url": "https://lightweight.info/",
+  "url": "https://lightweight.info/en",
   "studio": "VKZ Studio",
   "year": 2026,
   "award": "sotd",
@@ -3142,7 +3154,7 @@
  {
   "id": "lucid-motors",
   "name": "Lucid Motors",
-  "url": "https://www.lucidmotors.com",
+  "url": "https://lucidmotors.com/",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -3163,7 +3175,7 @@
  {
   "id": "mathis-biabiany",
   "name": "Mathis Biabiany",
-  "url": "https://mathis-biabiany.fr",
+  "url": "https://www.mathis-biabiany.fr/",
   "studio": "Mathis Biabiany",
   "year": 2026,
   "award": "honourable",
@@ -3180,7 +3192,7 @@
  {
   "id": "matt-davella",
   "name": "Matt D'Avella",
-  "url": "https://mattdavella.com",
+  "url": "https://www.mattdavella.com/",
   "studio": null,
   "year": 2026,
   "award": "showcase",
@@ -3204,7 +3216,7 @@
  {
   "id": "matters-singapore",
   "name": "Matters. Singapore",
-  "url": "https://matters.sg",
+  "url": "https://www.matters.sg/",
   "studio": "A./CHEN",
   "year": 2026,
   "award": "honourable",
@@ -3262,7 +3274,7 @@
  {
   "id": "mensch-club",
   "name": "MENSCH",
-  "url": "https://mensch.club",
+  "url": "https://www.mensch.club/",
   "studio": "JonahKLewis",
   "year": 2026,
   "award": "honourable",
@@ -3318,7 +3330,11 @@
   "type": "a bold sans headline paired with a lighter tagline weight directly beneath it",
   "motion": "minimal - the page favors a static, stable hero over a rotating or animated device shot",
   "why": "compared to Apple's frame-scrubbed rotation for a comparable hardware category, this page stays intentionally calmer and more static, a useful contrast point when deciding how much motion a hardware launch page actually needs",
-  "verified": true
+  "verified": false,
+  "dead": {
+   "status": 400,
+   "at": "2026-09-14T10:22:04.995Z"
+  }
  },
  {
   "id": "metalab-agency",
@@ -3596,7 +3612,7 @@
  {
   "id": "north-kingdom-agency",
   "name": "North Kingdom",
-  "url": "https://northkingdom.com",
+  "url": "https://www.northkingdom.com/",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -3728,7 +3744,7 @@
  {
   "id": "ordinary-folk-studio",
   "name": "Ordinary Folk",
-  "url": "https://ordinaryfolk.co",
+  "url": "https://www.ordinaryfolk.co/",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -3750,7 +3766,7 @@
  {
   "id": "ordr",
   "name": "ORDR",
-  "url": "https://ordrhealth.com",
+  "url": "https://www.ordrhealth.com/",
   "studio": "Valeriia Babicheva",
   "year": 2026,
   "award": "honourable",
@@ -3833,7 +3849,11 @@
   "type": "clean contemporary sans-serif with generous spacing, editorial sequencing standing in for a hero statement",
   "motion": "scroll-triggered section reveals plus accordion expansion, explicitly invited (\"Scroll down and enter\")",
   "why": "the bracketed numbered-section labels ([01Data]) borrow a print report's table-of-contents logic to make a pharma B2B site read as a structured document instead of a marketing scroll",
-  "verified": true
+  "verified": false,
+  "dead": {
+   "status": 403,
+   "at": "2026-09-14T10:22:04.995Z"
+  }
  },
  {
   "id": "partake-foods",
@@ -3880,7 +3900,7 @@
  {
   "id": "paul-kalkbrenner",
   "name": "Paul Kalkbrenner",
-  "url": "https://paulkalkbrenner.net",
+  "url": "https://www.paulkalkbrenner.net/",
   "studio": "Holographik",
   "year": 2026,
   "award": "showcase",
@@ -3904,7 +3924,7 @@
  {
   "id": "pedro-luz-e-lobos",
   "name": "Pedro Luz e Lobos",
-  "url": "https://pedroluzelobos.com",
+  "url": "https://www.pedroluzelobos.com/en",
   "studio": "Moliceiro Studio",
   "year": 2026,
   "award": "honourable",
@@ -3948,7 +3968,7 @@
  {
   "id": "pentagram-studio",
   "name": "Pentagram",
-  "url": "https://pentagram.com",
+  "url": "https://www.pentagram.com/",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -3988,7 +4008,7 @@
  {
   "id": "polestar",
   "name": "Polestar",
-  "url": "https://www.polestar.com",
+  "url": "https://www.polestar.com/us/",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -4035,7 +4055,7 @@
  {
   "id": "prime-security",
   "name": "Prime Security",
-  "url": "https://primesec.ai",
+  "url": "https://www.primesec.ai/",
   "studio": "BRIGHTSCOUT",
   "year": 2026,
   "award": "honourable",
@@ -4171,7 +4191,7 @@
  {
   "id": "rennsport-911",
   "name": "Rennsport 911",
-  "url": "https://911rennsport.co.uk",
+  "url": "https://www.911rennsport.co.uk/",
   "studio": "Signifly",
   "year": 2026,
   "award": "honourable",
@@ -4278,7 +4298,7 @@
  {
   "id": "robinhood",
   "name": "Robinhood",
-  "url": "https://robinhood.com",
+  "url": "https://robinhood.com/us/en/",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -4368,7 +4388,7 @@
  {
   "id": "seedlip-drinks-webby",
   "name": "Seedlip",
-  "url": "https://www.seedlipdrinks.com",
+  "url": "https://www.seedlipdrinks.com/en-us",
   "studio": null,
   "year": 2026,
   "award": "honourable",
@@ -4455,7 +4475,7 @@
  {
   "id": "sid-lee-agency",
   "name": "Sid Lee",
-  "url": "https://sidlee.com",
+  "url": "https://sidlee.com/en/",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -4474,7 +4494,7 @@
  {
   "id": "since-you-arrived",
   "name": "Since You Arrived",
-  "url": "https://sinceyouarrived.world/hub",
+  "url": "https://sinceyouarrived.world/",
   "studio": null,
   "year": 2026,
   "award": "honourable",
@@ -4495,7 +4515,7 @@
  {
   "id": "siteassist",
   "name": "SiteAssist",
-  "url": "https://siteassist.com",
+  "url": "https://www.siteassist.com/",
   "studio": "Signifly",
   "year": 2026,
   "award": "honourable",
@@ -4583,7 +4603,7 @@
  {
   "id": "soilboy",
   "name": "Soilboy",
-  "url": "https://soilboy.sg",
+  "url": "https://www.soilboy.sg/",
   "studio": null,
   "year": 2026,
   "award": "showcase",
@@ -4676,7 +4696,7 @@
  {
   "id": "stink-studios-agency",
   "name": "Stink Studios",
-  "url": "https://stinkstudios.com",
+  "url": "https://www.stinkstudios.com/",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -4873,7 +4893,7 @@
  {
   "id": "the-maker-makes",
   "name": "The Maker Makes",
-  "url": "https://themakermakes.com",
+  "url": "https://www.themakermakes.com/",
   "studio": null,
   "year": 2026,
   "award": "showcase",
@@ -4963,7 +4983,7 @@
  {
   "id": "trevor-noah",
   "name": "Trevor Noah",
-  "url": "https://trevornoah.com",
+  "url": "https://www.trevornoah.com/",
   "studio": "OFF+BRAND.",
   "year": 2026,
   "award": "sotd",
@@ -5031,7 +5051,7 @@
  {
   "id": "ultranoir-agency",
   "name": "Ultranoir",
-  "url": "https://ultranoir.com",
+  "url": "https://www.ultranoir.com/en/",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -5098,7 +5118,7 @@
  {
   "id": "usavionix",
   "name": "USAvionix",
-  "url": "https://usavionix.com",
+  "url": "https://www.usavionix.com/",
   "studio": "basement studio",
   "year": 2026,
   "award": "sotd",
@@ -5170,7 +5190,7 @@
  {
   "id": "vectr",
   "name": "Vectr",
-  "url": "https://vectrfl.com/",
+  "url": "https://www.vectrfl.com/",
   "studio": "Utsubo",
   "year": 2026,
   "award": "sotd",
@@ -5218,7 +5238,7 @@
  {
   "id": "viktor-horvath-enroute",
   "name": "Viktor Horvath - Enroute",
-  "url": "https://viktorhor.com",
+  "url": "https://www.viktorhor.com/",
   "studio": "viktor hor",
   "year": 2026,
   "award": "showcase",
@@ -5242,7 +5262,7 @@
  {
   "id": "warm-and-fuzzy",
   "name": "Warm & Fuzzy",
-  "url": "https://warmnfuzzy.tv",
+  "url": "https://www.warmnfuzzy.tv/",
   "studio": "Neutral Studio",
   "year": 2026,
   "award": "sotd",
@@ -5306,7 +5326,11 @@
   "type": "plain sans-serif nav, large display type only on individual project titles",
   "motion": "a horizontal carousel (explicit Previous/Next controls) moves through the director reel rather than a scroll-scrubbed sequence.",
   "why": "a production-company showcase that gets out of the way of its own thumbnails - proof that a gallery-white ground with zero brand colour is still a valid choice when the content is video.",
-  "verified": true
+  "verified": false,
+  "dead": {
+   "status": 403,
+   "at": "2026-09-14T10:22:04.995Z"
+  }
  },
  {
   "id": "we-are-royale-studio",
@@ -5373,12 +5397,16 @@
   "type": "a condensed slab/serif for each masthead reproduction, plain monospace-leaning sans for the descriptive text",
   "motion": "static archive browsing, no transitions to evaluate",
   "why": "using the actual historical mastheads as clickable navigation, instead of a generic 'Browse the archive' button, makes the typography of the 1970s source material do the wayfinding",
-  "verified": true
+  "verified": false,
+  "dead": {
+   "status": 0,
+   "at": "2026-09-14T10:22:04.995Z"
+  }
  },
  {
   "id": "why-zero",
   "name": "Why Zero",
-  "url": "https://zero.university",
+  "url": "https://www.zero.university/",
   "studio": "Sindhur Dutta / BUNQ Labs",
   "year": 2026,
   "award": "sotd",
@@ -5467,7 +5495,7 @@
  {
   "id": "zenit",
   "name": "Zenit",
-  "url": "https://zenit.co.uk",
+  "url": "https://www.zenit.co.uk/",
   "studio": null,
   "year": 2026,
   "award": "showcase",
@@ -5657,7 +5685,11 @@
   "type": "UNVERIFIED: no distinct font-family declarations found in the fetched markup (likely inlined in a bundled stylesheet or canvas-drawn)",
   "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
   "why": "We built a mobile-first platform with Vue.js, GSAP, and Three.js. A dynamic quiz pairs users with an Acura vehicle matching their personality and energy through varied interactions, offering an engaging way to explore the brand’s premium options while streamlining backend logic.",
-  "verified": false
+  "verified": false,
+  "dead": {
+   "status": 0,
+   "at": "2026-09-14T10:22:04.995Z"
+  }
  },
  {
   "id": "allagi-music",
@@ -5685,7 +5717,7 @@
  {
   "id": "alpine-bio",
   "name": "Alpine Bio",
-  "url": "https://alpbio.com/",
+  "url": "https://www.alpbio.com/",
   "studio": "Resn",
   "year": 2025,
   "award": "sotd",
@@ -5790,7 +5822,7 @@
  {
   "id": "aristide-benoist",
   "name": "In Cognita",
-  "url": "https://in-cognita-corp.com",
+  "url": "https://in-cognita-corp.com/fr",
   "studio": "Aristide Benoist + Pierre Patrault",
   "year": 2025,
   "award": "sotd",
@@ -5870,7 +5902,7 @@
  {
   "id": "astral-frontier",
   "name": "Astral Frontier",
-  "url": "https://theastralfrontier.com/",
+  "url": "https://www.theastralfrontier.com/",
   "studio": "Andrew Measham",
   "year": 2025,
   "award": "sotd",
@@ -6221,7 +6253,11 @@
   "type": "UNVERIFIED",
   "motion": "UNVERIFIED",
   "why": "flagged from the Codrops WebGL feed as a raw shader sketch (CodePen, no framework) - useful when the goal is a single self-contained fragment shader rather than a scene-graph technique.",
-  "verified": false
+  "verified": false,
+  "dead": {
+   "status": 403,
+   "at": "2026-09-14T10:22:04.995Z"
+  }
  },
  {
   "id": "company-policy-studio",
@@ -6314,7 +6350,7 @@
  {
   "id": "destination-bc",
   "name": "Destination: BC",
-  "url": "https://www.unit9.com/project/destinationbc-great-wilderness-car-wash/",
+  "url": "https://archive.unit9.com/project/destinationbc-great-wilderness-car-wash/",
   "studio": "UNIT9",
   "year": 2025,
   "award": "sotd",
@@ -6682,7 +6718,7 @@
  {
   "id": "jeton",
   "name": "Jeton",
-  "url": "https://jeton.com/?enter",
+  "url": "https://www.jeton.com/?enter",
   "studio": "Bürocratik",
   "year": 2025,
   "award": "sotd",
@@ -6808,7 +6844,11 @@
   "type": "UNVERIFIED: no distinct font-family declarations found in the fetched markup (likely inlined in a bundled stylesheet or canvas-drawn)",
   "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
   "why": "This immersive 3D experience was designed to immerse users into the world of Le Sel d'Issey fragrance, in an innovative and captivating way. User can create its own salt sculpture by adding the fragrance ingredients, personalized background and cymatics.",
-  "verified": false
+  "verified": false,
+  "dead": {
+   "status": 0,
+   "at": "2026-09-14T10:22:04.995Z"
+  }
  },
  {
   "id": "leo-parpeix-portfolio",
@@ -6855,7 +6895,7 @@
  {
   "id": "mat-voyce",
   "name": "Mat Voyce",
-  "url": "http://matvoyce.tv/",
+  "url": "https://matvoyce.tv/",
   "studio": "Huy Phan + Hon Tran + Uncommon Studio",
   "year": 2025,
   "award": "sotd",
@@ -7073,7 +7113,11 @@
   "type": "responsive type built with SplitText so headline treatment reflows per breakpoint rather than just scaling",
   "motion": "parallax and cursor-tracking layers move around a guide character that walks the visitor through Web3 concepts, deliberately breaking from typical Web3 sterility",
   "why": "borrowing subway-map iconography to explain an abstract data-security product is a concrete metaphor that does more work than another 3D token spinning in space",
-  "verified": false
+  "verified": false,
+  "dead": {
+   "status": 0,
+   "at": "2026-09-14T10:22:04.995Z"
+  }
  },
  {
   "id": "odd-ritual-golf",
@@ -7232,7 +7276,11 @@
   "type": "UNVERIFIED: no distinct font-family declarations found in the fetched markup (likely inlined in a bundled stylesheet or canvas-drawn)",
   "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
   "why": "Re-invinted is a data-powered experience that gives people the chance to understand the trends and behaviours of the pre-loved culture movement on Vinted. You can discover insights, dive into personality traits, and take a fun quiz to discover your custom \"pre-loved personality\".",
-  "verified": true
+  "verified": false,
+  "dead": {
+   "status": 404,
+   "at": "2026-09-14T10:22:04.995Z"
+  }
  },
  {
   "id": "richard-mille-art-here-2025",
@@ -7393,7 +7441,7 @@
  {
   "id": "sephora-pinball",
   "name": "SEPHORA PINBALL",
-  "url": "https://sephora-pinball.cosmicshelter.com/",
+  "url": "https://pinball.cosmicshelter.com/",
   "studio": "Cosmic Shelter + Press Play On Tape",
   "year": 2025,
   "award": "sotd",
@@ -7973,7 +8021,7 @@
  {
   "id": "akaru-2024",
   "name": "Akaru",
-  "url": "https://akaru.fr",
+  "url": "https://www.akaru.fr/",
   "studio": "Akaru",
   "year": 2024,
   "award": "sotm",
@@ -8030,7 +8078,7 @@
  {
   "id": "cartier-watches-wonders-2024",
   "name": "Cartier Watches & Wonders 2024",
-  "url": "http://cartier-waw-dev-0224.dev.60fps.fr/",
+  "url": "https://cartier-waw-dev-0224.dev.60fps.fr/",
   "studio": "Immersive Garden / 60fps",
   "year": 2024,
   "award": "sotd",
@@ -8139,7 +8187,7 @@
  {
   "id": "igloo-inc-soty-2024",
   "name": "Igloo Inc",
-  "url": "https://igloo.inc",
+  "url": "https://www.igloo.inc/",
   "studio": "abeto (with Bureaux)",
   "year": 2024,
   "award": "soty",
@@ -8187,7 +8235,7 @@
  {
   "id": "jamie",
   "name": "Jamie",
-  "url": "https://meetjamie.ai",
+  "url": "https://www.meetjamie.ai/",
   "studio": "Double Play",
   "year": 2024,
   "award": "honourable",
@@ -8208,7 +8256,7 @@
  {
   "id": "jordan-gilroy-portfolio",
   "name": "Jordan Gilroy",
-  "url": "https://jordangilroy.com",
+  "url": "https://www.jordangilroy.com/",
   "studio": "Jordan Gilroy",
   "year": 2024,
   "award": "sotd",
@@ -8286,7 +8334,7 @@
  {
   "id": "tag-heuer-eyewear",
   "name": "TAG Heuer Eyewear",
-  "url": "https://www.tagheuer.com/fr/en/eyewear/collection-eyewear.html",
+  "url": "https://www.tagheuer.com/fr/en/eyewear-collection/collection-eyewear.html",
   "studio": "Bonhomme",
   "year": 2024,
   "award": "sotd",
@@ -8377,7 +8425,7 @@
  {
   "id": "aten7-toom-archives-2023",
   "name": "Aten7 (Toom Archives)",
-  "url": "https://aten7.com",
+  "url": "https://www.aten7.com/intro",
   "studio": "Immersive Garden",
   "year": 2023,
   "award": "sotm",
@@ -8419,7 +8467,7 @@
  {
   "id": "locomotive-agency-2023",
   "name": "Locomotive",
-  "url": "https://locomotive.ca",
+  "url": "https://locomotive.ca/en",
   "studio": "Locomotive",
   "year": 2023,
   "award": "sotm",

@@ -239,7 +239,7 @@ runtime's own opening angle.
 | `0.640-0.760` | `dist * 0.96` to `dist * 0.54` on `inOutQuart`, look-at target lerped to the movement's world centre, `orbit.y` +0.78 to +1.15 rad | movement and rotor hold at `apart`; the other seven fade to `opacity 0.12` on `outExpo` and recede 0.18 along the axis | seven fade out `0.640-0.740`; movement and rotor stay at 1 and their copy is the longest on the page | isolation, and whether "isolates individual parts" was built as a state or as a jump cut. Fading is a multiplier on the same `p`, so it reverses |
 | `0.740-0.800` | `dist * 0.54` to `dist * 0.58`, target lerped to the bezel/crystal centre, `orbit.y` +1.15 to +0.20 rad on `inOutCubic` | movement and rotor fade back to 0.12; bezel and crystal return to 1 | movement/rotor out `0.740-0.790`, bezel/crystal in `0.760-0.820` | the second isolation beat, and the crossfade between two isolations - two overlapping `smoothstep` ranges, never a swap at the midpoint |
 | `0.780-0.880` | back out to `dist * 0.96`, `orbit.y` to +0.78 rad on `inOutQuart` | all nine return to `opacity 1` on `outExpo`, still at `apart` | bezel/crystal out `0.820-0.870`; nothing enters | the release. This is the band a fast scrub breaks first, because it is the only place two opposing fades share a range |
-| `0.860-0.975` | `dist * 0.96` to `dist`, `orbit.y` +0.78 to -0.10 rad on `inOutQuart` | reassembly, reverse part order with the same 40% overlap: bracelet first at `0.860-0.907`, bezel last at `0.928-0.975`, each on `outQuint` | all at 0 | requirement 2 in one band. Reassembly must be the same pure function of `p`, not a second timeline played forwards |
+| `0.860-0.975` | `dist * 0.96` to `dist`, `orbit.y` +0.78 to -0.10 rad on `inOutQuart` | reassembly, reverse part order, the same 40% overlap over a 0.115 window: span 0.020, step 0.012, so bracelet first at `0.860-0.880` and bezel last at `0.955-0.975`, each on `outQuint` | all at 0 | requirement 2 in one band. Reassembly must be the same pure function of `p`, not a second timeline played forwards |
 | `0.975-1.000` | settled at `dist`, `orbit.y` -0.10 rad | assembled, anticipation term is 0 | all at 0 | that the sequence ends on a still, complete, photographable frame that the specification section can sit under |
 
 The per-part ranges are computed, not chosen. For `n = 9` parts at 40% overlap
@@ -257,6 +257,19 @@ Sequential would give each part 0.038 of the window; the overlap gives each part
 0.059, a 1.5x longer move, and the sequence still ends at exactly 0.620. Below
 about 0.25 overlap it reads as a queue; above about 0.55 the parts move as one
 blob and the separation stops being legible.
+
+The same formula over the reassembly window gives each part 0.020 rather than
+0.059, so reassembly runs about three times faster than the explode. That is
+deliberate and worth saying out loud: taking it apart is the explanation and
+wants time, putting it back together is the conclusion and wants resolve. Do not
+mirror the explode timing onto the return - a reassembly that takes as long as
+the explode reads as the page repeating itself.
+
+One material caveat for the isolation band: `MeshPhysicalMaterial` ignores
+`opacity` until `transparent = true`, which `exploded.js` only sets for glass. Set
+it on every part at build time if you intend to fade seven of them, and set
+`depthWrite = false` on anything you have made transparent or the crystal punches
+a hole in whatever is behind it.
 
 **The four overlaps that are deliberate, and are the difference between
 choreography and a playlist:**

@@ -609,6 +609,27 @@ async function cmdAwards() {
     return;
   }
   if (flag('stats')) { console.log(JSON.stringify(A.corpusStats(), null, 2)); return; }
+  if (flag('check')) {
+    const limit = flag('limit');
+    const report = await A.checkCorpus({
+      limit,
+      concurrency: Number(flag('concurrency', 8)),
+      onResult: (r, done, total) => {
+        if (!flag('json') && !r.ok) console.log(`  dead  ${String(r.status).padStart(3)}  ${r.url}${r.error ? '  (' + r.error + ')' : ''}`);
+        if (!flag('json') && done % 50 === 0) console.log(`  ...   ${done}/${total}`);
+      },
+    });
+    report.stampedAt = new Date().toISOString();
+    if (flag('fix')) {
+      const changed = A.applyCheck(report);
+      report.corpusUpdated = changed;
+    }
+    if (flag('json')) { console.log(JSON.stringify(report, null, 2)); return; }
+    console.log(`\n${report.alive}/${report.checked} reachable, ${report.dead.length} dead, ${report.moved.length} moved.`);
+    if (report.moved.length) for (const m of report.moved.slice(0, 10)) console.log(`  moved  ${m.url}\n      -> ${m.movedTo}`);
+    if (!flag('fix') && (report.dead.length || report.moved.length)) console.log('Re-run with --fix to mark the dead ones unverified and follow the redirects.');
+    return;
+  }
   if (flag('techniques')) {
     const idx = A.techniqueIndex();
     if (flag('json')) { console.log(JSON.stringify(idx, null, 2)); return; }
