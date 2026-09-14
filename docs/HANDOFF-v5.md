@@ -37,10 +37,11 @@ was not showed 33 and a cancelled 10 under heavy load, both pass alone.
 Pass-2 tooling 2026-09-14 pm: madge/validate/publint/knip/html-validate all
 clean. The audit flagged 'duplicate id(s): main' on both pages - a false
 positive from an HTML COMMENT containing the literal text id="main"; the
-comment is reworded. OPEN: the audit's duplicate-id scan reads raw HTML rather
-than the comment-stripped text the other checks use (audit.mjs line 61 strips
-comments; the id regex near line 279 runs on `h`). One-line fix, not made
-under the cap.
+comment is reworded. OPEN: check whether the audit's duplicate-id scan (audit.mjs near line 279,
+on `h`) sees comment-stripped text - line 61 strips comments in a chain, yet
+the ids inside a comment were counted. Either the strip is on another variable
+or the chain is not what feeds the id scan. Small fix once read; not made under
+the cap.
 
 computer-use: the local checkout is C:/Users/OWNER/Downloads/axon (NOT a
 clone - one existed and I missed it). Pass 1 on origin: plugin validate
