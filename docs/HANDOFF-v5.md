@@ -64,3 +64,22 @@ here needs a decision from Gev; it was all agreed in the goal for this session.
 
 No emoji anywhere. Never invent a specific. Plain prose, no marketing language.
 Verify before asserting - run the command, fetch the page. The user is Gev.
+
+## When the resumed run finishes, or runs out again
+
+Gev's instruction for the pick-up, verbatim in effect: finish, then turn it off;
+if it is not finished, arm it again for the next five-hour window.
+
+- **Finished** (the Next list is done, tests pass, pushed): cancel the relay -
+  `node "$USAGE_LIMITS/scripts/relay.js" cancel` - and say so in one line. Do not
+  leave a scheduled task behind that will wake into nothing.
+- **Not finished**: update this file (move what landed into Done, leave the rest
+  in Next), commit and push it, then re-arm for the next reset -
+  `relay.js arm --session <this session id> "<the same continuation text>"`.
+  The relay is already set to arm at 80 per cent, wake 15 minutes after the reset,
+  delivery `resume`, `--permission-mode bypassPermissions`, `--model opus`.
+- Either way, push before the window closes. A commit on GitHub is the only part
+  of this that survives everything.
+
+`$USAGE_LIMITS` above is
+`C:/Users/OWNER/.claude/plugins/cache/usage-limits/usage-limits/1.21.0/skills/usage-limits`.
