@@ -340,7 +340,23 @@ async function cmdStudy() {
     const l = STUDY_LISTS[listName] || die(`unknown list "${listName}". Try: ${Object.keys(STUDY_LISTS).join(', ')}`);
     urls = urls.concat(l);
   }
-  if (!urls.length) die('study needs URLs, or --list editorial|object|cinema|product');
+  // A corpus query is the same thing as a list, chosen by the brief rather than
+  // picked off a shelf: `study --awards "scroll-scrubbed 3D"` renders what the
+  // corpus says solved that problem.
+  const awardsQuery = flag('awards');
+  if (awardsQuery) {
+    const { queryAwards, pickReferences } = await import('./awards.mjs');
+    const n = Number(flag('n', 3));
+    const picked = awardsQuery === true
+      ? pickReferences(flag('kind') || 'editorial', n)
+      : (queryAwards({ q: String(awardsQuery), kind: flag('kind'), technique: flag('technique'), limit: n }).length
+        ? queryAwards({ q: String(awardsQuery), kind: flag('kind'), technique: flag('technique'), limit: n })
+        : pickReferences(String(awardsQuery), n));
+    if (!picked.length) die(`no corpus entries match "${awardsQuery}". Try: awards --techniques`);
+    for (const e of picked) console.log(`  ref   ${e.name} - ${e.why || e.techniques.join(', ')}`);
+    urls = urls.concat(picked.map((e) => e.url));
+  }
+  if (!urls.length) die('study needs URLs, --list editorial|object|cinema|product, or --awards <query>');
   const out = resolve(String(flag('out', join(process.env.CLAUDE_SCRATCHPAD || tmpdir(), 'webdesign-study', listName || 'custom'))));
   const scrolls = String(flag('scroll', '0,900')).split(',').map((s) => parseInt(s, 10)).filter((n) => !isNaN(n));
   mkdirSync(out, { recursive: true });
@@ -581,6 +597,55 @@ async function cmdVideo() {
   console.log('Open these frames in timestamp order; do not infer motion from one still.');
 }
 
+/* The reference corpus. Looking at three sites that solved the same problem
+   differently is worth more than any amount of description of what good looks
+   like, so this exists to pick them, and `study` exists to render them. */
+async function cmdAwards() {
+  const A = await import('./awards.mjs');
+  if (flag('build')) {
+    let report;
+    try { report = A.buildCorpus(); } catch (e) { die(e.message); }
+    console.log(JSON.stringify(report, null, 2));
+    return;
+  }
+  if (flag('stats')) { console.log(JSON.stringify(A.corpusStats(), null, 2)); return; }
+  if (flag('techniques')) {
+    const idx = A.techniqueIndex();
+    if (flag('json')) { console.log(JSON.stringify(idx, null, 2)); return; }
+    for (const { technique, count } of idx) console.log(`${String(count).padStart(4)}  ${technique}`);
+    return;
+  }
+  const pick = flag('pick');
+  const rows = pick
+    ? A.pickReferences(pick, Number(flag('n', 3)), { kind: flag('kind'), technique: flag('technique'), since: flag('since') })
+    : A.queryAwards({
+      q: positional.join(' '),
+      kind: flag('kind'), source: flag('source'), award: flag('award'),
+      year: flag('year'), since: flag('since'), stack: flag('stack'),
+      technique: flag('technique'), verified: !!flag('verified'),
+      limit: flag('limit', pick ? 3 : 12),
+    });
+  if (flag('json')) { console.log(JSON.stringify(rows, null, 2)); return; }
+  if (flag('urls')) { for (const e of rows) console.log(e.url); return; }
+  if (!A.loadCorpus().length) die('the corpus is empty - run `awards --build` to merge data/awards/*.json');
+  console.log(A.formatAwards(rows, { verbose: !!flag('verbose') }));
+}
+
+/* The three scripts that reach outside the page: Blender for geometry, the
+   asset fetchers for CC0 textures and lighting, the bench check for what is
+   installed. They live in their own files and run from here so there is one
+   command surface to learn. */
+async function delegate(script, rest) {
+  const target = join(HERE, script);
+  if (!existsSync(target)) die(`${script} is missing from this install`);
+  const { spawn } = await import('node:child_process');
+  await new Promise((done) => {
+    const child = spawn(process.execPath, [target, ...rest], { stdio: 'inherit', windowsHide: true });
+    child.on('error', (e) => { console.error(e.message); process.exitCode = 1; done(); });
+    child.on('close', (code) => { process.exitCode = code === null ? 1 : code; done(); });
+  });
+}
+
 /* ------------------------------------------------------------------ main -- */
 switch (cmd) {
   case 'new': cmdNew(); break;
@@ -598,6 +663,10 @@ switch (cmd) {
   case 'verify': await cmdVerify(); break;
   case 'parity': await cmdParity(); break;
   case 'video': await cmdVideo(); break;
+  case 'awards': case 'refs': await cmdAwards(); break;
+  case 'blender': await delegate('blender.mjs', argv.slice(1)); break;
+  case 'assets': case 'texture': case 'textures': await delegate('assets.mjs', argv.slice(1)); break;
+  case 'tools': case 'bench': await delegate('tools.mjs', argv.slice(1)); break;
   default:
     console.log(`ultimate-frontend-skills
 
@@ -609,8 +678,19 @@ switch (cmd) {
                                   RENDER it: overlap, overflow, contrast, PNGs
   cut <photo> [--out DIR] [--name base] [--model isnet-general-use|u2net] [--alpha-matting]
                                   one photograph into parallax planes (rembg, local)
-  study <url...> | --list editorial|object|cinema|product [--scroll 0,900] [--out DIR]
+  study <url...> | --list editorial|object|cinema|product | --awards <query> [--n 3]
+        [--scroll 0,900] [--out DIR]
                                   render a batch of reference sites into contact sheets
+  awards [query] [--kind 3d|editorial|product|portfolio|ecommerce|brand|experiment]
+         [--source awwwards|fwa|threejs|codrops|...] [--award sotd|sotm|soty|honourable]
+         [--technique X] [--stack X] [--since YEAR] [--limit N] [--verbose] [--json|--urls]
+  awards --pick object|place|service|argument|3d|editorial [--n 3]
+                                  three references that disagree with each other
+  awards --techniques | --stats | --build
+                                  what the corpus knows, how big it is, rebuild it from chunks
+  blender <probe|run|glb|bake|frames> ...   author geometry, bake, render (Blender headless)
+  assets <search|textures|hdri|gen> ...     CC0 PBR materials, HDRI lighting, generated imagery
+  tools                           what else is installed on this bench and what changes because of it
   dev <dir> [--port 4321] [--widths 1440] [--scroll 0,900]
                                   serve + watch: re-audits and re-renders on every save
   serve <dir> [--port 4321]       local preview
