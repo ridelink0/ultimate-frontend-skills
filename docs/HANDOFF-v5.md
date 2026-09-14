@@ -34,6 +34,20 @@ Suite on e217fb3 (the tree as pushed, 2026-09-14 pm): 81 pass, 0 fail, 0
 cancelled. Two earlier runs the same afternoon were also 81/81; the one that
 was not showed 33 and a cancelled 10 under heavy load, both pass alone.
 
+Pass-2 tooling 2026-09-14 pm: madge/validate/publint/knip/html-validate all
+clean. The audit flagged 'duplicate id(s): main' on both pages - a false
+positive from an HTML COMMENT containing the literal text id="main"; the
+comment is reworded. OPEN: the audit's duplicate-id scan reads raw HTML rather
+than the comment-stripped text the other checks use (audit.mjs line 61 strips
+comments; the id regex near line 279 runs on `h`). One-line fix, not made
+under the cap.
+
+computer-use: the local checkout is C:/Users/OWNER/Downloads/axon (NOT a
+clone - one existed and I missed it). Pass 1 on origin: plugin validate
+passed, madge clean, 8 of 10 tools/*-test.mjs exit 0; astra-test.mjs and
+batch-test.mjs exit 1, causes NOT investigated. owner-4d runs pass 2 and holds
+the AxonHost.cs read in their relay note.
+
 ## Still open as of 2026-09-14 afternoon (the 9:55 relay never ran - argv cap)
 
 - test 47 in test/fixtures.test.mjs PASSES when run alone (verified 2026-09-14
