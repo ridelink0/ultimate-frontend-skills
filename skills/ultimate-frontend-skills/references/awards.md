@@ -87,7 +87,8 @@ Diversity is a property of `--pick`, not of the corpus.
 awards [query]                      every term must appear somewhere; ranked by
                                     whether it hit the technique list or the prose
        --kind 3d|editorial|product|portfolio|ecommerce|brand|experiment
-       --source awwwards|codrops|editorial|fwa|threejs
+       --source awwwards|editorial|fwa|codrops|cssda|siteinspire|minimalgallery|
+                httpster|lapaninja|webby|bwg|threejs   (run --stats for the live list)
        --award sotd|sotm|soty|honourable|showcase|developer
        --technique X --stack X      substring match inside those arrays
        --year N | --since YEAR      --verified
@@ -234,15 +235,21 @@ what the corpus can be asked for rather than what it happens to say. It returned
 `*.json` under `data/awards/` in sorted filename order, keys on URL, keeps the
 richer record when two harvesters found the same site, and writes the whole file.
 A chunk that is missing from the directory is simply absent from the rebuild.
-Rebuilding the shipped corpus reproduces it byte for byte:
 
 ```
 $ node scripts/webdesign.mjs awards --build
 { "files": 12, "read": 12, "entries": 388, "duplicates": 17, "dropped": [] }
 ```
 
+**Never hand-edit `awards.json`.** `--build` reads only the chunks, so any change
+made to the merged file alone is reverted the next time anyone rebuilds, with no
+warning and no entry in `dropped`. It is silent because the entry count does not
+move: on 2026-09-14 the chunks carried 343 verified rows and the shipped
+`awards.json` carried 336, same 388 entries either way. Correct a row in its
+chunk and rebuild; that is the only edit that survives.
+
 Run `awards --stats` for live counts rather than trusting any number written down
-here; on 2026-09-14 it read **388 entries, 343 verified**, across twelve sources
+here; on 2026-09-14 it read **388 entries, 336 verified**, across twelve sources
 - `awwwards 122 / editorial 114 / fwa 39 / codrops 37 / cssda 18 / siteinspire 14
 / minimalgallery 14 / httpster 14 / lapaninja 10 / webby 3 / bwg 2 / threejs 1` -
 and awards `sotd 94 / showcase 85 / reference 76 / honourable 52 / developer 49 /
@@ -320,7 +327,7 @@ not the raw size vendors quote.
 |---|---|---|---|---|---|
 | **Editorial grid with breakout lines** | CSS Grid with named lines; one element deliberately spans past the text column; hairlines derived from the ink colour, not from black | none | **0** | Always. This is what separates the top scorers from the bottom of the same listing | Never. The cheapest real craft on the list, and the one nobody ships instead of a shader |
 | **WebGL fluid / mesh gradient** | one full-screen triangle, one fragment shader, 3-4 simplex-noise octaves against time. No scene graph, no camera | `gradient.js` (ships here) or ogl | **0 - 39 KB** | The brand has no photography and the page needs a ground that is not flat | It sits behind text where nobody will look. A CSS `radial-gradient` reads identically at 0 KB |
-| **Scroll-scrubbed 3D** | GSAP timeline driven by ScrollTrigger, `scrub: 0.8`, `pin: true`, `anticipatePin: 1`; camera or model transform on `ease: 'none'` | GSAP + ScrollTrigger + three.js | **46 + 88 KB** | The subject *is* an object and rotating it reveals something a photograph cannot | The model is a generic abstract blob. Then it is a gradient with extra steps at 134 KB |
+| **Scroll-scrubbed 3D** | GSAP timeline driven by ScrollTrigger, `scrub: 0.8`, `pin: true`, `anticipatePin: 1`; camera or model transform on `ease: 'none'` | GSAP + ScrollTrigger + three.js | **46 + 191 KB** | The subject *is* an object and rotating it reveals something a photograph cannot | The model is a generic abstract blob. Then it is a gradient with extra steps at 237 KB |
 | **Image-sequence scroll** | 60-180 pre-rendered frames, `drawImage` into a canvas against scroll progress, every frame preloaded before the section is reachable | GSAP ScrollTrigger + bare canvas | **18 KB + the frames** | The motion is real footage, or a Blender bake you cannot ship as geometry | You need 120 frames to sell a fade. Budget the frames before you commit; they dominate the page weight, always |
 | **Pinned horizontal section** | `pin: true` on a sticky wrapper, `x: -(track.scrollWidth - innerWidth)` tweened against scroll distance | GSAP ScrollTrigger | **46 KB** | The content is genuinely a sequence - a timeline, a process, a filmstrip | Applied to a feature grid. Horizontal scroll destroys scanning, and there was no sequence to follow |
 | **Text mask reveal** | split to lines, wrap each in `overflow: clip`, `yPercent: 110 -> 0`, stagger ~0.06, inside `document.fonts.ready` | GSAP SplitText | **28 + 4 KB** | The headline is the one dominant element on that screen | On every heading. It is also the single most common cause of content invisible at rest, when the from-state is authored in CSS instead of by JS |
@@ -334,7 +341,7 @@ not the raw size vendors quote.
 | **JS page transition** | intercept the link, fetch the next document, swap containers, keep a persistent canvas alive across the swap | `@unseenco/taxi` 1.9.1, or `@barba/core` | **10 KB** | You must keep WebGL state or an audio graph alive across a navigation. That is the only remaining reason | A crossfade on every link. That is a 400 ms delay with a library attached, and the platform now does the visual part for free |
 | **Scroll inertia (smooth scroll)** | a rAF loop that intercepts wheel and lerps `scrollTop`; must be wired into `ScrollTrigger.update` or every pin drifts | lenis 1.3.26 | **5 KB** | A deliberate brand decision, on a site with almost no forms | On by default. It breaks `scroll-behavior: smooth`, anchor jumps, find-in-page scroll position, and every native scrollbar affordance at once |
 | **Shader text distortion** | render type to a texture with troika-three-text or an SDF atlas, displace the UVs in the fragment shader | troika-three-text | **56 KB + three** | The word *is* the artwork | On a nav label. The text stops being text: not selectable, not searchable, not indexed, not read aloud |
-| **Video in canvas** | `<video>` as a `VideoTexture` on a plane, or `drawImage(video)` per frame for 2D work | three.js, or bare canvas | **0 - 88 KB** | You need to mask, displace or light the footage | You wanted rounded corners and a poster frame |
+| **Video in canvas** | `<video>` as a `VideoTexture` on a plane, or `drawImage(video)` per frame for 2D work | three.js, or bare canvas | **0 - 191 KB** | You need to mask, displace or light the footage | You wanted rounded corners and a poster frame |
 | **Post-processing chain** | an `EffectComposer` pass stack over the scene - bloom, DOF, grain, chromatic aberration | postprocessing 6.39.5 | **154 KB** | The look depends on the light bleeding, and you measured the frame rate after adding it | Bloom added because it looks expensive. It is 154 KB gz and a full-screen pass per effect |
 | **2D WebGL at scale** | sprite batching, filters, particle counts a canvas cannot hold | pixi.js 8.20.1 | **226 KB** | Thousands of moving sprites, or real 2D filters | A few hundred particles. Canvas 2D or one ogl shader does that at a twentieth of the weight |
 | **Designer-authored vector animation** | export from After Effects or Rive, play in a runtime | lottie-web 5.13.0 / `@rive-app/canvas` 2.42.1 | **75 / 98 KB** | A designer authored the motion and the file is the deliverable | A spinner, an icon hover, a checkmark. All three are CSS |
@@ -367,6 +374,12 @@ says:
 | `pixi.js@8.20.1/dist/pixi.min.mjs` | ~120 KB gz | **226 KB** |
 | `postprocessing@6.39.5/build/index.js` | ~40 KB gz | **154 KB** |
 
+Gzipping `three.module.min.js` on its own gives 88 KB, and an earlier pass of
+this file printed that. It is not the page cost: the entry module's first line
+imports `./three.core.js`, which is 281 KB gz and is not minified on any CDN.
+`three.md` §2 has the import-map entry that swaps in the minified core and
+brings the pair to 191 KB.
+
 Also: the `+esm` specifiers stack.md prints are dependency-inlined bundles, and
 that is what you pay. `animejs@4.5.0/+esm` is **42 KB gz**, not ~10.
 `ogl@1.0.11/+esm` is **39 KB gz**, not ~10.
@@ -378,17 +391,27 @@ gsap 3.15.0 core          28 KB     lenis 1.3.26              5 KB
   + ScrollTrigger         18 KB     locomotive-scroll 5.0.1   9 KB
   + SplitText              4 KB     matter-js 0.20.0         25 KB
   + Flip                   9 KB     lottie-web 5.13.0        75 KB
-three 0.186.0 (WebGL)     88 KB     @rive-app/canvas 2.42.1  98 KB
-three 0.186.0 (WebGPU)   200 KB     troika-three-text        56 KB
+three 0.186.0 WebGL      191 KB     @rive-app/canvas 2.42.1  98 KB
+three 0.186.0 WebGPU     304 KB     troika-three-text 0.52.5 56 KB
 postprocessing 6.39.5    154 KB     curtainsjs 8.1.6         26 KB
 pixi.js 8.20.1           226 KB     @barba/core 2.10.3       10 KB
 animejs 4.5.0 (+esm)      42 KB     embla-carousel 8.6.0      7 KB
-ogl 1.0.11 (+esm)         39 KB     split-type 0.3.4          4 KB
+ogl 1.0.11 (+esm)         39 KB     split-type 0.3.4         12 KB
 ```
 
-**The WebGPU build costs 200 KB gz against 88 for WebGL - 2.3x.** That is the
-single most important cost fact of 2026, because everything fashionable is
-pushing toward it. See the dated section for when that is worth paying.
+Both three.js rows are **entry module plus its core, with the core remapped to
+`three.core.min.js`** - the pair the page actually downloads, per `three.md`.
+Left as published they are 370 and 482 KB. Every other row is a single file:
+GSAP from cdnjs, the rest from `cdn.jsdelivr.net/npm/`. `curtainsjs` is
+`dist/curtains.umd.min.js`. `split-type` publishes no minified build at all, so
+12 KB is what the bare specifier costs; its `+esm` is 5 KB.
+
+**The WebGPU build costs 304 KB gz against 191 for WebGL - 1.6x, and 113 KB in
+absolute terms.** (Entry modules alone it looks like 201 against 88, a far more
+dramatic 2.3x; that comparison is wrong, because both builds import the same
+`three.core.js` and the shared core cancels.) It is still the single most
+important cost fact of 2026, because everything fashionable is pushing toward
+it. See the dated section for when the 113 KB is worth paying.
 
 ## What jurors actually score
 
@@ -398,10 +421,15 @@ Awwwards prints its evaluation system on every winner's detail page:
 Design 40%   Usability 30%   Creativity 20%   Content 10%
 ```
 
-It is a literal weighted mean, not a vibe. Verified on all 45 recent Sites of
-the Day: **the 40/30/20/10 weights reproduce the published overall on every
-single row, to the printed decimal, with zero exceptions.** White Desert, SOTD
-11 Sept 2026: 7.28 / 7.27 / 7.21 / 7.74, weighted 7.309, published **7.31**.
+It is a literal weighted mean, not a vibe. Re-checked on 2026-09-14 against 20
+of the recent Sites of the Day: **the 40/30/20/10 weights reproduce the
+published overall from the published sub-scores to within 0.01 on every row, and
+exactly on 16 of 20.** White Desert: 7.28 / 7.27 / 7.21 / 7.74, weighted 7.309,
+published **7.31**. The four that land 0.01 low - Tuscan Journey, Why Zero,
+Trevor Noah, AI in Design Report - are rounding, not a different formula:
+Awwwards rounds each sub-score to two places before printing it, so recomputing
+from the printed values loses the last digit. Do not read a 0.01 gap as a
+hidden fifth criterion.
 
 There is a second, separate award with its own six criteria - the **DEV AWARD**:
 Semantics / SEO, Animations / Transitions, Accessibility, WPO, Responsive Design,
@@ -421,19 +449,30 @@ SOTD overall       n=45   min 7.17   mean 7.36   max 7.73
   Content 10%      n=45   min 6.98   mean 7.38   max 7.90
 
 DEV AWARD overall  n=41   min 7.07   mean 7.42   max 7.93
-  Accessibility    n=45   min 6.20   mean 6.80   max 7.60
-  Animations       n=45   min 7.20   mean 7.96   max 9.20
+  Accessibility    n=41   min 6.20   mean 6.80   max 7.60
+  Animations       n=41   min 7.20   mean 7.96   max 9.20
 
 which dimension was the winner's own weakest:
   Usability 32    Design 6    Content 4    Creativity 3
 ```
 
+The DEV AWARD sub-scores live inside the same block as the DEV overall, so they
+are necessarily the same n: four of the 45 carry no dev award at all. An
+independent re-scrape of 20 of these winners reproduced every band - overall
+7.20/7.40/7.73, usability 7.00/7.21/7.46, creativity 7.10/7.57/8.16,
+accessibility 6.40/6.88/7.60, animations 7.20/7.87/8.40, and usability weakest
+on 14 of 20.
+
 Four things fall out of this, and they are the most useful facts in the file.
 
-**1. A day winner is a 7.36, and the whole band is 0.56 wide.** Every Site of the
-Day sits between 7.17 and 7.73. You are not chasing an 8.5 - on this platform an
-8.5 does not happen. Year-tier is where the ceiling is: Igloo Inc at 7.92, Lando
-Norris at 8.18. **7.4 wins a day. Roughly 7.9 to 8.2 wins a year.**
+**1. A day winner is a 7.36, and the band is 0.56 wide.** All 45 sit between
+7.17 and 7.73; an independent re-scrape of 20 of them on the same day landed
+7.20 to 7.73, mean 7.40. You are not chasing an 8.5 - on this platform an 8.5
+does not happen. The ceiling belongs to the sites that go on to win at year
+tier, and their **SOTD** pages read 7.92 (Igloo Inc) and 8.18 (Lando Norris) -
+so a site scoring above this band on an ordinary day is the signal, not a
+separate year-tier scale. **7.4 wins a day. Roughly 7.9 to 8.2 is what a
+year-winner scored on its day.**
 
 **2. Usability is the lowest of the four on 32 of 45 winners, and it carries
 30%.** It is the ceiling on the entire platform. Moving usability from 7.0 to 8.0
@@ -447,10 +486,10 @@ at 8.31 and 8.71. Design barely moves at all (7.10-7.81). Design gets you
 admitted. Creativity gets you remembered. Usability decides whether you clear
 the bar.
 
-**4. On the dev award, accessibility is the floor: mean 6.80, and across 45
-winners it never once exceeded 7.60.** Animations is the ceiling: mean 7.96, max
+**4. On the dev award, accessibility is the floor: mean 6.80, and across the 41
+winners carrying a dev award it never once exceeded 7.60.** Animations is the ceiling: mean 7.96, max
 9.20. These pages are graded at about 8.0 on motion and 6.8 on access. A page
-that keeps the motion *and* fixes the accessibility outscores all 45 of them on
+that keeps the motion *and* fixes the accessibility outscores all 41 of them on
 the dev criteria. That is an unguarded gap, not a trade-off.
 
 ### The honest gap between a good page and a winning one
@@ -483,12 +522,16 @@ Visual design is 15% there against 40% on Awwwards. Accessibility is a named
 10% line that Awwwards folds into a separate optional award.
 
 **CSS Design Awards** runs a different scale entirely, and this is the scale that
-"6.5 versus 8.5" actually describes. From its FAQ: two judging systems; Website
-of the Day is "determined by the scores from the judging panel" and sites "must
-receive average score above 8.0"; sites above 6 that do not win receive **Special
-Kudos**. Verified on a real winner - bunq Labs, WOTD 7 Sept 2026, Final Judge's
-Score **8.29**, with the individual judges published (8.63, 8.63, 8.47, 8.0, 8.0,
-8.0) and a separate public vote (UI 8.25 / UX 8.18 / Innovation 8.43, 20 votes).
+"6.5 versus 8.5" actually describes. From its FAQ, quoted exactly: CSSDA uses two
+judging systems, the first for Website of the Day and "determined by the scores
+from the judging panel", where "sites must receive an average score above 8.0
+(this varies depending on quality of the sites submitted)"; "Sites, except WOTDs,
+that receive above 6 receive **Special Kudos**". The parenthetical matters - the
+8.0 is a guideline, not a gate. Verified on a real winner,
+`cssdesignawards.com/sites/won-j-you-studios/48029`: WOTD 14 Sept 2025, Final
+Judge's Score **8.24**, six individual judges published (8.37, 8.27, 8.13, 8.07,
+8.07, 8.00) and a separate public vote (UI 8.35 / UX 8.19 / Innovation 8.18, 20
+votes each).
 
 Do not carry an Awwwards number onto a CSSDA page or the reverse. A 7.4 wins on
 one and fails the threshold on the other.
@@ -534,12 +577,15 @@ measurements added.
 
 **Newly a tell, specific to 2026:**
 
-- **The loading-percentage intro gate.** This skill's own `study` command cannot
-  get past one in 4.2 seconds and discards the site as unrenderable, on a server
-  that returns a complete 1,579-character page to curl. If a headless browser
-  times out inside your intro, a bounced visitor will not wait either. It is the
-  technique and the tell in one artefact, and it costs usability - the dimension
-  that already caps 32 of 45 winners.
+- **The entrance animation that never finishes.** Measured on one SOTD-winning
+  portfolio: the server returns a complete 1,565-character page to curl, the DOM
+  at 12 seconds holds 1,500 characters of text across 29 elements, and 20 of
+  those elements are still collapsed to under 2px because their reveal never
+  ran. A headless capture sees a blank page at 4.2 s and at 30 s alike. This is
+  `tells.md`'s "content invisible at rest" caught in the wild on an awarded
+  site, and it costs usability - the dimension that already caps 32 of 45
+  winners. Author the from-state in JS, after `document.fonts.ready`, so the
+  markup is readable when the JS does not run.
 - **The WebGPU build shipped for a WebGL effect.** The frontier is genuinely
   there: `threejs.org/examples/files.json` now indexes **230 WebGPU examples
   against 220 WebGL** (plus 48 `webgl / advanced`, 26 postprocessing, 4
@@ -548,8 +594,8 @@ measurements added.
   The frontier and the award surface have not met. Paying 113 KB gz extra for a
   tag that does not exist is this year's costume. Pay it when you need compute
   shaders or a node material you cannot express in GLSL, and not for the name.
-- **Accessibility treated as an acceptable loss.** Mean 6.80 across 45 winners,
-  ceiling 7.60. It reads as normal because everybody does it. It is the cheapest
+- **Accessibility treated as an acceptable loss.** Mean 6.80 across the 41
+  winners that carry a dev award, ceiling 7.60. It reads as normal because everybody does it. It is the cheapest
   unclaimed score on the platform, and it is the one item on this list that is a
   defect rather than a fashion.
 - **Pure-CSS scroll-driven animation as a shipping answer.** MDN flags

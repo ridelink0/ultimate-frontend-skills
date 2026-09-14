@@ -57,7 +57,12 @@ is a voice; four is a costume.
 
 - **The section waterfall**: hero, logo wall, features, bento, how-it-works,
   stats, testimonials, pricing, FAQ, CTA, four-column footer - in that order,
-  every time. Structure is the highest-weighted dimension in every rubric.
+  every time. No published rubric weights "structure" highest, though - see
+  `references/awards.md`: Awwwards puts Design at 40% and has no structure
+  criterion, webdesignawards.io tops out at Performance and Innovation at 20%
+  each, and Webby lists Structure and Navigation among seven criteria with no
+  weights at all. The waterfall is a tell because it is recognisable, not
+  because a jury scores it.
 - **Three identical icon-topped cards** in a `lg:grid-cols-3`. Related: equal
   visual weight across every feature, so nothing is the hero feature.
 - **Bento grids** used as decoration rather than because the content genuinely

@@ -47,7 +47,7 @@ support ticket.
 | Grid, chassis, tokens, responsive floor | `core.css` | `core.css` |
 | Motion, scroll choreography, 3D | `motion.md`, `stack.md`, `exploded.js` | same |
 | Imagery, cut-outs, materials, lighting | `imagery.md` | same |
-| Every check and the ship gate | `audit` / `look` / `quality` / `security` / `verify` | same |
+| Every check and the ship gate | `audit` / `look` / `quality` / `security` / `parity` / `verify` | same |
 
 ## The two places they disagree
 

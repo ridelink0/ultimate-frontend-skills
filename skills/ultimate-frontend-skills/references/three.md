@@ -44,8 +44,10 @@ when the camera or the reader moves.
 
 ## 2. The import map that works
 
-Verified on this machine: rendered in headless Chromium through the repo's own
-harness, zero console errors, `gl.getError() === 0`, one draw call.
+Verified on this machine, this exact block: written to a file, rendered by
+`webdesign.mjs look` in headless Chromium, **0 errors and 0 warnings**,
+`THREE.REVISION === '186'`, `gl.getError() === 0`, one draw call,
+**192.3 KB over 3 requests**.
 
 ```html
 <!doctype html><meta charset="utf-8">
@@ -111,7 +113,8 @@ ships only `three.module.js`, `three.core.js`, `three.webgpu.js`,
 and warns against SRI on dynamically generated files. So the minified path
 cannot carry a stable integrity hash, and `webdesign.mjs security` warns
 "import map pulls modules from a CDN with no `integrity` block" on the map
-above - checked, that is the only finding it raises. If that warning has to go,
+above - checked, and it is the only thing that check says about the map. If
+that warning has to go,
 take the npm-shipped pair (`three.module.js` + `three.core.js`, 409.6 KB gz),
 which is byte-stable and hashable, and add the `"integrity"` block
 `security.md` describes. 191 KB unhashable against 410 KB hashable is the
@@ -651,7 +654,9 @@ triangulation diagonals, no tessellation grid. `thresholdAngle` is in degrees;
 `1` keeps every real crease, `30` also drops the soft seams on a cylinder.
 
 On an organic mesh `EdgesGeometry` is worse than useless - the torus knot gives
-back 14,383 segments from 12,800 triangles, which is every edge it had.
+back 14,383 segments from 12,800 triangles - more line than the surface has
+faces, because on a curved mesh almost no adjoining pair is coplanar enough to
+discard. There is no crease to find, so it draws the tessellation.
 
 ```js
 // mechanical parts: the technical-drawing look, and it is cheap
@@ -985,9 +990,9 @@ this file reported 1.16x as if it were a finding; it is not, the spread is the
 finding. V8's young-generation allocation is nearly free, the JIT and the
 nursery dominate the measurement, and at a realistic 50-200 allocations per
 frame the throughput difference is unmeasurable. **The real cost is the major GC
-the garbage
-eventually triggers, which lands as one dropped frame at an unpredictable
-moment.** So still hoist your scratch `Vector3`/`Quaternion`/`Matrix4` - but
+the garbage eventually triggers, which lands as one dropped frame at an
+unpredictable moment.** So still hoist your scratch
+`Vector3`/`Quaternion`/`Matrix4` - but
 because it removes a class of stutter, not because the arithmetic is slow. Do
 not contort code to avoid one allocation; do avoid allocating in a loop that
 runs per-part per-frame.

@@ -21,9 +21,19 @@ const ASSETS = resolve(HERE, '..', 'skills', 'ultimate-frontend-skills', 'assets
 
 const argv = process.argv.slice(2);
 const cmd = argv[0];
-const { positional, flag } = parseArgs(argv);
 
 const die = (msg, code = 1) => { console.error('ultimate-frontend-skills: ' + msg); process.exit(code); };
+
+// A mistyped flag is a usage error, and a usage error is one line. Letting
+// parseArgs throw put a raw Node stack trace in front of anyone who typed
+// `study --awards` with no query, which reads as a crash in the tool rather
+// than a mistake in the command.
+let positional, flag;
+try {
+  ({ positional, flag } = parseArgs(argv));
+} catch (err) {
+  die(err.message + '\nRun with no arguments for the usage.');
+}
 
 /* ------------------------------------------------------------- sections -- */
 function loadSections() {
@@ -152,8 +162,8 @@ function cmdNew() {
   if (needs.exploded || needs.sky) {
     engines.push(
       '<script type="importmap">\n{"imports":{\n' +
-      '  "three": "https://cdn.jsdelivr.net/npm/three@0.185.1/build/three.module.js",\n' +
-      '  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.185.1/examples/jsm/"\n' +
+      '  "three": "https://cdn.jsdelivr.net/npm/three@0.186.0/build/three.module.js",\n' +
+      '  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.0/examples/jsm/"\n' +
       '}}</script>',
     );
     if (needs.sky) engines.push('<script type="module" src="sky.js"></script>');
@@ -347,11 +357,11 @@ async function cmdStudy() {
   if (awardsQuery) {
     const { queryAwards, pickReferences } = await import('./awards.mjs');
     const n = Number(flag('n', 3));
-    const picked = awardsQuery === true
-      ? pickReferences(flag('kind') || 'editorial', n)
-      : (queryAwards({ q: String(awardsQuery), kind: flag('kind'), technique: flag('technique'), limit: n }).length
-        ? queryAwards({ q: String(awardsQuery), kind: flag('kind'), technique: flag('technique'), limit: n })
-        : pickReferences(String(awardsQuery), n));
+    // A query that matches nothing falls back to the register picker, so
+    // `--awards object` works as well as `--awards "wireframe dissolve"`.
+    const opts = { q: String(awardsQuery), kind: flag('kind'), technique: flag('technique'), limit: n };
+    const matched = queryAwards(opts);
+    const picked = matched.length ? matched : pickReferences(String(awardsQuery), n);
     if (!picked.length) die(`no corpus entries match "${awardsQuery}". Try: awards --techniques`);
     for (const e of picked) console.log(`  ref   ${e.name} - ${e.why || e.techniques.join(', ')}`);
     urls = urls.concat(picked.map((e) => e.url));
@@ -705,7 +715,7 @@ switch (cmd) {
   awards [query] [--kind 3d|editorial|product|portfolio|ecommerce|brand|experiment]
          [--source awwwards|fwa|threejs|codrops|...] [--award sotd|sotm|soty|honourable]
          [--technique X] [--stack X] [--since YEAR] [--limit N] [--verbose] [--json|--urls]
-  awards --pick object|place|service|argument|3d|editorial [--n 3]
+  awards --pick object|product|place|service|argument|portfolio|3d|editorial [--n 3]
                                   three references that disagree with each other
   awards --techniques | --stats | --build
                                   what the corpus knows, how big it is, rebuild it from chunks

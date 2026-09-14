@@ -207,8 +207,8 @@ Verified with `curl` on this bench today. Uncompressed transfer bytes.
 
 | Specifier | URL | Bytes |
 |---|---|---|
-| `three@0.185.1` | `https://cdn.jsdelivr.net/npm/three@0.185.1/build/three.module.js` | 650,153 |
-| `RoomEnvironment` | `https://cdn.jsdelivr.net/npm/three@0.185.1/examples/jsm/environments/RoomEnvironment.js` | 4,960 |
+| `three@0.186.0` | `https://cdn.jsdelivr.net/npm/three@0.186.0/build/three.module.js` | 650,153 |
+| `RoomEnvironment` | `https://cdn.jsdelivr.net/npm/three@0.186.0/examples/jsm/environments/RoomEnvironment.js` | 4,960 |
 | `gsap@3.15.0` | `https://cdnjs.cloudflare.com/ajax/libs/gsap/3.15.0/gsap.min.js` | 72,927 |
 | `ScrollTrigger` | `https://cdnjs.cloudflare.com/ajax/libs/gsap/3.15.0/ScrollTrigger.min.js` | 44,575 |
 | `lenis@1.3.26` | `https://cdn.jsdelivr.net/npm/lenis@1.3.26/dist/lenis.min.js` | 18,722 |

@@ -262,7 +262,7 @@ HDRI, `blocky_photo_studio`:
 fetch. Never ship 4k+ to a browser; 23 MB for lighting is indefensible.**
 
 **UltraHDR is the real answer if you can run a build step.** `UltraHDRLoader`
-(19696 bytes at three 0.185.1) reads a JPEG carrying an SDR base image plus a
+(19696 bytes at three 0.186.0) reads a JPEG carrying an SDR base image plus a
 gain map and yields a `HalfFloatType` texture. The files shipped in the three.js
 repo: `spruit_sunrise_2k.hdr.jpg` is **470493 bytes** and
 `spruit_sunrise_4k.hdr.jpg` is **1786249 bytes** - a 4K environment for 1.79 MB

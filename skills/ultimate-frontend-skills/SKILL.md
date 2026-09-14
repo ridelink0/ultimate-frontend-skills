@@ -152,11 +152,16 @@ globally and translate the section markup to components - keep the class names.
 12. **Quality floor, unannounced.** One `<h1>`, visible keyboard focus, `alt` on
    every image, `width`/`height` on every image, content visible with JS off,
    reduced motion respected, readable at 360px.
-13. **Use the library.** A hand-rolled gradient, scroll engine or exploded
+13. **A component has more states than the one you are looking at.** Hover,
+   focus-visible, active, disabled, loading, error, empty. Design the empty and
+   the loading state before the full one. `references/ui.md` has the catalogue
+   and `references/craft.md` has the rules; between them they are what stops a
+   beautiful page falling over the first time something goes wrong.
+14. **Use the library.** A hand-rolled gradient, scroll engine or exploded
    view is the low-effort version of all three, and it looks it. `gradient.js`,
    `depth.js` and `exploded.js` ship here; GSAP, three.js and anime.js v4 are
    one script tag away. `references/stack.md` says which, for what.
-14. **Spend boldness once.** Chanel's rule: before shipping, remove one thing.
+15. **Spend boldness once.** Chanel's rule: before shipping, remove one thing.
 
 **The preset is a choice, not a default.** Warm off-white plus a serif is now
 itself a recognised machine-made look. What separates this from that is
@@ -374,12 +379,14 @@ Read one only when you need it. Each is self-contained.
 |---|---|
 | `references/pipeline.md` | **First.** The nine stages, the gates, and the route decision that stage 3 makes |
 | `references/awards.md` | How to use the reference corpus, the technique taxonomy, what jurors score, what now reads as dated |
+| `references/ui.md` | The component catalogue: which control for which job, its states, the accessible pattern, and the mistake a junior ships. Button versus link and modal versus page are the two that cause the most damage |
+| `references/craft.md` | What a senior does without being asked: interaction states as a system, accessibility past the checklist, responsive strategy, performance as a design constraint, content design, tokens |
 | `references/plugins.md` | The rest of the bench: the `frontend-design` handshake, detection, Claude Design, when to hand off |
 | `references/three.md` | Real-time 3D on a scroll page: the import map, materials and light, the one-rAF scrub, wireframe-to-solid, projected callouts, the 60fps checklist |
 | `references/blender.md` | When Blender is the right answer and when it is not; headless bpy, named parts, GLB export, baking, rendered sequences |
 | `references/image-gen.md` | Generated imagery, CC0 PBR material sets, HDRI lighting, and the honest limits of a relit generated image |
 | `references/briefs/dive-watch.md` | The exemplar brief, a worked timeline, and where entries lose. Run it as a rehearsal |
-| `references/fable-showcase.md` | The September 2026 Fable 5.1 showcase and the dive-watch bake-off, turned into a reproduction recipe for Opus or Sonnet |
+| `references/fable-showcase.md` | The September 2026 Fable 5.1 launch page measured from its own bundles, what could NOT be evidenced about how it was made, and the reproduction recipe for Opus or Sonnet |
 | `references/fable.md` | The launch page torn down from its shipped bundles: the WebGL hero, the barycentric palette blend, the post chain, what it wastes |
 | `references/stack.md` | Which library for which job; GSAP, three.js and anime.js v4 recipes |
 | `references/typography.md` | Faces, the fluid scale, tracking and line-height tables, the OKLCH palette, deriving the accent, hairline alphas |

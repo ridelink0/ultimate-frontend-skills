@@ -49,7 +49,7 @@ rate limit exists; if one is needed, it is a Turnstile or a function.
 **Scripts from a CDN.** Every cross-origin `<script src>` needs `integrity`
 and `crossorigin="anonymous"` - without `crossorigin` the browser cannot read
 the response to hash it, so the integrity attribute silently does nothing.
-Pin the exact version (`three@0.185.1`), never `latest`. For modules behind an
+Pin the exact version (`three@0.186.0`), never `latest`. For modules behind an
 import map, the map itself takes an `"integrity"` block keyed by URL; Chrome
 127+, Firefox 138+ and Safari 18.4+ enforce it. A bare dynamic
 `import('https://…')` with no import map cannot be pinned by any browser
