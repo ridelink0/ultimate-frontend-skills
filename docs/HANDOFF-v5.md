@@ -31,8 +31,14 @@ here needs a decision from Gev; it was all agreed in the goal for this session.
   owns wake.js/defer.js - do not edit it without checking with them.
 
 Suite on e217fb3 (the tree as pushed, 2026-09-14 pm): 81 pass, 0 fail, 0
-cancelled. Two earlier runs the same afternoon were also 81/81; the one that
-was not showed 33 and a cancelled 10 under heavy load, both pass alone.
+cancelled. A later run under heavy load was 80/81, and this time the TAP was
+kept: test 33 failed with `fixture raised []` - the shift-on-load fixture
+raised NOTHING, expected 1. That is a MISSED DEFECT under load, not the extra
+timing warning raisesAllowingTiming tolerates, and it must not be tolerated:
+the test is right to fail. Cause to fix: the test waits a fixed 900 ms for
+the post-load shift, and a loaded browser had not shifted yet. Make the
+inspector wait for the layout-shift entry (or the fixture's own signal)
+rather than a fixed delay. Passes alone; the 81/81 runs stand.
 
 Pass-2 tooling 2026-09-14 pm: madge/validate/publint/knip/html-validate all
 clean. The audit flagged 'duplicate id(s): main' on both pages - a false
