@@ -90,6 +90,20 @@ export const NOTES = {
 export const SKILL_NOTES = {
   'visual-research': 'When the question is what something looks like in the wild. Pairs with `study` at stage 2.',
   dataviz: 'Read it BEFORE the first line of chart code and before choosing chart colours - any chart, stat tile or KPI row.',
+  // Packs from the open skills ecosystem (npx skills add). Each owns its domain
+  // when present; references/skill-packs.md has the handoff table.
+  animate: 'Owns UI component motion - dropdown, toast, modal, button press. Start from its RECIPES.md. Page choreography stays in motion.md.',
+  'review-animations': 'Run it on any page with component motion before `verify`; it catches ease-in on an entrance, which a render cannot.',
+  'find-animation-opportunities': 'Once, after the copy and before choreography: where the page should move and where it should stop.',
+  'animation-vocabulary': 'When the brief describes motion in adjectives. Turns them into a named technique with a number.',
+  'apple-design': 'For a product register that wants to read as engineered. Wrong for editorial, cinema and argument registers.',
+  'pick-ui-library': 'Component libraries: base-ui, cmdk, Sonner, motion, NumberFlow, Virtuoso. stack.md keeps the page-level and 3D ones.',
+  'emil-design-eng': 'The umbrella for the animate/review packs. Its numbers govern components; this plugin's govern the page.',
+  'web-design-guidelines': 'A broad review checklist. Where it and tells.md disagree on taste, tells.md is the more specific document.',
+  accessibility: 'A second reviewer on forms and navigation, beside craft.md.',
+  'fixing-accessibility': 'Hand off component-pattern fixes; keep landmark and contrast fixes here.',
+  'threejs-fundamentals': 'three.js as a subject. three.md is narrower and deeper on the scroll-driven product page only.',
+  'threejs-shaders': 'Shader work outside the product-page case three.md covers.',
 };
 
 const readJson = (file) => { try { return JSON.parse(readFileSync(file, 'utf8')); } catch { return null; } };
@@ -447,6 +461,9 @@ export async function detectBench({ home = homedir(), cwd = process.cwd(), probe
     skills: {
       personal: skillsIn(join(home, '.claude', 'skills')),
       project: skillsIn(join(cwd, '.claude', 'skills')),
+      // The agent-neutral directory the `skills` CLI also writes to, at both
+      // scopes. Missing it reports an installed pack as absent.
+      agents: skillsIn(join(home, '.agents', 'skills')).concat(skillsIn(join(cwd, '.agents', 'skills'))),
     },
     codex: codexBench({ home }),
     mcp: mcpNames({ home, cwd, plugins }),
@@ -503,9 +520,11 @@ export function formatBench(bench) {
     if (note) line('      ' + note);
   };
   line('  skills outside plugins');
-  if (!bench.skills.personal.length && !bench.skills.project.length) line('    none');
+  const agentsOnly = bench.skills.agents.filter((a) => ![...bench.skills.personal, ...bench.skills.project].some((s) => s.name === a.name));
+  if (!bench.skills.personal.length && !bench.skills.project.length && !agentsOnly.length) line('    none');
   for (const skill of bench.skills.personal) skillRow(skill);
   for (const skill of bench.skills.project) skillRow(skill);
+  for (const skill of agentsOnly) skillRow(skill);
   if (bench.self.localSkills.length) line('    (this repo ships: ' + bench.self.localSkills.join(', ') + ')');
   line('');
 

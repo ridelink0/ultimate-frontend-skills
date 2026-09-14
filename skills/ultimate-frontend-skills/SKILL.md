@@ -382,6 +382,7 @@ Read one only when you need it. Each is self-contained.
 |---|---|
 | `references/pipeline.md` | **First.** The nine stages, the gates, and the route decision that stage 3 makes |
 | `references/awards.md` | How to use the reference corpus, the technique taxonomy, what jurors score, what now reads as dated |
+| `references/skill-packs.md` | Third-party skill packs (Emil Kowalski's `animate` and `review-animations` first): which owns what when installed, where its numbers and this plugin's disagree, and the component-versus-page line that settles it |
 | `references/ui.md` | The component catalogue: which control for which job, its states, the accessible pattern, and the mistake a junior ships. Button versus link and modal versus page are the two that cause the most damage |
 | `references/craft.md` | What a senior does without being asked: interaction states as a system, accessibility past the checklist, responsive strategy, performance as a design constraint, content design, tokens |
 | `references/plugins.md` | The rest of the bench: the `frontend-design` handshake, detection, Claude Design, when to hand off |

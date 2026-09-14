@@ -30,6 +30,18 @@ here needs a decision from Gev; it was all agreed in the goal for this session.
   `relay doctor`. 775/775 tests pass. ANOTHER CLAUDE SESSION shares that tree and
   owns wake.js/defer.js - do not edit it without checking with them.
 
+## Still open as of 2026-09-14 afternoon (the 9:55 relay never ran - argv cap)
+
+- test 47 in test/fixtures.test.mjs fails under load and the CONTROL page gets
+  flagged; reproduce on an idle machine before deciding whether it is a real
+  false positive in measure.mjs. Do NOT silence it like 31 and 33.
+- ~25 UI gaps from the ui.md/craft.md analysis: status colour ramp, 404.html in
+  the scaffold, loading/empty/error patterns, data-table accessibility.
+- stack.md pins superseded versions and its KB figures are wrong.
+- npm publish blocked: `npm whoami` is 401. Needs Gev. computer-use and
+  video-watch also lack package.json/.codex-plugin.
+- Relay notes must stay under 8,191 characters or use usage-limits >= 1.30.0.
+
 ## Next, in value order
 
 1. **The seven references SKILL.md already points at do not exist yet.** Writing

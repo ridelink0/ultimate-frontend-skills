@@ -310,6 +310,16 @@ Easings: `cubic-bezier(0.16, 1, 0.3, 1)` expo-out is the default for entrances
 anything scrubbed. Entrances decelerate, exits accelerate; never `ease-in-out` on
 an entrance.
 
+Two rules adopted from Emil Kowalski's `animate` skill, because this file had no
+position on either and his is right: **never enter from `scale(0)`** - start at
+0.9-0.97 with opacity 0, since nothing in the world appears from nothing - and
+**reduced motion is a gentler variant, not zero**: keep the opacity and colour
+change, drop the transform. The numbers above are for page choreography. A UI
+component - a dropdown, a toast, a modal, a button press - takes his numbers
+instead (under 300 ms, stagger 30-80 ms), and when his pack is installed it
+owns those decisions outright. `references/skill-packs.md` has the full table of
+where the two systems meet.
+
 Stagger: characters 12-25ms, words 30-50, lines 60-90, cards 80-120. Keep the
 total span under ~600ms. Past 12 items, switch to a group fade.
 

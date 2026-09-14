@@ -202,6 +202,20 @@ reader emits table names and the literal `enabled = true` marker and has no
 path by which any other value leaves the file), and it masks credential-shaped
 text on the one route that carries host output through, `tools mcp`.
 
+## Skill packs from the open ecosystem
+
+Skills installed with `npx skills add <owner/repo>` land in `.claude/skills/`,
+`~/.claude/skills/` or `.agents/skills/`, usually as symlinks. `tools` reports
+the ones this plugin knows how to hand off to. The rule is the same as for
+`frontend-design`: an installed pack owns its domain, this plugin defers inside
+it, and nothing is ever recommended mid-build.
+
+The first and most important is Emil Kowalski's `emilkowalski/skills`, whose
+`animate` owns component motion and `review-animations` owns the verdict on
+it. The line between his numbers and this plugin's is component versus page,
+and `references/skill-packs.md` draws it in a table rather than picking a side.
+That file also lists the other packs worth the same treatment.
+
 ## The rest of the bench
 
 Hand off when the row's condition is true. All of these were verified present on
