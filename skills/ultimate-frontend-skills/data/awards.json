@@ -2,7 +2,7 @@
  {
   "id": "11-mois-sans-toit-cssda",
   "name": "11 mois sans toi(t)",
-  "url": "https://www.11moissanstoit.com/",
+  "url": "https://11moissanstoit.com/",
   "studio": null,
   "year": 2026,
   "award": "honourable",
@@ -18,7 +18,7 @@
   "motion": "a loading globe component implies the core interaction is a rotating/zoomable 3D map tracking a round-the-world route, though the fetch could not confirm the renderer.",
   "why": "a two-person travel-journal site built around a single centerpiece - an interactive globe - rather than a scroll sequence; the globe-as-navigation idea is the transferable part.",
   "verified": false,
-  "checked": "test",
+  "checked": "2026-09-14T11:18:54.490Z",
   "dead": {
    "status": 404,
    "at": "test"
@@ -144,7 +144,7 @@
  {
   "id": "akqa-agency",
   "name": "AKQA",
-  "url": "https://akqa.com",
+  "url": "https://www.akqa.com/",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -160,7 +160,8 @@
   "type": "large geometric/humanist sans-serif display headlines (\"IMAGINE WHAT'S NEXT\", \"MAKE WHAT MATTERS\") set in full caps",
   "motion": "not independently confirmed beyond the carousel's slide-count indicator in the markup",
   "why": "running the hero as a small, explicitly-numbered 3-slide carousel rather than an open-ended autoplay loop gives a large global agency's homepage a sense of a curated, finite set of current priorities rather than an endless reel",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "allbirds",
@@ -188,7 +189,7 @@
  {
   "id": "andluca",
   "name": "Andluca",
-  "url": "https://andluca.com",
+  "url": "https://www.andluca.com/",
   "studio": null,
   "year": 2026,
   "award": "showcase",
@@ -207,12 +208,13 @@
   "type": "plain geometric sans for the headline (\"Powered. Wireless. Intelligent.\"), small caps eyebrow label above it",
   "motion": "not evaluated beyond the static render",
   "why": "illustrating the hero with the product's own literal form (window panes against sky) rather than a generic tech-gradient graphic keeps a hard-to-photograph product legible at a glance",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "antinomy-studio",
   "name": "Antinomy Studio",
-  "url": "https://antinomy.studio",
+  "url": "https://www.antinomy.studio/",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -226,7 +228,8 @@
   "type": "not confirmed by a static fetch",
   "motion": "not confirmed by a static fetch",
   "why": "included as a known reference-tier French studio site, but the fetch itself only proves the URL resolves - do not lift technique claims for this one beyond that",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "apechain",
@@ -280,7 +283,7 @@
  {
   "id": "apple-iphone-17-pro",
   "name": "iPhone 17 Pro",
-  "url": "https://www.apple.com/iphone-17-pro/",
+  "url": "https://www.apple.com/iphone/",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -300,7 +303,8 @@
   "type": "San Francisco system type at a handful of weights, large declarative headline sizes over dense body copy, numbered footnotes for every technical claim",
   "motion": "each capability section scrubs through a pre-rendered frame sequence keyed to scroll position, faking a smooth product turn without loading a single polygon",
   "why": "the 3D-looking product rotation is JPEG/WebP frames swapped on a canvas as you scroll, not a 3D engine, which is why it stays fast on old hardware and is the technique nearly every 'how does Apple do that' teardown ends up reverse-engineering",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "apple-macbook-pro",
@@ -400,7 +404,7 @@
  {
   "id": "arcteryx",
   "name": "Arc'teryx",
-  "url": "https://arcteryx.com",
+  "url": "https://arcteryx.com/us/en",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -418,7 +422,8 @@
   "type": "a clean technical grotesque, the trademark tagline set at body weight rather than oversized",
   "motion": "the seasonal flagship jacket gets a looping video-background treatment while the rest of the catalogue stays static photography",
   "why": "concentrating the entire motion budget on one product per season, and leaving everything else static, signals which item the brand actually wants attention on without saying so in words",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "areyoudami-cssda",
@@ -491,7 +496,7 @@
  {
   "id": "arup-webby",
   "name": "Arup",
-  "url": "https://www.arup.com",
+  "url": "https://www.arup.com/en-us/",
   "studio": null,
   "year": 2026,
   "award": "honourable",
@@ -503,7 +508,8 @@
   "type": "UNVERIFIED",
   "motion": "UNVERIFIED - named a 2026 Webby Honoree in the Professional Services Website category (top 25% of entries) per Webby press coverage, but the site itself refused automated fetching (403) here.",
   "why": "UNVERIFIED for craft specifics - the Honoree status itself is confirmed via Webby coverage, described as 'a flagship digital destination for its audiences around the world,' but no visual detail could be checked against the live site in this pass.",
-  "verified": false
+  "verified": false,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "atlason",
@@ -576,7 +582,7 @@
  {
   "id": "b-reel-agency",
   "name": "B-Reel",
-  "url": "https://b-reel.com",
+  "url": "https://www.b-reel.com/",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -595,12 +601,13 @@
   "type": "clean sans-serif, size- and spacing-led hierarchy rather than decorative type treatment",
   "motion": "video is the primary homepage medium rather than an embellishment - multiple full-motion project previews carry the page instead of photography, which fits a studio whose own tool (Google Earth Studio) is a motion/animation product",
   "why": "using video thumbnails as the actual grid unit (not a static image with a hover-to-play affordance) is the right call for a motion-design studio's own portfolio, since the medium of the work and the medium of the pitch match",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "bang-olufsen",
   "name": "Bang & Olufsen",
-  "url": "https://www.bang-olufsen.com",
+  "url": "https://www.bang-olufsen.com/en/us",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -619,12 +626,13 @@
   "type": "a refined sans/serif mix for headlines, closer in register to a furniture catalogue than to consumer electronics",
   "motion": "the hero rotates slowly through gallery-style product photography rather than looping video",
   "why": "the copy and photography treat speakers explicitly as furniture ('gallery-worthy designs', 'Form. Function. Feeling'), and material-tone names carry straight into the color system instead of generic swatch labels - the naming convention is doing brand work most electronics sites leave to the copy alone",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "base31-ca",
   "name": "Base31",
-  "url": "https://base31.ca",
+  "url": "https://www.base31.ca/",
   "studio": "Signifly",
   "year": 2026,
   "award": "honourable",
@@ -640,7 +648,8 @@
   "type": "modern sans-serif, large narrative headline ('A new chapter for a storied site') over standard body sizing",
   "motion": "hover states and link-based page transitions carry the site; there is no single hero set-piece - the structure itself (three parallel offerings under one heritage narrative) is the design work.",
   "why": "Signifly's site for a heritage-site redevelopment in Prince Edward County - useful for showing how an agency partitions one physical place into three distinct digital 'products' (culture, housing, history) without the navigation feeling fractured.",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "biipmk",
@@ -662,7 +671,7 @@
  {
   "id": "bornfight-studio",
   "name": "Bornfight",
-  "url": "https://bornfight.com",
+  "url": "https://www.bornfight.com/",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -677,12 +686,13 @@
   "type": "not confirmed by a static fetch",
   "motion": "the timeline section is explicitly labelled \"DRAG\" with directional instruction text, meaning the studio's own history is browsed by a horizontal drag gesture rather than vertical scroll",
   "why": "switching one section's interaction model to horizontal drag - while the rest of the page scrolls normally - is a way to make a company-history timeline feel navigable rather than just long; it only works because it's used once, not as the whole page's scroll model",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "bose",
   "name": "Bose",
-  "url": "https://www.bose.com",
+  "url": "https://www.bose.com/home",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -700,12 +710,13 @@
   "type": "a bold, confident headline sans ('Quiet. Crafted. Epic.') kept to short lines",
   "motion": "primarily static grid and hero sections; color switching happens directly on the product card rather than the page background",
   "why": "letting a shopper swap the product photo's color right on the card removes a click from the color decision, a small conversion detail worth copying on any hardware catalogue page",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "breems-bram-van-vugt",
   "name": "Breems",
-  "url": "https://bramvanvugt.com",
+  "url": "https://www.bramvanvugt.com/",
   "studio": "Bram van Vugt",
   "year": 2026,
   "award": "honourable",
@@ -723,7 +734,8 @@
   "type": "bold sans-serif hero contrasted against readable body copy",
   "motion": "conventional carousel and hover interactions built on Webflow rather than a custom engine; the certified-Webflow-partner framing is the point - craft delivered inside a no-code constraint.",
   "why": "shows the honourable tier is reachable from Webflow specifically - the warm single-accent palette against a mostly neutral system is doing more work than any animation on the page.",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "brex",
@@ -819,7 +831,7 @@
  {
   "id": "cartier-watches-and-wonders",
   "name": "Cartier Watches & Wonders",
-  "url": "https://www.cartier.com/en-us/watches-and-wonders",
+  "url": "https://www.cartier.com/en-us/watches-and-wonders-2/",
   "studio": "Immersive Garden",
   "year": 2026,
   "award": "showcase",
@@ -839,7 +851,8 @@
   "type": "UNVERIFIED in detail — described per Utsubo's studio coverage",
   "motion": "described as six separate 3D rooms, one per watch, navigated by scrolling rather than clicking through a menu",
   "why": "structuring a multi-product luxury site as discrete navigable rooms, each with its own shader and score cue, rather than one continuous scene, is the transferable pattern",
-  "verified": false
+  "verified": false,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "cartier-watches-wonders-2026",
@@ -936,7 +949,7 @@
  {
   "id": "cctype-foundry",
   "name": "CcType",
-  "url": "https://cctype.com",
+  "url": "https://cctype.com/typefaces/cc-timeline",
   "studio": "CcType",
   "year": 2026,
   "award": "reference",
@@ -955,7 +968,8 @@
   "type": "the product is the typography: a grotesk/slab specimen typeface (CcTimeline) shown at a dozen sizes on one screen with no other content competing for attention",
   "motion": "not evaluated beyond the static render",
   "why": "letting a type specimen page be nothing but scaling instances of one word is the correct amount of restraint for a foundry selling craft, not marketing",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "cerebrium",
@@ -1843,7 +1857,12 @@
   "type": "UNVERIFIED",
   "motion": "UNVERIFIED - the fetch attempt was refused by the server (403); listed on the CSSDA Special Kudos roll but not confirmed here.",
   "why": "UNVERIFIED - real listing, but the site actively blocked automated fetching, so no craft claim can be made.",
-  "verified": false
+  "verified": false,
+  "dead": {
+   "status": 403,
+   "at": "2026-09-14T11:18:54.490Z"
+  },
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "discord",
@@ -1970,7 +1989,7 @@
  {
   "id": "era-residence-2026",
   "name": "ERA Residence",
-  "url": "https://era-residence.com",
+  "url": "https://www.era-residence.com/",
   "studio": "The First The Last",
   "year": 2026,
   "award": "sotm",
@@ -1986,12 +2005,13 @@
   "type": "clean contemporary sans, generous headline sizing over a legible body face",
   "motion": "toggling day and night swaps the hero photography's lighting state directly, rather than through a separate page or gallery, and cloud imagery in the background suggests layered parallax during scroll",
   "why": "a day/night toggle on the hero photo does more to sell 'a place to return to' at every hour than a single hero shot ever could, for the cost of one extra photo set",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "etq-amsterdam",
   "name": "ETQ Amsterdam",
-  "url": "https://etq-amsterdam.com",
+  "url": "https://www.etq-amsterdam.com/en-us",
   "studio": null,
   "year": 2026,
   "award": "showcase",
@@ -2010,7 +2030,8 @@
   "type": "small tracked sans caps throughout, no display-size headline - the photography carries the scale instead of the type",
   "motion": "not evaluated beyond the static render",
   "why": "letting the garment and the backdrop sit at nearly the same grey value is a deliberate low-contrast choice that reads as quiet confidence rather than a lighting mistake",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "everswap",
@@ -2251,7 +2272,7 @@
  {
   "id": "giant-ant-studio",
   "name": "Giant Ant",
-  "url": "https://giantant.ca",
+  "url": "https://www.giantant.ca/",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -2267,7 +2288,8 @@
   "type": "plain, functional sans-serif hierarchy with no decorative type treatment",
   "motion": "not confirmed by a static fetch",
   "why": "a well-regarded animation studio choosing Squarespace for its own site is proof that reference-tier portfolio craft is about the work in the grid, not the platform underneath it - the platform choice is worth naming precisely because it contradicts the assumption that every reference site is bespoke",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "gil-huybrecht",
@@ -2368,7 +2390,7 @@
  {
   "id": "gopro",
   "name": "GoPro",
-  "url": "https://www.gopro.com",
+  "url": "https://gopro.com/en/us/",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -2386,7 +2408,8 @@
   "type": "bold condensed headlines for campaign names, compact body copy for specs",
   "motion": "layered hero sections with background imagery suggest depth as the page scrolls between campaigns",
   "why": "the product photography is already maximally saturated by subject matter (action sports), so the surrounding UI chrome stays deliberately neutral rather than competing with it for attention",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "gq-ap-extraordinary-lab-2026",
@@ -2507,7 +2530,7 @@
  {
   "id": "hearst-exhibit-2026",
   "name": "Hearst Exhibit 2026 - ELLE & Esquire: The New Hollywood",
-  "url": "https://hollywoodexhibit2026.com",
+  "url": "https://www.hollywoodexhibit2026.com/",
   "studio": "OSMOS",
   "year": 2026,
   "award": "sotd",
@@ -2522,7 +2545,8 @@
   "type": "clean, understated hierarchy with deliberate line breaks doing the work a headline font size normally would",
   "motion": "restrained; the page leans on typographic spacing rather than animation to read as an exhibition invitation",
   "why": "it borrows the plain, confident spacing of a print exhibition invite instead of over-designing a landing page for a photography show",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "hello-monday-agency",
@@ -2565,7 +2589,12 @@
   "type": "hierarchical text organization with the agency name repeated as the sole recurring visual anchor",
   "motion": "the whole site is built around getting a visitor to the \"Get Capabilities Deck\" button rather than around a spectacle sequence",
   "why": "a two-color agency site that still won a 3D-tagged award shows the bar has moved to restraint and execution, not just render budget",
-  "verified": true
+  "verified": false,
+  "dead": {
+   "status": 403,
+   "at": "2026-09-14T11:18:54.490Z"
+  },
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "honda-wing-mark-history-cssda",
@@ -2591,7 +2620,7 @@
  {
   "id": "hpi-real-estate",
   "name": "HPI Real Estate",
-  "url": "https://hpitx.com",
+  "url": "https://www.hpitx.com/",
   "studio": null,
   "year": 2026,
   "award": "showcase",
@@ -2610,7 +2639,8 @@
   "type": "bold condensed sans stacked in three short declarative lines, small labels under each stat counter",
   "motion": "the numbered counter card implies an auto-advancing carousel behind a static featured-developments panel",
   "why": "three one-word sentences stacked as the entire headline is a plainer, more confident move than the usual real-estate paragraph of reassurance copy",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "hubtown",
@@ -2724,7 +2754,7 @@
  {
   "id": "instrument-agency",
   "name": "Instrument",
-  "url": "https://instrument.com",
+  "url": "https://www.instrument.com/",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -2740,12 +2770,13 @@
   "type": "not confirmed by a static fetch",
   "motion": "a client-logo/work carousel is the confirmed interactive element; deeper motion behavior isn't visible to a static fetch",
   "why": "leading the homepage with a rotating set of named, recognizable enterprise logos (rather than abstract case-study art) is a positioning choice - it substitutes brand recognition for visual spectacle as the trust signal",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "interiorglobe",
   "name": "Interiorglobe",
-  "url": "https://interiorglobe.co",
+  "url": "https://www.interiorglobe.co/",
   "studio": "UNFOUND STUDIO",
   "year": 2026,
   "award": "honourable",
@@ -2759,7 +2790,8 @@
   "type": "UNVERIFIED: not confirmed by direct fetch (site returned 403), typography not observed firsthand",
   "motion": "UNVERIFIED: not confirmed by direct fetch (site returned 403), motion not observed firsthand",
   "why": "listed as an Awwwards Honorable Mention (May 29, 2026) on the magazine/newspaper/blog showcase, included for completeness though the live site could not be fetched directly to confirm craft detail",
-  "verified": false
+  "verified": false,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "isaac-leon",
@@ -2937,7 +2969,7 @@
  {
   "id": "kurppa-hosk-studio",
   "name": "Kurppa Hosk",
-  "url": "https://kurppahosk.com",
+  "url": "https://www.kurppahosk.com/",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -2955,7 +2987,8 @@
   "type": "not confirmed by a static fetch",
   "motion": "video-as-thumbnail (rather than a static image with a hover-to-play state) is the confirmed pattern across multiple named case studies in the carousel",
   "why": "using a dedicated video CDN (Mux) for thumbnail-scale clips rather than serving full video files or GIFs is the correct choice once a portfolio grid needs more than two or three looping previews on screen at once",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "lacoste-ace-breaker",
@@ -3004,7 +3037,7 @@
  {
   "id": "lightweight-wheels",
   "name": "Lightweight",
-  "url": "https://lightweight.info/",
+  "url": "https://lightweight.info/en",
   "studio": "VKZ Studio",
   "year": 2026,
   "award": "sotd",
@@ -3024,7 +3057,8 @@
   "type": "modern minimal sans-serif, bold short headlines ('THE EVOLUTION OF PERFORMANCE') over generous whitespace",
   "motion": "full-page stacked sections read like a cycling magazine spread, with parallax/fade transitions between hero images as the page scrolls.",
   "why": "a component maker (wheels, not a whole bike) still earns a cinematic treatment by shooting the product in real alpine terrain rather than on white seamless - proof the object doesn't have to be the whole vehicle to carry a hero shot.",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "likova",
@@ -3147,7 +3181,7 @@
  {
   "id": "lucid-motors",
   "name": "Lucid Motors",
-  "url": "https://www.lucidmotors.com",
+  "url": "https://lucidmotors.com/",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -3163,12 +3197,13 @@
   "type": "a restrained luxury-register sans, taglines kept short and declarative",
   "motion": "primarily static hero imagery per model in scroll sequence, no configurator on the entry page",
   "why": "repeating one three-word mantra across every model section works as a structural rhyme instead of a fresh headline each time, reinforcing brand voice through literal repetition rather than variety",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "mathis-biabiany",
   "name": "Mathis Biabiany",
-  "url": "https://mathis-biabiany.fr",
+  "url": "https://www.mathis-biabiany.fr/",
   "studio": "Mathis Biabiany",
   "year": 2026,
   "award": "honourable",
@@ -3180,12 +3215,13 @@
   "type": "UNVERIFIED",
   "motion": "UNVERIFIED - not independently confirmed beyond appearing in the Awwwards Honorable Mention listing.",
   "why": "UNVERIFIED - included because it is a real, currently-listed Honorable Mention entry, but no craft claim beyond that listing has been checked against the live site.",
-  "verified": false
+  "verified": false,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "matt-davella",
   "name": "Matt D'Avella",
-  "url": "https://mattdavella.com",
+  "url": "https://www.mattdavella.com/",
   "studio": null,
   "year": 2026,
   "award": "showcase",
@@ -3204,12 +3240,13 @@
   "type": "bold rounded sans for the headline (\"Don't sacrifice your soul to the algorithm\"), small sans for testimonials and press logos",
   "motion": "not evaluated beyond the static render",
   "why": "leading with a contrarian, slightly confrontational headline about the algorithm - not with subscriber-count bragging - is the specific copy choice that keeps a creator's newsletter page from reading as generic",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "matters-singapore",
   "name": "Matters. Singapore",
-  "url": "https://matters.sg",
+  "url": "https://www.matters.sg/",
   "studio": "A./CHEN",
   "year": 2026,
   "award": "honourable",
@@ -3221,7 +3258,8 @@
   "type": "UNVERIFIED",
   "motion": "UNVERIFIED - listed on the Awwwards Honorable Mention roll; not independently confirmed.",
   "why": "UNVERIFIED - real listing, craft details not checked against the live site in this pass.",
-  "verified": false
+  "verified": false,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "meatopia",
@@ -3267,7 +3305,7 @@
  {
   "id": "mensch-club",
   "name": "MENSCH",
-  "url": "https://mensch.club",
+  "url": "https://www.mensch.club/",
   "studio": "JonahKLewis",
   "year": 2026,
   "award": "honourable",
@@ -3279,7 +3317,8 @@
   "type": "UNVERIFIED",
   "motion": "UNVERIFIED - listed on the Awwwards Honorable Mention roll; not independently confirmed.",
   "why": "UNVERIFIED - real listing, craft details not checked against the live site in this pass.",
-  "verified": false
+  "verified": false,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "mercury",
@@ -3323,7 +3362,12 @@
   "type": "a bold sans headline paired with a lighter tagline weight directly beneath it",
   "motion": "minimal - the page favors a static, stable hero over a rotating or animated device shot",
   "why": "compared to Apple's frame-scrubbed rotation for a comparable hardware category, this page stays intentionally calmer and more static, a useful contrast point when deciding how much motion a hardware launch page actually needs",
-  "verified": true
+  "verified": false,
+  "dead": {
+   "status": 400,
+   "at": "2026-09-14T11:18:54.490Z"
+  },
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "metalab-agency",
@@ -3601,7 +3645,7 @@
  {
   "id": "north-kingdom-agency",
   "name": "North Kingdom",
-  "url": "https://northkingdom.com",
+  "url": "https://www.northkingdom.com/",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -3618,7 +3662,8 @@
   "type": "not confirmed by a static fetch",
   "motion": "the client-logo carousel's HTML is duplicated in the markup, the standard trick for a seamless infinite-scroll loop with no visible seam or reset jump",
   "why": "the duplicate-the-list-in-markup approach to an infinite logo scroller is the correct low-tech way to fake seamlessness with CSS alone, before reaching for a JS carousel library at all",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "nothing-tech",
@@ -3733,7 +3778,7 @@
  {
   "id": "ordinary-folk-studio",
   "name": "Ordinary Folk",
-  "url": "https://ordinaryfolk.co",
+  "url": "https://www.ordinaryfolk.co/",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -3750,12 +3795,13 @@
   "type": "not confirmed by a static fetch",
   "motion": "project previews are animated WebP loops behind a play icon rather than static stills, so the grid itself is already in motion before any click",
   "why": "WebP video loops are a lighter-weight substitute for autoplaying `<video>` tags on a grid of many thumbnails at once - worth reaching for when a page needs a dozen looping previews without a dozen video decoders running",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "ordr",
   "name": "ORDR",
-  "url": "https://ordrhealth.com",
+  "url": "https://www.ordrhealth.com/",
   "studio": "Valeriia Babicheva",
   "year": 2026,
   "award": "honourable",
@@ -3771,7 +3817,8 @@
   "type": "serif typefaces anchoring the hierarchy, set for a curated-publication feel over a typical product-page feel",
   "motion": "restrained - interaction handled through form states and overlays, not scroll choreography",
   "why": "the repeated star-icon punctuation is a small typographic device doing the job a pull-quote or drop-cap would do in print, systematizing an evidence-based claim without resorting to a badge or checkmark icon set",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "oryzo",
@@ -3838,7 +3885,12 @@
   "type": "clean contemporary sans-serif with generous spacing, editorial sequencing standing in for a hero statement",
   "motion": "scroll-triggered section reveals plus accordion expansion, explicitly invited (\"Scroll down and enter\")",
   "why": "the bracketed numbered-section labels ([01Data]) borrow a print report's table-of-contents logic to make a pharma B2B site read as a structured document instead of a marketing scroll",
-  "verified": true
+  "verified": false,
+  "dead": {
+   "status": 403,
+   "at": "2026-09-14T11:18:54.490Z"
+  },
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "partake-foods",
@@ -3885,7 +3937,7 @@
  {
   "id": "paul-kalkbrenner",
   "name": "Paul Kalkbrenner",
-  "url": "https://paulkalkbrenner.net",
+  "url": "https://www.paulkalkbrenner.net/",
   "studio": "Holographik",
   "year": 2026,
   "award": "showcase",
@@ -3904,12 +3956,13 @@
   "type": "very large tight grotesk caps broken across a five-column numbered grid (01-05), read as a layout system rather than a single headline",
   "motion": "not evaluated beyond the static render",
   "why": "printing the grid's own column rules and numbers visibly, instead of hiding them, turns a plain typographic hero into a diagram of its own construction",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "pedro-luz-e-lobos",
   "name": "Pedro Luz e Lobos",
-  "url": "https://pedroluzelobos.com",
+  "url": "https://www.pedroluzelobos.com/en",
   "studio": "Moliceiro Studio",
   "year": 2026,
   "award": "honourable",
@@ -3925,7 +3978,8 @@
   "type": "classical serif typeface running through the portfolio, sized to read as a printed contact sheet rather than a web template",
   "motion": "static and linear by design - no scroll animation, in keeping with the photographer's stated \"low-profile, genuine\" positioning",
   "why": "a four-photo grid with nothing else is a legitimate typographic/editorial statement precisely because it refuses to add motion it doesn't need - restraint as the craft move",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "peloton",
@@ -3953,7 +4007,7 @@
  {
   "id": "pentagram-studio",
   "name": "Pentagram",
-  "url": "https://pentagram.com",
+  "url": "https://www.pentagram.com/",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -3967,7 +4021,8 @@
   "type": "sans-serif, hierarchy built from scale and weight rather than color or ornament, consistent with the firm's own stated line that \"typography is the voice of design\"",
   "motion": "standard scroll with no confirmed parallax or scroll-triggered effects - the restraint itself is the design choice for a firm this well known",
   "why": "the near-total absence of decoration or motion is itself the credibility move for a design consultancy at this level of reputation - it argues that the work needs no framing device, which is a much harder position to earn than a page full of effects",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "perform-europe",
@@ -3993,7 +4048,7 @@
  {
   "id": "polestar",
   "name": "Polestar",
-  "url": "https://www.polestar.com",
+  "url": "https://www.polestar.com/us/",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -4012,7 +4067,8 @@
   "type": "a condensed, understated sans, Scandinavian-minimal in both scale and weight",
   "motion": "primarily static full-bleed photography with progressive section reveal on scroll, no vehicle-turntable 3D",
   "why": "like Rivian, it skips the WebGL-turntable EV cliche and pairs restrained photography with a genuinely useful embedded calculator, which does more persuasion work than another spinning car render",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "porsche",
@@ -4040,7 +4096,7 @@
  {
   "id": "prime-security",
   "name": "Prime Security",
-  "url": "https://primesec.ai",
+  "url": "https://www.primesec.ai/",
   "studio": "BRIGHTSCOUT",
   "year": 2026,
   "award": "honourable",
@@ -4052,7 +4108,8 @@
   "type": "UNVERIFIED",
   "motion": "UNVERIFIED - a cybersecurity SaaS marketing site listed on the Awwwards Honorable Mention roll; not independently confirmed.",
   "why": "UNVERIFIED - real listing, craft details not checked against the live site in this pass.",
-  "verified": false
+  "verified": false,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "produx-design",
@@ -4176,7 +4233,7 @@
  {
   "id": "rennsport-911",
   "name": "Rennsport 911",
-  "url": "https://911rennsport.co.uk",
+  "url": "https://www.911rennsport.co.uk/",
   "studio": "Signifly",
   "year": 2026,
   "award": "honourable",
@@ -4192,7 +4249,8 @@
   "type": "clean sans-serif, large bold headline ('Bespoke Handcrafted Porsche 911s') with pull-quote-scale customer testimonials",
   "motion": "an image carousel drives the hero and project cards behave as clickable showcases; the restraint keeps focus on the restomod photography rather than the interface.",
   "why": "a second Signifly build in this pool (with Base31) - both lean on documentary-grade photography and a near-identical neutral system, suggesting the studio's honourable-tier formula is consistent art direction across very different clients rather than a reusable animation kit.",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "resn-studio",
@@ -4283,7 +4341,7 @@
  {
   "id": "robinhood",
   "name": "Robinhood",
-  "url": "https://robinhood.com",
+  "url": "https://robinhood.com/us/en/",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -4301,7 +4359,8 @@
   "type": "bold, confident grotesque headlines paired with plain body copy",
   "motion": "primarily static screenshot-led sections in scroll sequence, security iconography breaking up the financial UI",
   "why": "trust is built by showing the real trading interface at real fidelity rather than an abstracted illustration of 'investing', which matters more for a brokerage than it does for most SaaS categories",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "santioni-spirits",
@@ -4373,7 +4432,7 @@
  {
   "id": "seedlip-drinks-webby",
   "name": "Seedlip",
-  "url": "https://www.seedlipdrinks.com",
+  "url": "https://www.seedlipdrinks.com/en-us",
   "studio": null,
   "year": 2026,
   "award": "honourable",
@@ -4389,7 +4448,8 @@
   "type": "clean bold headline set ('Yeah, it's a drink') over plain product-card copy",
   "motion": "conventional carousel and card-link interactions; the craft the Webby judges cited was commerce clarity, not a signature animation - award badges and a founder story sit directly under the hero.",
   "why": "named a Webby nominee (Food & Drink Desktop, shortlisted among five, top 11% of entries) as 'a brand-led commerce site' - the lesson is that a DTC store can place on craft alone when photography and copy carry the premium feel instead of motion.",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "selkirk-omni-paddle",
@@ -4460,7 +4520,7 @@
  {
   "id": "sid-lee-agency",
   "name": "Sid Lee",
-  "url": "https://sidlee.com",
+  "url": "https://sidlee.com/en/",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -4474,12 +4534,13 @@
   "type": "large section headings for each collection, sans-serif, high-contrast against body copy",
   "motion": "the homepage's own copy names the interaction directly - collections are browsed horizontally by scroll-or-drag, a deliberate departure from the page's otherwise vertical flow, with explicit previous/next collection controls as a fallback for anyone who doesn't drag",
   "why": "pairing a horizontal-drag section with visible prev/next buttons is the accessible way to ship a gesture-first interaction - it never leaves a visitor stuck if they don't discover the drag on their own",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "since-you-arrived",
   "name": "Since You Arrived",
-  "url": "https://sinceyouarrived.world/hub",
+  "url": "https://sinceyouarrived.world/",
   "studio": null,
   "year": 2026,
   "award": "honourable",
@@ -4495,12 +4556,13 @@
   "type": "sparse, fragmented phrasing set like an artist statement or literary-magazine pull-quote rather than marketing copy",
   "motion": "content unfolds by discrete numbered volume rather than continuous scroll animation",
   "why": "using roman numerals and a bare counter as the entire navigation system is a genuinely typographic solution to structuring a conceptual piece, with zero UI chrome to fall back on",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "siteassist",
   "name": "SiteAssist",
-  "url": "https://siteassist.com",
+  "url": "https://www.siteassist.com/",
   "studio": "Signifly",
   "year": 2026,
   "award": "honourable",
@@ -4512,7 +4574,8 @@
   "type": "UNVERIFIED",
   "motion": "UNVERIFIED - a third Signifly-built site in this pool per the Awwwards Honorable Mention listing; not independently confirmed.",
   "why": "UNVERIFIED - real listing, craft details not checked against the live site in this pass; flagged because it would make Signifly's honourable-tier count three of these forty if confirmed.",
-  "verified": false
+  "verified": false,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "slack",
@@ -4588,7 +4651,7 @@
  {
   "id": "soilboy",
   "name": "Soilboy",
-  "url": "https://soilboy.sg",
+  "url": "https://www.soilboy.sg/",
   "studio": null,
   "year": 2026,
   "award": "showcase",
@@ -4607,7 +4670,8 @@
   "type": "small lower-case grotesk wordmark and nav, letting the plant photography carry the visual weight instead of display type",
   "motion": "not evaluated beyond the static render",
   "why": "cropping the hero photo tight on a single bonsai's silhouette, rather than a shelf of products, makes a plant shop feel like a considered object rather than inventory",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "son-daven-2026",
@@ -4681,7 +4745,7 @@
  {
   "id": "stink-studios-agency",
   "name": "Stink Studios",
-  "url": "https://stinkstudios.com",
+  "url": "https://www.stinkstudios.com/",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -4696,7 +4760,8 @@
   "type": "not confirmed by a static fetch",
   "motion": "not confirmed by a static fetch",
   "why": "keeping a dated press feed live on the homepage (rather than a static \"as seen in\" logo strip) is a low-cost way to keep an agency site looking maintained between full redesigns",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "stripe",
@@ -4878,7 +4943,7 @@
  {
   "id": "the-maker-makes",
   "name": "The Maker Makes",
-  "url": "https://themakermakes.com",
+  "url": "https://www.themakermakes.com/",
   "studio": null,
   "year": 2026,
   "award": "showcase",
@@ -4897,7 +4962,8 @@
   "type": "plain serif for post titles, small sans caps for category tags and metadata",
   "motion": "not evaluated beyond the static render",
   "why": "a hand-drawn avocado standing in for the generic down-arrow scroll cue is a tiny, specific brand touch that costs nothing but is easy to skip",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "the-thread-a-personal-story",
@@ -4968,7 +5034,7 @@
  {
   "id": "trevor-noah",
   "name": "Trevor Noah",
-  "url": "https://trevornoah.com",
+  "url": "https://www.trevornoah.com/",
   "studio": "OFF+BRAND.",
   "year": 2026,
   "award": "sotd",
@@ -4984,7 +5050,8 @@
   "type": "a modern serif paired with sans-serif supporting text, pitched deliberately at premium lifestyle-magazine register rather than a typical celebrity press-kit site",
   "motion": "restrained; typographic hierarchy, not animation, guides the visitor between sections",
   "why": "treating a public figure's site as a lifestyle-magazine masthead - serif display, sparse grid, restrained motion - instead of a press-kit template is the transferable move here",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "trionn",
@@ -5036,7 +5103,7 @@
  {
   "id": "ultranoir-agency",
   "name": "Ultranoir",
-  "url": "https://ultranoir.com",
+  "url": "https://www.ultranoir.com/en/",
   "studio": null,
   "year": 2026,
   "award": "reference",
@@ -5050,7 +5117,8 @@
   "type": "not confirmed by a static fetch",
   "motion": "not confirmed by a static fetch - the near-empty text response is itself evidence of a fully client-rendered experience",
   "why": "a homepage that resolves to a single identity line for a non-JS fetch is worth a manual screenshot pass later - it is not evidence of craft on its own, only that the real page lives entirely in JS/WebGL",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "united-carriers",
@@ -5103,7 +5171,7 @@
  {
   "id": "usavionix",
   "name": "USAvionix",
-  "url": "https://usavionix.com",
+  "url": "https://www.usavionix.com/",
   "studio": "basement studio",
   "year": 2026,
   "award": "sotd",
@@ -5123,7 +5191,8 @@
   "type": "monospaced-feeling technical sans in the interface chrome, mimicking a terminal readout rather than a marketing headline",
   "motion": "the page opens with a fake boot sequence (THERMAL / LIDAR / RGB / IR ONLINE) before settling into the marketing content, staying in character as a defense-tech console throughout",
   "why": "committing to the terminal/HUD conceit for the whole page, not just the hero, is what sells a two-color palette as high-tech instead of just plain",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "utsubo-v2",
@@ -5175,7 +5244,7 @@
  {
   "id": "vectr",
   "name": "Vectr",
-  "url": "https://vectrfl.com/",
+  "url": "https://www.vectrfl.com/",
   "studio": "Utsubo",
   "year": 2026,
   "award": "sotd",
@@ -5195,7 +5264,8 @@
   "type": "clean sans-serif with a sparse header (logo plus Apply/Request Crews), numbered process steps used as a structural typographic device",
   "motion": "\"Scroll to discover our process\" gates a four-step reveal, and page transitions behave like an app switching views rather than a site loading new pages",
   "why": "Utsubo's published case study on this build states an 80–95% cut to the 3D payload — that production discipline, not the render itself, is the transferable lesson",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "vercel",
@@ -5223,7 +5293,7 @@
  {
   "id": "viktor-horvath-enroute",
   "name": "Viktor Horvath - Enroute",
-  "url": "https://viktorhor.com",
+  "url": "https://www.viktorhor.com/",
   "studio": "viktor hor",
   "year": 2026,
   "award": "showcase",
@@ -5242,12 +5312,13 @@
   "type": "an oblique/expanded grotesk (FK Grotesk) set at a scale where the wordmark alone defines the page's proportions",
   "motion": "not evaluated beyond the static render",
   "why": "crediting the exact typeface in the case study is the kind of specific, checkable detail that turns a portfolio piece into a usable reference for someone else's project",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "warm-and-fuzzy",
   "name": "Warm & Fuzzy",
-  "url": "https://warmnfuzzy.tv",
+  "url": "https://www.warmnfuzzy.tv/",
   "studio": "Neutral Studio",
   "year": 2026,
   "award": "sotd",
@@ -5267,7 +5338,8 @@
   "type": "large declarative sans headlines set against generous whitespace, tagline treated as a design element in its own right",
   "motion": "the site behaves like a curated showreel rather than a project grid, letting client work (Dunkin, Crocs, Pearl Jam) carry the pacing",
   "why": "a production studio's own site restrains itself to two colors and lets the reel imagery do the persuading, instead of decorating over thin work",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "waymo",
@@ -5311,7 +5383,12 @@
   "type": "plain sans-serif nav, large display type only on individual project titles",
   "motion": "a horizontal carousel (explicit Previous/Next controls) moves through the director reel rather than a scroll-scrubbed sequence.",
   "why": "a production-company showcase that gets out of the way of its own thumbnails - proof that a gallery-white ground with zero brand colour is still a valid choice when the content is video.",
-  "verified": true
+  "verified": false,
+  "dead": {
+   "status": 403,
+   "at": "2026-09-14T11:18:54.490Z"
+  },
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "we-are-royale-studio",
@@ -5383,7 +5460,7 @@
  {
   "id": "why-zero",
   "name": "Why Zero",
-  "url": "https://zero.university",
+  "url": "https://www.zero.university/",
   "studio": "Sindhur Dutta / BUNQ Labs",
   "year": 2026,
   "award": "sotd",
@@ -5403,7 +5480,8 @@
   "type": "oversized type used as a pacing device, line breaks placed for shock rather than for line length",
   "motion": "the story is paced like a monologue, with each scroll beat landing a new half-sentence rather than continuously animating",
   "why": "breaking a sentence across a scroll beat to land a gut-punch line is a copy-and-motion trick, not a rendering trick, and it is the reason the site reads as urgent",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "wolff-olins-agency",
@@ -5472,7 +5550,7 @@
  {
   "id": "zenit",
   "name": "Zenit",
-  "url": "https://zenit.co.uk",
+  "url": "https://www.zenit.co.uk/",
   "studio": null,
   "year": 2026,
   "award": "showcase",
@@ -5491,7 +5569,8 @@
   "type": "large bold sans caps, deliberately cropped at the viewport edge so only word endings are legible in the render",
   "motion": "not evaluated beyond the static render",
   "why": "cropping headline words at the frame edge so only their endings show is either a deliberate scale device or a responsive bug - either way it is a specific, checkable detail for a build review",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "zeroz-brand-site",
@@ -5662,7 +5741,12 @@
   "type": "UNVERIFIED: no distinct font-family declarations found in the fetched markup (likely inlined in a bundled stylesheet or canvas-drawn)",
   "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
   "why": "We built a mobile-first platform with Vue.js, GSAP, and Three.js. A dynamic quiz pairs users with an Acura vehicle matching their personality and energy through varied interactions, offering an engaging way to explore the brand’s premium options while streamlining backend logic.",
-  "verified": false
+  "verified": false,
+  "dead": {
+   "status": 0,
+   "at": "2026-09-14T11:18:54.490Z"
+  },
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "allagi-music",
@@ -5690,7 +5774,7 @@
  {
   "id": "alpine-bio",
   "name": "Alpine Bio",
-  "url": "https://alpbio.com/",
+  "url": "https://www.alpbio.com/",
   "studio": "Resn",
   "year": 2025,
   "award": "sotd",
@@ -5704,7 +5788,8 @@
   "type": "font-family declarations in the page CSS name: Inter, Geist, var, Switzer (family names only, not a read of weight/tracking/behaviour)",
   "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
   "why": "Alpine Bio is transforming plants into the world’s most efficient protein producers. Their platform supports growers while promoting sustainable agriculture for the future.",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "altitude-101",
@@ -5795,7 +5880,7 @@
  {
   "id": "aristide-benoist",
   "name": "In Cognita",
-  "url": "https://in-cognita-corp.com",
+  "url": "https://in-cognita-corp.com/fr",
   "studio": "Aristide Benoist + Pierre Patrault",
   "year": 2025,
   "award": "sotd",
@@ -5809,7 +5894,8 @@
   "type": "font-family declarations in the page CSS name: r (family names only, not a read of weight/tracking/behaviour)",
   "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
   "why": "In Cognita is a Swiss army knife and a solid shoulder to count on when going through a crisis, whether managerial, social, security or cyber.",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "art-here-2024-richard-mille",
@@ -5875,7 +5961,7 @@
  {
   "id": "astral-frontier",
   "name": "Astral Frontier",
-  "url": "https://theastralfrontier.com/",
+  "url": "https://www.theastralfrontier.com/",
   "studio": "Andrew Measham",
   "year": 2025,
   "award": "sotd",
@@ -5891,7 +5977,8 @@
   "type": "UNVERIFIED: no distinct font-family declarations found in the fetched markup (likely inlined in a bundled stylesheet or canvas-drawn)",
   "motion": "a WebGL canvas is present, so at least part of the scene is GPU-rendered rather than DOM — the exact choreography (easing, sequencing, trigger points) was not independently observed beyond this.",
   "why": "This experience embarks on a journey across distant worlds, each with its own mysteries, landscapes, and stories. Blending ancient wisdom with futuristic innovation.",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "atom-watch",
@@ -6048,7 +6135,12 @@
   "type": "unverified - not present in fetched markup",
   "motion": "lottie-driven vector animation is loaded into the page, likely for small looping accents rather than full scenes.",
   "why": "a Sydney food-and-drink content studio using lightweight vector animation instead of video loops, which keeps a media-heavy category's homepage weight down.",
-  "verified": true
+  "verified": false,
+  "dead": {
+   "status": 0,
+   "at": "2026-09-14T11:18:54.490Z"
+  },
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "captain-goosebumps-p3",
@@ -6226,7 +6318,12 @@
   "type": "UNVERIFIED",
   "motion": "UNVERIFIED",
   "why": "flagged from the Codrops WebGL feed as a raw shader sketch (CodePen, no framework) - useful when the goal is a single self-contained fragment shader rather than a scene-graph technique.",
-  "verified": false
+  "verified": false,
+  "dead": {
+   "status": 403,
+   "at": "2026-09-14T11:18:54.490Z"
+  },
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "company-policy-studio",
@@ -6319,7 +6416,7 @@
  {
   "id": "destination-bc",
   "name": "Destination: BC",
-  "url": "https://www.unit9.com/project/destinationbc-great-wilderness-car-wash/",
+  "url": "https://archive.unit9.com/project/destinationbc-great-wilderness-car-wash/",
   "studio": "UNIT9",
   "year": 2025,
   "award": "sotd",
@@ -6333,7 +6430,8 @@
   "type": "font-family declarations in the page CSS name: PT Serif, Poppins (family names only, not a read of weight/tracking/behaviour)",
   "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
   "why": "An everyday car wash transformed into a sensory journey through Northern BC’s wilderness. Featuring 3D projections, soundscapes, and tactile effects, it captivated German travellers, blending car care with awe-inspiring beauty to inspire wanderlust for Destination BC.",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "developments-media",
@@ -6687,7 +6785,7 @@
  {
   "id": "jeton",
   "name": "Jeton",
-  "url": "https://jeton.com/?enter",
+  "url": "https://www.jeton.com/?enter",
   "studio": "Bürocratik",
   "year": 2025,
   "award": "sotd",
@@ -6703,7 +6801,8 @@
   "type": "font-family declarations in the page CSS name: Sequel Sans (family names only, not a read of weight/tracking/behaviour)",
   "motion": "a WebGL canvas is present, so at least part of the scene is GPU-rendered rather than DOM — the exact choreography (easing, sequencing, trigger points) was not independently observed beyond this.",
   "why": "One wallet for all needs. Jeton is a new-generation eWallet designed to simplify the way you pay online and offline: Your money, your way.",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "kai-blamey-cinematographer",
@@ -6813,7 +6912,12 @@
   "type": "UNVERIFIED: no distinct font-family declarations found in the fetched markup (likely inlined in a bundled stylesheet or canvas-drawn)",
   "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
   "why": "This immersive 3D experience was designed to immerse users into the world of Le Sel d'Issey fragrance, in an innovative and captivating way. User can create its own salt sculpture by adding the fragrance ingredients, personalized background and cymatics.",
-  "verified": false
+  "verified": false,
+  "dead": {
+   "status": 0,
+   "at": "2026-09-14T11:18:54.490Z"
+  },
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "leo-parpeix-portfolio",
@@ -6860,7 +6964,7 @@
  {
   "id": "mat-voyce",
   "name": "Mat Voyce",
-  "url": "http://matvoyce.tv/",
+  "url": "https://matvoyce.tv/",
   "studio": "Huy Phan + Hon Tran + Uncommon Studio",
   "year": 2025,
   "award": "sotd",
@@ -6876,7 +6980,8 @@
   "type": "UNVERIFIED: no distinct font-family declarations found in the fetched markup (likely inlined in a bundled stylesheet or canvas-drawn)",
   "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
   "why": "A portfolio space for all moving things from your friendly neighbourhood type designer and animator, Mat Voyce. Built to push the boundaries of creativity and performance.",
-  "verified": false
+  "verified": false,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "messenger-abeto",
@@ -7078,7 +7183,12 @@
   "type": "responsive type built with SplitText so headline treatment reflows per breakpoint rather than just scaling",
   "motion": "parallax and cursor-tracking layers move around a guide character that walks the visitor through Web3 concepts, deliberately breaking from typical Web3 sterility",
   "why": "borrowing subway-map iconography to explain an abstract data-security product is a concrete metaphor that does more work than another 3D token spinning in space",
-  "verified": false
+  "verified": false,
+  "dead": {
+   "status": 0,
+   "at": "2026-09-14T11:18:54.490Z"
+  },
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "odd-ritual-golf",
@@ -7237,7 +7347,12 @@
   "type": "UNVERIFIED: no distinct font-family declarations found in the fetched markup (likely inlined in a bundled stylesheet or canvas-drawn)",
   "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
   "why": "Re-invinted is a data-powered experience that gives people the chance to understand the trends and behaviours of the pre-loved culture movement on Vinted. You can discover insights, dive into personality traits, and take a fun quiz to discover your custom \"pre-loved personality\".",
-  "verified": true
+  "verified": false,
+  "dead": {
+   "status": 404,
+   "at": "2026-09-14T11:18:54.490Z"
+  },
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "richard-mille-art-here-2025",
@@ -7398,7 +7513,7 @@
  {
   "id": "sephora-pinball",
   "name": "SEPHORA PINBALL",
-  "url": "https://sephora-pinball.cosmicshelter.com/",
+  "url": "https://pinball.cosmicshelter.com/",
   "studio": "Cosmic Shelter + Press Play On Tape",
   "year": 2025,
   "award": "sotd",
@@ -7412,7 +7527,8 @@
   "type": "UNVERIFIED: no distinct font-family declarations found in the fetched markup (likely inlined in a bundled stylesheet or canvas-drawn)",
   "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
   "why": "Compete in the Sephora Pinball game, specially created for Cream Lip Stain! Collect as many points as you can to join the leaderboard and get a chance to unlock a discount code in the Sephora app.",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "shopify-x-sunny-side-up",
@@ -7978,7 +8094,7 @@
  {
   "id": "akaru-2024",
   "name": "Akaru",
-  "url": "https://akaru.fr",
+  "url": "https://www.akaru.fr/",
   "studio": "Akaru",
   "year": 2024,
   "award": "sotm",
@@ -7993,7 +8109,8 @@
   "type": "clean modern sans, generously spaced body copy",
   "motion": "UNVERIFIED — the fetch surfaced structure, not the animation layer",
   "why": "the agency states its own house philosophy in the copy ('go with common sense') and then visibly under-decorates the layout to match it, rather than contradicting the line with a busy page",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "atmos-lamp-ayocin",
@@ -8035,7 +8152,7 @@
  {
   "id": "cartier-watches-wonders-2024",
   "name": "Cartier Watches & Wonders 2024",
-  "url": "http://cartier-waw-dev-0224.dev.60fps.fr/",
+  "url": "https://cartier-waw-dev-0224.dev.60fps.fr/",
   "studio": "Immersive Garden / 60fps",
   "year": 2024,
   "award": "sotd",
@@ -8054,7 +8171,8 @@
   "type": "clean sans-serif UI type kept out of the way of the product photography",
   "motion": "scrolling carries the visitor between distinct Cartier 'universes,' each unveiling a watch collection through camera moves rather than page cuts.",
   "why": "the campaign treats the scroll position as a camera rig moving through a set, not a list of sections - worth taking for any multi-collection product launch.",
-  "verified": false
+  "verified": false,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "david-whyte-experience-2024",
@@ -8144,7 +8262,7 @@
  {
   "id": "igloo-inc-soty-2024",
   "name": "Igloo Inc",
-  "url": "https://igloo.inc",
+  "url": "https://www.igloo.inc/",
   "studio": "abeto (with Bureaux)",
   "year": 2024,
   "award": "soty",
@@ -8167,7 +8285,8 @@
   "type": "UNVERIFIED for the specific family — type is rendered through the WebGL layer rather than as styled DOM text",
   "motion": "the intro renders its ice-crystal formation live in the browser rather than as a baked video, and the particle field visibly reacts to cursor speed with colour and glow changes",
   "why": "building a custom VDB exporter so a volumetric ice/fluid simulation can run at real-time frame rates in the browser is the pipeline work that turns a Three.js demo into an SOTY-grade site",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "inkfish-2024",
@@ -8192,7 +8311,7 @@
  {
   "id": "jamie",
   "name": "Jamie",
-  "url": "https://meetjamie.ai",
+  "url": "https://www.meetjamie.ai/",
   "studio": "Double Play",
   "year": 2024,
   "award": "honourable",
@@ -8208,12 +8327,13 @@
   "type": "Editorial New (a Pangram Pangram serif) for display headlines, a plain sans for interface and body copy - the pairing is the editorial signal in an otherwise product-UI page",
   "motion": "smooth, understated transitions and micro-interactions; nothing scroll-jacked",
   "why": "reserving the serif display face for headline moments only, and defaulting to sans everywhere the UI actually has to function, is a disciplined way to bring editorial type into a SaaS product page without slowing the product down",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "jordan-gilroy-portfolio",
   "name": "Jordan Gilroy",
-  "url": "https://jordangilroy.com",
+  "url": "https://www.jordangilroy.com/",
   "studio": "Jordan Gilroy",
   "year": 2024,
   "award": "sotd",
@@ -8229,7 +8349,8 @@
   "type": "modern, simple type used for section numerals and captions, minimal display-size drama",
   "motion": "subtle, interaction-led animation appropriate to his own specialty (animation & interaction) but never overwhelming the grid",
   "why": "mixing personal photography into a project grid on equal footing is a small editorial-sequencing choice that makes a portfolio read like a magazine spread instead of a case-study list",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "merrell-agility-peak-5",
@@ -8291,7 +8412,7 @@
  {
   "id": "tag-heuer-eyewear",
   "name": "TAG Heuer Eyewear",
-  "url": "https://www.tagheuer.com/fr/en/eyewear/collection-eyewear.html",
+  "url": "https://www.tagheuer.com/fr/en/eyewear-collection/collection-eyewear.html",
   "studio": "Bonhomme",
   "year": 2024,
   "award": "sotd",
@@ -8309,7 +8430,8 @@
   "type": "clean single-page sans-serif, secondary to the 3D product view",
   "motion": "an interactive WebGL scroll experience rotates through the eyewear collection, using isometric mask transitions between frames.",
   "why": "isometric masking to cut between frame styles avoids the usual hard page-cut of an eyewear grid - one collection reads as one continuous object being turned in the hand.",
-  "verified": false
+  "verified": false,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "the-line-studio-2024",
@@ -8382,7 +8504,7 @@
  {
   "id": "aten7-toom-archives-2023",
   "name": "Aten7 (Toom Archives)",
-  "url": "https://aten7.com",
+  "url": "https://www.aten7.com/intro",
   "studio": "Immersive Garden",
   "year": 2023,
   "award": "sotm",
@@ -8398,7 +8520,8 @@
   "type": "monospace system font standing in for a computer terminal",
   "motion": "the site opens on a looping 'initializing operating system... loading, please wait' boot sequence before a single 'click to enter' button admits the visitor",
   "why": "turning the loading screen itself into the first act of the concept, instead of hiding it behind a spinner, buys real narrative time without feeling like a wait",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-14T11:18:54.490Z"
  },
  {
   "id": "c2-montreal-2023",
