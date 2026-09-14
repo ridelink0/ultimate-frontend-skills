@@ -44,9 +44,10 @@ here needs a decision from Gev; it was all agreed in the goal for this session.
 - UI gaps from the ui.md/craft.md analysis. DONE: mobile nav, 404.html in the
   scaffold, <main> landmark note, explicit input types. DONE 2026-09-14 pm: status colour ramp (--danger/--success in core.css,
   computed values from ui.md, no warning colour by design) and --accent-fill.
-  STILL OPEN: loading/skeleton/empty/error state patterns, data-table
-  accessibility past the two-column spec table, form validation wiring
-  (aria-describedby, aria-invalid, error summary). Full list in the workflow
+  Form validation wiring DONE (:user-invalid + aria-describedby + .field__error,
+  focus-visible ring restored). STILL OPEN: loading/skeleton/empty/error state
+  patterns, data-table accessibility past the two-column spec table, an error
+  summary for long forms. Full list in the workflow
   result at ...tasks/w499yppa4.output while it exists.
 - stack.md: pins fixed 2026-09-14 (all eleven now match npm). The KB figures
   were NOT re-measured; awards.md's corrections table has the measured ones.
