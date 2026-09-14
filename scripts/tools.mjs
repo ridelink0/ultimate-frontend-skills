@@ -98,7 +98,7 @@ export const SKILL_NOTES = {
   'animation-vocabulary': 'When the brief describes motion in adjectives. Turns them into a named technique with a number.',
   'apple-design': 'For a product register that wants to read as engineered. Wrong for editorial, cinema and argument registers.',
   'pick-ui-library': 'Component libraries: base-ui, cmdk, Sonner, motion, NumberFlow, Virtuoso. stack.md keeps the page-level and 3D ones.',
-  'emil-design-eng': 'The umbrella for the animate/review packs. Its numbers govern components; this plugin's govern the page.',
+  'emil-design-eng': 'The umbrella for the animate/review packs. Its numbers govern components; the plugin governs the page.',
   'web-design-guidelines': 'A broad review checklist. Where it and tells.md disagree on taste, tells.md is the more specific document.',
   accessibility: 'A second reviewer on forms and navigation, beside craft.md.',
   'fixing-accessibility': 'Hand off component-pattern fixes; keep landmark and contrast fixes here.',
