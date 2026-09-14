@@ -1,8 +1,8 @@
-Ultimate Frontend Skills 4.0.0 is the plugin formerly named cinematic-web-design (3.x), which in turn absorbed Atelier. [Migration and aliases](docs/merge.md) · [Claude Design routes](skills/ultimate-frontend-skills/references/claude-design.md)
+Ultimate Frontend Skills 5.0.0 is the plugin previously named Ultimate Website Skills (4.x) and cinematic-web-design (3.x), which in turn absorbed Atelier. [Migration and aliases](docs/merge.md) · [The pipeline](skills/ultimate-frontend-skills/references/pipeline.md) · [Claude Design routes](skills/ultimate-frontend-skills/references/claude-design.md)
 
 # Ultimate Frontend Skills
 
-**UFS for Claude.** Build, measure, debug and secure cinematic websites from Claude Code or Codex. Plugin id `ultimate-frontend-skills`; the old `cinematic-web-design` install name redirects on GitHub but the skill and commands now live under the new id.
+**UFS for Claude.** Build, measure, debug and secure cinematic websites from Claude Code or Codex. Plugin id `ultimate-frontend-skills`; the old `ultimate-website-skills` and `cinematic-web-design` install names redirect on GitHub but the skill and commands now live under the new id.
 A pinned art direction for websites, plus the code that produces it.
 
 Coding agents converge on the same page: Inter everywhere, an indigo-to-pink
@@ -22,6 +22,91 @@ and haze with distance, and three.js for anything taken apart. SVG is kept for
 what it is genuinely best at - line art, blueprints, icons - and nothing else.
 
 It works in **Claude Code** and **Codex**.
+
+## One route, nine stages
+
+The thing that was missing from 4.x was not another engine, it was the order to
+do it in. [`references/pipeline.md`](skills/ultimate-frontend-skills/references/pipeline.md)
+is the whole build: brief, bench, references, **route**, assets, chassis, copy,
+choreography, verify, ship - with a gate at each stage that says whether to go
+on or go back.
+
+Stage 3 is the one that costs the most to get wrong, and it is now an explicit
+decision rather than a habit:
+
+| The subject is | Route | Cost |
+|---|---|---|
+| A photograph's worth of atmosphere | photographic, cut into planes | minutes |
+| A made thing the visitor should understand | procedural 3D from the markup | hours |
+| A made thing with real manufactured geometry | modelled in Blender, exported to GLB | hours, plus Blender |
+| A made thing that must look expensive and never move | a rendered frame sequence | hours, heaviest payload |
+| A colour field, a mood, a launch page | a WebGL field | minutes |
+| An argument | type only | minutes |
+
+Most pages should not be 3D, and the pipeline says so out loud. Reaching for
+stage 4 on a page that does not need it is the most expensive mistake in the
+document.
+
+## Three references that disagree with each other
+
+A model builds better when it has looked at the thing it is trying to match.
+The plugin ships a corpus of award winners and reference sites - Awwwards Site
+of the Day, Site of the Month and Site of the Year, FWA, three.js and Codrops
+demos, Godly, Land-book, siteInspire, One Page Love and the studio sites that
+set the standard - each with its stack, its techniques, and the one specific
+craft move worth taking from it.
+
+```bash
+webdesign.mjs awards --pick object --n 3        # three that disagree
+webdesign.mjs awards "wireframe dissolve" --verbose
+webdesign.mjs awards --technique "pinned horizontal" --since 2025
+webdesign.mjs awards --techniques               # what it can be searched by
+webdesign.mjs study --awards "scroll-scrubbed 3D" --n 3   # render them, look at the PNGs
+```
+
+`--pick` deliberately refuses to return two sites from the same studio, the same
+source or the same technique. Three variations of one look teach the look; three
+different answers teach the decision.
+
+The corpus is data, not instruction. Nothing in the plugin copies a site - it
+picks references so `study` can render them and you can look.
+
+## Blender, CC0 textures, and generated imagery
+
+Three tools that reach outside the page, each behind the same CLI.
+
+```bash
+webdesign.mjs blender probe                                    # is it even here
+webdesign.mjs blender glb scripts/blender/part-library.py --out build/watch.glb
+webdesign.mjs assets search brushed                            # CC0 PBR material sets
+webdesign.mjs assets textures <slug> --res 2k --out img/mat
+webdesign.mjs assets hdri <slug> --res 1k --out img/env        # real environment lighting
+webdesign.mjs assets gen "<prompt>" --out img/plate.png
+```
+
+`assets gen` detects what this machine can actually do - an attached
+image-generation MCP server, a key in the environment, a local generator, or
+nothing - and says what to do next. It never invents a key and never sends a
+prompt to an endpoint it has no credential for.
+
+Metal reads as metal because of what it reflects. `RoomEnvironment` costs
+nothing and carries a lot of pages; an HDRI is the upgrade and it is a real
+download, so the reference has the budgets. A generated image has its lighting
+baked in and cannot be relit - that limit is stated once, with the three
+workarounds, rather than designed around.
+
+## The rest of the bench
+
+```bash
+webdesign.mjs tools
+```
+
+Reports every collaborator it can find on this machine and one line on what
+changes because of it. The important one: **if Anthropic's `frontend-design`
+plugin is installed it owns the aesthetic direction** at the start of new UI,
+and this plugin supplies the chassis, the motion, the 3D and the verification.
+If it is not installed, the house style stands in. Either way the seam is
+silent - the plugin never interrupts a build to tell you to install something.
 
 ## It wires itself
 

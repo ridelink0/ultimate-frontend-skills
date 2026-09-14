@@ -31,6 +31,32 @@ without a separate approval pass.
 
 For website debugging or final verification, read references/visual-debug.md. Run the rendered debug command and actually open its PNGs before declaring the visual check complete.
 
+## The route, before anything else
+
+`references/pipeline.md` is the whole build in nine stages, with a gate at each
+one. Read it at the start of a build and then follow it; it decides the thing
+that is expensive to get wrong, which is **how the subject gets made** -
+photographed, authored procedurally in three.js, modelled in Blender, rendered
+to a sequence, or not made at all because the page is type.
+
+Two commands belong at the top of every build, before the first line of markup:
+
+```bash
+node "${CLAUDE_PLUGIN_ROOT}/scripts/webdesign.mjs" tools
+node "${CLAUDE_PLUGIN_ROOT}/scripts/webdesign.mjs" awards --pick object --n 3
+```
+
+The first says what is on this machine. The second picks three award-winning
+references that disagree with each other, so the decisions get made against
+something real rather than from memory. `study --awards "<technique>"` renders
+them; open the PNGs.
+
+**If `frontend-design` is installed, it owns the aesthetic direction** at the
+start of new UI and this plugin supplies the chassis, the motion, the 3D and the
+verification. If it is not installed, the house style below stands in. Either
+way the seam is silent - never tell the user to go and install something
+mid-build. `references/plugins.md` has the handshake and the rest of the bench.
+
 ## Fix three things before you type
 
 Hold these in your head, not on the screen: **the subject** (the actual thing,
@@ -323,10 +349,16 @@ render exists - each of those is the low-effort version.
 
 | Need | Reach for |
 |---|---|
+| The order to do all of this in | `references/pipeline.md` - nine stages, a gate at each |
 | Anything beyond the three engines above | `references/stack.md` - the table of which library for which job, with verified specifiers and CDN URLs |
 | To see what a site you are imitating actually does | `webdesign.mjs look <url>` - real render, two scroll positions, PNGs. Study the reference as an image, not as a description of one |
-| Visual research on a style, a palette, a font in the wild | `webdesign.mjs study --list editorial\|object\|cinema\|product` renders a curated batch into contact sheets; the `imagesearch` skill, if installed, for anything it does not cover |
+| Three references that disagree with each other | `webdesign.mjs awards --pick <register>`, then `study --awards "<technique>"` to render them. `awards --techniques` lists what the corpus can be searched by |
+| Visual research on a style, a palette, a font in the wild | `webdesign.mjs study --list editorial\|object\|cinema\|product` renders a curated batch into contact sheets; the `visual-research` skill for anything it does not cover |
 | Photographs | Unsplash, Pexels, Wikimedia, museum IIIF - `references/imagery.md` has the URL formats and licences. Verify every hotlink with a HEAD request |
+| Detailed PBR textures and real environment lighting, free | `webdesign.mjs assets textures <slug>` and `assets hdri <slug>` - CC0, no key. `references/image-gen.md` wires the maps into the material |
+| A generated image, when no photograph exists | `webdesign.mjs assets gen "<prompt>"` - it detects what this machine can do and never invents a key. Remember a generated image cannot be relit |
+| Geometry primitives cannot carry - knurling, guilloché, a movement bridge | `webdesign.mjs blender glb <script.py> --out <file>`, then `data-model` on the exploded list. `references/blender.md`; skip it when primitives would do |
+| To know what else is installed and what changes because of it | `webdesign.mjs tools` - and `references/plugins.md` for the handoffs |
 | Depth from one photograph | `webdesign.mjs cut` (rembg, local) |
 | Pinning, scrubbing, sequenced choreography | GSAP 3.15 + ScrollTrigger from cdnjs, free for everything now. `gsap.matchMedia()` for the reduced-motion and narrow-screen branches |
 | A real 3D object the visitor must turn | three.js from jsDelivr, or `<model-viewer>` for hotspots with near-zero code |
@@ -340,6 +372,14 @@ Read one only when you need it. Each is self-contained.
 
 | File | When |
 |---|---|
+| `references/pipeline.md` | **First.** The nine stages, the gates, and the route decision that stage 3 makes |
+| `references/awards.md` | How to use the reference corpus, the technique taxonomy, what jurors score, what now reads as dated |
+| `references/plugins.md` | The rest of the bench: the `frontend-design` handshake, detection, Claude Design, when to hand off |
+| `references/three.md` | Real-time 3D on a scroll page: the import map, materials and light, the one-rAF scrub, wireframe-to-solid, projected callouts, the 60fps checklist |
+| `references/blender.md` | When Blender is the right answer and when it is not; headless bpy, named parts, GLB export, baking, rendered sequences |
+| `references/image-gen.md` | Generated imagery, CC0 PBR material sets, HDRI lighting, and the honest limits of a relit generated image |
+| `references/briefs/dive-watch.md` | The exemplar brief, a worked timeline, and where entries lose. Run it as a rehearsal |
+| `references/fable-showcase.md` | The September 2026 Fable 5.1 showcase and the dive-watch bake-off, turned into a reproduction recipe for Opus or Sonnet |
 | `references/fable.md` | The launch page torn down from its shipped bundles: the WebGL hero, the barycentric palette blend, the post chain, what it wastes |
 | `references/stack.md` | Which library for which job; GSAP, three.js and anime.js v4 recipes |
 | `references/typography.md` | Faces, the fluid scale, tracking and line-height tables, the OKLCH palette, deriving the accent, hairline alphas |

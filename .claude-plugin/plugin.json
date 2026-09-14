@@ -1,8 +1,8 @@
 {
   "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
   "name": "ultimate-frontend-skills",
-  "version": "4.3.0",
-  "description": "Ultimate Frontend Skills (UFS for Claude). Build cinematic, editorial websites the way an award-winning studio does: WebGL mesh gradients, three-plane parallax with real depth, three.js exploded product views, GSAP and anime.js scroll choreography, and a typographic system that does not read as AI-generated. Ships a copy-in CSS chassis, motion and WebGL runtimes, a section library, a scaffolder, a headless render check and a reference-site study tool.",
+  "version": "5.0.0",
+  "description": "Ultimate Frontend Skills (UFS for Claude). Build cinematic, editorial websites the way an award-winning studio does, on one route from brief to ship: a corpus of award-winning reference sites to decide against, WebGL mesh gradients, three-plane parallax with real depth, procedural and Blender-modelled three.js exploded product views, CC0 PBR materials and HDRI lighting, scroll choreography in GSAP and anime.js, and a typographic system that does not read as AI-generated. Ships a copy-in CSS chassis, motion and WebGL runtimes, a section library, a scaffolder, a headless render check, a bench detector that defers to frontend-design when it is installed, and one verify verdict.",
   "author": {
     "name": "Gev",
     "url": "https://github.com/ridelink0"
@@ -30,6 +30,16 @@
     "editorial",
     "design system",
     "ui design",
-    "cinematic"
+    "cinematic",
+    "blender",
+    "3d model",
+    "pbr",
+    "hdri",
+    "texture",
+    "awwwards",
+    "awards",
+    "product page",
+    "scroll choreography",
+    "image generation"
   ]
 }
