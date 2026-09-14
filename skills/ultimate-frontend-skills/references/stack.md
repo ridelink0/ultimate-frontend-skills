@@ -38,8 +38,8 @@ free, CDN-loadable, and needs no build step.
 
 ```
 three@0.186.0        anime.js@4.5.0       gsap@3.15.0        lenis@1.3.26
-ogl@1.0.11           pixi.js@8.20.1       postprocessing@6.39.4
-lottie-web@5.13.0    @rive-app/canvas@2.42.0                 matter-js@0.20.0
+ogl@1.0.11           pixi.js@8.20.1       postprocessing@6.39.5
+lottie-web@5.13.0    @rive-app/canvas@2.42.1                 matter-js@0.20.0
 split-type@0.3.4     p5@2.3.2             simplex-noise@4.0.3
 troika-three-text@0.52.5                  meshline@3.3.1
 curtainsjs@8.1.6     embla-carousel@8.6.0 @unseenco/taxi@1.9.1  @barba/core@2.10.3
