@@ -1,0 +1,822 @@
+[
+  {
+    "id": "gianluca-gradogna-portfolio-25",
+    "name": "Gianluca Gradogna - Portfolio '25",
+    "url": "https://gianlucagradogna.com/",
+    "studio": "Gianluca Gradogna + Gabriel Norman",
+    "year": 2025,
+    "award": "sotd",
+    "source": "fwa",
+    "kind": "portfolio",
+    "stack": [],
+    "techniques": [
+      "DOM/CSS-driven interaction (no third-party animation engine detected server-side)"
+    ],
+    "palette": "hex values pulled from page CSS: #0d0d0d, #e0dfdf, #5e5d5d, #f6f6f6 (raw CSS signal, not a full visual read)",
+    "type": "font-family declarations in the page CSS name: Neue-Montreal, LZ, PPNeue-Montreal (family names only, not a read of weight/tracking/behaviour)",
+    "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
+    "why": "Gianluca Gradogna is a versatile Multidisciplinary Designer based in Florence. With expertise spanning design, advertising, coding and photography.",
+    "verified": true
+  },
+  {
+    "id": "shopify-x-sunny-side-up",
+    "name": "Shopify X Sunny Side Up",
+    "url": "https://shopify.sunnysideup.work/",
+    "studio": "Yoann Gueny",
+    "year": 2025,
+    "award": "sotd",
+    "source": "fwa",
+    "kind": "ecommerce",
+    "stack": [
+      "webgl",
+      "shopify"
+    ],
+    "techniques": [
+      "WebGL canvas",
+      "Shopify commerce templating"
+    ],
+    "palette": "hex values pulled from page CSS: #031323, #f8f9f8, #ede3d4, #c6c3be (raw CSS signal, not a full visual read)",
+    "type": "UNVERIFIED: no distinct font-family declarations found in the fetched markup (likely inlined in a bundled stylesheet or canvas-drawn)",
+    "motion": "a WebGL canvas is present, so at least part of the scene is GPU-rendered rather than DOM — the exact choreography (easing, sequencing, trigger points) was not independently observed beyond this.",
+    "why": "Endlessly customize your commerce stack with tools proven to drive conversion and a more powerful customer connection.\n\nA collaboration with Shopify, Sunny Side Up and Yoann Gueny",
+    "verified": true
+  },
+  {
+    "id": "park",
+    "name": "Park",
+    "url": "https://parkstudio.co/",
+    "studio": "Volkan Olmez + Fol + Baran Somaklı + Basework",
+    "year": 2025,
+    "award": "sotd",
+    "source": "fwa",
+    "kind": "3d",
+    "stack": [
+      "barba"
+    ],
+    "techniques": [
+      "Barba.js page transitions"
+    ],
+    "palette": "hex values pulled from page CSS: #32373c, #313131, #00d084, #0693e3 (raw CSS signal, not a full visual read)",
+    "type": "UNVERIFIED: no distinct font-family declarations found in the fetched markup (likely inlined in a bundled stylesheet or canvas-drawn)",
+    "motion": "Barba.js is loaded for page-transition routing — the exact choreography (easing, sequencing, trigger points) was not independently observed beyond this.",
+    "why": "Park is an Istanbul based architecture design studio.",
+    "verified": true
+  },
+  {
+    "id": "destination-bc",
+    "name": "Destination: BC",
+    "url": "https://www.unit9.com/project/destinationbc-great-wilderness-car-wash/",
+    "studio": "UNIT9",
+    "year": 2025,
+    "award": "sotd",
+    "source": "fwa",
+    "kind": "editorial",
+    "stack": [],
+    "techniques": [
+      "DOM/CSS-driven interaction (no third-party animation engine detected server-side)"
+    ],
+    "palette": "hex values pulled from page CSS: #32373c, #313131, #00d084, #0693e3 (raw CSS signal, not a full visual read)",
+    "type": "font-family declarations in the page CSS name: PT Serif, Poppins (family names only, not a read of weight/tracking/behaviour)",
+    "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
+    "why": "An everyday car wash transformed into a sensory journey through Northern BC’s wilderness. Featuring 3D projections, soundscapes, and tactile effects, it captivated German travellers, blending car care with awe-inspiring beauty to inspire wanderlust for Destination BC.",
+    "verified": true
+  },
+  {
+    "id": "art-here-2024-richard-mille",
+    "name": "Art Here 2024 - Richard Mille",
+    "url": "https://artprize-experience.com/",
+    "studio": "Hervé Studio + Tommy Cornilleau",
+    "year": 2025,
+    "award": "sotd",
+    "source": "fwa",
+    "kind": "portfolio",
+    "stack": [],
+    "techniques": [
+      "DOM/CSS-driven interaction (no third-party animation engine detected server-side)"
+    ],
+    "palette": "theme-color #ffffff declared in the page head (background/accent signal only, not a full visual read)",
+    "type": "UNVERIFIED: no distinct font-family declarations found in the fetched markup (likely inlined in a bundled stylesheet or canvas-drawn)",
+    "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
+    "why": "The digital exhibition of the 2024 edition of “Art Here” by Richard Mille & the Louvre Abu Dhabi highlights, through the theme “The Awakening,” the work of the five selected artists.",
+    "verified": true
+  },
+  {
+    "id": "mat-voyce",
+    "name": "Mat Voyce",
+    "url": "http://matvoyce.tv/",
+    "studio": "Huy Phan + Hon Tran + Uncommon Studio",
+    "year": 2025,
+    "award": "sotd",
+    "source": "fwa",
+    "kind": "portfolio",
+    "stack": [
+      "react"
+    ],
+    "techniques": [
+      "React/Next.js build"
+    ],
+    "palette": "theme-color #000 declared in the page head (background/accent signal only, not a full visual read)",
+    "type": "UNVERIFIED: no distinct font-family declarations found in the fetched markup (likely inlined in a bundled stylesheet or canvas-drawn)",
+    "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
+    "why": "A portfolio space for all moving things from your friendly neighbourhood type designer and animator, Mat Voyce. Built to push the boundaries of creativity and performance.",
+    "verified": false
+  },
+  {
+    "id": "moooor",
+    "name": "Moooor",
+    "url": "https://www.moooor.com/",
+    "studio": "ET Studio + Tomas Baruffaldi + Elettra Zuanazzi + Filippo Bissoli + Lorenzo Girardi + Studio Sentempo",
+    "year": 2025,
+    "award": "sotd",
+    "source": "fwa",
+    "kind": "ecommerce",
+    "stack": [
+      "shopify"
+    ],
+    "techniques": [
+      "Shopify commerce templating"
+    ],
+    "palette": "hex values pulled from page CSS: #f27f00, #8ccfad, #9fab61, #bae800 (raw CSS signal, not a full visual read)",
+    "type": "UNVERIFIED: no distinct font-family declarations found in the fetched markup (likely inlined in a bundled stylesheet or canvas-drawn)",
+    "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
+    "why": "Moooor offers total well-being through vegan superfoods.\nPure, natural, and complete solutions designed to support a balanced and healthy lifestyle.",
+    "verified": true
+  },
+  {
+    "id": "dropbox-brand-guidelines-p2",
+    "name": "Dropbox Brand Guidelines",
+    "url": "https://brand.dropbox.com/",
+    "studio": "Daybreak Studio",
+    "year": 2025,
+    "award": "sotm",
+    "source": "fwa",
+    "kind": "portfolio",
+    "stack": [
+      "webflow"
+    ],
+    "techniques": [
+      "Webflow build with custom JS layer"
+    ],
+    "palette": "theme-color #ffffff declared in the page head (background/accent signal only, not a full visual read)",
+    "type": "font-family declarations in the page CSS name: Dbsharpgroteskvariable Vf, Atlasgrotesk Web (family names only, not a read of weight/tracking/behaviour)",
+    "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
+    "why": "Through interactive play and artful detail, enter the vibrant new world for the Dropbox brand. It’s a place where the type dances, colours hum, and illustrations wink. Every detail invites you in—to linger a little longer, to look a little closer.",
+    "verified": true
+  },
+  {
+    "id": "hkiparis",
+    "name": "HKI.Paris",
+    "url": "https://hki.paris/en",
+    "studio": "HKI™ + Laetitia Nanni",
+    "year": 2025,
+    "award": "sotd",
+    "source": "fwa",
+    "kind": "portfolio",
+    "stack": [],
+    "techniques": [
+      "DOM/CSS-driven interaction (no third-party animation engine detected server-side)"
+    ],
+    "palette": "hex values pulled from page CSS: #6f6f6f (raw CSS signal, not a full visual read)",
+    "type": "font-family declarations in the page CSS name: ApercuPro-Bold, Inter-Medium, Inter-Bold, var (family names only, not a read of weight/tracking/behaviour)",
+    "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
+    "why": "As Content Directors, we blend design, motion, and technology to deliver bold and unique artistic direction.\n\nThis site reflects our commitment to creating exceptional content and elevating every project.",
+    "verified": true
+  },
+  {
+    "id": "acura-unlock-your-energy",
+    "name": "Acura - Unlock Your Energy",
+    "url": "https://acuraunlockyourenergy.com/",
+    "studio": "MONOGRID",
+    "year": 2025,
+    "award": "sotd",
+    "source": "fwa",
+    "kind": "product",
+    "stack": [],
+    "techniques": [
+      "DOM/CSS-driven interaction (no third-party animation engine detected server-side)"
+    ],
+    "palette": "UNVERIFIED: no theme-color meta or inline hex values found in the fetched markup",
+    "type": "UNVERIFIED: no distinct font-family declarations found in the fetched markup (likely inlined in a bundled stylesheet or canvas-drawn)",
+    "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
+    "why": "We built a mobile-first platform with Vue.js, GSAP, and Three.js. A dynamic quiz pairs users with an Acura vehicle matching their personality and energy through varied interactions, offering an engaging way to explore the brand’s premium options while streamlining backend logic.",
+    "verified": false
+  },
+  {
+    "id": "sephora-pinball",
+    "name": "SEPHORA PINBALL",
+    "url": "https://sephora-pinball.cosmicshelter.com/",
+    "studio": "Cosmic Shelter + Press Play On Tape",
+    "year": 2025,
+    "award": "sotd",
+    "source": "fwa",
+    "kind": "experiment",
+    "stack": [],
+    "techniques": [
+      "DOM/CSS-driven interaction (no third-party animation engine detected server-side)"
+    ],
+    "palette": "theme-color #CF055D declared in the page head (background/accent signal only, not a full visual read)",
+    "type": "UNVERIFIED: no distinct font-family declarations found in the fetched markup (likely inlined in a bundled stylesheet or canvas-drawn)",
+    "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
+    "why": "Compete in the Sephora Pinball game, specially created for Cream Lip Stain! Collect as many points as you can to join the leaderboard and get a chance to unlock a discount code in the Sephora app.",
+    "verified": true
+  },
+  {
+    "id": "365-a-year-of-cartier-p5",
+    "name": "365 — A Year of Cartier",
+    "url": "https://365ayearof.cartier.com/en/",
+    "studio": "14islands + Alexis Demachy",
+    "year": 2025,
+    "award": "sotd",
+    "source": "fwa",
+    "kind": "showcase",
+    "stack": [
+      "webgl",
+      "react"
+    ],
+    "techniques": [
+      "WebGL canvas",
+      "React/Next.js build"
+    ],
+    "palette": "theme-color #FFFFFF declared in the page head (background/accent signal only, not a full visual read)",
+    "type": "UNVERIFIED: no distinct font-family declarations found in the fetched markup (likely inlined in a bundled stylesheet or canvas-drawn)",
+    "motion": "a WebGL canvas is present, so at least part of the scene is GPU-rendered rather than DOM — the exact choreography (easing, sequencing, trigger points) was not independently observed beyond this.",
+    "why": "The Cartier Yearbook celebrates 2024's extraordinary journey, showcasing transformative creativity, innovation, and timeless elegance.",
+    "verified": true
+  },
+  {
+    "id": "aramco-generation-3",
+    "name": "Aramco Generation 3",
+    "url": "https://sponsorships.aramco.com/amf1/generation3/",
+    "studio": "Immersive Garden",
+    "year": 2025,
+    "award": "sotd",
+    "source": "fwa",
+    "kind": "showcase",
+    "stack": [
+      "webgl"
+    ],
+    "techniques": [
+      "WebGL canvas"
+    ],
+    "palette": "hex values pulled from page CSS: #444444, #3a7ed5, #f0f0f0, #00ad4a (raw CSS signal, not a full visual read)",
+    "type": "UNVERIFIED: no distinct font-family declarations found in the fetched markup (likely inlined in a bundled stylesheet or canvas-drawn)",
+    "motion": "a WebGL canvas is present, so at least part of the scene is GPU-rendered rather than DOM — the exact choreography (easing, sequencing, trigger points) was not independently observed beyond this.",
+    "why": "Discover our new Generation 3 website, for the new partnership between Aramco and Aston Martin Formula One team.",
+    "verified": true
+  },
+  {
+    "id": "lacoste-members-experience",
+    "name": "Lacoste Members Experience",
+    "url": "https://membersexperience-create.lacoste.com/",
+    "studio": "Merci-Michel",
+    "year": 2025,
+    "award": "sotm",
+    "source": "fwa",
+    "kind": "brand",
+    "stack": [
+      "webgl"
+    ],
+    "techniques": [
+      "WebGL canvas"
+    ],
+    "palette": "theme-color #000000 declared in the page head (background/accent signal only, not a full visual read)",
+    "type": "font-family declarations in the page CSS name: Figtree (family names only, not a read of weight/tracking/behaviour)",
+    "motion": "a WebGL canvas is present, so at least part of the scene is GPU-rendered rather than DOM — the exact choreography (easing, sequencing, trigger points) was not independently observed beyond this.",
+    "why": "Shape the future of Lacoste in innovative ways. Lacoste members can reimagine the brand's iconic products and see the winning designs come to life exclusively for the Lacoste community.",
+    "verified": true
+  },
+  {
+    "id": "stas-bondar-25",
+    "name": "Stas Bondar '25",
+    "url": "https://www.stabondar.com/",
+    "studio": "Stas Bondar + Den Potapov",
+    "year": 2025,
+    "award": "sotd",
+    "source": "fwa",
+    "kind": "portfolio",
+    "stack": [
+      "barba",
+      "webgl"
+    ],
+    "techniques": [
+      "WebGL canvas",
+      "Barba.js page transitions"
+    ],
+    "palette": "UNVERIFIED: no theme-color meta or inline hex values found in the fetched markup",
+    "type": "UNVERIFIED: no distinct font-family declarations found in the fetched markup (likely inlined in a bundled stylesheet or canvas-drawn)",
+    "motion": "a WebGL canvas is present, so at least part of the scene is GPU-rendered rather than DOM; Barba.js is loaded for page-transition routing — the exact choreography (easing, sequencing, trigger points) was not independently observed beyond this.",
+    "why": "Multidisciplinary freelancer and creative developer who creates eye-catching websites.",
+    "verified": true
+  },
+  {
+    "id": "warhol-arts",
+    "name": "Warhol Arts",
+    "url": "https://warhol-arts.webflow.io/",
+    "studio": "BL/S® + Serhii Polyvanyi",
+    "year": 2025,
+    "award": "sotd",
+    "source": "fwa",
+    "kind": "experiment",
+    "stack": [
+      "gsap",
+      "lenis",
+      "webgl",
+      "lottie",
+      "webflow"
+    ],
+    "techniques": [
+      "WebGL canvas",
+      "GSAP scroll/timeline animation",
+      "inertia scroll (Lenis)",
+      "Lottie vector playback",
+      "Webflow build with custom JS layer"
+    ],
+    "palette": "hex values pulled from page CSS: #ffe5d5, #ff7e63, #fb4e2b, #353535 (raw CSS signal, not a full visual read)",
+    "type": "UNVERIFIED: no distinct font-family declarations found in the fetched markup (likely inlined in a bundled stylesheet or canvas-drawn)",
+    "motion": "GSAP is loaded, so scroll/timeline choreography is plausible; Lenis smooth-scroll is loaded; a WebGL canvas is present, so at least part of the scene is GPU-rendered rather than DOM; Lottie is loaded for vector animation playback — the exact choreography (easing, sequencing, trigger points) was not independently observed beyond this.",
+    "why": "An American artist, producer, designer, writer, magazine publisher, and film director, a prominent figure in the history of the pop art movement and contemporary art as a whole.",
+    "verified": true
+  },
+  {
+    "id": "moonbaser",
+    "name": "Moonbase®",
+    "url": "https://moonbase.social/",
+    "studio": "Studio Now + Ranjeet Jagtap + Piotr Osmola + Danilo Schoebe",
+    "year": 2025,
+    "award": "sotd",
+    "source": "fwa",
+    "kind": "brand",
+    "stack": [
+      "webgl"
+    ],
+    "techniques": [
+      "WebGL canvas"
+    ],
+    "palette": "theme-color #ffffff declared in the page head (background/accent signal only, not a full visual read)",
+    "type": "font-family declarations in the page CSS name: Instrument Serif (family names only, not a read of weight/tracking/behaviour)",
+    "motion": "a WebGL canvas is present, so at least part of the scene is GPU-rendered rather than DOM — the exact choreography (easing, sequencing, trigger points) was not independently observed beyond this.",
+    "why": "A new website for Moonbase®, one of Europe's leading social-first agencies, driven by performance, growth, and creativity.",
+    "verified": true
+  },
+  {
+    "id": "vita-lenta",
+    "name": "Vita Lenta",
+    "url": "https://vita-lenta.com/",
+    "studio": "DialedWeb",
+    "year": 2025,
+    "award": "sotd",
+    "source": "fwa",
+    "kind": "experiment",
+    "stack": [],
+    "techniques": [
+      "DOM/CSS-driven interaction (no third-party animation engine detected server-side)"
+    ],
+    "palette": "UNVERIFIED: no theme-color meta or inline hex values found in the fetched markup",
+    "type": "UNVERIFIED: no distinct font-family declarations found in the fetched markup (likely inlined in a bundled stylesheet or canvas-drawn)",
+    "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
+    "why": "At Vita Lenta, enjoy authentic Italian dishes made from fresh, local ingredients in a warm setting. Relax and savor the spirit of \"la dolce vita\" with fine wine and great service.",
+    "verified": true
+  },
+  {
+    "id": "mastering-web-animations",
+    "name": "Mastering Web Animations",
+    "url": "https://vwlab.io/pages/showcase",
+    "studio": "Victor Work",
+    "year": 2025,
+    "award": "sotd",
+    "source": "fwa",
+    "kind": "portfolio",
+    "stack": [
+      "shopify"
+    ],
+    "techniques": [
+      "Shopify commerce templating"
+    ],
+    "palette": "theme-color #5d3136 declared in the page head (background/accent signal only, not a full visual read)",
+    "type": "font-family declarations in the page CSS name: IBM Plex Mono (family names only, not a read of weight/tracking/behaviour)",
+    "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
+    "why": "THE ONLY COURSE YOU WILL NEED TO MASTER WEB ANIMATIONS. The course will guide you through principles of motion, timeline animation, and techniques used by award-winning developers.",
+    "verified": true
+  },
+  {
+    "id": "yellow-fellow",
+    "name": "Yellow Fellow",
+    "url": "https://yellowfellow.tv",
+    "studio": "Guy Trefler + Daniel Biran",
+    "year": 2025,
+    "award": "sotd",
+    "source": "fwa",
+    "kind": "experiment",
+    "stack": [
+      "gsap"
+    ],
+    "techniques": [
+      "GSAP scroll/timeline animation"
+    ],
+    "palette": "hex values pulled from page CSS: #e1e600, #f7ffe4, #fff61e, #5f6b45 (raw CSS signal, not a full visual read)",
+    "type": "UNVERIFIED: no distinct font-family declarations found in the fetched markup (likely inlined in a bundled stylesheet or canvas-drawn)",
+    "motion": "GSAP is loaded, so scroll/timeline choreography is plausible — the exact choreography (easing, sequencing, trigger points) was not independently observed beyond this.",
+    "why": "Yellow Fellow is a new motion design studio with a twist. The website interactive homepage is inspired by the studio's logo - the lemon eye.",
+    "verified": true
+  },
+  {
+    "id": "a-happy-new-year-2025-p2",
+    "name": "A HAPPY NEW YEAR 2025",
+    "url": "https://2025.qlip.co.jp/",
+    "studio": "Qlip Co., Ltd. + tomoya okada",
+    "year": 2025,
+    "award": "sotd",
+    "source": "fwa",
+    "kind": "3d",
+    "stack": [],
+    "techniques": [
+      "DOM/CSS-driven interaction (no third-party animation engine detected server-side)"
+    ],
+    "palette": "theme-color #ffffff declared in the page head (background/accent signal only, not a full visual read)",
+    "type": "UNVERIFIED: no distinct font-family declarations found in the fetched markup (likely inlined in a bundled stylesheet or canvas-drawn)",
+    "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
+    "why": "In Japan, there is a cultural tradition called \"\"Eto\"\" (干支), a calendar system that represents a 12-year cycle with 12 different animals.\nEto is more than just a calendar system; it is a rich cultural tradition that reflects their connection to nature and their beliefs.",
+    "verified": true
+  },
+  {
+    "id": "aristide-benoist",
+    "name": "In Cognita",
+    "url": "https://in-cognita-corp.com",
+    "studio": "Aristide Benoist + Pierre Patrault",
+    "year": 2025,
+    "award": "sotd",
+    "source": "fwa",
+    "kind": "brand",
+    "stack": [],
+    "techniques": [
+      "DOM/CSS-driven interaction (no third-party animation engine detected server-side)"
+    ],
+    "palette": "theme-color #fff declared in the page head (background/accent signal only, not a full visual read)",
+    "type": "font-family declarations in the page CSS name: r (family names only, not a read of weight/tracking/behaviour)",
+    "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
+    "why": "In Cognita is a Swiss army knife and a solid shoulder to count on when going through a crisis, whether managerial, social, security or cyber.",
+    "verified": true
+  },
+  {
+    "id": "astral-frontier",
+    "name": "Astral Frontier",
+    "url": "https://theastralfrontier.com/",
+    "studio": "Andrew Measham",
+    "year": 2025,
+    "award": "sotd",
+    "source": "fwa",
+    "kind": "experiment",
+    "stack": [
+      "webgl"
+    ],
+    "techniques": [
+      "WebGL canvas"
+    ],
+    "palette": "hex values pulled from page CSS: #8f7e77, #131719 (raw CSS signal, not a full visual read)",
+    "type": "UNVERIFIED: no distinct font-family declarations found in the fetched markup (likely inlined in a bundled stylesheet or canvas-drawn)",
+    "motion": "a WebGL canvas is present, so at least part of the scene is GPU-rendered rather than DOM — the exact choreography (easing, sequencing, trigger points) was not independently observed beyond this.",
+    "why": "This experience embarks on a journey across distant worlds, each with its own mysteries, landscapes, and stories. Blending ancient wisdom with futuristic innovation.",
+    "verified": true
+  },
+  {
+    "id": "gucci-gift-giving-on-apple-vision-pro-p4",
+    "name": "Gucci - Gift Giving on Apple Vision Pro",
+    "url": "https://monogrid.com/en/project/gucci-gift-giving-on-apple-vision-pro",
+    "studio": "MONOGRID + GUCCI",
+    "year": 2025,
+    "award": "sotd",
+    "source": "fwa",
+    "kind": "brand",
+    "stack": [],
+    "techniques": [
+      "DOM/CSS-driven interaction (no third-party animation engine detected server-side)"
+    ],
+    "palette": "theme-color #0000FF declared in the page head (background/accent signal only, not a full visual read)",
+    "type": "font-family declarations in the page CSS name: Space Mono (family names only, not a read of weight/tracking/behaviour)",
+    "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
+    "why": "Gucci transformed the Gift Giving campaign into an XR journey. On Apple Vision Pro, users step into the story, interacting with Gucci’s iconic designs in their real space. More than an adaptation, it’s a reinvention—elevating fashion storytelling into a new dimension.",
+    "verified": true
+  },
+  {
+    "id": "captain-goosebumps-p3",
+    "name": "Captain Goosebumps",
+    "url": "https://goosebumps.epic.net/",
+    "studio": "EPIC Agency",
+    "year": 2025,
+    "award": "sotd",
+    "source": "fwa",
+    "kind": "experiment",
+    "stack": [
+      "webgl"
+    ],
+    "techniques": [
+      "WebGL canvas"
+    ],
+    "palette": "hex values pulled from page CSS: #adfde2, #ff2201, #0f1a56, #afffe2 (raw CSS signal, not a full visual read)",
+    "type": "UNVERIFIED: no distinct font-family declarations found in the fetched markup (likely inlined in a bundled stylesheet or canvas-drawn)",
+    "motion": "a WebGL canvas is present, so at least part of the scene is GPU-rendered rather than DOM — the exact choreography (easing, sequencing, trigger points) was not independently observed beyond this.",
+    "why": "This quirky goose may not be able to fly, but it sure can slide! Collect all the orbs and bring color back to the world.\nEPIC supports Live in Color, a non profit organisation that promotes inclusion through education.",
+    "verified": true
+  },
+  {
+    "id": "samsung-health-illustration-system",
+    "name": "Samsung Health — Illustration System",
+    "url": "https://illo.tv/samsung-health-illustration-system",
+    "studio": "Illo",
+    "year": 2025,
+    "award": "sotd",
+    "source": "fwa",
+    "kind": "showcase",
+    "stack": [],
+    "techniques": [
+      "DOM/CSS-driven interaction (no third-party animation engine detected server-side)"
+    ],
+    "palette": "theme-color #ffffff declared in the page head (background/accent signal only, not a full visual read)",
+    "type": "font-family declarations in the page CSS name: LL Circular Medium Web, Mirador (family names only, not a read of weight/tracking/behaviour)",
+    "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
+    "why": "illo designed a custom illustration system for Samsung Health, introducing over 100 vibrant, dynamic assets. Built around bold colors and fluid layouts, the visuals make health content more accessible and engaging for users worldwide.",
+    "verified": true
+  },
+  {
+    "id": "2025-ford-national-convention",
+    "name": "2025 Ford National convention",
+    "url": "https://hki.paris/en/use-case-ford",
+    "studio": "HKI™ + Solutions",
+    "year": 2025,
+    "award": "sotd",
+    "source": "fwa",
+    "kind": "product",
+    "stack": [],
+    "techniques": [
+      "DOM/CSS-driven interaction (no third-party animation engine detected server-side)"
+    ],
+    "palette": "hex values pulled from page CSS: #6f6f6f (raw CSS signal, not a full visual read)",
+    "type": "font-family declarations in the page CSS name: Inter-Medium, ApercuPro-Bold, Inter-Bold, Inter-SemiBold (family names only, not a read of weight/tracking/behaviour)",
+    "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
+    "why": "Ford France brought together about 900 ford members for an exceptional event focused on electric vehicles and technology.",
+    "verified": true
+  },
+  {
+    "id": "virtual-car-showroom-p2",
+    "name": "Virtual Car Showroom",
+    "url": "https://labs.otherlife.xyz/virtual-car-showroom",
+    "studio": "Otherlife",
+    "year": 2025,
+    "award": "sotd",
+    "source": "fwa",
+    "kind": "product",
+    "stack": [
+      "react"
+    ],
+    "techniques": [
+      "React/Next.js build"
+    ],
+    "palette": "UNVERIFIED: no theme-color meta or inline hex values found in the fetched markup",
+    "type": "UNVERIFIED: no distinct font-family declarations found in the fetched markup (likely inlined in a bundled stylesheet or canvas-drawn)",
+    "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
+    "why": "The Virtual Car Showroom is a high-fidelity, immersive car customization experience. Explore four iconic cars in stunning detail, powered by Three.js and WebGL.",
+    "verified": true
+  },
+  {
+    "id": "a-3d-game-like-portfolio",
+    "name": "A 3D Game-Like Portfolio",
+    "url": "https://toshihito-endo.com/",
+    "studio": "Toshihito Endo",
+    "year": 2025,
+    "award": "sotd",
+    "source": "fwa",
+    "kind": "3d",
+    "stack": [
+      "react"
+    ],
+    "techniques": [
+      "React/Next.js build"
+    ],
+    "palette": "UNVERIFIED: no theme-color meta or inline hex values found in the fetched markup",
+    "type": "UNVERIFIED: no distinct font-family declarations found in the fetched markup (likely inlined in a bundled stylesheet or canvas-drawn)",
+    "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
+    "why": "This 3D game-lilke portfolio transforms a website into an interactive world. Users can walk, explore, and engage with projects through first-person navigation, physics-based interactions, and real-time rendering. Built with React and Three.js, it blends game mechanics with web-based storytelling.",
+    "verified": true
+  },
+  {
+    "id": "45r-denim-karuta",
+    "name": "45R Denim Karuta",
+    "url": "https://45r.jp/ja/45denim-karuta/",
+    "studio": "SHIFTBRAIN Inc. + ingraft Inc. + COPILOT Inc.",
+    "year": 2025,
+    "award": "sotd",
+    "source": "fwa",
+    "kind": "experiment",
+    "stack": [
+      "webgl"
+    ],
+    "techniques": [
+      "WebGL canvas"
+    ],
+    "palette": "hex values pulled from page CSS: #faedcd, #193854, #d59b95, #66a3b7 (raw CSS signal, not a full visual read)",
+    "type": "UNVERIFIED: no distinct font-family declarations found in the fetched markup (likely inlined in a bundled stylesheet or canvas-drawn)",
+    "motion": "a WebGL canvas is present, so at least part of the scene is GPU-rendered rather than DOM — the exact choreography (easing, sequencing, trigger points) was not independently observed beyond this.",
+    "why": "Denim is 45R's signature item. We created an online Japanese Poetry Card Game to showcase the craft of our 30+ years. Featuring warm distinctive illustrations, optimized for mobile.",
+    "verified": true
+  },
+  {
+    "id": "le-sel-dissey-the-saltcraft-studio",
+    "name": "Le Sel d'Issey - The Saltcraft studio",
+    "url": "https://leseldissey.isseymiyakeparfums.com/",
+    "studio": "Soleil Noir + Robin Payot",
+    "year": 2025,
+    "award": "sotd",
+    "source": "fwa",
+    "kind": "experiment",
+    "stack": [],
+    "techniques": [
+      "DOM/CSS-driven interaction (no third-party animation engine detected server-side)"
+    ],
+    "palette": "UNVERIFIED: no theme-color meta or inline hex values found in the fetched markup",
+    "type": "UNVERIFIED: no distinct font-family declarations found in the fetched markup (likely inlined in a bundled stylesheet or canvas-drawn)",
+    "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
+    "why": "This immersive 3D experience was designed to immerse users into the world of Le Sel d'Issey fragrance, in an innovative and captivating way. \nUser can create its own salt sculpture by adding the fragrance ingredients, personalized background and cymatics.",
+    "verified": false
+  },
+  {
+    "id": "treasures-of-japan",
+    "name": "Treasures of Japan",
+    "url": "https://treasuresofjapan.mirror.it/",
+    "studio": "Mirror + Andrea Giuffrida",
+    "year": 2025,
+    "award": "sotd",
+    "source": "fwa",
+    "kind": "experiment",
+    "stack": [],
+    "techniques": [
+      "DOM/CSS-driven interaction (no third-party animation engine detected server-side)"
+    ],
+    "palette": "UNVERIFIED: no theme-color meta or inline hex values found in the fetched markup",
+    "type": "UNVERIFIED: no distinct font-family declarations found in the fetched markup (likely inlined in a bundled stylesheet or canvas-drawn)",
+    "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
+    "why": "A journey to the wonderful lands of the Rising Sun together with Pasticcino-chan, discovering the hidden treasures between Kyoto and Tokyo.",
+    "verified": true
+  },
+  {
+    "id": "jeton",
+    "name": "Jeton",
+    "url": "https://jeton.com/?enter",
+    "studio": "Bürocratik",
+    "year": 2025,
+    "award": "sotd",
+    "source": "fwa",
+    "kind": "brand",
+    "stack": [
+      "webgl"
+    ],
+    "techniques": [
+      "WebGL canvas"
+    ],
+    "palette": "hex values pulled from page CSS: #f73b20, #360802, #fff6f5, #f96853 (raw CSS signal, not a full visual read)",
+    "type": "font-family declarations in the page CSS name: Sequel Sans (family names only, not a read of weight/tracking/behaviour)",
+    "motion": "a WebGL canvas is present, so at least part of the scene is GPU-rendered rather than DOM — the exact choreography (easing, sequencing, trigger points) was not independently observed beyond this.",
+    "why": "One wallet for all needs. Jeton is a new-generation eWallet designed to simplify the way you pay online and offline: Your money, your way.",
+    "verified": true
+  },
+  {
+    "id": "national-geographic-into-the-amazon",
+    "name": "National Geographic | Into The Amazon",
+    "url": "https://www.nationalgeographic.com/into-the-amazon/",
+    "studio": "Gladeye",
+    "year": 2025,
+    "award": "sotd",
+    "source": "fwa",
+    "kind": "editorial",
+    "stack": [],
+    "techniques": [
+      "DOM/CSS-driven interaction (no third-party animation engine detected server-side)"
+    ],
+    "palette": "hex values pulled from page CSS: #ffcc00 (raw CSS signal, not a full visual read)",
+    "type": "UNVERIFIED: no distinct font-family declarations found in the fetched markup (likely inlined in a bundled stylesheet or canvas-drawn)",
+    "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
+    "why": "Into the Amazon follows a drop of water from summit to sea, revealing its vital role in the ecosystem through the perspectives of locals, scientists, and explorers.",
+    "verified": true
+  },
+  {
+    "id": "reinvinted",
+    "name": "Re-invinted",
+    "url": "https://reinvinted.vinted.com/",
+    "studio": "Stink Studios",
+    "year": 2025,
+    "award": "sotd",
+    "source": "fwa",
+    "kind": "brand",
+    "stack": [
+      "react"
+    ],
+    "techniques": [
+      "React/Next.js build"
+    ],
+    "palette": "hex values pulled from page CSS: #e1e6e6, #940572, #c8c8c9, #d3d2d1 (raw CSS signal, not a full visual read)",
+    "type": "UNVERIFIED: no distinct font-family declarations found in the fetched markup (likely inlined in a bundled stylesheet or canvas-drawn)",
+    "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
+    "why": "Re-invinted is a data-powered experience that gives people the chance to understand the trends and behaviours of the pre-loved culture movement on Vinted. You can discover insights, dive into personality traits, and take a fun quiz to discover your custom \"pre-loved personality\".",
+    "verified": true
+  },
+  {
+    "id": "alpine-bio",
+    "name": "Alpine Bio",
+    "url": "https://alpbio.com/",
+    "studio": "Resn",
+    "year": 2025,
+    "award": "sotd",
+    "source": "fwa",
+    "kind": "brand",
+    "stack": [],
+    "techniques": [
+      "DOM/CSS-driven interaction (no third-party animation engine detected server-side)"
+    ],
+    "palette": "hex values pulled from page CSS: #1e1e1f, #e1fcad, #f5f5f5, #e4e4e4 (raw CSS signal, not a full visual read)",
+    "type": "font-family declarations in the page CSS name: Inter, Geist, var, Switzer (family names only, not a read of weight/tracking/behaviour)",
+    "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
+    "why": "Alpine Bio is transforming plants into the world’s most efficient protein producers. Their platform supports growers while promoting sustainable agriculture for the future.",
+    "verified": true
+  },
+  {
+    "id": "cash-app-brand-guidelines",
+    "name": "Cash App Brand Guidelines",
+    "url": "https://design.cash.app/",
+    "studio": "index + Quentin Hocdé",
+    "year": 2025,
+    "award": "sotd",
+    "source": "fwa",
+    "kind": "brand",
+    "stack": [
+      "webgl"
+    ],
+    "techniques": [
+      "WebGL canvas"
+    ],
+    "palette": "theme-color #000000 declared in the page head (background/accent signal only, not a full visual read)",
+    "type": "UNVERIFIED: no distinct font-family declarations found in the fetched markup (likely inlined in a bundled stylesheet or canvas-drawn)",
+    "motion": "a WebGL canvas is present, so at least part of the scene is GPU-rendered rather than DOM — the exact choreography (easing, sequencing, trigger points) was not independently observed beyond this.",
+    "why": "A new creative showcase for the Cash App brand guidelines. In collaboration with the Cash App team, we were tasked with building an interactive playground to complement the presentation of the brand guidelines, highlighting the brand's rich visual identity in an effortless, immersive journey.",
+    "verified": true
+  },
+  {
+    "id": "basementstudio",
+    "name": "basement.studio",
+    "url": "https://basement.studio",
+    "studio": "basement.studio",
+    "year": 2025,
+    "award": "sotd",
+    "source": "fwa",
+    "kind": "portfolio",
+    "stack": [
+      "react"
+    ],
+    "techniques": [
+      "React/Next.js build"
+    ],
+    "palette": "hex values pulled from page CSS: #212121, #1a1a1a (raw CSS signal, not a full visual read)",
+    "type": "UNVERIFIED: no distinct font-family declarations found in the fetched markup (likely inlined in a bundled stylesheet or canvas-drawn)",
+    "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
+    "why": "we make cool shit that performs",
+    "verified": true
+  },
+  {
+    "id": "dg-velvet-p2",
+    "name": "DG VELVET",
+    "url": "https://beautytools.dolcegabbana.com/en-it/velvet",
+    "studio": "MONOGRID",
+    "year": 2025,
+    "award": "sotd",
+    "source": "fwa",
+    "kind": "brand",
+    "stack": [],
+    "techniques": [
+      "DOM/CSS-driven interaction (no third-party animation engine detected server-side)"
+    ],
+    "palette": "UNVERIFIED: no theme-color meta or inline hex values found in the fetched markup",
+    "type": "UNVERIFIED: no distinct font-family declarations found in the fetched markup (likely inlined in a bundled stylesheet or canvas-drawn)",
+    "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
+    "why": "For the Dolce&Gabbana Velvet Collection we crafted a digital tool that offers an immersive, personalized experience. Users select key elements, the tool integrates these data to recommend a fragrance that matches their unique preferences, reflecting the essence of the collection.",
+    "verified": true
+  },
+  {
+    "id": "world-of-volvo-every-body",
+    "name": "World of Volvo: Every Body",
+    "url": "https://greatapes.studio/work/wov-every-body",
+    "studio": "Great Apes + HiQ + Realise",
+    "year": 2025,
+    "award": "sotd",
+    "source": "fwa",
+    "kind": "product",
+    "stack": [
+      "react"
+    ],
+    "techniques": [
+      "React/Next.js build"
+    ],
+    "palette": "hex values pulled from page CSS: #cfece7, #cbedff (raw CSS signal, not a full visual read)",
+    "type": "UNVERIFIED: no distinct font-family declarations found in the fetched markup (likely inlined in a bundled stylesheet or canvas-drawn)",
+    "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
+    "why": "World of Volvo, located in central Gothenburg's new event district, is a one-of-a-kind experience centre with a unique Scandinavian-style architecture.\n\n\"Every Body\" is an interactive installation which serves as an introductory experience for the Volvo exhibition about the future of mobility.",
+    "verified": true
+  }
+]
