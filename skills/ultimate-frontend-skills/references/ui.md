@@ -211,7 +211,9 @@ measured in a browser. **Where they overlap the measured table in
 | danger | `oklch(48% 0.14 28)` | 6.10:1 | `oklch(72% 0.13 28)` | 7.47:1 |
 | success | `oklch(52% 0.13 150)` | 4.51:1 | `oklch(72% 0.13 150)` | 8.31:1 |
 
-Three constraints travel with those values.
+These ship in `core.css` as `--danger` and `--success`, with the dark-ground
+values under `[data-tone="dark"]`, and the passing accent-button pair as
+`--accent-fill`. Three constraints travel with those values.
 
 1. **There is no warning colour.** At C 0.14 the amber family falls outside sRGB
    and the browser clips it, silently changing the colour. Hue 75 is also too

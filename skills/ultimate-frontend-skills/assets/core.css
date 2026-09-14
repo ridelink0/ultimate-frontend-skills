@@ -36,6 +36,18 @@
   --fg-muted:  var(--stone-600);
   --fg-faint:  var(--stone-500);
   --on-accent: var(--bone-50);
+  /* --on-accent on --accent is 4.00:1 - it fails 4.5:1 for a button's own
+     label. The accent-filled button that passes is --on-accent on
+     --accent-strong (7.28:1). Computed in references/ui.md; use that pair. */
+  --accent-fill: var(--accent-strong);
+  /* Status. One lightness-and-chroma pair per ground, hue the only variable,
+     so it sits inside the palette instead of arriving as a framework red.
+     There is deliberately NO warning colour: at this chroma amber clips out
+     of sRGB, and hue 75 is too close to the accent to read as a signal. A
+     warning is an icon and a word on the ordinary ground. Status never
+     travels by colour alone (WCAG 1.4.1) and is only present while live. */
+  --danger:  oklch(48% 0.14 28);    /* 6.10:1 on --bone-100 */
+  --success: oklch(52% 0.13 150);   /* 4.51:1 on --bone-100 */
   --rule:      color-mix(in oklab, var(--ink-800) 14%, transparent);
   --rule-soft: color-mix(in oklab, var(--ink-800) 8%, transparent);
 
@@ -103,6 +115,8 @@
   --fg-faint:  var(--stone-500);
   --rule:      color-mix(in oklab, var(--bone-300) 16%, transparent);
   --rule-soft: color-mix(in oklab, var(--bone-300) 9%, transparent);
+  --danger:  oklch(72% 0.13 28);    /* 7.47:1 on --ink-950 */
+  --success: oklch(72% 0.13 150);   /* 8.31:1 on --ink-950 */
   -webkit-font-smoothing: antialiased;   /* only on dark: serifs fatten otherwise */
   -moz-osx-font-smoothing: grayscale;
 }
