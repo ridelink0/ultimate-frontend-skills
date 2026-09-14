@@ -113,6 +113,14 @@ AxonHost.cs read stays in owner-4d's relay note.
   by Computer Use - that one step is Gev's, say so rather than looping on it.
   Everything else (hooks firing, the Antigravity payload, the Codex wake check)
   is headless work. Run each host's proof twice.
+  RECONCILE: the armed continuation also carries a block owner-4d appended at
+  Gev's request with a concrete live checklist (one real Codex turn showing the
+  hook line, the [agents] clamp in config.toml, a +2 min throwaway relay over
+  stdin; Antigravity's PreInvocation message and a PreToolUse deny under the
+  cap). Follow that checklist. Where it says "Computer use on a spare desktop for
+  anything the terminal cannot do", read it with the limit above: Computer Use
+  can drive the desktop but not a terminal, so the trust-review keystroke is
+  Gev's and everything else is yours.
 - npm publish blocked: `npm whoami` is 401. Needs Gev. computer-use and
   video-watch also lack package.json/.codex-plugin.
 - Relay notes must stay under 8,191 characters or use usage-limits >= 1.30.0.
