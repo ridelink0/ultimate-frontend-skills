@@ -185,6 +185,31 @@ ${sections.get('foot').body}${engines.length ? '\n' + engines.join('\n') : ''}
 `;
 
   writeFileSync(join(dir, 'index.html'), html, 'utf8');
+
+  // The 404. Netlify serves /404.html from the publish root as the custom
+  // not-found page with no configuration, and every other static host has an
+  // equivalent. A site without one hands a lost visitor the host's default
+  // page, which is the one screen on the whole site nobody designed. Same
+  // head, same nav, same footer; anchors point back at the index because this
+  // is a different document, and only motion.js loads - there is nothing here
+  // for an engine to draw.
+  const navBlock = wanted.includes('nav') ? sections.get('nav').body.replace(/Brand Name/g, name) : '';
+  const notFound = `<!DOCTYPE html>
+<html lang="en">
+<head>
+${head.replace(/<title>[^<]*<\/title>/, `<title>Page not found - ${name}</title>`)}
+</head>
+<body${preset.tone}>
+${navBlock}
+<main id="main">
+${sections.get('not-found').body}
+</main>
+${sections.get('footer').body.replace(/Brand Name/g, name)}
+${sections.get('foot').body}
+</body>
+</html>
+`.replace(/href="#/g, 'href="./#');
+  writeFileSync(join(dir, '404.html'), notFound, 'utf8');
   writeFileSync(join(dir, 'site.css'),
 `/* ${name} - project layer. core.css is the chassis; every choice specific to
    this subject belongs here. Do not edit core.css. */
