@@ -11,16 +11,42 @@ import and only fetched once the hero component mounts. Roughly 90 KB of
 hand-written GLSL and scene code sits alongside it. Raw three.js - no
 `postprocessing`, no fiber, no drei.
 
+**`references/fable-showcase.md` corrects four things in this file** - the
+bokeh kernel, the post order, the tree seeds and the size of the GSAP waste -
+and all four corrections are folded in below. It also carries the one idea this
+teardown missed entirely (shelters), and the reproduction procedure. Read it
+after this one.
+
 What is in the scene:
 
 - a **procedurally generated tree** - a custom branch and leaf mesh generator
-  seeded by a mulberry32 PRNG, so the silhouette is different per build
+  seeded by a mulberry32 PRNG. The silhouette is *not* different per build:
+  two desktop seeds and four portrait seeds are baked into the module and the
+  page passes no override, so each load picks one of a handful of curated
+  silhouettes. The lesson is the opposite of the obvious one - generate
+  broadly, then allowlist the seeds that came out good. Shipping
+  `Math.random()` across the whole space is how you get a bad tree in front
+  of somebody.
 - a **GLTF bird** (`/fx/hero/tit.glb`, a great tit) with flap / perch / fold
   clips driven by an `AnimationMixer`
 - a **cloud dome** and a **shader moon**
-- a full hand-rolled post chain, in this order:
-  **72-tap hexagonal-bokeh depth of field → ACES → chromatic aberration →
-  glow → vignette → film grain → gamma 2.2**
+- a full hand-rolled post chain. The real order, read off the composite
+  fragment shader:
+  **chromatic aberration (at texture-read time) → sky/foliage composite with
+  light wrap → glow → ACES → colour trim → vignette → film grain → gamma 2.2**
+
+  ACES comes *after* the glow, and it is hand-written GLSL rather than
+  three.js's own: `renderer.toneMapping = NoToneMapping`,
+  `outputColorSpace = LinearSRGBColorSpace`, and the curve lives in the shader.
+
+- the **depth of field is a 72-tap circular bokeh**, not hexagonal. Seven
+  concentric rings emitted by a build-time loop as
+  `(count, radius, angularOffset)`:
+  `(1,0,0) (5,.16,.7) (8,.38,.3) (10,.55,.5) (12,.72,0) (20,.87,.4) (16,1,.15)`,
+  summing to 72, with `gl_FragColor = accum / 72.0`. The part that matters is
+  that the whole kernel is rotated **per pixel** by
+  `hash12(vUv * 517.3) * 6.28318`. That rotation is the only reason 72 taps do
+  not band into visible rings, and it is the single cheapest trick in the file.
 
 That post chain is the answer to "why does it look like that". The bokeh and
 the grain are doing the work a photograph would otherwise do.
@@ -56,8 +82,18 @@ only because the site header's animated wordmark lazy-loads them. On this page
 there is no app-level `gsap.to` or `ScrollTrigger.create` at all. Scroll
 behaviour is `window.addEventListener('scroll')` + rAF + IntersectionObserver.
 
-So ~117 KB of GSAP is downloaded and never used here. Do not copy that. Real
-ScrollTrigger scrub does exist on a sibling page, `/features/claude-on-mars`:
+The waste is specific and worse than "~117 KB". The header's `LogoWordmark`
+fires an unconditional `requestIdleCallback(..., { timeout: 2000 })` - or the
+first scroll, whichever lands first - and awaits four chunks: the gsap wrapper
+at 764 B, gsap 3.14.2 at 70,940 B, ScrollTrigger at 43,062 B and lottie-web
+5.13.0 at 305,712 B, plus 27,698 B of animation JSON. After `registerPlugin`
+the module calls `gsap` zero more times. **114,766 bytes of GSAP and
+ScrollTrigger are fetched on every page of that site in order to call
+`registerPlugin` and nothing else.**
+
+A library whose only call site is its own registration is exactly the shape
+`webdesign.mjs quality --record` looks for. Do not copy it. Real ScrollTrigger
+scrub does exist on a sibling page, `/features/claude-on-mars`:
 
 ```js
 gsap.registerPlugin(ScrollTrigger)
@@ -84,8 +120,9 @@ gsap.context(() => gsap.fromTo(el,
    clean render is what stops it reading as a game engine.
 3. **Ease a weight vector, do not crossfade assets.** `1 - exp(-dt * k)` is
    frame-rate independent and needs no library.
-4. **Do not ship a library you do not call.** This page downloads 117 KB of
-   GSAP to use none of it - the audit here warns on exactly that.
+4. **Do not ship a library you do not call.** This page downloads 114,766
+   bytes of GSAP and ScrollTrigger to call `registerPlugin` and nothing else -
+   `quality --record` warns on exactly that shape.
 5. **Hand-write the SVG for charts.** Use a scale library for the maths and
    draw the marks yourself; every charting library has a house style and it is
    never yours.
