@@ -393,9 +393,9 @@
           data-netlify="true" netlify-honeypot="company">
       <input type="hidden" name="form-name" value="contact">
       <p hidden><label>Leave blank <input type="text" name="company" tabindex="-1" autocomplete="off"></label></p>
-      <div class="field"><label for="f-name">Name</label><input type="text" id="f-name" name="name" required autocomplete="name"></div>
-      <div class="field"><label for="f-mail">Email</label><input id="f-mail" name="email" type="email" required autocomplete="email"></div>
-      <div class="field"><label for="f-msg">What is happening</label><textarea id="f-msg" name="message" rows="4" required></textarea></div>
+      <div class="field"><label for="f-name">Name</label><input type="text" id="f-name" name="name" required autocomplete="name" aria-describedby="f-name-err"><p class="field__error" id="f-name-err">Add your name so the reply has somewhere to go.</p></div>
+      <div class="field"><label for="f-mail">Email</label><input id="f-mail" name="email" type="email" required autocomplete="email" aria-describedby="f-mail-err"><p class="field__error" id="f-mail-err">That does not look like an email address. Check for a missing @ or a stray space.</p></div>
+      <div class="field"><label for="f-msg">What is happening</label><textarea id="f-msg" name="message" rows="4" required aria-describedby="f-msg-err"></textarea><p class="field__error" id="f-msg-err">A sentence is enough. Say what you need and when.</p></div>
       <p><button class="btn" type="submit">Send it</button></p>
       <p class="caption">Replies within two working days. <a href="/privacy">How your details are handled</a>.</p>
     </form>

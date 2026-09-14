@@ -547,7 +547,19 @@ figcaption { margin-top: var(--s-3); font-family: var(--font-ui); font-size: var
   background: transparent; border: 0; border-bottom: 1px solid var(--rule);
   padding: var(--s-3) 0; border-radius: 0; font-family: var(--font-text);
   transition: border-color var(--dur-1) var(--ease); }
-.field :is(input, textarea, select):focus { outline: none; border-bottom-color: var(--accent); }
+.field :is(input, textarea, select):focus { border-bottom-color: var(--accent); }
+/* Keyboard focus keeps a real ring. Removing the outline and leaning on a
+   border colour is the single most common focus defect there is. */
+.field :is(input, textarea, select):focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+/* Validation, with no script. :user-invalid matches only after the visitor
+   has interacted with the field, so the error never appears on a keystroke
+   before the first blur - the timing rule in references/craft.md, enforced by
+   the browser. The message is in the markup, tied by aria-describedby, and
+   the colour reinforces it rather than carrying it. Native bubbles still
+   fire on submit as the fallback for anything :user-invalid misses. */
+.field__error { display: none; margin: 0; font-family: var(--font-ui); font-size: var(--step--2); color: var(--danger); }
+.field:has(:user-invalid) .field__error { display: block; }
+.field :is(input, textarea, select):user-invalid { border-bottom-color: var(--danger); }
 
 .marquee { overflow: clip; white-space: nowrap;
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);

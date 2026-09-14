@@ -462,6 +462,10 @@ in `site.css` and thicken the hairline; against **2.4.7 Focus Visible (AA)** and
 
 ### Validation timing
 
+The chassis wires this with no script: each `.field` carries a `.field__error`
+paragraph tied by `aria-describedby`, shown by `:user-invalid`, which the
+browser only matches after interaction. What follows is the rule it enforces.
+
 1. Never validate on `input` while a field is first being filled. Flagging
    "invalid email" at the third keystroke is hostile.
 2. Validate on `blur` only if the field has been changed, and then only to show
