@@ -30,6 +30,10 @@ here needs a decision from Gev; it was all agreed in the goal for this session.
   `relay doctor`. 775/775 tests pass. ANOTHER CLAUDE SESSION shares that tree and
   owns wake.js/defer.js - do not edit it without checking with them.
 
+Suite on e217fb3 (the tree as pushed, 2026-09-14 pm): 81 pass, 0 fail, 0
+cancelled. Two earlier runs the same afternoon were also 81/81; the one that
+was not showed 33 and a cancelled 10 under heavy load, both pass alone.
+
 ## Still open as of 2026-09-14 afternoon (the 9:55 relay never ran - argv cap)
 
 - test 47 in test/fixtures.test.mjs PASSES when run alone (verified 2026-09-14
