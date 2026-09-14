@@ -86,6 +86,39 @@ export function buildCorpus() {
 
 const KINDS = new Set(['3d', 'editorial', 'product', 'portfolio', 'ecommerce', 'brand', 'experiment']);
 
+const NOISE = /^(unverified\b|not individually|listed on|could not|no longer|see also|source:)|not individually fetched|tag feed/i;
+
+/* The vocabulary the corpus can actually be searched by.
+   A technique in this dataset is a sentence - "ScrollTrigger-driven camera path
+   through a rotating image-atlas cylinder" - which is the right thing to store,
+   because the mechanism is the point. It is the wrong thing to list: an index of
+   three hundred unique sentences tells a model nothing about what to ask for.
+   So the index counts terms, not rows, and these are the terms. Everything here
+   is something a page can be built out of; the free text stays searchable
+   underneath by the ordinary query path. */
+const VOCABULARY = [
+  'scroll-scrubbed 3d', 'scrollytelling', 'pinned horizontal', 'horizontal scroll', 'sticky section',
+  'image sequence', 'canvas sequence', 'wireframe', 'exploded view', 'turntable',
+  'webgl', 'three.js', 'react-three-fiber', 'shader', 'glsl', 'fragment shader', 'vertex displacement',
+  'mesh gradient', 'fluid simulation', 'particle', 'point cloud', 'instancing', 'raymarching',
+  'post-processing', 'bloom', 'depth of field', 'chromatic aberration', 'ascii',
+  'distortion', 'displacement map', 'render target', 'portal', 'fbo',
+  'gsap', 'scrolltrigger', 'scrollsmoother', 'lenis', 'locomotive', 'smooth scroll', 'inertia',
+  'motion one', 'framer motion', 'anime.js', 'barba.js', 'view transition', 'page transition',
+  'shared element', 'flip', 'morph', 'svg filter', 'clip-path', 'mask reveal', 'text mask',
+  'split text', 'per-word reveal', 'per-character', 'kinetic type', 'variable font', 'marquee',
+  'custom cursor', 'cursor follow', 'magnetic', 'hover distortion', 'tilt',
+  'parallax', 'depth map', 'layered depth', 'aerial perspective',
+  'physics', 'matter.js', 'rapier', 'ragdoll', 'soft body',
+  'editorial grid', 'breakout grid', 'asymmetric grid', 'dot leader', 'spec table',
+  'grain', 'film grain', 'vignette', 'duotone', 'colour grade', 'scrim',
+  'video in canvas', 'video scrub', 'webm', 'lottie',
+  'glb', 'gltf', 'draco', 'blender', 'baked lighting', 'hdri', 'pbr', 'matcap',
+  'audio', 'web audio', 'sound design', 'preloader', 'loading sequence',
+  'infinite scroll', 'drag gallery', 'carousel', 'accordion', 'sticky nav',
+  'dark mode', 'theme toggle', 'reduced motion', 'accessibility',
+];
+
 function normalise(row, file, report) {
   if (!row || typeof row !== 'object') return null;
   const url = typeof row.url === 'string' ? row.url.trim() : '';
@@ -98,8 +131,13 @@ function normalise(row, file, report) {
   const id = String(row.id || row.name || url).toLowerCase()
     .replace(/^https?:\/\//, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60);
   if (!id) return null;
-  const list = (v) => (Array.isArray(v) ? v : typeof v === 'string' ? v.split(/\s*,\s*/) : [])
-    .map((s) => String(s).trim()).filter(Boolean);
+  // Harvesters sometimes put their own provenance into the technique list -
+  // "unverified - listed on the tag feed, not individually fetched". That is a
+  // note about the row, not a thing the site does, and left in it pollutes the
+  // technique vocabulary that `--techniques` exists to publish.
+  const list = (v, drop) => (Array.isArray(v) ? v : typeof v === 'string' ? v.split(/\s*,\s*/) : [])
+    .map((s) => String(s).trim())
+    .filter((s) => s && !(drop && NOISE.test(s)));
   const year = Number(row.year);
   return {
     id,
@@ -110,8 +148,8 @@ function normalise(row, file, report) {
     award: String(row.award || 'reference').toLowerCase(),
     source: String(row.source || 'editorial').toLowerCase(),
     kind: KINDS.has(String(row.kind).toLowerCase()) ? String(row.kind).toLowerCase() : 'editorial',
-    stack: list(row.stack),
-    techniques: list(row.techniques),
+    stack: list(row.stack, true),
+    techniques: list(row.techniques, true),
     palette: str(row.palette),
     type: str(row.type),
     motion: str(row.motion),
@@ -230,14 +268,19 @@ export function formatAwards(rows, opts = {}) {
 /* What the corpus knows how to do, which is the useful index into it - a model
    that cannot name a technique cannot search for one. */
 export function techniqueIndex(corpus) {
+  const all = corpus || loadCorpus();
   const counts = new Map();
-  for (const e of corpus || loadCorpus()) {
-    for (const t of e.techniques) {
-      const k = t.toLowerCase();
-      counts.set(k, (counts.get(k) || 0) + 1);
+  for (const e of all) {
+    // One site counts once per term however many times it says it.
+    const hay = (e.techniques.join(' ; ') + ' ; ' + e.stack.join(' ; ') + ' ; ' + e.motion).toLowerCase();
+    for (const term of VOCABULARY) {
+      if (hay.includes(term)) counts.set(term, (counts.get(term) || 0) + 1);
     }
   }
-  return [...counts.entries()].sort((a, b) => b[1] - a[1]).map(([technique, count]) => ({ technique, count }));
+  return [...counts.entries()]
+    .filter(([, count]) => count > 0)
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .map(([technique, count]) => ({ technique, count }));
 }
 
 export function corpusStats() {

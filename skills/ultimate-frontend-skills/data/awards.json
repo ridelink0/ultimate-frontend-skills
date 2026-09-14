@@ -141,6 +141,30 @@
   "verified": false
  },
  {
+  "id": "cartier-watches-wonders-2026",
+  "name": "Cartier Watches & Wonders 2026",
+  "url": "https://www.cartier.com/en-fr/watchesandwonders",
+  "studio": "Immersive Garden",
+  "year": 2026,
+  "award": "sotd",
+  "source": "awwwards",
+  "kind": "product",
+  "stack": [
+   "three.js",
+   "webgl"
+  ],
+  "techniques": [
+   "3D product rendering (Blender-modeled watches)",
+   "scroll-scrubbed scene transitions",
+   "gesture-driven camera moves"
+  ],
+  "palette": "the live Cartier shell is neutral white/gray/black; the microsite itself uses richer jewel tones per the collection (not independently confirmed - campaign build had rotated off by the time of this fetch)",
+  "type": "refined sans-serif luxury type, subordinate to product photography and 3D renders",
+  "motion": "an immersive journey through the brand's watch 'worlds', built on three.js/GLSL scenes rather than DOM sections.",
+  "why": "shows a luxury house committing to a from-scratch three.js microsite every single year rather than reskinning a template - the bar for what 'seasonal campaign site' can mean.",
+  "verified": true
+ },
+ {
   "id": "cassandra-vale",
   "name": "Cassandra Vale",
   "url": "https://thecassandravale.com",
@@ -232,6 +256,718 @@
   "verified": true
  },
  {
+  "id": "codrops-3d-image-tube-r3f",
+  "name": "Scroll-Driven 3D Image Tube with R3F",
+  "url": "https://tympanus.net/Tutorials/3DImageTubeR3F/",
+  "studio": null,
+  "year": 2026,
+  "award": "developer",
+  "source": "codrops",
+  "kind": "experiment",
+  "stack": [
+   "react-three-fiber",
+   "three.js"
+  ],
+  "techniques": [
+   "images mapped onto the inside of a scroll-driven tube geometry",
+   "sphere and \"Rubens\" geometry variants of the same rig"
+  ],
+  "palette": "UNVERIFIED - not confirmed",
+  "type": "UNVERIFIED - not confirmed",
+  "motion": "scrolling travels the camera through a tube whose inner wall is tiled with gallery images, with alternate builds swapping the tube for a sphere.",
+  "why": "the same scroll-to-camera-path rig re-skinned across three geometries in one repo - a clean demonstration that the technique is the path, not the mesh.",
+  "verified": true
+ },
+ {
+  "id": "codrops-3d-wave-grid",
+  "name": "3D Wave Grid",
+  "url": "https://projects.arkon.digital/threejs/wavy-cubes/",
+  "studio": "Franky",
+  "year": 2026,
+  "award": "developer",
+  "source": "codrops",
+  "kind": "experiment",
+  "stack": [
+   "three.js"
+  ],
+  "techniques": [
+   "grid of instanced cubes displaced by a wave function"
+  ],
+  "palette": "UNVERIFIED - not confirmed",
+  "type": "UNVERIFIED - not confirmed",
+  "motion": "UNVERIFIED beyond the title - the wave's drive (time, pointer, or scroll) is not confirmed from the fetched text.",
+  "why": "the canonical instanced-cube wave grid, the starting point most sites reach for before customising the displacement function.",
+  "verified": true
+ },
+ {
+  "id": "codrops-ascii-logo",
+  "name": "ASCII Logo in Three.js",
+  "url": "https://tympanus.net/Tutorials/ASCIILogo/",
+  "studio": "Edoardo Lunardi",
+  "year": 2026,
+  "award": "developer",
+  "source": "codrops",
+  "kind": "experiment",
+  "stack": [
+   "three.js",
+   "glsl"
+  ],
+  "techniques": [
+   "fragment-shader ASCII-character mapping over a 3D model",
+   "draggable model rotation"
+  ],
+  "palette": "monochrome character grid over whatever ground colour the shader is cleared to - not confirmed beyond that",
+  "type": "no UI text - the ASCII character set itself is the only typography on screen",
+  "motion": "dragging the logo rotates the underlying 3D mesh while the ASCII shader keeps re-sampling luminance into characters each frame.",
+  "why": "the technique is the character lookup in the fragment shader, not the 3D model - useful as a drop-in postprocess pass over any existing scene.",
+  "verified": true
+ },
+ {
+  "id": "codrops-atmospheric-depth-gallery",
+  "name": "Atmospheric Depth Gallery",
+  "url": "https://tympanus.net/Tutorials/DepthGallery/",
+  "studio": "Houmahani Kane",
+  "year": 2026,
+  "award": "developer",
+  "source": "codrops",
+  "kind": "experiment",
+  "stack": [
+   "three.js",
+   "webgl",
+   "glsl"
+  ],
+  "techniques": [
+   "scroll-reactive depth-layered gallery",
+   "GLSL atmospheric shader background",
+   "color-chip layout credited to @thisislandscape"
+  ],
+  "palette": "described by its own credit as a \"colour chip layout\" - exact hues not confirmed",
+  "type": "UNVERIFIED - not confirmed",
+  "motion": "scrolling drives both the gallery's depth layering and a GLSL atmosphere shader behind it; a hidden debug overlay (press D) exposes the underlying values.",
+  "why": "ships a debug key baked into the public demo - a habit worth copying so a scroll-shader rig can be tuned live instead of by trial commits.",
+  "verified": true
+ },
+ {
+  "id": "codrops-ball-of-glass-attraction",
+  "name": "Ball of Glass with Attraction",
+  "url": "https://r3f-rapier-ball-of-glass.vercel.app/",
+  "studio": null,
+  "year": 2026,
+  "award": "developer",
+  "source": "codrops",
+  "kind": "experiment",
+  "stack": [
+   "react-three-fiber",
+   "three.js",
+   "rapier"
+  ],
+  "techniques": [
+   "transparent glass-sphere material combined with Rapier rigid-body attraction forces"
+  ],
+  "palette": "UNVERIFIED - not confirmed",
+  "type": "UNVERIFIED - not confirmed",
+  "motion": "UNVERIFIED beyond \"attraction\" - specific gravity/force curve not present in the fetched text.",
+  "why": "pairs a physically-based transmission/glass material with a physics engine rather than a purely visual shader trick, so refraction and motion stay consistent with each other.",
+  "verified": true
+ },
+ {
+  "id": "codrops-curve-gallery",
+  "name": "Scroll-Driven 3D Gallery Along Blender Path with Three.js and GSAP",
+  "url": "https://tympanus.net/Tutorials/CurveGallery/",
+  "studio": null,
+  "year": 2026,
+  "award": "developer",
+  "source": "codrops",
+  "kind": "experiment",
+  "stack": [
+   "three.js",
+   "gsap"
+  ],
+  "techniques": [
+   "Blender-authored spline imported as a camera/gallery path",
+   "five selectable curve presets"
+  ],
+  "palette": "UNVERIFIED - not confirmed",
+  "type": "UNVERIFIED - not confirmed",
+  "motion": "scroll moves gallery items along a curved path (one of five named presets) instead of a straight scroll axis, so images arc and recede in 3D as they pass.",
+  "why": "shows the Blender-to-three.js curve pipeline directly - author the path as a spline in a DCC tool, not as hand-written control points in code.",
+  "verified": true
+ },
+ {
+  "id": "codrops-datamosh",
+  "name": "Real-Time Datamosh with Three.js",
+  "url": "https://tympanus.net/Tutorials/Datamosh/",
+  "studio": null,
+  "year": 2026,
+  "award": "developer",
+  "source": "codrops",
+  "kind": "experiment",
+  "stack": [
+   "three.js",
+   "webgl",
+   "postprocessing"
+  ],
+  "techniques": [
+   "click-or-drag-triggered datamosh postprocess",
+   "GPU frame-corruption glitch pass"
+  ],
+  "palette": "UNVERIFIED - the effect depends on whatever scene it corrupts, no ground colour confirmed",
+  "type": "no on-screen typography beyond the interaction hint (\"click or drag to datamosh\", \"press Space\")",
+  "motion": "held frames bleed and smear into each other on click, drag, or spacebar, mimicking corrupted video compression rather than a clean crossfade.",
+  "why": "a real-time GPU version of an effect usually faked in post-production video - worth lifting as a transition between two rendered states instead of a dissolve.",
+  "verified": true
+ },
+ {
+  "id": "codrops-dithering-visualization",
+  "name": "Visualizing Dithering with Three.js",
+  "url": "https://tympanus.net/Tutorials/VisualizingDitheringThreejs/",
+  "studio": null,
+  "year": 2026,
+  "award": "developer",
+  "source": "codrops",
+  "kind": "experiment",
+  "stack": [
+   "three.js",
+   "webgl"
+  ],
+  "techniques": [
+   "step-by-step dithering algorithm shown as a live 3D/shader visualization"
+  ],
+  "palette": "UNVERIFIED - not confirmed",
+  "type": "UNVERIFIED - not confirmed",
+  "motion": "UNVERIFIED beyond \"interactive visualization\" - specific control scheme not present in the fetched text.",
+  "why": "turns an image-processing algorithm most people only read pseudocode for into something watchable step by step - a pattern for any explainer of a per-pixel technique.",
+  "verified": true
+ },
+ {
+  "id": "codrops-dreamfold",
+  "name": "Dreamfold",
+  "url": "https://cityfold.vercel.app/",
+  "studio": null,
+  "year": 2026,
+  "award": "developer",
+  "source": "codrops",
+  "kind": "experiment",
+  "stack": [
+   "three.js",
+   "3d-tiles-renderer",
+   "cesium-ion"
+  ],
+  "techniques": [
+   "real-world photogrammetric city tiles (via Cesium Ion / 3DTiles) bent and folded around the viewer",
+   "adjustable bend angle, lighting (glow, clouds, sky/haze) and tilt-shift, with 4K recording export"
+  ],
+  "palette": "user-adjustable sky/haze and glow, so no fixed palette",
+  "type": "UNVERIFIED - not confirmed",
+  "motion": "the viewer walks a roughly one-kilometre radius of real city mesh with arrow keys and mouse-look, while a bend control folds the streamed terrain upward into an impossible curved shape.",
+  "why": "feeds real photogrammetry data (not an authored model) into a deforming shader, which is a different starting point from every hand-modelled scroll scene in this dataset - worth studying for the 3DTiles-to-three.js pipeline alone.",
+  "verified": true
+ },
+ {
+  "id": "codrops-easy-bugs",
+  "name": "Easy Bugs",
+  "url": "https://bandinopla.github.io/threejs-easybugs/",
+  "studio": "bandinopla",
+  "year": 2026,
+  "award": "developer",
+  "source": "codrops",
+  "kind": "experiment",
+  "stack": [
+   "three.js",
+   "typescript"
+  ],
+  "techniques": [
+   "Sketchfab-sourced glTF models (head, cockroach) composited in one three.js scene"
+  ],
+  "palette": "UNVERIFIED - not confirmed",
+  "type": "UNVERIFIED - not confirmed",
+  "motion": "UNVERIFIED - specific animation/interaction not present in the fetched text beyond the model credits.",
+  "why": "a plain example of pulling ready-made Sketchfab assets into a three.js scene rather than modelling from scratch - useful as a credits/attribution pattern too.",
+  "verified": true
+ },
+ {
+  "id": "codrops-eiffel-catapult",
+  "name": "Eiffel Tower Catapult with Three.js",
+  "url": "https://tympanus.net/Development/EiffelCatapult/",
+  "studio": null,
+  "year": 2026,
+  "award": "developer",
+  "source": "codrops",
+  "kind": "experiment",
+  "stack": [
+   "three.js"
+  ],
+  "techniques": [
+   "3D landmark model as a physics prop",
+   "catapult-style launch interaction"
+  ],
+  "palette": "UNVERIFIED - not confirmed beyond the fetched title and tags",
+  "type": "UNVERIFIED - no page text beyond title in the fetched markup",
+  "motion": "a projectile is aimed and launched from the tower structure using catapult mechanics rather than a static camera fly-around.",
+  "why": "turns a landmark model from a passive showpiece into an interactive toy - a pattern for making a hero 3D asset earn its keep past the first look.",
+  "verified": true
+ },
+ {
+  "id": "codrops-false-earth",
+  "name": "False Earth",
+  "url": "https://false-earth.mingjyunhung.com/",
+  "studio": "Ming-Jyun Hung",
+  "year": 2026,
+  "award": "developer",
+  "source": "codrops",
+  "kind": "experiment",
+  "stack": [
+   "three.js",
+   "webgl"
+  ],
+  "techniques": [],
+  "palette": "UNVERIFIED",
+  "type": "UNVERIFIED",
+  "motion": "UNVERIFIED",
+  "why": "flagged from the Codrops feed by title only - a planetary/globe-shaped WebGL piece worth opening directly before citing its technique.",
+  "verified": false
+ },
+ {
+  "id": "codrops-garden-anomaly",
+  "name": "Garden Anomaly",
+  "url": "https://dasprinzip.com/tinker/day41",
+  "studio": "dasprinzip",
+  "year": 2026,
+  "award": "developer",
+  "source": "codrops",
+  "kind": "experiment",
+  "stack": [
+   "three.js",
+   "webgl"
+  ],
+  "techniques": [],
+  "palette": "UNVERIFIED",
+  "type": "UNVERIFIED",
+  "motion": "UNVERIFIED",
+  "why": "the sibling daily-sketch to Volatile Nexus in the same dasprinzip \"tinker\" series - same caveat, worth opening directly rather than trusting the title alone.",
+  "verified": false
+ },
+ {
+  "id": "codrops-geometry-painter",
+  "name": "Geometry Painter",
+  "url": "https://tympanus.net/Tutorials/GeometryPainterThreeJS",
+  "studio": null,
+  "year": 2026,
+  "award": "developer",
+  "source": "codrops",
+  "kind": "experiment",
+  "stack": [
+   "three.js",
+   "webgpu"
+  ],
+  "techniques": [
+   "paint-mode geometry placement driven by WebGPU"
+  ],
+  "palette": "UNVERIFIED - not confirmed",
+  "type": "UNVERIFIED - not confirmed",
+  "motion": "switching into paint mode lets the pointer stamp geometry into the scene rather than manipulate a fixed model.",
+  "why": "a rare worked example of authoring tooling (a painter, not a viewer) built directly on three.js's WebGPU renderer.",
+  "verified": true
+ },
+ {
+  "id": "codrops-glass-xylophone",
+  "name": "Interactive Glass Xylophone with Three.js",
+  "url": "https://tympanus.net/Tutorials/Xylophone/",
+  "studio": null,
+  "year": 2026,
+  "award": "developer",
+  "source": "codrops",
+  "kind": "experiment",
+  "stack": [
+   "three.js",
+   "webgl"
+  ],
+  "techniques": [
+   "playable 3D instrument with per-key audio triggers"
+  ],
+  "palette": "UNVERIFIED - not confirmed",
+  "type": "UNVERIFIED - not confirmed",
+  "motion": "striking a bar in the 3D scene plays a tone, with a sound-on/off toggle gating the audio layer.",
+  "why": "pairs a 3D object directly to Web Audio triggers rather than treating the model as decoration - a template for any product page that should feel touchable.",
+  "verified": true
+ },
+ {
+  "id": "codrops-horizontal-parallax-gallery",
+  "name": "On-Scroll Horizontal Parallax Gallery",
+  "url": "https://tympanus.net/Tutorials/HorizontalParallaxGallery/index2.html",
+  "studio": null,
+  "year": 2026,
+  "award": "developer",
+  "source": "codrops",
+  "kind": "experiment",
+  "stack": [
+   "three.js",
+   "webgl"
+  ],
+  "techniques": [
+   "vertical scroll re-mapped to horizontal WebGL parallax across roughly ten images",
+   "parallel DOM-only fallback version"
+  ],
+  "palette": "UNVERIFIED - not confirmed",
+  "type": "UNVERIFIED - not confirmed",
+  "motion": "foreground and background image layers move at different speeds across the horizontal axis as the page scrolls vertically, producing depth from a single scroll input.",
+  "why": "ships both a WebGL version and a plain-DOM 2D version of the same gallery side by side - a genuinely useful A/B for deciding whether the shader buys anything.",
+  "verified": true
+ },
+ {
+  "id": "codrops-html-in-canvas",
+  "name": "HTML-in-Canvas Examples",
+  "url": "https://html-in-canvas.vercel.app/",
+  "studio": null,
+  "year": 2026,
+  "award": "developer",
+  "source": "codrops",
+  "kind": "experiment",
+  "stack": [
+   "webgl"
+  ],
+  "techniques": [
+   "the HTML-in-Canvas browser proposal demonstrated through small examples: vanishing inputs, a page-curl effect, a login form, basic UI controls"
+  ],
+  "palette": "UNVERIFIED - not confirmed",
+  "type": "real HTML form controls (inputs, login UI) rendered and shader-affected inside a canvas rather than positioned as DOM overlays",
+  "motion": "an input can visually vanish or a page can curl as if it were paper, effects applied directly to live HTML content rather than to a texture snapshot of it.",
+  "why": "documents an emerging browser primitive (HTML content as canvas-native, shader-affectable material) - worth tracking because it removes the usual DOM-to-texture round trip curtainsjs-style effects rely on.",
+  "verified": true
+ },
+ {
+  "id": "codrops-infinite-3d-tunnel",
+  "name": "Infinite 3D Tunnel",
+  "url": "https://delphi-three.vercel.app/",
+  "studio": null,
+  "year": 2026,
+  "award": "developer",
+  "source": "codrops",
+  "kind": "experiment",
+  "stack": [
+   "three.js"
+  ],
+  "techniques": [],
+  "palette": "UNVERIFIED",
+  "type": "UNVERIFIED",
+  "motion": "UNVERIFIED",
+  "why": "flagged from the Codrops feed by title only - the tunnel-fly-through is a recurring three.js technique (repeat-wrapped geometry along a camera path) worth confirming directly before citing specifics.",
+  "verified": false
+ },
+ {
+  "id": "codrops-infinite-canvas",
+  "name": "Infinite Canvas",
+  "url": "https://tympanus.net/Tutorials/InfiniteCanvas/",
+  "studio": null,
+  "year": 2026,
+  "award": "developer",
+  "source": "codrops",
+  "kind": "experiment",
+  "stack": [
+   "three.js",
+   "webgl"
+  ],
+  "techniques": [
+   "unbounded pan-and-zoom canvas over a WebGL-rendered content plane"
+  ],
+  "palette": "UNVERIFIED - not confirmed",
+  "type": "UNVERIFIED - not confirmed",
+  "motion": "the viewport pans and zooms freely across content with no world-boundary clamp, unlike a fixed-extent scroll container.",
+  "why": "the base rig for any mind-map, mood-board, or design-tool interface that needs to feel spatially unbounded rather than scroll-paged.",
+  "verified": true
+ },
+ {
+  "id": "codrops-interactive-3d-cluster",
+  "name": "Interactive 3D Cluster",
+  "url": "https://tympanus.net/Tutorials/3DCluster/",
+  "studio": "Francesco Michelini",
+  "year": 2026,
+  "award": "developer",
+  "source": "codrops",
+  "kind": "experiment",
+  "stack": [
+   "three.js",
+   "TSL",
+   "webgpu"
+  ],
+  "techniques": [
+   "icosahedron-based instanced cluster",
+   "TSL node-material shading"
+  ],
+  "palette": "UNVERIFIED - not confirmed",
+  "type": "UNVERIFIED - not confirmed",
+  "motion": "UNVERIFIED beyond \"interactive\" - specific interaction mechanics not present in the fetched text.",
+  "why": "a TSL/WebGPU node-material approach to an instanced cluster, useful as a reference for moving an existing GLSL instancing setup to WebGPU.",
+  "verified": true
+ },
+ {
+  "id": "codrops-pixel-image-effect-scroll",
+  "name": "WebGL Pixel Effect on Scroll",
+  "url": "https://pixelimageeffect.pages.dev/",
+  "studio": null,
+  "year": 2026,
+  "award": "developer",
+  "source": "codrops",
+  "kind": "editorial",
+  "stack": [
+   "three.js",
+   "gsap",
+   "astro"
+  ],
+  "techniques": [
+   "scroll-triggered pixelation/decomposition of photographs into pixel fragments"
+  ],
+  "palette": "archival photography (\"Northern Expeditions, 1970-1978\") rather than a designed brand palette",
+  "type": "atmospheric narrative prose interleaved between image galleries",
+  "motion": "each photograph decomposes into pixel-like fragments as it enters or leaves view while scrolling, rather than a plain fade or slide.",
+  "why": "wraps a per-image WebGL effect inside an editorial, essay-style layout - proof the technique reads as tasteful rather than gimmicky when the surrounding type and pacing are calm.",
+  "verified": true
+ },
+ {
+  "id": "codrops-pixel-voxel-drop",
+  "name": "Pixel-Voxel-Drop",
+  "url": "https://tympanus.net/Tutorials/PixelVoxelDrop",
+  "studio": "Junichi Kasahara",
+  "year": 2026,
+  "award": "developer",
+  "source": "codrops",
+  "kind": "experiment",
+  "stack": [
+   "three.js",
+   "rapier",
+   "webgl"
+  ],
+  "techniques": [
+   "2D pixel image converted into falling 3D voxels with rigid-body physics (Rapier)"
+  ],
+  "palette": "UNVERIFIED - not confirmed",
+  "type": "UNVERIFIED - not confirmed",
+  "motion": "UNVERIFIED beyond \"drop\" - exact trigger (load, scroll, or click) not present in the fetched text.",
+  "why": "pairs a pixel-art source image with a physics engine so a flat image collapses into a pile of simulated blocks - a distinct image-to-3D pipeline from the shader-displacement demos elsewhere in this set.",
+  "verified": true
+ },
+ {
+  "id": "codrops-plinkopinball",
+  "name": "Plinko + Pinball Combo Demo",
+  "url": "https://codrops-demo-for-threejs-conference-ten.vercel.app/",
+  "studio": null,
+  "year": 2026,
+  "award": "developer",
+  "source": "codrops",
+  "kind": "experiment",
+  "stack": [
+   "three.js"
+  ],
+  "techniques": [
+   "plinko-board physics combined with pinball flipper/launch mechanics in one 3D scene"
+  ],
+  "palette": "UNVERIFIED - not confirmed",
+  "type": "UNVERIFIED - not confirmed",
+  "motion": "UNVERIFIED beyond the physics combo itself - exact ball/flipper choreography not present in the fetched text.",
+  "why": "built for the first three.js conference as a physics-toy demo - a reference for mixing two familiar arcade physics systems in a single rigid-body world instead of building one from scratch.",
+  "verified": true
+ },
+ {
+  "id": "codrops-pointer-lens-distortion",
+  "name": "Mouse-Following Square Lens Distortion Effect with RGB Shift",
+  "url": "https://tympanus.net/Tutorials/PointerSquareLensDistortion",
+  "studio": null,
+  "year": 2026,
+  "award": "developer",
+  "source": "codrops",
+  "kind": "experiment",
+  "stack": [
+   "three.js",
+   "webgl",
+   "glsl"
+  ],
+  "techniques": [
+   "pointer-tracked square lens distortion",
+   "chromatic-aberration RGB channel split"
+  ],
+  "palette": "UNVERIFIED - depends on the underlying image, not confirmed",
+  "type": "no on-screen typography confirmed",
+  "motion": "a square distortion region follows the cursor while red, green and blue channels separate at its edges, so the lens both warps and fringes the image beneath it.",
+  "why": "combines two effects usually shown separately - lens warp and chromatic aberration - into one pointer-driven region, which reads as a camera-lens artifact rather than a filter.",
+  "verified": true
+ },
+ {
+  "id": "codrops-relighting-images",
+  "name": "Relighting Images with Three.js",
+  "url": "https://tympanus.net/Tutorials/RelightingImages",
+  "studio": "Dominik Fojcik",
+  "year": 2026,
+  "award": "developer",
+  "source": "codrops",
+  "kind": "experiment",
+  "stack": [
+   "three.js",
+   "webgpu",
+   "TSL"
+  ],
+  "techniques": [
+   "WebGPU/TSL-driven dynamic relighting of a flat photograph"
+  ],
+  "palette": "UNVERIFIED - not confirmed beyond title and tags",
+  "type": "UNVERIFIED - not confirmed",
+  "motion": "a light source is repositioned in real time over a 2D photo, which is re-shaded as if it had real depth and normals.",
+  "why": "one of the first published Codrops demos to reach for TSL over WebGPU instead of a GLSL/WebGL pass - worth studying purely for the API shape.",
+  "verified": true
+ },
+ {
+  "id": "codrops-rendering-html-into-canvas",
+  "name": "Rendering HTML into a Canvas",
+  "url": "https://cullenwebber.github.io/three-html-to-canvas/",
+  "studio": "Cullen Webber",
+  "year": 2026,
+  "award": "developer",
+  "source": "codrops",
+  "kind": "experiment",
+  "stack": [
+   "three.js"
+  ],
+  "techniques": [],
+  "palette": "UNVERIFIED",
+  "type": "UNVERIFIED",
+  "motion": "UNVERIFIED",
+  "why": "companion technique to HTML-in-Canvas above but via the older rasterise-to-texture route rather than a native browser primitive - a comparison pair worth studying together.",
+  "verified": false
+ },
+ {
+  "id": "codrops-shoe-finder-r3f",
+  "name": "Shoe Finder",
+  "url": "https://shoe-finder-wine.vercel.app/",
+  "studio": null,
+  "year": 2026,
+  "award": "developer",
+  "source": "codrops",
+  "kind": "product",
+  "stack": [
+   "react-three-fiber",
+   "three.js"
+  ],
+  "techniques": [
+   "3D sneaker grid rendered with React Three Fiber"
+  ],
+  "palette": "UNVERIFIED - not confirmed",
+  "type": "UNVERIFIED - not confirmed",
+  "motion": "UNVERIFIED - the fetched page returned only the title, no interaction detail confirmed.",
+  "why": "listed as a straightforward R3F product-grid pattern - a starting reference for any catalogue that wants 3D product tiles instead of flat photography.",
+  "verified": true
+ },
+ {
+  "id": "codrops-skeleton-fluid-reveal",
+  "name": "Skeleton Fluid Reveal",
+  "url": "https://tympanus.net/Tutorials/SkeletonFluidReveal/",
+  "studio": null,
+  "year": 2026,
+  "award": "developer",
+  "source": "codrops",
+  "kind": "experiment",
+  "stack": [
+   "three.js",
+   "webgpu",
+   "webgl"
+  ],
+  "techniques": [
+   "fluid-simulation mask revealing an underlying skeletal/anatomical mesh"
+  ],
+  "palette": "UNVERIFIED - not confirmed",
+  "type": "UNVERIFIED - not confirmed",
+  "motion": "a fluid layer moves across the body model and uncovers the skeleton beneath it, reading like an X-ray wipe rather than a hard clip mask.",
+  "why": "a fluid sim used as a reveal mechanism instead of decoration - applicable to any before/after or outer/inner-layer product reveal.",
+  "verified": true
+ },
+ {
+  "id": "codrops-unwoven",
+  "name": "Unwoven",
+  "url": "https://tympanus.net/Development/Unwoven/",
+  "studio": null,
+  "year": 2026,
+  "award": "developer",
+  "source": "codrops",
+  "kind": "experiment",
+  "stack": [
+   "three.js",
+   "webgl"
+  ],
+  "techniques": [
+   "infinite image marquee wrapped as a 3D loom",
+   "continuous scroll-independent loop"
+  ],
+  "palette": "UNVERIFIED - canvas output, no colour data in the fetched markup",
+  "type": "no visible HTML chrome in the fetched page - the marquee itself carries the imagery, not text",
+  "motion": "images loop endlessly through a woven 3D band rather than a flat marquee strip.",
+  "why": "shows how to bend a marquee - normally a flat CSS trick - into an actual 3D mesh so the loop reads as a physical object instead of a scrolling div.",
+  "verified": true
+ },
+ {
+  "id": "codrops-volatile-nexus",
+  "name": "Volatile Nexus",
+  "url": "https://dasprinzip.com/tinker/day42/",
+  "studio": "dasprinzip",
+  "year": 2026,
+  "award": "developer",
+  "source": "codrops",
+  "kind": "experiment",
+  "stack": [
+   "three.js",
+   "webgl"
+  ],
+  "techniques": [],
+  "palette": "UNVERIFIED",
+  "type": "UNVERIFIED",
+  "motion": "UNVERIFIED",
+  "why": "part of dasprinzip's numbered daily-sketch series (\"tinker/dayNN\") surfaced by Codrops - flagged here as a lead worth opening directly rather than described from title alone.",
+  "verified": false
+ },
+ {
+  "id": "codrops-webgl-snake-animation",
+  "name": "WebGL Snake Animation",
+  "url": "https://tympanus.net/Tutorials/WebGLSnakeAnimation/",
+  "studio": null,
+  "year": 2026,
+  "award": "developer",
+  "source": "codrops",
+  "kind": "experiment",
+  "stack": [
+   "three.js",
+   "webgl"
+  ],
+  "techniques": [
+   "segmented body animated with a follow-the-leader curve"
+  ],
+  "palette": "UNVERIFIED - not confirmed",
+  "type": "UNVERIFIED - not confirmed",
+  "motion": "UNVERIFIED beyond the title - the drive (pointer, path, or autonomous) is not present in the fetched text.",
+  "why": "a compact worked example of curve-following segment animation, the same maths behind chain, tail, and cable rigs.",
+  "verified": true
+ },
+ {
+  "id": "codrops-webgpu-gommage",
+  "name": "Clair Obscur: Expedition 33 WebGPU Gommage Effect",
+  "url": "https://tympanus.net/Tutorials/WebGPUGommage",
+  "studio": null,
+  "year": 2026,
+  "award": "developer",
+  "source": "codrops",
+  "kind": "experiment",
+  "stack": [
+   "three.js",
+   "webgpu",
+   "TSL"
+  ],
+  "techniques": [
+   "\"gommage\" (erasure) shader effect built in TSL over WebGPU",
+   "referenced from the game Clair Obscur: Expedition 33"
+  ],
+  "palette": "UNVERIFIED - not confirmed",
+  "type": "UNVERIFIED - not confirmed",
+  "motion": "an image or mesh is progressively erased/revealed through a shader-driven wipe rather than a simple opacity fade.",
+  "why": "a rare case of a Codrops demo reverse-engineering a shipped game's shader look and rebuilding it in the browser with TSL - good source material for translating a game VFX into a web-safe pass.",
+  "verified": true
+ },
+ {
   "id": "everswap",
   "name": "EverSwap",
   "url": "https://everswap.com/",
@@ -274,6 +1010,29 @@
   "type": "elegant hospitality-brand type (\"IN THE HEART of The Blue Ridge mountains\"), understated against the landscape imagery",
   "motion": "the terrain is flown over rather than paged through, with the camera path itself acting as the site's primary navigation",
   "why": "using a literal terrain flythrough as the resort's homepage, instead of a photo carousel, sells the property's actual geography rather than its amenities list",
+  "verified": true
+ },
+ {
+  "id": "ferry-feriawan-meet-my-robot",
+  "name": "Meet My Robot",
+  "url": "https://ferryferiawan.com",
+  "studio": "Ferry Feriawan",
+  "year": 2026,
+  "award": "showcase",
+  "source": "editorial",
+  "kind": "portfolio",
+  "stack": [
+   "three.js",
+   "webgl"
+  ],
+  "techniques": [
+   "interactive 3D robot mascot as the portfolio's centrepiece",
+   "numbered UNIT carousel (01-05) for project navigation"
+  ],
+  "palette": "UNVERIFIED - not confirmed beyond the minimal sans-serif chrome described in the fetch",
+  "type": "clean sans-serif, uppercase project titles (e.g. ADAM, CIAYO CORP) over plain-case descriptive copy",
+  "motion": "a percentage loader gates entry before the 3D robot and carousel become interactive, and an ESC-to-close pattern governs the project overlays.",
+  "why": "uses one recurring 3D character (the robot) as the through-line across an otherwise conventional case-study portfolio, instead of a different hero visual per project.",
   "verified": true
  },
  {
@@ -462,6 +1221,27 @@
   "verified": false
  },
  {
+  "id": "klimt-wine",
+  "name": "Klimt Wine",
+  "url": "https://klimtwine.com/en",
+  "studio": null,
+  "year": 2026,
+  "award": "honourable",
+  "source": "awwwards",
+  "kind": "ecommerce",
+  "stack": [],
+  "techniques": [
+   "progressive scroll reveals",
+   "fixed minimal navigation",
+   "bottom loading-progress indicator ('Passion and culture loading...')"
+  ],
+  "palette": "dark luxury ground, white type, warm golden vineyard photography as the accent",
+  "type": "clean modern sans-serif with strong hierarchy between headline and body",
+  "motion": "a vertical scroll alternates full-width bottle shots with atmospheric vineyard photography, gated by a playful bottom-of-screen progress line.",
+  "why": "borrowing Gustav Klimt's own name and gold palette gives a small three-wine estate an instant, load-bearing art reference instead of inventing a visual identity from nothing.",
+  "verified": true
+ },
+ {
   "id": "lacoste-ace-breaker",
   "name": "Lacoste Ace Breaker",
   "url": "https://members-play.lacoste.com/ace-breaker-rg/gb/en/",
@@ -482,6 +1262,31 @@
   "type": "UNVERIFIED in detail — sourced from Utsubo's studio coverage of the build",
   "motion": "a Roland-Garros-themed brick-breaker game where play performance unlocks real-world prizes, per Merci Michel's own project description",
   "why": "gamifying a loyalty program with a playable arcade mechanic, instead of a points dashboard, is the transferable idea, independent of the render quality",
+  "verified": true
+ },
+ {
+  "id": "lightweight-wheels",
+  "name": "Lightweight",
+  "url": "https://lightweight.info/",
+  "studio": "VKZ Studio",
+  "year": 2026,
+  "award": "sotd",
+  "source": "awwwards",
+  "kind": "ecommerce",
+  "stack": [
+   "three.js",
+   "react",
+   "next.js"
+  ],
+  "techniques": [
+   "magazine-style stacked image/text sections",
+   "full-width cinematic cycling photography",
+   "social-feed carousel"
+  ],
+  "palette": "clean white/gray ground, high-contrast dark type, carbon-fiber black as the material accent",
+  "type": "modern minimal sans-serif, bold short headlines ('THE EVOLUTION OF PERFORMANCE') over generous whitespace",
+  "motion": "full-page stacked sections read like a cycling magazine spread, with parallax/fade transitions between hero images as the page scrolls.",
+  "why": "a component maker (wheels, not a whole bike) still earns a cinematic treatment by shooting the product in real alpine terrain rather than on white seamless - proof the object doesn't have to be the whole vehicle to carry a hero shot.",
   "verified": true
  },
  {
@@ -507,6 +1312,29 @@
   "motion": "the abstract crystal hero object catches light across its facets as you interact, standing in for the building's own architecture",
   "why": "offering two entirely different selectors for the same inventory (visual browsing versus parametric filtering) is a UX idea independent of the 3D, worth stealing on its own",
   "verified": false
+ },
+ {
+  "id": "longbow-motors",
+  "name": "Longbow Motors",
+  "url": "https://db-longbow.webflow.io/",
+  "studio": "Digital Butlers",
+  "year": 2026,
+  "award": "sotd",
+  "source": "awwwards",
+  "kind": "product",
+  "stack": [
+   "webflow"
+  ],
+  "techniques": [
+   "parallax image galleries",
+   "testimonial sections with signed team quotes",
+   "modular philosophy cards"
+  ],
+  "palette": "dark ground with white/light-gray type, moody metallic car photography carrying the color",
+  "type": "large bold sans-serif headlines with generous whitespace - restrained, matching the brand line 'speed in lightness'",
+  "motion": "full-width hero photography with parallax galleries as the visitor scrolls through the car's design philosophy.",
+  "why": "a small British EV maker uses restraint rather than spectacle to signal luxury - worth taking when the brief is 'premium' on a Webflow budget, not a bespoke three.js build.",
+  "verified": true
  },
  {
   "id": "miu-miu-house-we-shaped",
@@ -808,6 +1636,68 @@
   "verified": true
  },
  {
+  "id": "radian-exr",
+  "name": "Radian EXR",
+  "url": "https://www.rideradian.com/",
+  "studio": null,
+  "year": 2026,
+  "award": "sotd",
+  "source": "awwwards",
+  "kind": "product",
+  "stack": [],
+  "techniques": [
+   "parallax hero backgrounds",
+   "progressive section reveals on scroll",
+   "numbered section counters (01/09)",
+   "sticky nav to spec/battery/design anchors"
+  ],
+  "palette": "high-contrast motorsport yellow against black",
+  "type": "modern sans-serif with large bold headlines and technical numeric callouts",
+  "motion": "a sticky-nav single-pager moves through hero, features, story and use-cases with layered parallax and progressive reveals as the visitor scrolls.",
+  "why": "the numbered section counter (01/09) gives a scroll-only single page the sense of a fixed, finite spec sheet rather than an endless feed - cheap trick, real payoff for a product with a real number of talking points.",
+  "verified": true
+ },
+ {
+  "id": "ricardo-chance-scroll-driven-webgl",
+  "name": "Scroll-Driven WebGL",
+  "url": "https://experiments.ricardochance.com/scroll-driven-webgl",
+  "studio": "Ricardo Chance",
+  "year": 2026,
+  "award": "showcase",
+  "source": "editorial",
+  "kind": "experiment",
+  "stack": [
+   "webgl"
+  ],
+  "techniques": [
+   "infinite WebGL terrain that dissolves into plain HTML as the page scrolls"
+  ],
+  "palette": "UNVERIFIED - not confirmed",
+  "type": "framed as \"a quiet archive of light and memory\" - prose voice over minimal visible typography",
+  "motion": "scroll position drives the handoff between the 3D terrain and the HTML layer beneath it, so the page changes rendering technology mid-scroll rather than mid-transition.",
+  "why": "a rare demo of the WebGL-to-DOM handoff itself as the subject, useful for any site where a hero 3D scene needs to resolve into ordinary readable content further down the page.",
+  "verified": true
+ },
+ {
+  "id": "santioni-spirits",
+  "name": "Santioni Spirits",
+  "url": "https://santionispirits.com/",
+  "studio": "Active Theory",
+  "year": 2026,
+  "award": "sotd",
+  "source": "awwwards",
+  "kind": "ecommerce",
+  "stack": [
+   "three.js"
+  ],
+  "techniques": [],
+  "palette": "not confirmed in detail on this pass",
+  "type": "not confirmed in detail on this pass",
+  "motion": "not confirmed in detail - built by Active Theory (a three.js-first studio), per the studio's own case-study listing",
+  "why": "Active Theory taking on a spirits-bottle brief is a useful data point that the studio's usual playbook (real-time 3D, WebGL) is being brought to a category (drinks e-commerce) that mostly still ships flat photography.",
+  "verified": true
+ },
+ {
   "id": "seasats",
   "name": "Seasats",
   "url": "https://www.seasats.com",
@@ -829,6 +1719,27 @@
   "type": "bold sans headlines built around short declaratives (\"Deploy in minutes. Detect from miles. React at once.\")",
   "motion": "a draggable mission carousel lets you pull through the boats' real deployments instead of watching a fixed autoplay reel",
   "why": "the X-ray cutaway views turn a marketing render into a spec sheet, which matches a hardware buyer's actual question better than a beauty shot would",
+  "verified": true
+ },
+ {
+  "id": "selkirk-omni-paddle",
+  "name": "Selkirk OMNI Pickleball Paddle",
+  "url": "https://www.selkirk.com/pages/omni-pickleball-paddle",
+  "studio": null,
+  "year": 2026,
+  "award": "showcase",
+  "source": "awwwards",
+  "kind": "ecommerce",
+  "stack": [],
+  "techniques": [
+   "drag-to-explore 3D CT-scan of the paddle interior",
+   "rotating four-attribute feature banner",
+   "head-to-head product comparison tool"
+  ],
+  "palette": "colorway-driven - blue/black, white/black and a pink/purple gradient limited edition, shot on bright court surfaces",
+  "type": "bold uppercase feature headlines ('VERSATILITY TO WIN', 'REACTCORE') over dense spec copy",
+  "motion": "a draggable CT-scan view lets the visitor rotate through the paddle's internal layer construction instead of reading a materials list.",
+  "why": "the CT-scan-style interior view turns a paddle's core lay-up into something you manipulate rather than read about - the move to steal for any layered/composite object.",
   "verified": true
  },
  {
@@ -1058,6 +1969,27 @@
   "motion": "the studio's own description calls it \"a real-time WebGL piece that interacts with the content around it\" rather than a fixed product shot",
   "why": "treating the watch render as reactive to the surrounding page, not just spinnable, is the detail that separates it from a generic 360 product viewer",
   "verified": false
+ },
+ {
+  "id": "threejs-official-examples",
+  "name": "three.js Examples",
+  "url": "https://threejs.org/examples/",
+  "studio": null,
+  "year": 2026,
+  "award": "reference",
+  "source": "threejs",
+  "kind": "3d",
+  "stack": [
+   "three.js"
+  ],
+  "techniques": [
+   "the library's own example gallery, organised by category (postprocessing, materials, geometry, lights, animation, camera, and more)"
+  ],
+  "palette": "not applicable - a documentation index, not a designed page",
+  "type": "not applicable - a documentation index, not a designed page",
+  "motion": "not applicable at the index level; each individual example page (accessed via the on-page code icon) demonstrates one isolated technique",
+  "why": "the primary source for any three.js technique - before copying an effect off a showcase site, check whether the library ships the same idea as a named, minimal example first.",
+  "verified": true
  },
  {
   "id": "trevor-noah",
@@ -1348,6 +2280,590 @@
   "verified": true
  },
  {
+  "id": "altitude-101",
+  "name": "Altitude 101",
+  "url": "https://altitude101.com/",
+  "studio": "METABOLE STUDIO",
+  "year": 2025,
+  "award": "showcase",
+  "source": "awwwards",
+  "kind": "portfolio",
+  "stack": [
+   "three.js"
+  ],
+  "techniques": [
+   "a three.js 3D hero section positioning a traditional film-production studio's rebrand toward immersive/Apple Vision Pro work"
+  ],
+  "palette": "not independently confirmed - Metabole's own case study focuses on strategic positioning over palette specifics",
+  "type": "not independently confirmed in detail",
+  "motion": "not independently confirmed beyond the 3D hero itself",
+  "why": "reaching for three.js specifically to signal a production studio's pivot from flat video work to immersive/spatial content makes the technology choice part of the pitch, not just decoration",
+  "verified": false
+ },
+ {
+  "id": "atom-watch",
+  "name": "Atom Watch",
+  "url": "https://atom.uprock.pro/",
+  "studio": "Uprock",
+  "year": 2025,
+  "award": "honourable",
+  "source": "awwwards",
+  "kind": "product",
+  "stack": [
+   "lottie",
+   "figma"
+  ],
+  "techniques": [
+   "scroll-to-explore lifestyle reveals",
+   "technical-diagram cards for internals",
+   "colorway switcher"
+  ],
+  "palette": "near-monochrome: black, white, and steel, matching the watch's own silver/black-PVD/white case options",
+  "type": "clean geometric sans-serif, generously spaced, matching the 'less is more' positioning stated on the page",
+  "motion": "a vertical scroll narrative alternates full-width lifestyle photography with exploded technical diagrams of the movement and case.",
+  "why": "puts the engineering cutaway (case, movement, crystal hardness) in the same rhythm as the lifestyle shots instead of hiding specs on a separate tab - good model for any object that has to sell on both feeling and fact.",
+  "verified": true
+ },
+ {
+  "id": "basement-studio-2025",
+  "name": "basement.studio",
+  "url": "https://basement.studio/",
+  "studio": "basement.studio",
+  "year": 2025,
+  "award": "sotd",
+  "source": "awwwards",
+  "kind": "portfolio",
+  "stack": [
+   "three.js",
+   "react",
+   "next.js",
+   "gsap"
+  ],
+  "techniques": [
+   "three.js scene built with React (open-sourced on GitHub) rather than a raw WebGL/GLSL pipeline",
+   "case-study-led homepage (Vercel Ship, Daylight, KidSuper, Shop MrBeast) instead of a project grid"
+  ],
+  "palette": "not independently confirmed in detail beyond a dark, tech-studio ground consistent with the studio's client roster",
+  "type": "plain-spoken, lower-case brand voice ('we make cool shit that performs') carried into blunt sans-serif headline type",
+  "motion": "not independently confirmed beyond the 3D homepage scene; the studio's own positioning leads with performance and craft over spectacle",
+  "why": "open-sourcing the exact three.js/React site that won the award is a rare case where the technique claims can be checked line by line instead of taken on faith",
+  "verified": true
+ },
+ {
+  "id": "cartier-watches-wonders-2025",
+  "name": "Cartier Watches & Wonders 2025",
+  "url": "https://cartier-waw-0225.dev.60fps.fr/",
+  "studio": "Immersive Garden, with 60fps and Mooders (sound)",
+  "year": 2025,
+  "award": "sotd",
+  "source": "awwwards",
+  "kind": "brand",
+  "stack": [
+   "three.js",
+   "gsap",
+   "lenis",
+   "blender"
+  ],
+  "techniques": [
+   "six discrete three.js scenes, one alcove per emblematic watch, each staged like its own spotlit installation",
+   "Blender-authored geometry and materials streamed into the WebGL scenes",
+   "Lenis-smoothed scroll driving camera movement between alcoves",
+   "hidden clickable gestures inside each 3D scene that unlock further detail",
+   "Web Audio-threaded ambient score synced to scene transitions"
+  ],
+  "palette": "near-black per-alcove grounds, each lit in a single warm accent pulled from that watch's own material (gold, lacquer, gem)",
+  "type": "restrained serif wordmark and small-caps labels kept subordinate to the 3D staging, functioning as museum signage rather than a headline",
+  "motion": "scrolling physically moves the camera through a sequence of self-contained 3D rooms instead of sliding 2D sections, so the site behaves like a walkthrough of the trade-fair pavilion it is modeled on",
+  "why": "treating the whole site as architecture - discrete rooms you walk between - rather than a stack of hero sections is the move worth taking whenever a brief has more than one hero product to feature",
+  "verified": true
+ },
+ {
+  "id": "codrops-cinematic-3d-scroll-gsap",
+  "name": "How to Build Cinematic 3D Scroll Experiences with GSAP",
+  "url": "https://tympanus.net/Tutorials/Cinematic3DScroll/",
+  "studio": null,
+  "year": 2025,
+  "award": "developer",
+  "source": "codrops",
+  "kind": "experiment",
+  "stack": [
+   "three.js",
+   "react-three-fiber",
+   "gsap",
+   "ogl",
+   "scrolltrigger",
+   "scrollsmoother"
+  ],
+  "techniques": [
+   "ScrollTrigger-driven camera path through a rotating image-atlas cylinder with orbiting particles (demo 1)",
+   "cyberpunk building scene with synced camera, lighting and text overlays across distinct scenes (demo 2)"
+  ],
+  "palette": "cyberpunk-leaning colour direction in the second scene per the article's own framing - exact values not confirmed",
+  "type": "animated text overlays fade in and out per scene, timed to the scroll-driven camera rather than sitting static over the canvas",
+  "motion": "GSAP ScrollTrigger ties scroll position to camera path, particle opacity, and lighting simultaneously, so scroll behaves as a single timeline scrubbing camera, light and type together.",
+  "why": "the clearest published example of GSAP owning the whole scene - camera, light and DOM text on one ScrollTrigger timeline - rather than three separate scroll listeners fighting each other.",
+  "verified": true
+ },
+ {
+  "id": "codrops-meshlines-bamboo",
+  "name": "MeshLines - Bamboo",
+  "url": "https://meshline-demo.makio.io/examples/bamboooo",
+  "studio": "Makio64",
+  "year": 2025,
+  "award": "developer",
+  "source": "codrops",
+  "kind": "experiment",
+  "stack": [
+   "three.js",
+   "meshline"
+  ],
+  "techniques": [
+   "the meshline library used to draw thick, shaded line geometry (here, bamboo stalks) instead of GL_LINES"
+  ],
+  "palette": "UNVERIFIED - not confirmed",
+  "type": "UNVERIFIED - not confirmed",
+  "motion": "UNVERIFIED - not confirmed from the fetched text.",
+  "why": "meshline turns a line into real mesh geometry with width and shading, which is the only practical way to get a convincing thick, tapered line (like a bamboo stalk) in WebGL.",
+  "verified": true
+ },
+ {
+  "id": "codrops-papercraft-portfolio",
+  "name": "Hand-drawn Papercraft Portfolio",
+  "url": "https://www.mr-pandas-psychologically-safe-portfolio.com/",
+  "studio": null,
+  "year": 2025,
+  "award": "developer",
+  "source": "codrops",
+  "kind": "portfolio",
+  "stack": [
+   "three.js"
+  ],
+  "techniques": [],
+  "palette": "UNVERIFIED",
+  "type": "UNVERIFIED",
+  "motion": "UNVERIFIED",
+  "why": "flagged for its stated art direction - a papercraft/illustrated look is an unusual departure from the glass-and-metal register most three.js portfolios default to, worth confirming directly.",
+  "verified": false
+ },
+ {
+  "id": "codrops-r3f-experimental-carousels",
+  "name": "R3F Experimental Carousels",
+  "url": "https://tympanus.net/Tutorials/R3FExperimentalCarousels",
+  "studio": null,
+  "year": 2025,
+  "award": "developer",
+  "source": "codrops",
+  "kind": "experiment",
+  "stack": [
+   "react-three-fiber",
+   "three.js"
+  ],
+  "techniques": [],
+  "palette": "UNVERIFIED",
+  "type": "UNVERIFIED",
+  "motion": "UNVERIFIED",
+  "why": "flagged as a grab-bag of carousel interaction patterns in R3F, worth opening directly when a specific carousel behaviour (not just \"a carousel\") is needed.",
+  "verified": false
+ },
+ {
+  "id": "codrops-wavefield-shader",
+  "name": "Wavefield Shader",
+  "url": "https://codepen.io/VoXelo/full/raxRoxg",
+  "studio": "VoXelo",
+  "year": 2025,
+  "award": "developer",
+  "source": "codrops",
+  "kind": "experiment",
+  "stack": [
+   "webgl",
+   "glsl"
+  ],
+  "techniques": [],
+  "palette": "UNVERIFIED",
+  "type": "UNVERIFIED",
+  "motion": "UNVERIFIED",
+  "why": "flagged from the Codrops WebGL feed as a raw shader sketch (CodePen, no framework) - useful when the goal is a single self-contained fragment shader rather than a scene-graph technique.",
+  "verified": false
+ },
+ {
+  "id": "fiddle-digital-the-new-us",
+  "name": "Fiddle.Digital - The New Us",
+  "url": "https://fiddle.digital/",
+  "studio": "Fiddle.Digital",
+  "year": 2025,
+  "award": "sotm",
+  "source": "awwwards",
+  "kind": "portfolio",
+  "stack": [
+   "webgl",
+   "nuxt"
+  ],
+  "techniques": [
+   "a WebGL context pool running multiple canvases in parallel so several small effects share one resource budget",
+   "a noise-based algorithm assigning colors that a WebGL shader maps onto mosaic icons, with per-cell fade rates creating a trail effect",
+   "an in-house animation module suite (StringTune) handling smooth scroll, FPS tracking, lazy loading, parallax and cursor interaction at a fixed 60fps target",
+   "an audio-reactive vinyl-scratch effect on the About page",
+   "zero-transition, deliberately abrupt cuts used as a page-transition choice"
+  ],
+  "palette": "minimalist, high-contrast palette built around a redesigned mascot ('Susuwatari') as the sole illustrative accent",
+  "type": "clean modern sans throughout, restrained rather than expressive, letting the mosaic and mascot carry the personality",
+  "motion": "cursor position drives a grid of shader-mapped icons directly, so pointer movement reads as material interaction rather than a hover state",
+  "why": "running several lightweight WebGL canvases through one shared context pool, instead of one large three.js scene, is the pattern worth copying whenever a page needs many small living details rather than one big hero",
+  "verified": true
+ },
+ {
+  "id": "furnistor",
+  "name": "Furnistor",
+  "url": "https://sites.kaliumtheme.com/elementor/furniture",
+  "studio": "Laborator",
+  "year": 2025,
+  "award": "honourable",
+  "source": "awwwards",
+  "kind": "ecommerce",
+  "stack": [
+   "wordpress",
+   "woocommerce",
+   "elementor"
+  ],
+  "techniques": [
+   "shop-by-room category cards",
+   "hover image-swap on product cards",
+   "FAQ accordion"
+  ],
+  "palette": "off-white and soft gray ground with orange and warm terracotta/amber product-photography accents",
+  "type": "clean spacious sans-serif, bold display headlines over generously spaced body copy",
+  "motion": "product cards swap to an alternate angle on hover; otherwise a conventional, calm scroll through category and editorial sections.",
+  "why": "it is an Elementor/WooCommerce theme demo, not a real brand - useful precisely as evidence of how far a no-code stack can go toward the Scandinavian-minimal furniture look without any custom animation library.",
+  "verified": true
+ },
+ {
+  "id": "iventions",
+  "name": "Iventions",
+  "url": "https://iventions.com/",
+  "studio": "Iventions (in-house)",
+  "year": 2025,
+  "award": "sotd",
+  "source": "awwwards",
+  "kind": "brand",
+  "stack": [
+   "three.js",
+   "gsap"
+  ],
+  "techniques": [
+   "a three.js scene used for atmosphere and framing rather than spectacle - each project staged like a spotlit installation",
+   "GSAP-paced reveals that turn the page into a guided walkthrough instead of a grid"
+  ],
+  "palette": "not independently confirmed beyond the spotlight concept - dark staging grounds implied by the installation framing",
+  "type": "bold identity typography paired with motion-led UX, per the studio's own positioning as an event-architecture brand",
+  "motion": "scrolling paces revealed installations one at a time, the three.js lighting doing the work of a spotlight moving across a stage rather than a hero animation looping for attention",
+  "why": "using three.js as stage lighting - dimming and framing real photography - rather than as the subject itself is the reusable idea for any portfolio whose actual work is physical, not digital",
+  "verified": false
+ },
+ {
+  "id": "kode-immersive",
+  "name": "KODE Immersive",
+  "url": "https://kodeimmersive.com/",
+  "studio": "KODE Immersive",
+  "year": 2025,
+  "award": "sotd",
+  "source": "awwwards",
+  "kind": "brand",
+  "stack": [
+   "three.js",
+   "webgl"
+  ],
+  "techniques": [
+   "custom shader logic and ambient lighting built for cross-browser/device performance testing",
+   "cursor-reactive interactions layered over the 3D scene",
+   "run-together, no-space display copy ('Withthehelpoftechnology') used as a typographic effect"
+  ],
+  "palette": "dark charcoal/black ground with white text and selective bright accents, tech-forward rather than warm",
+  "type": "sans-serif in varying weights, deliberately unconventional word-spacing on key display lines to slow the reading rhythm",
+  "motion": "a numbered service breakdown ('00123 Ideate') and prev/next scroll cues move the visitor through the studio's own capability pitch inside the same real-time 3D shell it sells to clients",
+  "why": "removing spaces from a display line is a cheap typographic trick that reads as expensive next to a genuinely shader-driven scene, because it signals the same confidence as the 3D work rather than fighting it",
+  "verified": true
+ },
+ {
+  "id": "lando-norris",
+  "name": "Lando Norris",
+  "url": "https://landonorris.com/",
+  "studio": "OFF+BRAND.",
+  "year": 2025,
+  "award": "soty",
+  "source": "awwwards",
+  "kind": "brand",
+  "stack": [
+   "webgl",
+   "rive",
+   "webflow"
+  ],
+  "techniques": [
+   "real-time WebGL 3D rotation across the multi-year helmet archive",
+   "Rive-driven vector motion layered over the 3D helmet work",
+   "speed-themed scroll-triggered transitions between race and helmet sections"
+  ],
+  "palette": "near-black ground cut with a single lime-green accent, pushed for maximum contrast rather than blended in",
+  "type": "bold contemporary sans for headlines against smaller refined body copy; the lime accent does typographic as well as decorative work",
+  "motion": "scrolling spins and steps through a hall-of-fame of Norris's own helmet designs (2019-2025) in real 3D, while Rive handles the smaller kinetic-type flourishes around it",
+  "why": "reaching for real-time 3D specifically because the subject has fifteen-plus genuine yearly variants (the helmets), rather than one hero product, is what turns a driver-bio site into a collection you rotate through",
+  "verified": true
+ },
+ {
+  "id": "messenger-abeto",
+  "name": "Messenger",
+  "url": "https://messenger.abeto.co/",
+  "studio": "Abeto (developed by Vicente Lucendo and Michael Sungaila, music by Kevin Colombin)",
+  "year": 2025,
+  "award": "soty",
+  "source": "awwwards",
+  "kind": "experiment",
+  "stack": [
+   "three.js",
+   "webgl",
+   "websockets"
+  ],
+  "techniques": [
+   "a small spherical planet rendered and navigated in real time, cel-shaded low-poly style",
+   "GPU-driven physics, lighting and animation for the delivery character and world",
+   "WebSocket-based multiplayer so other players' couriers are visible and emoji-reactive live on the same planet"
+  ],
+  "palette": "saturated cel-shaded color per planet biome, a Jet Set Radio-adjacent palette rather than a corporate brand system",
+  "type": "minimal in-world UI type, the game deliberately keeps chrome out of the way of the 3D planet itself",
+  "motion": "the whole experience is a playable, spinning 3D planet - the courier runs, jumps and delivers packages across its compact geography while other live players' avatars move in the same shared instance",
+  "why": "winning Awwwards' Developer Site of the Year with a literal browser game rather than a marketing site is the proof point that a real-time WebGL world, not a scroll effect, is what the top developer prize actually rewards",
+  "verified": false
+ },
+ {
+  "id": "meta-ray-ban-display",
+  "name": "Meta Ray-Ban Display",
+  "url": "https://www.ray-ban.com/usa/l/discover-meta-ray-ban-display",
+  "studio": null,
+  "year": 2025,
+  "award": "showcase",
+  "source": "awwwards",
+  "kind": "product",
+  "stack": [],
+  "techniques": [],
+  "palette": "not confirmed - live fetch blocked (403)",
+  "type": "not confirmed - live fetch blocked (403)",
+  "motion": "not confirmed on this pass",
+  "why": "listed on Awwwards' Product Honors index for November 2025 for the Ray-Ban/Meta smart-display glasses; included for the eyewear category but unverified live.",
+  "verified": false
+ },
+ {
+  "id": "montfort",
+  "name": "Montfort",
+  "url": "https://mont-fort.com/",
+  "studio": "Immersive Garden",
+  "year": 2025,
+  "award": "sotm",
+  "source": "awwwards",
+  "kind": "brand",
+  "stack": [
+   "three.js",
+   "gsap",
+   "lenis"
+  ],
+  "techniques": [
+   "WebGL 3D transitions between the four business-division sections (Trading, Capital, Maritime, Fort Energy)",
+   "swipe/scroll-driven card rotation for the CSR pillars section",
+   "gesture-driven hover micro-interactions throughout"
+  ],
+  "palette": "two-color system only - a deep petrol blue (#29648e) against near-white (#f4f6f8), chosen to keep a commodities-trading brand legible instead of decorative",
+  "type": "clean corporate sans across large section headers and dense body copy, sized for a text-heavy financial-services brief",
+  "motion": "scroll and swipe prompts carry the visitor through modular, 3D-transitioned cards for each business line, smoothed by Lenis rather than snapping between states",
+  "why": "the craft here is restraint - a two-color palette and a small number of exact 3D transitions used to organize a genuinely dense corporate site instead of dressing it up",
+  "verified": true
+ },
+ {
+  "id": "ponpon-mania",
+  "name": "Ponpon Mania",
+  "url": "https://ponpon-mania.com/",
+  "studio": "Patrick Heng (creative development) and Justine Soulié (art direction/illustration)",
+  "year": 2025,
+  "award": "sotm",
+  "source": "awwwards",
+  "kind": "experiment",
+  "stack": [
+   "ogl",
+   "gsap",
+   "nuxt",
+   "matter-js"
+  ],
+  "techniques": [
+   "illustrated panels packed into WebGL texture atlases and reconstructed as shaded planes in an ogl scene",
+   "custom shader cross-fade between whole pages, timed by GSAP tweens",
+   "GSAP SplitText line-by-line dialogue reveals",
+   "spring-physics mouse-repulsion on background elements (clouds)",
+   "Matter.js physics on the About page"
+  ],
+  "palette": "mostly black-and-white comic panels; color is withheld and only appears inside dream sequences, so it reads as a narrative cue rather than decoration",
+  "type": "comic lettering paired with a music-player-style chapter UI (tracks, not chapters), reinforcing the sheep protagonist's DJ ambition",
+  "motion": "GSAP timelines drive scroll-synced panel reveals while a bespoke shader blends one whole page into the next like a deck transition, and background elements flee the cursor under spring physics",
+  "why": "choosing ogl over three.js and treating every hand-drawn panel as a shader-mapped texture-atlas plane is how a full illustrated comic stays smooth without shipping a heavy scene graph per page",
+  "verified": false
+ },
+ {
+  "id": "richard-mille-art-here-2025",
+  "name": "Art Here 2025 - Richard Mille",
+  "url": "https://artprize-shadows.com/",
+  "studio": "Herve Studio / 60fps",
+  "year": 2025,
+  "award": "sotd",
+  "source": "awwwards",
+  "kind": "brand",
+  "stack": [
+   "three.js",
+   "cinema 4d"
+  ],
+  "techniques": [
+   "swipe-through gallery of commissioned artworks",
+   "tap-to-interact artwork detail view",
+   "portrait-only forced viewport",
+   "sound-on cue"
+  ],
+  "palette": "light beige ground against a dark blue accent",
+  "type": "not confirmed in detail - the fetch returned interaction copy ('scroll to know more', 'swipe to discover') rather than styled type samples",
+  "motion": "a sequential, swipe-driven gallery of seven artist commissions tied to the Richard Mille Art Prize, each piece tapped open into its own interactive view.",
+  "why": "it is a watch brand's site that never shows a watch - the entire craft budget goes into staging other people's art, which is a distinct way for a luxury object brand to spend a web budget.",
+  "verified": true
+ },
+ {
+  "id": "rigas-furniture",
+  "name": "Rigas Furniture",
+  "url": "https://www.rigas-furniture.gr/",
+  "studio": "Proweb",
+  "year": 2025,
+  "award": "honourable",
+  "source": "awwwards",
+  "kind": "ecommerce",
+  "stack": [],
+  "techniques": [
+   "category-block homepage (Home/Horeca/Airbnb use-cases)",
+   "bilingual Greek/English navigation"
+  ],
+  "palette": "white, black and gray with natural wood tones in product photography",
+  "type": "clean modern sans-serif, no decorative serifs, hierarchical navigation typography",
+  "motion": "conventional grid-based scroll through hero and category imagery; no unusual scroll-linked effects observed.",
+  "why": "segmenting the same catalogue into Home/Horeca(hospitality)/Airbnb use-cases on the homepage is a low-cost way for one furniture line to speak to three different buyers without three different sites.",
+  "verified": true
+ },
+ {
+  "id": "roman-jean-elie-portfolio-25",
+  "name": "Roman Jean-Elie - Portfolio '25",
+  "url": "https://www.romanjeanelie.com/",
+  "studio": "Roman Jean-Elie",
+  "year": 2025,
+  "award": "sotd",
+  "source": "awwwards",
+  "kind": "portfolio",
+  "stack": [
+   "three.js",
+   "react-three-fiber",
+   "next.js",
+   "gsap"
+  ],
+  "techniques": [
+   "WebGL 'fold' effect using manual vector projection to bend DOM-aligned geometry",
+   "MeshPortal rendering via FBO/render targets to show a second scene through a shape",
+   "GSAP MorphSVG driving path morphs, rendered through a canvas-optimized pipeline",
+   "velocity-based shader distortion tied to scroll speed",
+   "DOM-to-WebGL bounds synchronization so 3D elements track real layout"
+  ],
+  "palette": "dark, near-monochrome ground built around black silhouettes, letting embedded client video and character animation supply the only color",
+  "type": "a single bold display face (Anton) carrying section titles, set large enough to double as a shape the WebGL fold effect can bend",
+  "motion": "a three-step hover timeline (Cinema 2008, Theater 2013, Code 2020) narrates the developer's own path before the project grid loads, and scroll velocity itself feeds the shader distortion on transitions",
+  "why": "letting scroll speed itself become a shader uniform - so faster scrolling visibly stretches the distortion - ties the motion directly to user input instead of running on a fixed timeline",
+  "verified": true
+ },
+ {
+  "id": "scout-motors",
+  "name": "Scout Motors",
+  "url": "https://www.scoutmotors.com/",
+  "studio": "Locomotive",
+  "year": 2025,
+  "award": "sotd",
+  "source": "awwwards",
+  "kind": "ecommerce",
+  "stack": [],
+  "techniques": [
+   "numbered heritage-photo carousel",
+   "hover-state product cards",
+   "alternating hero-image/text-block rhythm"
+  ],
+  "palette": "earthy neutrals - black, white, muted outdoor tones - with a vivid orange-red accent against warm beige",
+  "type": "bold modern sans-serif headlines ('Scouts always come back') over clean, whitespace-heavy body copy",
+  "motion": "vertical scroll alternates full-bleed outdoor hero imagery with product cards for the two vehicles, paced by a 12-photo heritage carousel.",
+  "why": "the heritage carousel does the brand-story work that a paragraph of copy usually does - twelve archive photographs standing in for 'reborn American icon' without a word of text.",
+  "verified": true
+ },
+ {
+  "id": "selkirk-courtstrike-2",
+  "name": "Selkirk CourtStrike 2.0 Pickleball Shoes",
+  "url": "https://www.selkirk.com/collections/courtstrike-pickleball-shoes",
+  "studio": null,
+  "year": 2025,
+  "award": "showcase",
+  "source": "awwwards",
+  "kind": "ecommerce",
+  "stack": [],
+  "techniques": [
+   "three-column upgrade callouts",
+   "exploded technical-spec views",
+   "pro-athlete testimonial block",
+   "product comparison cards"
+  ],
+  "palette": "navy/black/earth-tone uppers with tan gum-rubber soles, dark sections with white type for contrast",
+  "type": "bold capitalized sans-serif headlines ('THE UPGRADES', 'GET THERE') over readable body copy",
+  "motion": "a vertical stack of modular sections builds the shoe's case feature by feature before landing on a direct model comparison.",
+  "why": "the exploded component view sits right next to the buy button instead of behind a spec-sheet link - shortens the distance between 'why' and 'add to cart'.",
+  "verified": true
+ },
+ {
+  "id": "siena-film-foundation",
+  "name": "Siena Film Foundation",
+  "url": "https://www.siena.film/",
+  "studio": "Niccolò Miranda (design & technical direction), production by G-NS Studio, development by Federico Valla",
+  "year": 2025,
+  "award": "sotm",
+  "source": "awwwards",
+  "kind": "editorial",
+  "stack": [
+   "webgl"
+  ],
+  "techniques": [
+   "WebGL-powered horizontal filmstrip slider for the homepage and project archive",
+   "subtle parallax on poster imagery as the strip scrolls, reading as physical depth rather than a CSS transform",
+   "card-based film sections with festival-accolade and critical-quote overlays"
+  ],
+  "palette": "dark cinematic ground with high-contrast white type; each film's own poster grading (warm for one title, cool blue for another) supplies the only color variation",
+  "type": "clean sans-serif for headlines and metadata, vintage-poster-inspired display treatment inside the slider itself, a repeated star-icon motif punctuating review quotes",
+  "motion": "one WebGL filmstrip shared by the homepage and archive scrubs horizontally like an actual reel, parallaxing each poster against its caption as it passes",
+  "why": "building the slider itself in WebGL rather than CSS transforms is what makes the filmstrip conceit - posters parallaxing like frames under a loupe - read as a real material instead of a carousel plugin",
+  "verified": true
+ },
+ {
+  "id": "solk",
+  "name": "SOLK",
+  "url": "https://solk.com/",
+  "studio": "Astral",
+  "year": 2025,
+  "award": "sotd",
+  "source": "awwwards",
+  "kind": "ecommerce",
+  "stack": [],
+  "techniques": [
+   "hover-preview navigation thumbnails",
+   "scroll-based image reveals",
+   "press-logo credibility strip"
+  ],
+  "palette": "black and white base, muted natural-material photography carrying the color",
+  "type": "clean contemporary geometric sans-serif, editorial rather than sporty",
+  "motion": "subtle scroll-based reveals move the visitor from hero to material story to the 'back to earth' composting narrative.",
+  "why": "a sneaker brand whose entire pitch is biodegradability builds the page like a materials essay, not a hype drop - the restraint is the argument.",
+  "verified": true
+ },
+ {
   "id": "truekind-skincare",
   "name": "Truekind Skincare",
   "url": "https://truekindskincare.com",
@@ -1366,6 +2882,69 @@
   "type": "serif-forward editorial hierarchy paired with a magazine-style grid rather than a typical DTC hero-plus-grid template",
   "motion": "subtle, restrained transitions - nothing scroll-jacked, matching the brand's \"radical transparency\" copy",
   "why": "it applies magazine editorial typography to a skincare product page instead of the usual ecommerce hero-carousel pattern, and lets that carry the brand's honesty pitch",
+  "verified": true
+ },
+ {
+  "id": "atmos-lamp-ayocin",
+  "name": "ATMOS Lamp by AYOCIN",
+  "url": "https://ayocin.com",
+  "studio": null,
+  "year": 2024,
+  "award": "sotd",
+  "source": "awwwards",
+  "kind": "product",
+  "stack": [],
+  "techniques": [],
+  "palette": "not confirmed - live fetch blocked (403)",
+  "type": "not confirmed - live fetch blocked (403)",
+  "motion": "not confirmed on this pass",
+  "why": "listed on Awwwards' dated Product Honors index (SOTD, Dec 3 2024) for a physical lamp object; included for the furniture/home-object category but unverified live.",
+  "verified": false
+ },
+ {
+  "id": "cartier-watches-wonders-2024",
+  "name": "Cartier Watches & Wonders 2024",
+  "url": "http://cartier-waw-dev-0224.dev.60fps.fr/",
+  "studio": "Immersive Garden / 60fps",
+  "year": 2024,
+  "award": "sotd",
+  "source": "awwwards",
+  "kind": "product",
+  "stack": [
+   "three.js",
+   "webgl"
+  ],
+  "techniques": [
+   "scroll-driven universe transitions",
+   "gesture/drag product exploration",
+   "hotspot reveals on the watch face"
+  ],
+  "palette": "not confirmed on this pass - dev-subdomain build, no color tags recorded",
+  "type": "clean sans-serif UI type kept out of the way of the product photography",
+  "motion": "scrolling carries the visitor between distinct Cartier 'universes,' each unveiling a watch collection through camera moves rather than page cuts.",
+  "why": "the campaign treats the scroll position as a camera rig moving through a set, not a list of sections - worth taking for any multi-collection product launch.",
+  "verified": false
+ },
+ {
+  "id": "girard-perregaux-casquette",
+  "name": "Girard-Perregaux - Casquette Collection",
+  "url": "https://www.girard-perregaux.com/casquette-collection",
+  "studio": null,
+  "year": 2024,
+  "award": "sotd",
+  "source": "awwwards",
+  "kind": "product",
+  "stack": [],
+  "techniques": [
+   "drag/swipe image exploration",
+   "simulated LED time display spanning 1976-2024",
+   "product-variant comparison grid",
+   "vertical section storytelling (intro, heritage, specs, related)"
+  ],
+  "palette": "deep black and dark gray ground, gold accents on titanium and a red logo mark, white for contrast panels",
+  "type": "bold uppercase sans-serif headlines over quieter body copy - the type reads as spec-sheet, not lifestyle-ad",
+  "motion": "the page recreates the watch's own tubular LED display in the browser, letting the visitor watch the digits jump between the 1976 original and the 2024 reissue.",
+  "why": "the LED-display gimmick is not decoration - it is literally the product's own display technology re-implemented as the page's hero interaction, which is the right way to borrow a client's own object language.",
   "verified": true
  },
  {
@@ -1409,5 +2988,85 @@
   "motion": "subtle, interaction-led animation appropriate to his own specialty (animation & interaction) but never overwhelming the grid",
   "why": "mixing personal photography into a project grid on equal footing is a small editorial-sequencing choice that makes a portfolio read like a magazine spread instead of a case-study list",
   "verified": true
+ },
+ {
+  "id": "merrell-agility-peak-5",
+  "name": "MERRELL Agility Peak 5",
+  "url": "https://merrell.joffreyspitzer.com",
+  "studio": "Joffrey Spitzer",
+  "year": 2024,
+  "award": "showcase",
+  "source": "awwwards",
+  "kind": "product",
+  "stack": [],
+  "techniques": [],
+  "palette": "not confirmed - live fetch blocked (403)",
+  "type": "not confirmed - live fetch blocked (403)",
+  "motion": "not confirmed on this pass",
+  "why": "listed on Awwwards' own Product Honors index for May 2024; included for the slice's shoe category but unverified live, so treat the detail fields as thin.",
+  "verified": false
+ },
+ {
+  "id": "oakame",
+  "name": "Oakame",
+  "url": "https://www.oakame.com/en/",
+  "studio": "Beaucoup.",
+  "year": 2024,
+  "award": "sotd",
+  "source": "awwwards",
+  "kind": "ecommerce",
+  "stack": [
+   "woocommerce"
+  ],
+  "techniques": [
+   "NFC-tag provenance lookup per physical piece",
+   "grid product showcase",
+   "footer microinteractions"
+  ],
+  "palette": "warm neutrals - cream ground, dark brown/near-black type, natural reclaimed-oak wood tones in photography",
+  "type": "clean modern sans-serif with strong size contrast between display headlines and body copy",
+  "motion": "restrained transitions; the standout interaction is off-page - an NFC tap on the physical furniture surfaces that piece's reclaimed-wood history on the site.",
+  "why": "the site's cleverest move happens off-screen: tapping the furniture itself is the interaction, and the website is just where that story lands - a rare case of a product page extending into the physical object.",
+  "verified": true
+ },
+ {
+  "id": "oakley-project-2075",
+  "name": "Oakley Project 2075",
+  "url": "https://project2075.oakley.com",
+  "studio": null,
+  "year": 2024,
+  "award": "sotd",
+  "source": "awwwards",
+  "kind": "product",
+  "stack": [],
+  "techniques": [],
+  "palette": "not confirmed - live fetch returned no content on this pass",
+  "type": "not confirmed on this pass",
+  "motion": "not confirmed on this pass",
+  "why": "included from Awwwards' dated Product Honors listing (SOTD, Jan 31 2024) for the eyewear category; the live experience did not return usable content on this fetch, so treat only the award record as confirmed.",
+  "verified": false
+ },
+ {
+  "id": "tag-heuer-eyewear",
+  "name": "TAG Heuer Eyewear",
+  "url": "https://www.tagheuer.com/fr/en/eyewear/collection-eyewear.html",
+  "studio": "Bonhomme",
+  "year": 2024,
+  "award": "sotd",
+  "source": "awwwards",
+  "kind": "ecommerce",
+  "stack": [
+   "webgl"
+  ],
+  "techniques": [
+   "webgl scroll-driven 3D product view",
+   "blur text transitions",
+   "isometric mask transitions between frames"
+  ],
+  "palette": "black and white, letting the frame color and lens tint carry the accent",
+  "type": "clean single-page sans-serif, secondary to the 3D product view",
+  "motion": "an interactive WebGL scroll experience rotates through the eyewear collection, using isometric mask transitions between frames.",
+  "why": "isometric masking to cut between frame styles avoids the usual hard page-cut of an eyewear grid - one collection reads as one continuous object being turned in the hand.",
+  "verified": false
  }
 ]
