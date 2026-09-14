@@ -289,7 +289,42 @@ body:has(.hero:not(:has(.hero__media, canvas, .on-media)):not([data-tone="dark"]
   color: var(--ink-800); border-bottom-color: var(--rule-soft);
   padding-block: calc(var(--s-4) * 0.62);
 }
-@media (max-width: 46rem) { .nav__links { display: none; } }
+/* The phone navigation.
+   A nav that vanishes under a breakpoint is not responsive, it is broken, and
+   `.nav__links { display: none }` on its own was exactly that. The disclosure
+   below replaces them. It is a <details>, so it opens with JavaScript off and
+   the summary already carries the button role and the expanded state. */
+.nav__menu { display: none; }
+.nav__menu > summary {
+  list-style: none; cursor: pointer; display: grid; place-items: center;
+  width: 44px; height: 44px; margin-right: -10px;       /* 44px: a real target */
+  border-radius: 999px; color: inherit;
+}
+.nav__menu > summary::-webkit-details-marker { display: none; }
+.nav__menu > summary:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+.nav__menu[open] > summary .nav__bar1 { transform: translateY(5px) rotate(45deg); }
+.nav__menu[open] > summary .nav__bar2 { opacity: 0; }
+.nav__menu[open] > summary .nav__bar3 { transform: translateY(-5px) rotate(-45deg); }
+.nav__menu svg path { transform-origin: center; transition: transform .22s cubic-bezier(.22,1,.36,1), opacity .12s linear; }
+.nav__panel {
+  position: fixed; inset: var(--nav-h, 68px) 0 auto 0;
+  background: var(--bg); color: var(--fg);
+  border-bottom: 1px solid var(--rule);
+  padding: clamp(1.5rem, 6vw, 2.5rem) var(--gutter, 1.25rem) clamp(2rem, 8vw, 3rem);
+  max-height: calc(100dvh - var(--nav-h, 68px)); overflow-y: auto;
+}
+.nav__panel ul { list-style: none; margin: 0 0 1.75rem; padding: 0; display: grid; gap: .25rem; }
+.nav__panel a { display: block; padding: .7rem 0; font-size: 1.375rem; opacity: 1; }
+.nav__panel > .btn { width: 100%; justify-content: center; }
+
+@media (max-width: 46rem) {
+  .nav__links { display: none; }
+  /* The header CTA duplicates the one inside the panel; keeping both puts two
+     identical links in the tab order two elements apart. */
+  .nav__cta { display: none; }
+  .nav__menu { display: block; }
+}
+@media (prefers-reduced-motion: reduce) { .nav__menu svg path { transition: none; } }
 
 /* ================================================================ buttons == */
 .btn {

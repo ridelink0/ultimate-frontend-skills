@@ -188,3 +188,65 @@
     }
   }
 })();
+
+/* The phone navigation, enhanced.
+   The markup is a <details>, so it already opens, closes, takes keyboard focus
+   and announces its state with no JavaScript at all. Everything here is the
+   part a disclosure does not get for free and a visitor still expects:
+   Escape closes it, tapping a link closes it, tapping outside closes it, and
+   the page behind it does not scroll while it is open. If this file never
+   loads, the menu still works - which is the whole reason it is a <details>
+   and not a hand-built dialog. */
+(() => {
+  const menu = document.querySelector('.nav__menu');
+  if (!menu) return;
+  const summary = menu.querySelector('summary');
+  let scrollY = 0;
+
+  const close = ({ refocus = false } = {}) => {
+    if (!menu.open) return;
+    menu.open = false;
+    if (refocus && summary) summary.focus();
+  };
+
+  // Locking the body is the part everyone gets wrong. Fixing the body at a
+  // negative offset keeps the scroll position instead of jumping to the top,
+  // which is what `overflow:hidden` alone does on iOS.
+  const lock = () => {
+    scrollY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
+  };
+  const unlock = () => {
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.width = '';
+    window.scrollTo(0, scrollY);
+  };
+
+  menu.addEventListener('toggle', () => (menu.open ? lock() : unlock()));
+
+  // Escape, from anywhere - including from inside the panel.
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && menu.open) { e.preventDefault(); close({ refocus: true }); }
+  });
+
+  // A link inside the panel is a same-page anchor: the panel has to get out of
+  // the way or the visitor lands behind it.
+  menu.addEventListener('click', (e) => {
+    if (e.target.closest('.nav__panel a')) close();
+  });
+
+  // Anywhere outside it. Pointerdown rather than click, so the menu is gone
+  // before the tap lands on whatever is underneath.
+  document.addEventListener('pointerdown', (e) => {
+    if (menu.open && !menu.contains(e.target)) close();
+  });
+
+  // Rotating to landscape, or resizing past the breakpoint, leaves an open
+  // panel over a nav that is no longer hiding its links.
+  matchMedia('(min-width: 46.0625rem)').addEventListener('change', (e) => {
+    if (e.matches) close();
+  });
+})();

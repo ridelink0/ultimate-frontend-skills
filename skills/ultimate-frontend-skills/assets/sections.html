@@ -33,7 +33,26 @@
     <li><a href="#method">Method</a></li>
     <li><a href="#detail">Detail</a></li>
   </ul>
-  <a class="btn btn--ghost" href="#contact" data-magnetic="0.18">Get in touch</a>
+  <a class="btn btn--ghost nav__cta" href="#contact" data-magnetic="0.18">Get in touch</a>
+  <!-- The phone navigation. <details> rather than a dialog: it is a disclosure,
+       not a modal, and it is the only version that still opens with JavaScript
+       off. summary carries the button semantics and the expanded state itself,
+       so there is no aria-expanded to keep in sync and nothing to get wrong. -->
+  <details class="nav__menu">
+    <summary aria-label="Menu">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path class="nav__bar1" d="M3 7h18"/><path class="nav__bar2" d="M3 12h18"/><path class="nav__bar3" d="M3 17h18"/>
+      </svg>
+    </summary>
+    <div class="nav__panel">
+      <ul>
+        <li><a href="#work">Work</a></li>
+        <li><a href="#method">Method</a></li>
+        <li><a href="#detail">Detail</a></li>
+      </ul>
+      <a class="btn btn--ghost" href="#contact">Get in touch</a>
+    </div>
+  </details>
 </nav>
 <!-- @end -->
 
