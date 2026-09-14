@@ -108,7 +108,10 @@ Other commands: `sections` lists the library, `add <id> --to <file>` inserts one
 `serve <dir>` previews at localhost.
 
 **No Node, or a framework project?** Copy `assets/core.css` and `assets/motion.js`
-in as-is and take blocks out of `assets/sections.html` by hand. Everything works
+in as-is and take blocks out of `assets/sections.html` by hand. Wrap everything
+after the nav in `<main id="main">` yourself - the scaffolder does that, the
+section file cannot, and without it the skip link points at nothing and the page
+has no main landmark. Everything works
 as plain files; the script only saves typing. In React/Astro, import `core.css`
 globally and translate the section markup to components - keep the class names.
 

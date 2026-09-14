@@ -25,6 +25,15 @@
 
 
 <!-- @section nav | fixed header, transparent over the hero, frosted after it -->
+<!-- COPYING THIS BY HAND? The skip link below points at #main, and the
+     scaffolder is what wraps the page in <main id="main">. Taking blocks out of
+     this file yourself means writing that wrapper yourself too, or the first
+     thing a keyboard user presses goes nowhere:
+
+       <main id="main"> ...every section after the nav... </main>
+
+     It is also the page's only main landmark, so a screen reader has no way to
+     skip the header without it. -->
 <a class="sr-skip" href="#main">Skip to content</a>
 <nav class="nav" aria-label="Primary">
   <a class="nav__brand" href="#top">Brand Name</a>
