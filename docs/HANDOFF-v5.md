@@ -52,8 +52,11 @@ the cap.
 computer-use: the local checkout is C:/Users/OWNER/Downloads/axon (NOT a
 clone - one existed and I missed it). Pass 1 on origin: plugin validate
 passed, madge clean, 8 of 10 tools/*-test.mjs exit 0; astra-test.mjs and
-batch-test.mjs exit 1, causes NOT investigated. owner-4d runs pass 2 and holds
-the AxonHost.cs read in their relay note.
+batch-test.mjs exit 1 - BOTH REAL, fixed by owner-4d as computer-use 0.8.2
+(355db65): SERVER_INFO announced 0.8.0 under a 0.8.1 manifest and now reads
+plugin.json; the always-on schema cost was 3,047 tokens against a 3,000
+bound, now 3,100 with the reason in the test. All ten exit 0. The
+AxonHost.cs read stays in owner-4d's relay note.
 
 ## Still open as of 2026-09-14 afternoon (the 9:55 relay never ran - argv cap)
 
