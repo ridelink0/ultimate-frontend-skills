@@ -1,4 +1,4 @@
-/* ultimate-website-skills/verify - one command, one verdict.
+/* ultimate-frontend-skills/verify - one command, one verdict.
    audit, debug/quality and security each print their own ad-hoc format with
    their own exit code, and "is this page done" today means running all three
    and reconciling them by hand. This runs them, folds every finding into one

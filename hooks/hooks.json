@@ -1,5 +1,5 @@
 {
-  "description": "Points Claude at the ultimate-website-skills skill when a prompt is clearly about building or restyling a web page. Silent on every other prompt, so it costs nothing the rest of the time.",
+  "description": "Points Claude at the ultimate-frontend-skills skill when a prompt is clearly about building or restyling a web page. Silent on every other prompt, so it costs nothing the rest of the time.",
   "hooks": {
     "UserPromptSubmit": [
       {

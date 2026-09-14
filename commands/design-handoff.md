@@ -1,7 +1,7 @@
 ---
-description: Use Claude Design with Ultimate Website Skills to create or implement a design.
+description: Use Claude Design with Ultimate Frontend Skills to create or implement a design.
 ---
-Read skills/ultimate-website-skills/references/claude-design.md and skills/ultimate-website-skills/SKILL.md in this plugin, then apply the user's brief below.
+Read skills/ultimate-frontend-skills/references/claude-design.md and skills/ultimate-frontend-skills/SKILL.md in this plugin, then apply the user's brief below.
 
 Find out which route exists before assuming one: `node "${CLAUDE_PLUGIN_ROOT}/scripts/design.mjs" detect`. On a current Claude Code build the live routes are the built-in `design` canvas skill and the native `DesignSync` tool - neither is an MCP server, so do not go looking for a connected Design server or explain MCP setup unless `detect` says that is the only route this host has. Never register anything, consent or log in on the user's behalf, and never report a remote Design operation as successful without its actual result.
 

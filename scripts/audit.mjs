@@ -1,4 +1,4 @@
-/* ultimate-website-skills/audit - static quality + bug check over the source files.
+/* ultimate-frontend-skills/audit - static quality + bug check over the source files.
    Split out of webdesign.mjs so `verify` can call it as a library function: the
    CLI command used to end in a bare process.exit(), which is fine for a
    terminal but means nothing calling into the same module can ever get a

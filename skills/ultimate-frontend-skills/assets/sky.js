@@ -1,4 +1,4 @@
-/* ultimate-website-skills/sky.js - the launch-page hero, as a WebGL scene.
+/* ultimate-frontend-skills/sky.js - the launch-page hero, as a WebGL scene.
 
    The Fable 5.1 hero is not a photograph. It is a three.js scene whose three
    palette dots do not crossfade images: they set a weight vector that the

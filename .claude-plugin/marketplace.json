@@ -1,6 +1,6 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "ultimate-website-skills",
+  "name": "ultimate-frontend-skills",
   "description": "Cinematic, editorial web design for Claude Code and Codex",
   "owner": {
     "name": "Gev",
@@ -8,14 +8,14 @@
   },
   "plugins": [
     {
-      "name": "ultimate-website-skills",
+      "name": "ultimate-frontend-skills",
       "description": "Build cinematic, editorial websites the way an award-winning studio does: WebGL mesh gradients, three-plane parallax with real depth, three.js exploded product views, GSAP and anime.js scroll choreography, and a typographic system that does not read as AI-generated. Ships a copy-in CSS chassis, motion and WebGL runtimes, a section library, a scaffolder, a headless render check and a reference-site study tool.",
       "author": {
         "name": "Gerald"
       },
       "category": "design",
       "source": "./",
-      "homepage": "https://github.com/ridelink0/ultimate-website-skills",
+      "homepage": "https://github.com/ridelink0/ultimate-frontend-skills",
       "version": "4.3.0"
     }
   ]

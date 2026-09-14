@@ -1,13 +1,13 @@
 {
-  "name": "ultimate-website-skills",
+  "name": "ultimate-frontend-skills",
   "version": "4.3.0",
-  "description": "Ultimate Website Skills (UWS for Claude). Build cinematic, editorial websites the way an award-winning studio does: WebGL mesh gradients, three-plane parallax with real depth, three.js exploded product views, GSAP and anime.js scroll choreography, and a typographic system that does not read as AI-generated. Ships a copy-in CSS chassis, motion and WebGL runtimes, a section library, a scaffolder, a headless render check and a reference-site study tool.",
+  "description": "Ultimate Frontend Skills (UFS for Claude). Build cinematic, editorial websites the way an award-winning studio does: WebGL mesh gradients, three-plane parallax with real depth, three.js exploded product views, GSAP and anime.js scroll choreography, and a typographic system that does not read as AI-generated. Ships a copy-in CSS chassis, motion and WebGL runtimes, a section library, a scaffolder, a headless render check and a reference-site study tool.",
   "author": {
     "name": "Gev",
     "url": "https://github.com/ridelink0"
   },
-  "homepage": "https://github.com/ridelink0/ultimate-website-skills",
-  "repository": "https://github.com/ridelink0/ultimate-website-skills",
+  "homepage": "https://github.com/ridelink0/ultimate-frontend-skills",
+  "repository": "https://github.com/ridelink0/ultimate-frontend-skills",
   "license": "MIT",
   "keywords": [
     "web design",
@@ -33,8 +33,8 @@
   ],
   "skills": "./skills/",
   "interface": {
-    "displayName": "Ultimate Website Skills",
-    "shortDescription": "UWS for Claude: websites that look like a studio made them, not a model",
+    "displayName": "Ultimate Frontend Skills",
+    "shortDescription": "UFS for Claude: websites that look like a studio made them, not a model",
     "longDescription": "A pinned art direction plus the code that produces it. Editorial serif typography at real optical sizes, warm-neutral and near-black grounds in OKLCH, cinematic photography with eased scrims, layered scroll parallax, and exploded technical views built from stacked 2D layers rather than a 3D engine. Ships a copy-in CSS chassis, a dependency-free motion runtime, a library of section archetypes, a scaffolder, and an audit that fails the build on placeholder copy, missing image dimensions, pure black and white, absent reduced-motion handling, and the other marks of a generated page.",
     "developerName": "Ridelink",
     "category": "Developer Tools",
@@ -42,7 +42,7 @@
       "Read",
       "Write"
     ],
-    "websiteURL": "https://github.com/ridelink0/ultimate-website-skills",
+    "websiteURL": "https://github.com/ridelink0/ultimate-frontend-skills",
     "defaultPrompt": [
       "Build me a landing page for a roofing company in Houston",
       "Give this page a WebGL gradient hero and real parallax",

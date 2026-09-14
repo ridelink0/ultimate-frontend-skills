@@ -8,7 +8,7 @@ Run the security check on the site directory I name (or the current one):
 node "${CLAUDE_PLUGIN_ROOT}/scripts/webdesign.mjs" security <dir>
 ```
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/ultimate-website-skills/references/security.md`
+Read `${CLAUDE_PLUGIN_ROOT}/skills/ultimate-frontend-skills/references/security.md`
 first if you have not this session; it says what each finding means and the
 fix for each.
 

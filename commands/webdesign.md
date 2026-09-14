@@ -2,7 +2,7 @@
 description: Build a website in the studio house style, or audit one that already exists
 ---
 
-Use the `ultimate-website-skills` skill for everything below. Follow its rule zero: build the
+Use the `ultimate-frontend-skills` skill for everything below. Follow its rule zero: build the
 files and keep design reasoning out of your reply.
 
 The user's brief is: $ARGUMENTS

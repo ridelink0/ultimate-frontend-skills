@@ -1,4 +1,4 @@
-/* ultimate-website-skills/parity - does the built page still look like the design?
+/* ultimate-frontend-skills/parity - does the built page still look like the design?
 
    Neither half of the Claude Design pairing can answer this alone. Claude
    Design holds the intent and never sees the site running; this repo renders

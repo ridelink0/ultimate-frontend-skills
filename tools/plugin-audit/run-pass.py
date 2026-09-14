@@ -13,7 +13,7 @@ for name in ['policy','sessions','astra','build']:
  add('computer-'+name,'claude-computer-use',['node','tools/'+name+'-test.mjs'])
 add('computer-start-apps','claude-computer-use',['node','--test','tools/start-apps-test.mjs'])
 add('computer-driver','claude-computer-use',['node','--test','tools/driver-test.mjs'])
-for repo in ['atelier','ultimate-website-skills']:
+for repo in ['atelier','ultimate-frontend-skills']:
  files=sorted(str(p.relative_to(root/repo)) for p in (root/repo/'test').glob('*.test.mjs'))
  add(repo,repo,['node','--test']+files)
 add('bwc-validation','buildwithclaude',['node','scripts/validate-all.js'])
@@ -48,7 +48,7 @@ rows=json.loads((root/'manifest-results.json').read_text(encoding='utf8'))
 results.append({'check':'manifest-findings','exit':int(any(not r['success'] for r in rows)),'targets':len(rows),'failures':sum(not r['success'] for r in rows)})
 (out/'manifest-results.json').write_text(json.dumps(rows,indent=2),encoding='utf8')
 # Fresh scaffolds must have only their expected placeholder error and meta warning.
-for repo,cli in [('atelier','atelier'),('ultimate-website-skills','webdesign')]:
+for repo,cli in [('atelier','atelier'),('ultimate-frontend-skills','webdesign')]:
  target=out/('scaffold-'+repo)
  made=subprocess.run(['node','scripts/'+cli+'.mjs','new',str(target),'--name','T'],cwd=root/repo,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
  audit=subprocess.run(['node','scripts/'+cli+'.mjs','audit',str(target)],cwd=root/repo,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)

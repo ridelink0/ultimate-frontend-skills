@@ -1,11 +1,11 @@
-# ultimate-website-skills
+# ultimate-frontend-skills
 
 This repo is a plugin for Claude Code and Codex. It teaches a coding agent one
 art direction for websites and ships the code that produces it.
 
 ## If you are building a website
 
-Read `skills/ultimate-website-skills/SKILL.md` and follow it. That is the whole entry point.
+Read `skills/ultimate-frontend-skills/SKILL.md` and follow it. That is the whole entry point.
 It is written for agents that do not load skills automatically, so it stands on
 its own.
 
@@ -25,18 +25,18 @@ Layout:
 .claude-plugin/plugin.json      Claude Code manifest
 .claude-plugin/marketplace.json Claude Code catalogue (Codex reads this too)
 .codex-plugin/plugin.json       Codex manifest
-skills/ultimate-website-skills/SKILL.md         the doctrine
-skills/ultimate-website-skills/assets/          core.css, motion.js, sections.html
-skills/ultimate-website-skills/references/      loaded on demand
+skills/ultimate-frontend-skills/SKILL.md         the doctrine
+skills/ultimate-frontend-skills/assets/          core.css, motion.js, sections.html
+skills/ultimate-frontend-skills/references/      loaded on demand
 scripts/webdesign.mjs             new / sections / add / audit / look / serve / parity / verify
 scripts/inspect.mjs             headless-browser render check, over CDP
 scripts/parity.mjs              built page vs its Claude Design artboards, same probes both sides
 scripts/design.mjs              which Claude Design route exists here - reports, never enrols
 scripts/cut.py                  photograph -> parallax planes via rembg
 scripts/install.mjs             registers with both CLIs
-commands/webdesign.md           the /ultimate-website-skills:webdesign slash command
-commands/debug-website.md       /ultimate-website-skills:debug-website
-commands/design-handoff.md      /ultimate-website-skills:design-handoff
+commands/webdesign.md           the /ultimate-frontend-skills:webdesign slash command
+commands/debug-website.md       /ultimate-frontend-skills:debug-website
+commands/design-handoff.md      /ultimate-frontend-skills:design-handoff
 commands/atelier.md             the compatibility alias for the old name
 hooks/                          UserPromptSubmit nudge
 ```

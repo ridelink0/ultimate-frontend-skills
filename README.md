@@ -1,8 +1,8 @@
-Ultimate Website Skills 4.0.0 is the plugin formerly named cinematic-web-design (3.x), which in turn absorbed Atelier. [Migration and aliases](docs/merge.md) · [Claude Design routes](skills/ultimate-website-skills/references/claude-design.md)
+Ultimate Frontend Skills 4.0.0 is the plugin formerly named cinematic-web-design (3.x), which in turn absorbed Atelier. [Migration and aliases](docs/merge.md) · [Claude Design routes](skills/ultimate-frontend-skills/references/claude-design.md)
 
-# Ultimate Website Skills
+# Ultimate Frontend Skills
 
-**UWS for Claude.** Build, measure, debug and secure cinematic websites from Claude Code or Codex. Plugin id `ultimate-website-skills`; the old `cinematic-web-design` install name redirects on GitHub but the skill and commands now live under the new id.
+**UFS for Claude.** Build, measure, debug and secure cinematic websites from Claude Code or Codex. Plugin id `ultimate-frontend-skills`; the old `cinematic-web-design` install name redirects on GitHub but the skill and commands now live under the new id.
 A pinned art direction for websites, plus the code that produces it.
 
 Coding agents converge on the same page: Inter everywhere, an indigo-to-pink
@@ -10,7 +10,7 @@ gradient, three feature cards with icon circles, everything centred, 16px radius
 on everything, and copy about unleashing your potential. It is recognisable
 enough that people have built scanners for it.
 
-ultimate-website-skills replaces that default with a different one: editorial serif typography at
+ultimate-frontend-skills replaces that default with a different one: editorial serif typography at
 real optical sizes, warm-neutral and near-black grounds in OKLCH, cinematic
 photography with eased scrims, layered scroll parallax, and exploded technical
 views built from stacked 2D layers rather than a 3D engine.
@@ -35,25 +35,25 @@ rendering less than it should.
 ## Install
 
 ```bash
-git clone https://github.com/ridelink0/ultimate-website-skills
-node ultimate-website-skills/scripts/install.mjs
+git clone https://github.com/ridelink0/ultimate-frontend-skills
+node ultimate-frontend-skills/scripts/install.mjs
 ```
 
 That registers the plugin with both CLIs. Or do it by hand:
 
 ```bash
 # Claude Code
-claude plugin marketplace add ridelink0/ultimate-website-skills
-claude plugin install ultimate-website-skills@ultimate-website-skills
+claude plugin marketplace add ridelink0/ultimate-frontend-skills
+claude plugin install ultimate-frontend-skills@ultimate-frontend-skills
 ```
 
 ```toml
 # Codex - ~/.codex/config.toml
-[marketplaces.ultimate-website-skills]
+[marketplaces.ultimate-frontend-skills]
 source_type = "git"
-source = "https://github.com/ridelink0/ultimate-website-skills.git"
+source = "https://github.com/ridelink0/ultimate-frontend-skills.git"
 
-[plugins."ultimate-website-skills@ultimate-website-skills"]
+[plugins."ultimate-frontend-skills@ultimate-frontend-skills"]
 enabled = true
 ```
 
@@ -72,7 +72,7 @@ Or drive it directly:
 
 ## What is in it
 
-**`skills/ultimate-website-skills/SKILL.md`** - the doctrine. Short, because the code carries the
+**`skills/ultimate-frontend-skills/SKILL.md`** - the doctrine. Short, because the code carries the
 design rather than the prose describing it.
 
 **`assets/core.css`** - the chassis, copied into the project verbatim. Tokens,
@@ -187,7 +187,7 @@ MIT.
 
 ## Website debugger
 
-Run node scripts/webdesign.mjs debug <site-directory-or-url> --out review to capture desktop/mobile, scrolling, interactions and reduced motion in an HTML gallery. Claude and Codex must open the PNGs before reporting a visual pass. See [visual debugging](skills/ultimate-website-skills/references/visual-debug.md) for action files and reference-video extraction.
+Run node scripts/webdesign.mjs debug <site-directory-or-url> --out review to capture desktop/mobile, scrolling, interactions and reduced motion in an HTML gallery. Claude and Codex must open the PNGs before reporting a visual pass. See [visual debugging](skills/ultimate-frontend-skills/references/visual-debug.md) for action files and reference-video extraction.
 
 ## Measuring the page while it runs
 
@@ -275,7 +275,7 @@ It exits 1 on a high finding only. A checker that fails a build over a
 `console.log` is a checker people turn off. It also prints the three things
 only the served site can answer - whether the headers actually arrive, and
 whether `/.git/HEAD` and `/.env` are 404s - as curl commands to run after the
-deploy. See `skills/ultimate-website-skills/references/security.md` for the
+deploy. See `skills/ultimate-frontend-skills/references/security.md` for the
 reasoning behind every rule.
 
 ## Verify - one command, one verdict
@@ -383,5 +383,5 @@ hosts - the `claude mcp add` command, and the `[mcp_servers.claude-design]` bloc
 Codex reads from `~/.codex/config.toml`, since the claude CLI is the one thing
 that cannot help a Codex user - without running either; it never registers,
 consents, logs in or publishes. See
-[Claude Design routes](skills/ultimate-website-skills/references/claude-design.md)
+[Claude Design routes](skills/ultimate-frontend-skills/references/claude-design.md)
 for what each route can do and what was and was not exercised.

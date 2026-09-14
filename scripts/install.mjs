@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* ultimate-website-skills installer - registers the plugin with Claude Code and with Codex.
+/* ultimate-frontend-skills installer - registers the plugin with Claude Code and with Codex.
    node scripts/install.mjs [--source <git-url-or-path>] [--uninstall] [--dry-run]
 
    Claude Code goes through its own CLI. Codex has no CLI on every platform, so
@@ -13,7 +13,7 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = resolve(HERE, '..');
-const NAME = 'ultimate-website-skills';
+const NAME = 'ultimate-frontend-skills';
 
 const argv = process.argv.slice(2);
 const has = (f) => argv.includes('--' + f);
@@ -108,7 +108,7 @@ function doCodex() {
 
 /* ------------------------------------------------------------------- main -- */
 
-log(`ultimate-website-skills ${UNINSTALL ? 'uninstall' : 'install'}${DRY ? ' (dry run)' : ''}`);
+log(`ultimate-frontend-skills ${UNINSTALL ? 'uninstall' : 'install'}${DRY ? ' (dry run)' : ''}`);
 log(`  source: ${SOURCE}`);
 const a = doClaude();
 const b = doCodex();

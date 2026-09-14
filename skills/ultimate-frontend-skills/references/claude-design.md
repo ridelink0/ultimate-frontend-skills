@@ -1,4 +1,4 @@
-# Claude Design with Ultimate Website Skills
+# Claude Design with Ultimate Frontend Skills
 
 Rewritten 8 September 2026 against **the running host**, not only against the
 published documentation. The earlier version of this page described one route -

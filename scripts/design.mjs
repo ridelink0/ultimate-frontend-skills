@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* ultimate-website-skills/design - which Claude Design route is actually here?
+/* ultimate-frontend-skills/design - which Claude Design route is actually here?
 
    There is more than one, they are not interchangeable, and the wrong
    assumption is expensive. This plugin used to assume exactly one: that Claude

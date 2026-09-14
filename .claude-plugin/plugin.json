@@ -1,14 +1,14 @@
 {
   "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
-  "name": "ultimate-website-skills",
+  "name": "ultimate-frontend-skills",
   "version": "4.3.0",
-  "description": "Ultimate Website Skills (UWS for Claude). Build cinematic, editorial websites the way an award-winning studio does: WebGL mesh gradients, three-plane parallax with real depth, three.js exploded product views, GSAP and anime.js scroll choreography, and a typographic system that does not read as AI-generated. Ships a copy-in CSS chassis, motion and WebGL runtimes, a section library, a scaffolder, a headless render check and a reference-site study tool.",
+  "description": "Ultimate Frontend Skills (UFS for Claude). Build cinematic, editorial websites the way an award-winning studio does: WebGL mesh gradients, three-plane parallax with real depth, three.js exploded product views, GSAP and anime.js scroll choreography, and a typographic system that does not read as AI-generated. Ships a copy-in CSS chassis, motion and WebGL runtimes, a section library, a scaffolder, a headless render check and a reference-site study tool.",
   "author": {
     "name": "Gev",
     "url": "https://github.com/ridelink0"
   },
-  "homepage": "https://github.com/ridelink0/ultimate-website-skills",
-  "repository": "https://github.com/ridelink0/ultimate-website-skills",
+  "homepage": "https://github.com/ridelink0/ultimate-frontend-skills",
+  "repository": "https://github.com/ridelink0/ultimate-frontend-skills",
   "license": "MIT",
   "keywords": [
     "web design",

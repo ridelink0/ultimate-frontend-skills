@@ -1,9 +1,9 @@
 ---
-name: ultimate-website-skills
+name: ultimate-frontend-skills
 description: Use whenever a website, landing page, marketing site, portfolio, microsite, homepage, or any public-facing web page is being built, redesigned, restyled, or made to "look better" - including plain HTML/CSS pages, Next/React/Astro sites, and single-file pages. Supplies the house style (editorial serif typography, warm-neutral and near-black grounds, cinematic imagery, layered scroll parallax, exploded technical views) plus a copy-in CSS chassis, a motion runtime, a section library, a scaffolder, and an audit.
 ---
 
-# Ultimate Website Skills
+# Ultimate Frontend Skills
 
 The studio's house style, and the code that produces it. This is a pinned art
 direction for projects without an existing design. A supplied or selected Claude Design project takes precedence.

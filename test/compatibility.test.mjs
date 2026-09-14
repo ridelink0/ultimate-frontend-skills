@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 const root = fileURLToPath(new URL('../', import.meta.url));
 test('merged library retains all Atelier section IDs and both CLI entry points work', () => {
   const fixture = JSON.parse(readFileSync(new URL('./atelier-compat.json', import.meta.url)));
-  const library = readFileSync(new URL('../skills/ultimate-website-skills/assets/sections.html', import.meta.url), 'utf8');
+  const library = readFileSync(new URL('../skills/ultimate-frontend-skills/assets/sections.html', import.meta.url), 'utf8');
   for (const id of fixture.sections) assert.ok(library.includes('@section ' + id + ' '), id);
   const temp = mkdtempSync(join(tmpdir(), 'design-compat-'));
   try {
