@@ -41,12 +41,24 @@ here needs a decision from Gev; it was all agreed in the goal for this session.
   denominator collapses and the ratio inflates. Make the measurement robust
   (count scroll FRAMES or cap the denominator at the gesture's event budget),
   then the test holds under load without touching it.
-- ~25 UI gaps from the ui.md/craft.md analysis: status colour ramp, 404.html in
-  the scaffold, loading/empty/error patterns, data-table accessibility.
-- stack.md pins superseded versions and its KB figures are wrong.
+- UI gaps from the ui.md/craft.md analysis. DONE: mobile nav, 404.html in the
+  scaffold, <main> landmark note, explicit input types. STILL OPEN: a status
+  colour ramp (error/success/warning derived in OKLCH so a junior does not
+  break the hue rule), loading/skeleton/empty/error state patterns, data-table
+  accessibility past the two-column spec table, form validation wiring
+  (aria-describedby, aria-invalid, error summary). Full list in the workflow
+  result at ...tasks/w499yppa4.output while it exists.
+- stack.md: pins fixed 2026-09-14 (all eleven now match npm). The KB figures
+  were NOT re-measured; awards.md's corrections table has the measured ones.
 - npm publish blocked: `npm whoami` is 401. Needs Gev. computer-use and
   video-watch also lack package.json/.codex-plugin.
 - Relay notes must stay under 8,191 characters or use usage-limits >= 1.30.0.
+- Skill packs (emilkowalski/skills and the ecosystem) integrated by handshake:
+  references/skill-packs.md, tools.mjs detection incl. .agents/skills. DONE.
+- `look <file>` now works (it rooted the server at the file before). DONE.
+- Verification tooling pass 2026-09-14: madge, publint, plugin validate
+  --strict, knip all clean; html-validate clean apart from no-inline-style on
+  per-element placement values, which stand. gitleaks is NOT on PATH here.
 
 ## Next, in value order
 
