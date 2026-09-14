@@ -207,7 +207,11 @@ test('planes driven by the wheel read three distinct rates under a real gesture'
 
 test('a shift after load is attributed to the elements that actually moved', { skip, timeout: 60000 }, async () => {
   const r = await measured('shift-on-load.html', { wait: 900 });
-  raises(r, /^warn: layout shift 0\.\d+ \(budget 0\.1\)$/);
+  // Same rule as the thrash fixture: a page built to shift under load also
+  // takes a long main-thread task on a busy machine, and that finding is
+  // triggered by a duration. The SHIFT is the trigger here; the milliseconds
+  // beside it are weather.
+  raisesAllowingTiming(r, /^warn: layout shift 0\.\d+ \(budget 0\.1\)$/);
   const warn = judge(r.measured).find((f) => /layout shift/.test(f.text));
   assert.match(warn.detail, /H1#f/, 'the shift finding must name what moved: ' + JSON.stringify(warn));
   // The control attributes nothing because there is nothing to attribute.

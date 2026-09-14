@@ -17,7 +17,12 @@
   "type": "custom wordmark logo carrying the pun in its title (sans toit / sans toi)",
   "motion": "a loading globe component implies the core interaction is a rotating/zoomable 3D map tracking a round-the-world route, though the fetch could not confirm the renderer.",
   "why": "a two-person travel-journal site built around a single centerpiece - an interactive globe - rather than a scroll sequence; the globe-as-navigation idea is the transferable part.",
-  "verified": true
+  "verified": false,
+  "checked": "test",
+  "dead": {
+   "status": 404,
+   "at": "test"
+  }
  },
  {
   "id": "1password",

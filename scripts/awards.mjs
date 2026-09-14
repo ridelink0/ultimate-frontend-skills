@@ -44,6 +44,20 @@ export function loadCorpus() {
    diff is reviewable rather than a reshuffle. */
 export function buildCorpus() {
   if (!existsSync(CHUNK_DIR)) throw new Error(`no chunk directory at ${CHUNK_DIR}`);
+
+  // What `awards --check` learned lives in the merged file, not in the chunks -
+  // a harvester writes what it believed at harvest time and never hears about a
+  // domain that lapsed six months later. Rebuilding from the chunks therefore
+  // used to throw the check away silently: twelve dead URLs came back marked
+  // verified, and the next `study` run rendered twelve parking pages.
+  //
+  // So the check's verdict is carried forward across a rebuild. The chunks stay
+  // the source of truth for everything a harvester knows; the check stays the
+  // source of truth for whether the page is still there.
+  const prior = new Map();
+  for (const e of loadCorpus()) if (e.dead || e.checked) prior.set(e.id, e);
+  cache = null;
+
   const files = readdirSync(CHUNK_DIR).filter((f) => f.endsWith('.json')).sort();
   const byId = new Map();
   const byUrl = new Map();
@@ -64,11 +78,20 @@ export function buildCorpus() {
       if (!clean) continue;
       // Same site found by two harvesters is the normal case, not an error.
       // Keep the richer record: more techniques means more to study.
+      // Carry the check's verdict over the harvester's optimism.
+      const seen = prior.get(clean.id);
+      if (seen) {
+        if (seen.checked) clean.checked = seen.checked;
+        if (seen.dead) { clean.dead = seen.dead; clean.verified = false; }
+        // A redirect the check followed is the live address; the chunk still
+        // holds the one that redirected.
+        if (seen.checked && seen.url) clean.url = seen.url;
+      }
       const key = clean.url.replace(/\/+$/, '').toLowerCase();
-      const prior = byUrl.get(key) || byId.get(clean.id);
-      if (prior) {
+      const already = byUrl.get(key) || byId.get(clean.id);
+      if (already) {
         report.duplicates++;
-        if (score(clean) > score(prior)) Object.assign(prior, clean, { id: prior.id });
+        if (score(clean) > score(already)) Object.assign(already, clean, { id: already.id });
         continue;
       }
       byId.set(clean.id, clean);
@@ -371,12 +394,14 @@ export function applyCheck(report) {
     if (!entry) continue;
     entry.verified = false;
     entry.dead = { status: row.status, at: report.stampedAt || null };
+    entry.checked = report.stampedAt || null;
     changed++;
   }
   for (const row of report.moved) {
     const entry = byId.get(row.id);
     if (!entry || !row.movedTo) continue;
     entry.url = row.movedTo;
+    entry.checked = report.stampedAt || null;
     changed++;
   }
   if (changed) writeFileSync(CORPUS, JSON.stringify(all, null, 1) + '\n');
