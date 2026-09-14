@@ -16,6 +16,20 @@ here needs a decision from Gev; it was all agreed in the goal for this session.
 - SKILL.md, README.md, AGENTS.md, docs/merge.md wired to all of it.
 - `data/awards.json` - 61 entries, 53 URL-verified, from 2 of 12 harvest chunks.
 
+## Landed since (2026-09-14, second session)
+
+- `package.json` + bin entries (`ultimate-frontend-skills`, `ufs`); GitHub topics
+  and description set. npm publish still needs an authenticated account - `npm whoami`
+  returned 401, so it was prepared, not published. That is the one distribution
+  channel still open.
+- usage-limits 1.24.0 in C:/Users/OWNER/Downloads/claude-code-usage-limits:
+  `scripts/net.js` (reachability + TLS-interception detection + failure
+  classification), relay arms at the END of a reply rather than mid-reply
+  (`armOn: completion`, backstop 95), an offline preflight that holds rather than
+  spends the relay, bounded rearming, run logs, a visible resumed window, and
+  `relay doctor`. 775/775 tests pass. ANOTHER CLAUDE SESSION shares that tree and
+  owns wake.js/defer.js - do not edit it without checking with them.
+
 ## Next, in value order
 
 1. **The seven references SKILL.md already points at do not exist yet.** Writing
