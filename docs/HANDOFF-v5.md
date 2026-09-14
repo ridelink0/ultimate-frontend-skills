@@ -79,6 +79,20 @@ AxonHost.cs read stays in owner-4d's relay note.
   result at ...tasks/w499yppa4.output while it exists.
 - stack.md: pins fixed 2026-09-14 (all eleven now match npm). The KB figures
   were NOT re-measured; awards.md's corrections table has the measured ones.
+- TEXTURES / assets.mjs, three things left honest rather than smoothed over:
+  (a) `assets hdri --res 16k` is in the help text and the manifest lists it,
+      but it was never proven end to end - that is a 336 MB download. The code
+      path resolves the entry the same way 1k does, so it is untested, not
+      known-broken.
+  (b) ambientCG publishes 12K and 16K archives (890 MB for Wood095) and
+      assets.mjs would buffer one entirely in memory; the zip64 guard only
+      fires above 4 GB. Nothing documents a path into it and no resolution
+      above 8k is offered, but nothing stops `--res 16k` on an ambientCG slug
+      either. Stream to disk, or refuse the resolution for that source.
+  (c) pollinations.ai's OUTPUT LICENCE is genuinely UNVERIFIED: /terms returns
+      200 but renders only under JavaScript, so the static HTML carries no
+      terms text. Reading it needs a browser session. Until then the reference
+      must not imply its images are safe to ship commercially.
 - npm publish blocked: `npm whoami` is 401. Needs Gev. computer-use and
   video-watch also lack package.json/.codex-plugin.
 - Relay notes must stay under 8,191 characters or use usage-limits >= 1.30.0.
