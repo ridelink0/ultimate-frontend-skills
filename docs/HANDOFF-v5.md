@@ -93,6 +93,26 @@ AxonHost.cs read stays in owner-4d's relay note.
       200 but renders only under JavaScript, so the static HTML carries no
       terms text. Reading it needs a browser session. Until then the reference
       must not imply its images are safe to ship commercially.
+- CODEX AND ANTIGRAVITY, from Gev directly (2026-09-14 evening): make sure the
+  usage-limits plugin works and is implemented on both. Tree is
+  C:/Users/OWNER/Downloads/claude-code-usage-limits (owner-4d's; pull first,
+  1.31.2). State as owner-4d reported it: Codex hooks are installed
+  (UserPromptSubmit/PostToolUse/SubagentStop/PreToolUse) but INERT until Gev
+  accepts a one-time trust review in a terminal; the Codex meter reader ignores
+  the `premium` limit_id; lowpower writes the [agents] clamp; UNVERIFIED whether
+  wake.js's stdin delivery to `codex exec resume` actually works - test it
+  without spending his ChatGPT quota. Antigravity: a real plugin at
+  ~/.gemini/config/plugins/usage-limits with PreInvocation + PreToolUse hooks,
+  but it publishes NO readable quota on disk, so the collector reports unknown;
+  the channel to build is the documented statusline stdin payload (a `quota` map
+  with remaining_fraction/reset_time), docs at
+  ~/.gemini/antigravity-cli/builtin/skills/agy-customizations/docs/.
+  Gev said use Computer Use if it cannot be done headlessly. One limit to know
+  before trying: Computer Use classifies terminals and editors as `shell` tier
+  and will NOT send input to them, so the Codex trust review cannot be accepted
+  by Computer Use - that one step is Gev's, say so rather than looping on it.
+  Everything else (hooks firing, the Antigravity payload, the Codex wake check)
+  is headless work. Run each host's proof twice.
 - npm publish blocked: `npm whoami` is 401. Needs Gev. computer-use and
   video-watch also lack package.json/.codex-plugin.
 - Relay notes must stay under 8,191 characters or use usage-limits >= 1.30.0.
