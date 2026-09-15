@@ -242,8 +242,14 @@ const REGISTERS = {
 
 export function pickReferences(register, n = 3, extra = {}) {
   const base = REGISTERS[String(register || '').toLowerCase()] || { kind: '', q: String(register || '') };
-  let pool = queryAwards({ ...base, ...extra, verified: true });
-  if (pool.length < n) pool = queryAwards({ ...base, ...extra });
+  // A caller passing { kind: null } because no --kind flag was given must not
+  // erase the register's own kind. It did: every --pick since the corpus
+  // landed ran with no kind filter, which is how a service brief got a watch,
+  // an art archive and a headset.
+  const merged = { ...base };
+  for (const [k, v] of Object.entries(extra || {})) if (v !== null && v !== undefined && v !== '') merged[k] = v;
+  let pool = queryAwards({ ...merged, verified: true });
+  if (pool.length < n) pool = queryAwards(merged);
   const picked = [];
   const seenStudio = new Set();
   const seenSource = new Set();
