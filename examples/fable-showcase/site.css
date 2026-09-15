@@ -106,3 +106,8 @@ body{--bg:oklch(96.4% .008 88);--fg:oklch(22% .018 62);--fg-muted:oklch(44% .022
    the fable preset now emits this on scaffold; this example predates it */
 .nav__links,.nav__cta{display:none}
 .nav__menu{display:block}
+
+/* the measured column: inspect read the real title at 624px wide, x 408 at
+   1440, and the index rows at 405px - narrower than the title, centred on it */
+.hero-fable .display, .hero-fable h1 { max-width: 624px; margin-inline: auto; }
+.hero-fable .index { max-width: 405px; margin-inline: auto; }
