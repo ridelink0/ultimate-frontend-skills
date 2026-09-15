@@ -8,3 +8,7 @@ Thumbs.db
 __pycache__/
 *.pyc
 !docs/audit-2026-09-07/**/*.log
+
+# Screenshot comparisons made while building the examples; the 44 already
+# tracked in fable-showcase/compare need a person to git rm --cached them.
+examples/*/compare/
