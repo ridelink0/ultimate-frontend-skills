@@ -119,11 +119,15 @@ AxonHost.cs read stays in owner-4d's relay note.
   the services and faq blocks carry no id on a landmark element the anchor regex
   in cmdNew matches (section|header|article|aside|footer with id=), and
   hero-photo carries id=work. Give every section block a landmark id.
-- Gev asked whether the plugin can inspect live sites the way DevTools does.
-  It already drives headless Chrome over CDP (look/quality/study/debug); what is
-  missing is an on-demand `inspect <url> --selector` that returns computed
-  styles (font, size, line-height, tracking, colours), the loaded font list and
-  the resource tree. Build it on the CDP client in scripts/inspect.mjs.
+- DONE: `inspect <url> [--selector] [--width] [--json]` - the Elements panel on a
+  live site over the existing CDP client (inspectStyles + formatInspect in
+  scripts/inspect.mjs). Its first run corrected fable.md: the hero h1 is
+  67.84px/74.62px w400 -0.16px in a 624px column at x 408, eyebrow 14px at
+  +1.68px, index rows 405px at x 517. README has a section.
+- DONE: the ROOT CAUSE of every bad awards --pick: cmdAwards spread
+  { kind: flag('kind') } over the register and a null flag erased the
+  register's kind, so no pick was ever filtered. Fixed in pickReferences.
+  --pick service now returns three agencies.
 
 ## Still open as of 2026-09-14 afternoon (the 9:55 relay never ran - argv cap)
 

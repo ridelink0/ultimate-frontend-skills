@@ -121,6 +121,47 @@ download, so the reference has the budgets. A generated image has its lighting
 baked in and cannot be relit - that limit is stated once, with the three
 workarounds, rather than designed around.
 
+## Inspecting a live site for reference
+
+`look` measures a page for defects. `inspect` reads one for **reference** - the
+Elements panel, on demand, over the same DevTools protocol:
+
+```bash
+webdesign.mjs inspect https://example.com --selector "h1,p,a" --width 1440
+webdesign.mjs inspect https://example.com --json
+```
+
+It returns the computed type for every match of the selector (family, size,
+line-height, weight, tracking, variation settings, colour, box), the fonts the
+page actually loaded, the type scale as painted, the colours it uses most, and
+the resources it fetched with their sizes. Nothing is written.
+
+Its first run corrected the plugin's own teardown of the Fable launch page: the
+hero title the reference estimated at "~76px" from a screenshot is 67.84px on a
+74.6px line, in a 624px column at x 408. Numbers read from a browser beat
+numbers read from a picture, and this is how a teardown should start.
+
+## Two builds, as a test of the plugin
+
+`examples/fable-showcase` and `examples/houston-roofing` were built by an
+agent following the pipeline with no help, then verified with the plugin's own
+tooling. Each carries a `BUILD-NOTES.md` that says what the plugin did well,
+where it fell short, and what had to be hand-written - read those before the
+pages; they are the honest part. Serve them locally:
+
+```bash
+webdesign.mjs serve examples/fable-showcase --port 4321
+webdesign.mjs serve examples/houston-roofing --port 4322
+```
+
+The Fable recreation is measured against the live page side by side, and the
+first comparison found the engine's sky was not the reference's sky - pale
+where it is saturated, wisps where it has cloud masses, a hard crescent where
+the moon is large and soft, and a branch silhouette across the centre where
+the original keeps one blurred branch in a corner. That is being fixed in
+`sky.js` itself, with `data-branches`, `data-moon` and `data-cloud` so the
+next page can tune it without editing the engine.
+
 ## The packs it works alongside, and how to get them
 
 Detection was only half of it. `packs` lists the packs this plugin defers to,

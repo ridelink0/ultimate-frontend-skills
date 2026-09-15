@@ -12,6 +12,23 @@ mounts, as a pair with `14c8frmb4u5hu.js` - 89,886 bytes of hand-written GLSL
 and scene code, which is where every shader quoted below lives. Raw three.js -
 no `postprocessing`, no fiber, no drei.
 
+**Measured on 2026-09-15 with `webdesign.mjs inspect <url> --selector "h1,.eyebrow,nav a,p"`**,
+which reads computed styles over the DevTools protocol, so these replace the
+screenshot estimates further down wherever the two disagree:
+
+| Element | Computed | Box at 1440 |
+|---|---|---|
+| Hero `h1` | **67.84px / 74.62px**, weight 400, letter-spacing -0.16px, `anthropicSerif`, `rgb(250,249,245)` | 624 x 149 at x 408, y 365 - a centred 624px column, not full width |
+| Eyebrow `.text-prehead-tracked` | 14px / 14px, weight 500, letter-spacing **+1.68px**, uppercase, `anthropicSans` | 624 x 14 at x 408, y 327 |
+| Index rows | 15px / 26px, weight 400, -0.16px, `anthropicSerif` | **405px wide at x 517** - narrower than the title column, centred on it |
+| Header nav links | 15px / 21px, weight 400, -0.0375px, `anthropicSans`, `rgb(15,15,14)` | 21px tall at y 24 |
+| Side contents links | 16px / 20px, `anthropicSerif`, `rgb(0,0,238)` | 44px wide at x 0 - the rail is off-canvas at load |
+
+The "~76px" display size below was read off a screenshot; the browser says
+67.84. The tracking on the eyebrow is +1.68px on 14px, which is +0.12em, not
+the +0.16em estimated. Run `inspect` before trusting any number in a teardown,
+including this one.
+
 **`references/fable-showcase.md` corrects four things in this file** - the
 bokeh kernel, the post order, the tree seeds and the size of the GSAP waste -
 and all four corrections are folded in below. It also carries the one idea this
