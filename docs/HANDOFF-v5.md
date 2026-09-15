@@ -75,7 +75,11 @@ AxonHost.cs read stays in owner-4d's relay note.
   commit by a git add -A; the finished state must be verified (verify --widths
   1440,390, look at the PNGs) and committed. Read the two BUILD-NOTES.md first:
   they are the actual test result. No deploy - Gev has no Netlify credits.
-- STILL TO DO from Gev's 8:05 message: run for bugs and tests on the final tree
+- Bug pass ONE on the plugin code, 8:05 window: madge, plugin validate
+  --strict, publint, knip clean; every script parses; suite 80 pass / 0 fail /
+  1 cancelled - test 11 (WebGL canvas) hit its 30 s timeout while two build
+  agents loaded headless Chrome, and PASSES ALONE. Contention, like 31/33/47.
+- STILL TO DO from Gev's 8:05 message: bug pass TWO on the final tree
   (node --test test/*.test.mjs twice, full TAP kept; madge, publint, plugin
   validate --strict, knip, html-validate on a fresh scaffold), stay under 65%.
 
