@@ -362,6 +362,7 @@ render exists - each of those is the low-effort version.
 | The order to do all of this in | `references/pipeline.md` - nine stages, a gate at each |
 | Anything beyond the three engines above | `references/stack.md` - the table of which library for which job, with verified specifiers and CDN URLs |
 | To see what a site you are imitating actually does | `webdesign.mjs look <url>` - real render, two scroll positions, PNGs. Study the reference as an image, not as a description of one |
+| What a site you are imitating actually SETS - its computed type, the fonts it loaded, its colours, what it fetched | `webdesign.mjs inspect <url> --selector "h1,p,a"` - the Elements panel over the DevTools protocol. Numbers read from the browser beat numbers read from a picture; a teardown starts here |
 | Three references that disagree with each other | `webdesign.mjs awards --pick <register>`, then `study --awards "<technique>"` to render them. `awards --techniques` lists what the corpus can be searched by |
 | Visual research on a style, a palette, a font in the wild | `webdesign.mjs study --list editorial\|object\|cinema\|product` renders a curated batch into contact sheets; the `visual-research` skill for anything it does not cover |
 | Photographs | Unsplash, Pexels, Wikimedia, museum IIIF - `references/imagery.md` has the URL formats and licences. Verify every hotlink with a HEAD request |

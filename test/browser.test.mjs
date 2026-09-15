@@ -10,6 +10,7 @@ import { Session, findBrowser, inspect, decodePNG, sampleImageContrast, readPort
 import { writeReview } from '../scripts/review.mjs';
 import { runVerify, formatVerify } from '../scripts/verify.mjs';
 import { startServer } from '../scripts/preview-server.mjs';
+import { inspectStyles, formatInspect } from '../scripts/inspect.mjs';
 
 test('CDP synchronous send failure removes pending requests', async () => {
   const s = new Session({ send() { throw new Error('socket unavailable'); }, close() {} });
@@ -322,4 +323,32 @@ test('a half-written or unreadable DevToolsActivePort means keep waiting, not cr
     writeFileSync(join(dir, 'good'), '54321\n/devtools/browser/abc\n');
     assert.equal(readPortFile(join(dir, 'good')), 54321);
   } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test('inspect reads computed type, loaded fonts, the type scale and resources from a live page', { skip: !findBrowser(), timeout: 45000 }, async () => {
+  // The Elements panel on demand: this is reference data, so every field a
+  // teardown would copy by hand has to come back populated and typed.
+  const server = startServer(new URL('./fixtures', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'), 0);
+  await new Promise((resolve) => server.once('listening', resolve));
+  try {
+    const url = 'http://127.0.0.1:' + server.address().port + '/clean-basic.html';
+    const r = await inspectStyles(url, { selector: 'h1,p', width: 1200, wait: 300 });
+    assert.equal(r.url, url);
+    assert.equal(r.width, 1200);
+    assert.ok(r.elements.length >= 1, 'the selector matched nothing: ' + JSON.stringify(r.elements));
+    for (const el of r.elements) {
+      assert.match(el.style.fontSize, /px$/, 'computed size is in px');
+      assert.match(el.style.fontFamily, /./, 'a family is reported');
+      assert.ok(el.rect.w > 0 && el.rect.h > 0, 'a painted box');
+    }
+    assert.ok(Array.isArray(r.fonts), 'fonts is a list');
+    assert.ok(r.typeScale.length >= 1 && r.typeScale.every((t) => t.px > 0 && t.count > 0), 'the scale is sizes with counts');
+    assert.ok(r.palette.length >= 1, 'colours were counted');
+    assert.ok(r.resources.some((x) => x.url.endsWith('/clean-basic.html')), 'the page itself is in the resource list');
+    const text = formatInspect(r);
+    assert.match(text, /type scale/);
+    assert.match(text, /resources/);
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
 });

@@ -86,6 +86,18 @@ awards --kind product --stack three.js --verbose
 awards --techniques                  # what the corpus knows how to search for
 ```
 
+When a reference is close to what you are building, read its numbers rather
+than estimating them from the render:
+
+```bash
+node "${CLAUDE_PLUGIN_ROOT}/scripts/webdesign.mjs" inspect <url> --selector "h1,h2,p,a"
+```
+
+That is the Elements panel on the live page - computed size, line-height,
+weight, tracking, the fonts it actually loaded, the colours it uses most, and
+what it fetched with sizes. It corrected this plugin's own Fable teardown by
+eight pixels on the hero title. Measure first; a screenshot lies about type.
+
 Then write down, in one line each: the move you are taking from each reference,
 and the move you are deliberately not taking. `references/awards.md` has the
 technique taxonomy and, more usefully, which techniques now read as a costume.

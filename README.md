@@ -2,6 +2,8 @@ Ultimate Frontend Skills 5.0.0 is the plugin previously named Ultimate Website S
 
 # Ultimate Frontend Skills
 
+![Before: a hand-drawn scribble of a page. After: the Fable 5.1 launch page, sky, moon, serif title and dot-leader index.](docs/img/ultimate-frontend-skills.png)
+
 **UFS for Claude.** Build, measure, debug and secure cinematic websites from Claude Code or Codex. Plugin id `ultimate-frontend-skills`; the old `ultimate-website-skills` and `cinematic-web-design` install names redirect on GitHub but the skill and commands now live under the new id.
 A pinned art direction for websites, plus the code that produces it.
 
