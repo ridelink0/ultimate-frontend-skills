@@ -108,6 +108,16 @@ AxonHost.cs read stays in owner-4d's relay note.
   validate --strict, knip, html-validate on a fresh scaffold), stay under 65%.
 
 ## 2026-09-15, first window
+- skills.sh: NO submission step exists (checked skills.sh, /docs, and the
+  vercel-labs/skills README). The directory is populated from the CLI's install
+  telemetry. All three repos (ultimate-frontend-skills, claude-code-usage-limits,
+  claude-computer-use; video-watch excluded on Gev's instruction) are recognised
+  by the CLI and were installed through it globally, which is what fires the
+  event. Listing may lag; check https://skills.sh/ridelink0/<repo>/<skill>.
+- Gev's picture is at docs/img/ultimate-frontend-skills.png, top of README.
+- inspect: wired into SKILL.md and pipeline stage 2; browser test added and
+  passing alone. Cap: the plugin has a standing 65 (mode --cap 65 --always,
+  set by owner-23) and no per-session raise; it refuses fan-outs only.
 - Scaffolder: the phone <details> panel is now rewritten with the same anchors
   as the desktop list, and 404.html reuses the index's REWRITTEN nav instead of
   the section file's raw block. The fable preset hides .nav__links and .nav__cta

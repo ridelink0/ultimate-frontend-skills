@@ -258,6 +258,17 @@ git clone https://github.com/ridelink0/ultimate-frontend-skills
 node ultimate-frontend-skills/scripts/install.mjs
 ```
 
+Or through the open skills ecosystem, which installs the two skills into every
+agent it finds on the machine:
+
+```bash
+npx skills add ridelink0/ultimate-frontend-skills
+```
+
+The same works for the sibling plugins: `ridelink0/claude-code-usage-limits`
+and `ridelink0/claude-computer-use`. skills.sh has no submission step - it
+lists what the CLI installs.
+
 That registers the plugin with both CLIs. Or do it by hand:
 
 ```bash
