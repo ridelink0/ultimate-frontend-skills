@@ -107,6 +107,24 @@ AxonHost.cs read stays in owner-4d's relay note.
   (node --test test/*.test.mjs twice, full TAP kept; madge, publint, plugin
   validate --strict, knip, html-validate on a fresh scaffold), stay under 65%.
 
+## 2026-09-15, first window
+- Scaffolder: the phone <details> panel is now rewritten with the same anchors
+  as the desktop list, and 404.html reuses the index's REWRITTEN nav instead of
+  the section file's raw block. The fable preset hides .nav__links and .nav__cta
+  and shows .nav__menu at every width, like the page it is named for.
+- awards --pick service maps to kind portfolio,brand with q 'agency' - Produx,
+  Noomo, Obys - because the corpus has no service kind and agencies are services.
+- FOUND, NOT FIXED: the desktop anchor list is thin. new --sections
+  nav,hero-photo,services,faq,contact,footer yields anchors [work, contact] only:
+  the services and faq blocks carry no id on a landmark element the anchor regex
+  in cmdNew matches (section|header|article|aside|footer with id=), and
+  hero-photo carries id=work. Give every section block a landmark id.
+- Gev asked whether the plugin can inspect live sites the way DevTools does.
+  It already drives headless Chrome over CDP (look/quality/study/debug); what is
+  missing is an on-demand `inspect <url> --selector` that returns computed
+  styles (font, size, line-height, tracking, colours), the loaded font list and
+  the resource tree. Build it on the CDP client in scripts/inspect.mjs.
+
 ## Still open as of 2026-09-14 afternoon (the 9:55 relay never ran - argv cap)
 
 - test 47 in test/fixtures.test.mjs PASSES when run alone (verified 2026-09-14

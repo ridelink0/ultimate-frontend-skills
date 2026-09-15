@@ -230,7 +230,10 @@ const REGISTERS = {
   object: { kind: '3d,product', q: '' },
   product: { kind: 'product,3d', q: '' },
   place: { kind: 'brand,editorial', q: '' },
-  service: { kind: 'brand,editorial', q: '' },
+  // An agency or studio site IS a service site - the corpus has no 'service'
+  // kind, and mapping the register to brand alone returned a watch, an art
+  // archive and a headset.
+  service: { kind: 'portfolio,brand', q: 'agency' },
   argument: { kind: 'editorial', q: '' },
   portfolio: { kind: 'portfolio', q: '' },
   '3d': { kind: '3d', q: '' },

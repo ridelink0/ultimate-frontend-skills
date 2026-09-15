@@ -55,7 +55,10 @@ const PRESETS = {
 body{--bg:oklch(96.4% .008 88);--fg:oklch(22% .018 62);--fg-muted:oklch(44% .022 66)}
 .nav{position:sticky;background:oklch(96.4% .008 88);color:oklch(22% .018 62);min-height:68px}
 .nav .btn--ghost{background:oklch(22% .018 62);color:oklch(96.4% .008 88);border-color:transparent}
-.hero{min-height:87svh}`,
+.hero{min-height:87svh}
+/* the launch page's header is a wordmark and a menu button, at every width */
+.nav__links,.nav__cta{display:none}
+.nav__menu{display:block}`,
     tone: '',
     themeColor: '#f7f5ef',
   },
@@ -137,6 +140,16 @@ function cmdNew() {
         `\n  </ul>`
       : '',
   );
+  // The phone panel carries its own list, and rewriting only the desktop one
+  // shipped every scaffolded phone menu with the section file's labels - Work,
+  // Method, Detail - pointing at whatever the fallback below chose. Same
+  // anchors, same labels, both lists.
+  body = body.replace(
+    /(<div class="nav__panel">\s*)<ul>[\s\S]*?<\/ul>/,
+    anchors.length
+      ? `$1<ul>\n` + anchors.slice(0, 6).map((id) => `        <li><a href="#${id}">${label(id)}</a></li>`).join('\n') + `\n      </ul>`
+      : '$1',
+  );
   const cta = anchors.includes('contact') ? 'contact' : anchors[anchors.length - 1];
   body = cta
     ? body.replace(/(<a class="btn btn--ghost" href=")#contact(")/, `$1#${cta}$2`)
@@ -193,7 +206,11 @@ ${sections.get('foot').body}${engines.length ? '\n' + engines.join('\n') : ''}
   // head, same nav, same footer; anchors point back at the index because this
   // is a different document, and only motion.js loads - there is nothing here
   // for an engine to draw.
-  const navBlock = wanted.includes('nav') ? sections.get('nav').body.replace(/Brand Name/g, name) : '';
+  // The nav as the index finally has it - anchors rewritten, labels derived,
+  // dead links removed - not the section file's raw block, which kept Work /
+  // Method / Detail on every 404 the scaffolder ever wrote.
+  const navMatch = body.match(/<a class="sr-skip"[\s\S]*?<\/nav>/);
+  const navBlock = navMatch ? navMatch[0] : '';
   const notFound = `<!DOCTYPE html>
 <html lang="en">
 <head>
