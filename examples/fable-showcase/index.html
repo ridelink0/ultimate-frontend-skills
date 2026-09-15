@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fable Showcase - a recreation of the Fable 5.1 launch page, built to test a plugin</title>
+<meta name="description" content="A recreation of the Claude Fable 5.1 launch page hero and article layout, built with the Ultimate Frontend Skills plugin to test its pipeline. Not Anthropic's page.">
+<meta name="theme-color" content="#f7f5ef">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2316140f'/><text x='16' y='23' font-family='Georgia,serif' font-size='20' fill='%23f2efe7' text-anchor='middle'>F</text></svg>">
+<meta property="og:title" content="Fable Showcase">
+<meta property="og:description" content="A recreation of the Claude Fable 5.1 launch page hero and article layout, built with the Ultimate Frontend Skills plugin to test its pipeline. Not Anthropic's page.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Instrument+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="core.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<a class="sr-skip" href="#main">Skip to content</a>
+<nav class="nav" aria-label="Primary">
+  <a class="nav__brand" href="#top">Fable Showcase</a>
+  <ul class="nav__links">
+    <li><a href="#introduction">Introduction</a></li>
+    <li><a href="#performance">Performance</a></li>
+    <li><a href="#research">Research</a></li>
+    <li><a href="#safety">Safety</a></li>
+  </ul>
+  <a class="btn btn--ghost nav__cta" href="#about" data-magnetic="0.18">About this page</a>
+  <details class="nav__menu">
+    <summary aria-label="Menu">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path class="nav__bar1" d="M3 7h18"/><path class="nav__bar2" d="M3 12h18"/><path class="nav__bar3" d="M3 17h18"/>
+      </svg>
+    </summary>
+    <div class="nav__panel">
+      <ul>
+        <li><a href="#introduction">Introduction</a></li>
+        <li><a href="#performance">Performance</a></li>
+        <li><a href="#research">Research</a></li>
+        <li><a href="#safety">Safety</a></li>
+        <li><a href="#mythos">Claude Mythos 5.1</a></li>
+      </ul>
+      <a class="btn btn--ghost" href="#about">About this page</a>
+    </div>
+  </details>
+</nav>
+<main id="main">
+
+<header class="hero" id="top">
+  <div class="sky" data-sky data-moods="Noon:#7ea9de|Night:#1a2237|Morning:#dcc4b3"></div>
+  <div class="hero__scrim"></div>
+  <div class="hero__inner wrap center on-media">
+    <p class="eyebrow r">September 2026</p>
+    <h1 class="r r-2">
+      The Fable 5.1 launch page,<span class="display__b">rebuilt to test a plugin.</span>
+    </h1>
+    <ol class="index r r-3">
+      <li><span class="index__n">[1]</span><span class="index__dots"></span><a class="index__label link" href="#introduction">Introduction</a></li>
+      <li><span class="index__n">[2]</span><span class="index__dots"></span><a class="index__label link" href="#performance">A new performance frontier</a></li>
+      <li><span class="index__n">[3]</span><span class="index__dots"></span><a class="index__label link" href="#research">Scientific research</a></li>
+      <li><span class="index__n">[4]</span><span class="index__dots"></span><a class="index__label link" href="#safety">Safety, security, and alignment</a></li>
+      <li><span class="index__n">[5]</span><span class="index__dots"></span><a class="index__label link" href="#mythos">Claude Mythos 5.1</a></li>
+    </ol>
+  </div>
+  <p class="hero__credit">Made with Fable 5.1 and the Ultimate Frontend Skills plugin</p>
+</header>
+
+<div class="rail" aria-hidden="true"><span class="rail__mark"></span></div>
+
+<article class="article" id="article">
+  <div class="article__col">
+
+    <p class="lede r">
+      This is not Anthropic's page. It is a recreation of the Claude Fable 5.1 launch page, built on 14 September 2026 with the Ultimate Frontend Skills plugin, to find out whether its pipeline can produce the page it was <em>measured</em> from.
+    </p>
+
+    <section class="article__section" id="introduction">
+      <h2><span class="article__n">[1]</span>Introduction</h2>
+      <p><strong class="runin">What this is.</strong> The five headings on this page are the five entries in the original's contents list, kept so the dot-leader index in the hero has real targets. Everything under them is a note about how this recreation was built. None of it is Anthropic's text, and no claim about either model is made here.</p>
+      <p><strong class="runin">What was copied.</strong> The layout numbers only: a 68px solid header, a hero at 87vh, a 13px eyebrow tracked at +0.16em, a two-line serif title at about 76px with the second line pushed 150px right, a 15px contents list, a 28px lede on a 640px column, and body text at 18px with a 1.55 line height. Those came from the plugin's own teardown of the original, not from its stylesheets.</p>
+      <p><strong class="runin">What was not.</strong> The wordmark, the prose, the benchmark charts, the bird, and the testimonials. A recreation that carried those over would be a copy, and a copy tests nothing.</p>
+    </section>
+
+    <section class="article__section" id="performance">
+      <h2><span class="article__n">[2]</span>A new performance frontier</h2>
+      <p><strong class="runin">Not a model benchmark.</strong> Nothing on this page measures a model. The heading is here because the original's contents list has it at [2], and the plugin's audit fails a page whose index points at anchors that do not exist.</p>
+      <p><strong class="runin">What was measured instead.</strong> The page itself. The plugin's verify command runs the source audit, a headless-browser render at 1440 and 390 pixels, the quality budgets, and the security scan, and returns one exit code. The quality pass watches frames for four seconds under a driven scroll and reports forced layouts, layout shift, idle libraries, and the type scale as painted. The results are in the build notes shipped beside this file.</p>
+      <p><strong class="runin">The sky.</strong> The hero is the plugin's sky.js engine: one WebGL sphere with a hand-written fragment shader, a canvas of blurred branches in the lower corners, and three palette buttons that set a weight vector the render loop eases every frame. Clicking a dot does not swap an image. It re-lights the scene.</p>
+    </section>
+
+    <section class="article__section" id="research">
+      <h2><span class="article__n">[3]</span>Scientific research</h2>
+      <p><strong class="runin">Not protein design.</strong> The original's third section is about research done with the model. This one is about the research done to build the page, which was reading two files: the plugin's teardown of the original's shipped bundles, and the showcase note that corrects four things in that teardown.</p>
+      <p><strong class="runin">What those files know.</strong> That the original hero is a three.js scene and not a photograph; that its three dots blend a weight vector barycentrically rather than crossfading assets; that its depth of field is a 72-tap circular bokeh rotated per pixel; and that its clouds thin behind the headline through a shelter uniform rather than a scrim. The plugin's engine reproduces the first two. It does not reproduce the last two, and the notes say so.</p>
+      <p><strong class="runin">What was looked at.</strong> The live page, rendered by the plugin's own look command at 1440 pixels, side by side with this one. Where the two differ is written down in the build notes rather than smoothed over here.</p>
+    </section>
+
+    <section class="article__section" id="safety">
+      <h2><span class="article__n">[4]</span>Safety, security, and alignment</h2>
+      <p><strong class="runin">Not model safety.</strong> No safety evaluation of any model appears on this page. The heading is the original's; the content is the page's own.</p>
+      <p><strong class="runin">What ran.</strong> The plugin's security command reads the build directory for secrets, environment files, served source maps, forms that post personal data over GET or plain HTTP, CDN scripts with nothing pinning them, and quiet disclosures such as a developer's username in a shipped path. This page has no form, no key, and one CDN dependency, three.js, pinned to an exact version in the import map.</p>
+      <p><strong class="runin">What it cannot see.</strong> Whether security headers arrive from a host, because this page has no host. The plugin's reference says to check that with curl after a deploy. There was no deploy, so that check did not run.</p>
+    </section>
+
+    <section class="article__section" id="mythos">
+      <h2><span class="article__n">[5]</span>Claude Mythos 5.1</h2>
+      <p><strong class="runin">Nothing to report.</strong> The original's fifth section describes a second model. This recreation has nothing to say about it, and writing something to fill the space would be exactly the kind of invented specific the plugin's rules forbid. The section is here so the index is complete, and it ends here.</p>
+    </section>
+
+    <section class="article__section article__section--about" id="about">
+      <h2><span class="article__n">[+]</span>About this page</h2>
+      <p><strong class="runin">Purpose.</strong> A test of the Ultimate Frontend Skills plugin, using the page it was built around as the target. The deliverable is not this page but the build notes next to it, which list every command run, its exit code, what the plugin did well, where it fell short, and what had to be written by hand.</p>
+      <p><strong class="runin">Hand-written here.</strong> The article layout, the run-in labels, the tick-mark rail at the left edge, and the credit line in the hero. The plugin's section library had no article template, so those four are site.css and plain markup.</p>
+    </section>
+
+  </div>
+</article>
+
+<footer class="section section--tight" style="padding-block:var(--s-7)">
+  <hr class="rule">
+  <div class="wrap" style="display:flex;flex-wrap:wrap;gap:var(--s-5);justify-content:space-between;align-items:baseline;padding-top:var(--s-6)">
+    <p class="caption">A recreation built to test a plugin. Not affiliated with Anthropic.</p>
+    <ul style="display:flex;gap:var(--s-5);list-style:none;padding:0" class="caption">
+      <li><a class="link" href="#top">Back to top</a></li>
+    </ul>
+  </div>
+</footer>
+</main>
+<div class="grain" aria-hidden="true"></div>
+<script src="motion.js" defer></script>
+<script type="importmap">
+{"imports":{
+  "three": "https://cdn.jsdelivr.net/npm/three@0.186.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.0/examples/jsm/"
+}}</script>
+<script type="module" src="sky.js"></script>
+</body>
+</html>

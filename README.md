@@ -121,6 +121,71 @@ download, so the reference has the budgets. A generated image has its lighting
 baked in and cannot be relit - that limit is stated once, with the three
 workarounds, rather than designed around.
 
+## The packs it works alongside, and how to get them
+
+Detection was only half of it. `packs` lists the packs this plugin defers to,
+says which are installed, and - with `--install` - gets the absent ones through
+the tool each author documents. Nothing is copied into this repo; each pack is
+its author's, installed at your scope, updated there.
+
+```bash
+webdesign.mjs packs                 # what is recommended, what is here
+webdesign.mjs packs --dry-run       # the exact commands, nothing run
+webdesign.mjs packs --install       # get every absent one
+```
+
+| Pack | Owns when installed |
+|---|---|
+| [emilkowalski/skills](https://github.com/emilkowalski/skills) | UI component motion (`animate`) and the verdict on it (`review-animations`). The line between his numbers and this plugin's is component versus page - `references/skill-packs.md` draws it |
+| [frontend-design](https://github.com/anthropics/claude-code-plugins) (Anthropic, official) | Aesthetic direction at the start of new UI |
+| [MickeyAlton33/web-designer-plugin](https://github.com/MickeyAlton33/web-designer-plugin) | Award-winning references as a way of teaching a model what good looks like - the idea this plugin's corpus grew from |
+| [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) `web-design-guidelines` | A broad review checklist, the most-installed design skill in the ecosystem |
+| [addyosmani/web-quality-skills](https://github.com/addyosmani/web-quality-skills) `accessibility` | Accessibility review, from the Chrome team's side |
+| [ibelick/ui-skills](https://github.com/ibelick/ui-skills) `fixing-accessibility` | Fixing accessibility defects, not just finding them |
+| [cloudai-x/threejs-skills](https://github.com/cloudai-x/threejs-skills) | three.js as a general subject, everything outside the scroll-driven product page |
+
+## Built on the work of
+
+This plugin exists because of other people's work, and it should say so where
+it can be seen.
+
+- **[Emil Kowalski](https://github.com/emilkowalski/skills)** - the `animate`
+  and `review-animations` skills, MIT. Two of his rules were adopted into this
+  plugin's own practice because it had no position on either: never enter from
+  `scale(0)`, and reduced motion is a gentler variant rather than zero.
+- **[MickeyAlton33/web-designer-plugin](https://github.com/MickeyAlton33/web-designer-plugin)** -
+  published first, in March 2026, the idea of naming the specific award-winning
+  site beside each technique so a model decides against something real rather
+  than from memory: 48 patterns from 38 sites, each attributed to where it was taken from.
+  This plugin's corpus is that idea as structured data - **388 entries, 336 with
+  a URL that was fetched and answered**, each carrying its stack, techniques,
+  palette, type, motion and the one craft move worth taking - so it can be
+  queried by the problem and rendered into contact sheets. The idea was his.
+- **Anthropic's [frontend-design](https://github.com/anthropics/claude-code-plugins)** -
+  when installed it owns aesthetic direction and this plugin defers to it.
+- **[Vercel Labs](https://github.com/vercel-labs/skills)** - the `skills` CLI
+  and the open ecosystem the packs above are installed through.
+- **[Poly Haven](https://polyhaven.com)** and **[ambientCG](https://ambientcg.com)** -
+  CC0 PBR material sets and HDRI lighting with key-free APIs. `assets textures`
+  and `assets hdri` are thin clients over their work.
+- **[three.js](https://threejs.org)**, **[GSAP](https://gsap.com)**,
+  **[Lenis](https://lenis.darkroom.engineering)**, **[anime.js](https://animejs.com)** -
+  the runtimes `references/stack.md` pins.
+- **[Blender](https://www.blender.org)** - the modelled-3D route runs on it
+  headless; the Blender Foundation's glTF exporter is what carries the named
+  parts to the web.
+- **[rembg](https://github.com/danielgatis/rembg)** and
+  **[Depth Anything V2](https://github.com/DepthAnything/Depth-Anything-V2)** -
+  local background removal behind `cut`, and the depth maps `depth.js` reads.
+- **The showcase sites the corpus is harvested from** - Awwwards, FWA, Codrops,
+  Godly, Land-book, siteInspire, One Page Love, Httpster, Minimal Gallery, Lapa
+  Ninja, Best Website Gallery, CSS Design Awards, the Webby Awards, and the
+  three.js showcase - and every studio whose site is in it. The corpus points
+  at them; it never copies them.
+- **Anthropic's Fable 5.1 launch page** - measured from its own shipped bundles
+  in `references/fable.md` and `references/fable-showcase.md`, which also
+  record what could *not* be evidenced about how it was made.
+
 ## The rest of the bench
 
 ```bash

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Page not found - Fable Showcase</title>
+<meta name="description" content="One sentence, 140-160 characters, written for a person.">
+<meta name="theme-color" content="#f7f5ef">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2316140f'/><text x='16' y='23' font-family='Georgia,serif' font-size='20' fill='%23f2efe7' text-anchor='middle'>A</text></svg>">
+<meta property="og:title" content="Fable Showcase">
+<meta property="og:description" content="Same sentence as the description.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Instrument+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="core.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<!-- COPYING THIS BY HAND? The skip link below points at the main landmark,
+     and the scaffolder is what wraps the page in a main element whose id is
+     "main". Taking blocks out of this file yourself means writing that wrapper
+     yourself too - a main element, id main, around every section after the
+     nav - or the first thing a keyboard user presses goes nowhere. It is also
+     the page's only main landmark, so a screen reader cannot skip the header
+     without it. -->
+<a class="sr-skip" href="./#main">Skip to content</a>
+<nav class="nav" aria-label="Primary">
+  <a class="nav__brand" href="./#top">Fable Showcase</a>
+  <ul class="nav__links">
+    <li><a href="./#work">Work</a></li>
+    <li><a href="./#method">Method</a></li>
+    <li><a href="./#detail">Detail</a></li>
+  </ul>
+  <a class="btn btn--ghost nav__cta" href="./#contact" data-magnetic="0.18">Get in touch</a>
+  <!-- The phone navigation. <details> rather than a dialog: it is a disclosure,
+       not a modal, and it is the only version that still opens with JavaScript
+       off. summary carries the button semantics and the expanded state itself,
+       so there is no aria-expanded to keep in sync and nothing to get wrong. -->
+  <details class="nav__menu">
+    <summary aria-label="Menu">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path class="nav__bar1" d="M3 7h18"/><path class="nav__bar2" d="M3 12h18"/><path class="nav__bar3" d="M3 17h18"/>
+      </svg>
+    </summary>
+    <div class="nav__panel">
+      <ul>
+        <li><a href="./#work">Work</a></li>
+        <li><a href="./#method">Method</a></li>
+        <li><a href="./#detail">Detail</a></li>
+      </ul>
+      <a class="btn btn--ghost" href="./#contact">Get in touch</a>
+    </div>
+  </details>
+</nav>
+<main id="main">
+<section class="section" id="not-found" aria-labelledby="nf-title">
+  <div class="wrap" style="max-width:40rem;padding-block:var(--s-9)">
+    <p class="eyebrow">404</p>
+    <h1 id="nf-title" class="t-hero" style="max-width:16ch">There is nothing at this address.</h1>
+    <p class="lede">The link may be old, or the page may have moved. Nothing here is broken on your side.</p>
+    <p style="display:flex;flex-wrap:wrap;gap:var(--s-4);margin-top:var(--s-6)">
+      <a class="btn" href="./">Back to the start</a>
+      <a class="btn btn--ghost" href="./#contact">Get in touch</a>
+    </p>
+  </div>
+</section>
+</main>
+<footer class="section section--tight" style="padding-block:var(--s-7)">
+  <hr class="rule">
+  <div class="wrap" style="display:flex;flex-wrap:wrap;gap:var(--s-5);justify-content:space-between;
+       align-items:baseline;padding-top:var(--s-6)">
+    <p class="caption">&copy; 2026 Fable Showcase</p>
+    <ul style="display:flex;gap:var(--s-5);list-style:none;padding:0" class="caption">
+      <li><a class="link" href="./#top">Back to top</a></li>
+    </ul>
+  </div>
+</footer>
+<div class="grain" aria-hidden="true"></div>
+<script src="motion.js" defer></script>
+<!-- The scaffolder adds gradient.js / depth.js / three.js + exploded.js
+     here, but only when the page actually contains one. -->
+</body>
+</html>

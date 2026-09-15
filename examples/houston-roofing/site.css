@@ -1,0 +1,37 @@
+/* Sabine Roofing - project layer. core.css is the chassis; every choice specific to
+   this subject belongs here. Do not edit core.css. */
+:root{--accent-h:50}
+body{--bg:var(--ink-950);--fg:var(--bone-300);--fg-muted:var(--sand-400);
+  --bg-raised:var(--ink-900);--rule:color-mix(in oklab,var(--bone-300) 16%,transparent);
+  --rule-soft:color-mix(in oklab,var(--bone-300) 9%,transparent);color-scheme:dark}
+
+/* Hero: the colour field is the roof's own material (shingle, cedar, clay);
+   the ridge line under the lead is a 4:12 pitch drawn at one stroke. */
+.hero__actions{display:flex;flex-wrap:wrap;gap:var(--s-4);justify-content:center;margin-top:var(--s-7)}
+.ridge{display:block;margin:var(--s-8) auto 0;color:var(--bone-100);max-width:100%;height:auto}
+
+/* Fields: the chassis swaps the hairline colour on :focus, which is thin for a
+   keyboard user. Put a ring back for :focus-visible. */
+.field :is(input,textarea,select):focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-bottom-color:var(--accent)}
+
+/* Radio group */
+.choice{border:0;padding:0;margin:0;display:grid;gap:0}
+.choice legend{padding:0;margin-block-end:var(--s-3)}
+.choice__opt{display:flex;align-items:center;gap:var(--s-3);min-block-size:44px;margin:0;font-family:var(--font-ui);font-size:var(--step--1)}
+.choice__opt label{cursor:pointer}
+.choice input[type="radio"]{inline-size:1.1rem;block-size:1.1rem;margin:0;accent-color:var(--accent);flex:none}
+.choice input[type="radio"]:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+/* Section rhythm: the claim steps sit on the raised ground; the questions get
+   more air above them than the list before. */
+#claims{background:var(--bg-raised)}
+#questions{padding-block-start:calc(var(--section-y) * 1.15)}
+#services{padding-block-end:calc(var(--section-y) * 0.8)}
+
+/* Footer: one wider prose column, the rest narrow */
+.footer__row{display:flex;flex-wrap:wrap;gap:var(--s-5) var(--s-7);justify-content:space-between;align-items:baseline;padding-top:var(--s-6)}
+.footer__area{max-width:38ch;margin:0}
+.footer__links{display:flex;gap:var(--s-5);list-style:none;padding:0;margin:0}
+
+/* The 404 and privacy pages */
+.page{max-width:40rem}

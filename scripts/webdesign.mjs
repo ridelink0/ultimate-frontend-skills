@@ -693,6 +693,23 @@ async function cmdAwards() {
   console.log(A.formatAwards(rows, { verbose: !!flag('verbose') }));
 }
 
+/* The packs this plugin defers to, and getting them. Detection alone left a
+   user reading about a handoff to a pack they did not have. */
+async function cmdPacks() {
+  const P = await import('./packs.mjs');
+  if (flag('install') || flag('dry-run')) {
+    const report = P.install({ only: flag('only') ? String(flag('only')) : null, dry: !!flag('dry-run') });
+    if (flag('json')) { console.log(JSON.stringify(report, null, 2)); return; }
+    console.log('');
+    for (const r of report) console.log('  ' + r.id.padEnd(40) + r.action);
+    process.exitCode = report.some((r) => !r.ok) ? 1 : 0;
+    return;
+  }
+  const rows = P.status();
+  if (flag('json')) { console.log(JSON.stringify(rows, null, 2)); return; }
+  console.log(P.format(rows));
+}
+
 /* The three scripts that reach outside the page: Blender for geometry, the
    asset fetchers for CC0 textures and lighting, the bench check for what is
    installed. They live in their own files and run from here so there is one
@@ -726,6 +743,7 @@ switch (cmd) {
   case 'parity': await cmdParity(); break;
   case 'video': await cmdVideo(); break;
   case 'awards': case 'refs': await cmdAwards(); break;
+  case 'packs': await cmdPacks(); break;
   case 'blender': await delegate('blender.mjs', argv.slice(1)); break;
   case 'assets': case 'texture': case 'textures': await delegate('assets.mjs', argv.slice(1)); break;
   case 'tools': case 'bench': await delegate('tools.mjs', argv.slice(1)); break;
@@ -753,6 +771,8 @@ switch (cmd) {
   blender <probe|run|glb|bake|frames> ...   author geometry, bake, render (Blender headless)
   assets <search|textures|hdri|gen> ...     CC0 PBR materials, HDRI lighting, generated imagery
   tools                           what else is installed on this bench and what changes because of it
+  packs [--install] [--dry-run] [--only <id>]
+                                  the packs this plugin defers to; get the absent ones
   dev <dir> [--port 4321] [--widths 1440] [--scroll 0,900]
                                   serve + watch: re-audits and re-renders on every save
   serve <dir> [--port 4321]       local preview

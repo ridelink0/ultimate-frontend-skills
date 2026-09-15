@@ -1,0 +1,11 @@
+/* Fable Showcase - project layer. core.css is the chassis; every choice specific to
+   this subject belongs here. Do not edit core.css. */
+:root{--accent-h:44;--nav-h:68px}
+/* the photograph sits UNDER a solid bar, not behind a transparent one */
+body{--bg:oklch(96.4% .008 88);--fg:oklch(22% .018 62);--fg-muted:oklch(44% .022 66)}
+.nav{position:sticky;background:oklch(96.4% .008 88);color:oklch(22% .018 62);min-height:68px}
+.nav .btn--ghost{background:oklch(22% .018 62);color:oklch(96.4% .008 88);border-color:transparent}
+.hero{min-height:87svh}
+
+/* Derive --accent-h from the hero photograph: take the hue of the subject's
+   own material, keep the L and C above. */

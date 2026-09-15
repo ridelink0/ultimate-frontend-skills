@@ -46,7 +46,9 @@ node "${CLAUDE_PLUGIN_ROOT}/scripts/webdesign.mjs" tools
 node "${CLAUDE_PLUGIN_ROOT}/scripts/webdesign.mjs" awards --pick object --n 3
 ```
 
-The first says what is on this machine. The second picks three award-winning
+The first says what is on this machine - and `packs` says which of the packs
+this plugin defers to are absent, and `packs --install` gets them (see
+`references/skill-packs.md`). The second picks three award-winning
 references that disagree with each other, so the decisions get made against
 something real rather than from memory. `study --awards "<technique>"` renders
 them; open the PNGs.
