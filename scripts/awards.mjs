@@ -233,7 +233,7 @@ const REGISTERS = {
   // An agency or studio site IS a service site - the corpus has no 'service'
   // kind, and mapping the register to brand alone returned a watch, an art
   // archive and a headset.
-  service: { kind: 'portfolio,brand', q: 'agency' },
+  service: { kind: 'portfolio', q: 'agency' },
   argument: { kind: 'editorial', q: '' },
   portfolio: { kind: 'portfolio', q: '' },
   '3d': { kind: '3d', q: '' },
