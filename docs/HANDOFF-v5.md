@@ -89,7 +89,20 @@ AxonHost.cs read stays in owner-4d's relay note.
   .sky__dot[aria-label="Night"][aria-pressed="true"] missing after clicking
   Night while Morning and Noon passed - check whether sky.js sets aria-pressed
   on the Night dot or whether the action fired before the eased transition.
-- examples/houston-roofing: in progress at window close; verify and commit it.
+- examples/houston-roofing DONE and pushed: 3 rounds, verify exit 0. Hero is
+  hero-gradient because assets gen found no generator and no key. Its
+  BUILD-NOTES.md found PLUGIN BUGS to fix: (1) the scaffolder rewrites only the
+  DESKTOP nav list - the phone <details> panel and 404.html keep the section
+  file's Work/Method/Detail links with dead anchors (my mobile-nav change added
+  a second list the anchor rewrite never touches - fix cmdNew to rewrite both);
+  (2) awards --pick service returned Warhol Arts, Bruno Simon and Apple Vision
+  Pro - none a service - so the register map in pickReferences is wrong for
+  service/place; (3) verify crawls sibling tool output (debug's review.html)
+  and fails on it - exclude compare/ and debug galleries; (4) core.css
+  .hero:has([data-sky]) .hero__scrim at .55 greys the sky the engine painted;
+  (5) debug swallows the first click after load, reproduced twice.
+  Full lists in both BUILD-NOTES.md files - read them before touching the plugin.
+- Suite run TWO on the final tree: not run - window closed at 91%. Do it first.
 - STILL TO DO from Gev's 8:05 message: bug pass TWO on the final tree
   (node --test test/*.test.mjs twice, full TAP kept; madge, publint, plugin
   validate --strict, knip, html-validate on a fresh scaffold), stay under 65%.

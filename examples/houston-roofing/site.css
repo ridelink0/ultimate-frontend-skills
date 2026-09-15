@@ -14,13 +14,31 @@ body{--bg:var(--ink-950);--fg:var(--bone-300);--fg-muted:var(--sand-400);
    keyboard user. Put a ring back for :focus-visible. */
 .field :is(input,textarea,select):focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-bottom-color:var(--accent)}
 
-/* Radio group */
-.choice{border:0;padding:0;margin:0;display:grid;gap:0}
+/* Radio group. Native radios paint at 18px; 24px is the floor (WCAG 2.5.8). */
+.choice{border:0;padding:0;margin:0;margin-block-start:var(--s-5);display:grid;gap:0}
 .choice legend{padding:0;margin-block-end:var(--s-3)}
 .choice__opt{display:flex;align-items:center;gap:var(--s-3);min-block-size:44px;margin:0;font-family:var(--font-ui);font-size:var(--step--1)}
 .choice__opt label{cursor:pointer}
-.choice input[type="radio"]{inline-size:1.1rem;block-size:1.1rem;margin:0;accent-color:var(--accent);flex:none}
+.choice input[type="radio"]{inline-size:1.5rem;block-size:1.5rem;margin:0;accent-color:var(--accent);flex:none}
 .choice input[type="radio"]:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+/* Vertical contact the chassis leaves open: core.css zeroes every margin and
+   trims the leading off eyebrows and headings with text-box, and .grid sets a
+   column-gap but no row-gap. So an eyebrow followed by a heading in one column
+   touches it (the 404 block ships this way), and once the grid collapses under
+   46rem the eyebrow's row and the heading's row touch too. */
+.eyebrow + :is(h1, h2, h3) { margin-block-start: var(--s-5); }
+h1 + .lead, .t-hero + .lead { margin-block-start: var(--s-5); }
+
+/* Narrow widths. Two more chassis gaps:
+   the ghost CTA stays in the bar under 46rem and pushes the wordmark onto two
+   lines (the phone panel already carries the same CTA); and the bar stays
+   transparent over the hero while the phone panel is open. */
+@media (max-width: 46rem) {
+  .grid { row-gap: var(--s-6); }
+  .nav__cta { display: none; }
+  .nav:has(.nav__menu[open]) { background: var(--bg); }
+}
 
 /* Section rhythm: the claim steps sit on the raised ground; the questions get
    more air above them than the list before. */
