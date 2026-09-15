@@ -58,6 +58,27 @@ plugin.json; the always-on schema cost was 3,047 tokens against a 3,000
 bound, now 3,100 with the reason in the test. All ten exit 0. The
 AxonHost.cs read stays in owner-4d's relay note.
 
+## 2026-09-14 evening (the 8:05 window), landed
+- `packs` command (scripts/packs.mjs): seven recommended packs, real
+  installed/absent state, `--install` gets the absent ones via npx skills add /
+  claude plugin. ALL SEVEN ARE NOW INSTALLED on this machine - Emil Kowalski's
+  skills, frontend-design, MickeyAlton33/web-designer-plugin (marketplace name
+  web-designer-marketplace, plugin web-designer - NOT the repo name), vercel
+  web-design-guidelines, addyosmani accessibility, ibelick fixing-accessibility,
+  cloudai-x threejs (ten skills).
+- README: "The packs it works alongside" + "Built on the work of" credits.
+- TWO BUILDS were running as a test of the plugin when the window closed:
+  examples/fable-showcase (recreation of anthropic.com/claude-fable-and-mythos-5-1
+  with preset fable + sky.js) and examples/houston-roofing (the README's own
+  example prompt). Each writes BUILD-NOTES.md - what the plugin did well, where
+  it fell short, what had to be hand-written. Half-built files got swept into
+  commit by a git add -A; the finished state must be verified (verify --widths
+  1440,390, look at the PNGs) and committed. Read the two BUILD-NOTES.md first:
+  they are the actual test result. No deploy - Gev has no Netlify credits.
+- STILL TO DO from Gev's 8:05 message: run for bugs and tests on the final tree
+  (node --test test/*.test.mjs twice, full TAP kept; madge, publint, plugin
+  validate --strict, knip, html-validate on a fresh scaffold), stay under 65%.
+
 ## Still open as of 2026-09-14 afternoon (the 9:55 relay never ran - argv cap)
 
 - test 47 in test/fixtures.test.mjs PASSES when run alone (verified 2026-09-14
