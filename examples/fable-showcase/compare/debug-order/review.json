@@ -1,0 +1,861 @@
+{
+  "target": "examples/fable-showcase",
+  "summary": {
+    "errors": 0,
+    "warnings": 52
+  },
+  "results": [
+    {
+      "width": 1440,
+      "scroll": 0,
+      "file": "C:\\Users\\OWNER\\cinematic-web-design\\examples\\fable-showcase\\compare\\debug-order\\normal\\w1440.png",
+      "overlaps": [],
+      "overflow": [],
+      "contrast": [
+        {
+          "el": "span.index__n \"[4]\"",
+          "ratio": 1.44,
+          "worstRatio": 1.11,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "span.index__n \"[1]\"",
+          "ratio": 1.5,
+          "worstRatio": 1.13,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "span.index__n \"[2]\"",
+          "ratio": 1.52,
+          "worstRatio": 1.27,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "span.index__n \"[5]\"",
+          "ratio": 1.63,
+          "worstRatio": 1.26,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "a.index__label.link \"Scientific research\"",
+          "ratio": 1.67,
+          "worstRatio": 1.22,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "span.index__n \"[3]\"",
+          "ratio": 1.69,
+          "worstRatio": 1.26,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "a.index__label.link \"Safety, security, and alignment\"",
+          "ratio": 1.75,
+          "worstRatio": 1.26,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "a.index__label.link \"A new performance frontier\"",
+          "ratio": 1.8,
+          "worstRatio": 1.32,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "a.index__label.link \"Claude Mythos 5.1\"",
+          "ratio": 1.83,
+          "worstRatio": 1.41,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "a.index__label.link \"Introduction\"",
+          "ratio": 1.87,
+          "worstRatio": 1.39,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        }
+      ],
+      "collapsed": [],
+      "broken": [],
+      "tiny": [],
+      "offscreen": [],
+      "stats": {
+        "textElements": 58,
+        "scrollHeight": 4560,
+        "viewport": "1440x1000"
+      },
+      "reducedMotion": false,
+      "visual": {
+        "canvases": [
+          {
+            "width": 1440,
+            "height": 870,
+            "uniform": false,
+            "readable": true,
+            "spread": 167,
+            "context": "webgl2"
+          },
+          {
+            "width": 1440,
+            "height": 870,
+            "uniform": false,
+            "readable": true,
+            "spread": 255,
+            "context": "2d"
+          }
+        ],
+        "reducedMotion": false,
+        "webglSections": []
+      },
+      "actionErrors": [],
+      "hung": [],
+      "console": [],
+      "network": []
+    },
+    {
+      "width": 1440,
+      "scroll": 1780,
+      "file": "C:\\Users\\OWNER\\cinematic-web-design\\examples\\fable-showcase\\compare\\debug-order\\normal\\w1440-y1780.png",
+      "overlaps": [],
+      "overflow": [],
+      "contrast": [],
+      "collapsed": [],
+      "broken": [],
+      "tiny": [],
+      "offscreen": [],
+      "stats": {
+        "textElements": 60,
+        "scrollHeight": 4560,
+        "viewport": "1440x1000"
+      },
+      "reducedMotion": false,
+      "visual": {
+        "canvases": [
+          {
+            "width": 1440,
+            "height": 870,
+            "uniform": false,
+            "readable": true,
+            "spread": 168,
+            "context": "webgl2"
+          },
+          {
+            "width": 1440,
+            "height": 870,
+            "uniform": false,
+            "readable": true,
+            "spread": 255,
+            "context": "2d"
+          }
+        ],
+        "reducedMotion": false,
+        "webglSections": []
+      },
+      "actionErrors": [],
+      "hung": [],
+      "console": [],
+      "network": []
+    },
+    {
+      "width": 1440,
+      "scroll": 3560,
+      "file": "C:\\Users\\OWNER\\cinematic-web-design\\examples\\fable-showcase\\compare\\debug-order\\normal\\w1440-y3560.png",
+      "overlaps": [],
+      "overflow": [],
+      "contrast": [],
+      "collapsed": [],
+      "broken": [],
+      "tiny": [],
+      "offscreen": [],
+      "stats": {
+        "textElements": 60,
+        "scrollHeight": 4560,
+        "viewport": "1440x1000"
+      },
+      "reducedMotion": false,
+      "visual": {
+        "canvases": [
+          {
+            "width": 1440,
+            "height": 870,
+            "uniform": false,
+            "readable": true,
+            "spread": 171,
+            "context": "webgl2"
+          },
+          {
+            "width": 1440,
+            "height": 870,
+            "uniform": false,
+            "readable": true,
+            "spread": 255,
+            "context": "2d"
+          }
+        ],
+        "reducedMotion": false,
+        "webglSections": []
+      },
+      "actionErrors": [],
+      "hung": [],
+      "console": [],
+      "network": [],
+      "interact": [],
+      "focus": [],
+      "shifted": []
+    },
+    {
+      "width": 1440,
+      "scroll": null,
+      "step": 1,
+      "action": {
+        "type": "click",
+        "selector": ".sky__dot[aria-label=\"Morning\"]"
+      },
+      "file": "C:\\Users\\OWNER\\cinematic-web-design\\examples\\fable-showcase\\compare\\debug-order\\normal\\w1440-step1.png",
+      "overlaps": [],
+      "overflow": [],
+      "contrast": [
+        {
+          "el": "span.display__b \"rebuilt to test a plugin.\"",
+          "ratio": 1.02,
+          "worstRatio": 1.02,
+          "need": 3,
+          "size": 76,
+          "method": "photo"
+        },
+        {
+          "el": "span.index__n \"[4]\"",
+          "ratio": 1.69,
+          "worstRatio": 1.17,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "span.index__n \"[1]\"",
+          "ratio": 1.74,
+          "worstRatio": 1.18,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "span.index__n \"[2]\"",
+          "ratio": 1.81,
+          "worstRatio": 1.38,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "span.index__n \"[5]\"",
+          "ratio": 2.03,
+          "worstRatio": 1.39,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "a.index__label.link \"Scientific research\"",
+          "ratio": 2.15,
+          "worstRatio": 1.34,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "a.index__label.link \"Safety, security, and alignment\"",
+          "ratio": 2.28,
+          "worstRatio": 1.4,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "a.index__label.link \"Claude Mythos 5.1\"",
+          "ratio": 2.42,
+          "worstRatio": 1.62,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "a.index__label.link \"A new performance frontier\"",
+          "ratio": 2.51,
+          "worstRatio": 1.53,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "a.index__label.link \"Introduction\"",
+          "ratio": 2.57,
+          "worstRatio": 1.63,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        }
+      ],
+      "collapsed": [],
+      "broken": [],
+      "tiny": [],
+      "offscreen": [],
+      "stats": {
+        "textElements": 60,
+        "scrollHeight": 4560,
+        "viewport": "1440x1000"
+      },
+      "hung": [],
+      "console": [],
+      "network": [],
+      "visual": {
+        "canvases": [
+          {
+            "width": 1440,
+            "height": 870,
+            "uniform": false,
+            "readable": true,
+            "spread": 220,
+            "context": "webgl2"
+          },
+          {
+            "width": 1440,
+            "height": 870,
+            "uniform": false,
+            "readable": true,
+            "spread": 255,
+            "context": "2d"
+          }
+        ],
+        "reducedMotion": false,
+        "webglSections": []
+      },
+      "actionErrors": [],
+      "reducedMotion": false
+    },
+    {
+      "width": 1440,
+      "scroll": null,
+      "step": 2,
+      "action": {
+        "type": "expect-visible",
+        "selector": ".sky__dot[aria-label=\"Morning\"][aria-pressed=\"true\"]"
+      },
+      "file": "C:\\Users\\OWNER\\cinematic-web-design\\examples\\fable-showcase\\compare\\debug-order\\normal\\w1440-step2.png",
+      "overlaps": [],
+      "overflow": [],
+      "contrast": [
+        {
+          "el": "span.display__b \"rebuilt to test a plugin.\"",
+          "ratio": 1.02,
+          "worstRatio": 1.02,
+          "need": 3,
+          "size": 76,
+          "method": "photo"
+        },
+        {
+          "el": "span.index__n \"[4]\"",
+          "ratio": 1.69,
+          "worstRatio": 1.18,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "span.index__n \"[1]\"",
+          "ratio": 1.77,
+          "worstRatio": 1.16,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "span.index__n \"[2]\"",
+          "ratio": 1.83,
+          "worstRatio": 1.38,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "span.index__n \"[5]\"",
+          "ratio": 2.04,
+          "worstRatio": 1.4,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "a.index__label.link \"Scientific research\"",
+          "ratio": 2.22,
+          "worstRatio": 1.34,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "a.index__label.link \"Safety, security, and alignment\"",
+          "ratio": 2.35,
+          "worstRatio": 1.41,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "a.index__label.link \"Claude Mythos 5.1\"",
+          "ratio": 2.49,
+          "worstRatio": 1.64,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "a.index__label.link \"A new performance frontier\"",
+          "ratio": 2.64,
+          "worstRatio": 1.57,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "a.index__label.link \"Introduction\"",
+          "ratio": 2.68,
+          "worstRatio": 1.65,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        }
+      ],
+      "collapsed": [],
+      "broken": [],
+      "tiny": [],
+      "offscreen": [],
+      "stats": {
+        "textElements": 60,
+        "scrollHeight": 4560,
+        "viewport": "1440x1000"
+      },
+      "hung": [],
+      "console": [],
+      "network": [],
+      "visual": {
+        "canvases": [
+          {
+            "width": 1440,
+            "height": 870,
+            "uniform": false,
+            "readable": true,
+            "spread": 222,
+            "context": "webgl2"
+          },
+          {
+            "width": 1440,
+            "height": 870,
+            "uniform": false,
+            "readable": true,
+            "spread": 255,
+            "context": "2d"
+          }
+        ],
+        "reducedMotion": false,
+        "webglSections": []
+      },
+      "actionErrors": [],
+      "reducedMotion": false
+    },
+    {
+      "width": 1440,
+      "scroll": null,
+      "step": 3,
+      "action": {
+        "type": "click",
+        "selector": ".sky__dot[aria-label=\"Night\"]"
+      },
+      "file": "C:\\Users\\OWNER\\cinematic-web-design\\examples\\fable-showcase\\compare\\debug-order\\normal\\w1440-step3.png",
+      "overlaps": [],
+      "overflow": [],
+      "contrast": [
+        {
+          "el": "span.display__b \"rebuilt to test a plugin.\"",
+          "ratio": 1.02,
+          "worstRatio": 1.02,
+          "need": 3,
+          "size": 76,
+          "method": "photo"
+        }
+      ],
+      "collapsed": [],
+      "broken": [],
+      "tiny": [],
+      "offscreen": [],
+      "stats": {
+        "textElements": 60,
+        "scrollHeight": 4560,
+        "viewport": "1440x1000"
+      },
+      "hung": [],
+      "console": [],
+      "network": [],
+      "visual": {
+        "canvases": [
+          {
+            "width": 1440,
+            "height": 870,
+            "uniform": false,
+            "readable": true,
+            "spread": 92,
+            "context": "webgl2"
+          },
+          {
+            "width": 1440,
+            "height": 870,
+            "uniform": false,
+            "readable": true,
+            "spread": 255,
+            "context": "2d"
+          }
+        ],
+        "reducedMotion": false,
+        "webglSections": []
+      },
+      "actionErrors": [],
+      "reducedMotion": false
+    },
+    {
+      "width": 1440,
+      "scroll": null,
+      "step": 4,
+      "action": {
+        "type": "expect-visible",
+        "selector": ".sky__dot[aria-label=\"Night\"][aria-pressed=\"true\"]"
+      },
+      "file": "C:\\Users\\OWNER\\cinematic-web-design\\examples\\fable-showcase\\compare\\debug-order\\normal\\w1440-step4.png",
+      "overlaps": [],
+      "overflow": [],
+      "contrast": [
+        {
+          "el": "span.display__b \"rebuilt to test a plugin.\"",
+          "ratio": 1.02,
+          "worstRatio": 1.02,
+          "need": 3,
+          "size": 76,
+          "method": "photo"
+        }
+      ],
+      "collapsed": [],
+      "broken": [],
+      "tiny": [],
+      "offscreen": [],
+      "stats": {
+        "textElements": 60,
+        "scrollHeight": 4560,
+        "viewport": "1440x1000"
+      },
+      "hung": [],
+      "console": [],
+      "network": [],
+      "visual": {
+        "canvases": [
+          {
+            "width": 1440,
+            "height": 870,
+            "uniform": false,
+            "readable": true,
+            "spread": 105,
+            "context": "webgl2"
+          },
+          {
+            "width": 1440,
+            "height": 870,
+            "uniform": false,
+            "readable": true,
+            "spread": 255,
+            "context": "2d"
+          }
+        ],
+        "reducedMotion": false,
+        "webglSections": []
+      },
+      "actionErrors": [],
+      "reducedMotion": false
+    },
+    {
+      "width": 1440,
+      "scroll": null,
+      "step": 5,
+      "action": {
+        "type": "click",
+        "selector": ".sky__dot[aria-label=\"Noon\"]"
+      },
+      "file": "C:\\Users\\OWNER\\cinematic-web-design\\examples\\fable-showcase\\compare\\debug-order\\normal\\w1440-step5.png",
+      "overlaps": [],
+      "overflow": [],
+      "contrast": [
+        {
+          "el": "span.display__b \"rebuilt to test a plugin.\"",
+          "ratio": 1.02,
+          "worstRatio": 1.02,
+          "need": 3,
+          "size": 76,
+          "method": "photo"
+        },
+        {
+          "el": "span.index__n \"[4]\"",
+          "ratio": 1.67,
+          "worstRatio": 1.17,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "span.index__n \"[1]\"",
+          "ratio": 1.74,
+          "worstRatio": 1.16,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "span.index__n \"[2]\"",
+          "ratio": 1.8,
+          "worstRatio": 1.36,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "span.index__n \"[5]\"",
+          "ratio": 2,
+          "worstRatio": 1.38,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "a.index__label.link \"Scientific research\"",
+          "ratio": 2.04,
+          "worstRatio": 1.31,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "a.index__label.link \"Safety, security, and alignment\"",
+          "ratio": 2.17,
+          "worstRatio": 1.36,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "a.index__label.link \"A new performance frontier\"",
+          "ratio": 2.24,
+          "worstRatio": 1.44,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "a.index__label.link \"Claude Mythos 5.1\"",
+          "ratio": 2.27,
+          "worstRatio": 1.56,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "a.index__label.link \"Introduction\"",
+          "ratio": 2.32,
+          "worstRatio": 1.54,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        }
+      ],
+      "collapsed": [],
+      "broken": [],
+      "tiny": [],
+      "offscreen": [],
+      "stats": {
+        "textElements": 60,
+        "scrollHeight": 4560,
+        "viewport": "1440x1000"
+      },
+      "hung": [],
+      "console": [],
+      "network": [],
+      "visual": {
+        "canvases": [
+          {
+            "width": 1440,
+            "height": 870,
+            "uniform": false,
+            "readable": true,
+            "spread": 153,
+            "context": "webgl2"
+          },
+          {
+            "width": 1440,
+            "height": 870,
+            "uniform": false,
+            "readable": true,
+            "spread": 255,
+            "context": "2d"
+          }
+        ],
+        "reducedMotion": false,
+        "webglSections": []
+      },
+      "actionErrors": [],
+      "reducedMotion": false
+    },
+    {
+      "width": 1440,
+      "scroll": null,
+      "step": 6,
+      "action": {
+        "type": "expect-visible",
+        "selector": ".sky__dot[aria-label=\"Noon\"][aria-pressed=\"true\"]"
+      },
+      "file": "C:\\Users\\OWNER\\cinematic-web-design\\examples\\fable-showcase\\compare\\debug-order\\normal\\w1440-step6.png",
+      "overlaps": [],
+      "overflow": [],
+      "contrast": [
+        {
+          "el": "span.display__b \"rebuilt to test a plugin.\"",
+          "ratio": 1.02,
+          "worstRatio": 1.02,
+          "need": 3,
+          "size": 76,
+          "method": "photo"
+        },
+        {
+          "el": "span.index__n \"[4]\"",
+          "ratio": 1.44,
+          "worstRatio": 1.13,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "span.index__n \"[1]\"",
+          "ratio": 1.5,
+          "worstRatio": 1.12,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "span.index__n \"[2]\"",
+          "ratio": 1.52,
+          "worstRatio": 1.26,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "span.index__n \"[5]\"",
+          "ratio": 1.63,
+          "worstRatio": 1.26,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "a.index__label.link \"Scientific research\"",
+          "ratio": 1.67,
+          "worstRatio": 1.22,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "a.index__label.link \"Safety, security, and alignment\"",
+          "ratio": 1.75,
+          "worstRatio": 1.26,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "a.index__label.link \"A new performance frontier\"",
+          "ratio": 1.8,
+          "worstRatio": 1.32,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "a.index__label.link \"Claude Mythos 5.1\"",
+          "ratio": 1.83,
+          "worstRatio": 1.41,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        },
+        {
+          "el": "a.index__label.link \"Introduction\"",
+          "ratio": 1.87,
+          "worstRatio": 1.38,
+          "need": 4.5,
+          "size": 15,
+          "method": "photo"
+        }
+      ],
+      "collapsed": [],
+      "broken": [],
+      "tiny": [],
+      "offscreen": [],
+      "stats": {
+        "textElements": 60,
+        "scrollHeight": 4560,
+        "viewport": "1440x1000"
+      },
+      "hung": [],
+      "console": [],
+      "network": [],
+      "visual": {
+        "canvases": [
+          {
+            "width": 1440,
+            "height": 870,
+            "uniform": false,
+            "readable": true,
+            "spread": 179,
+            "context": "webgl2"
+          },
+          {
+            "width": 1440,
+            "height": 870,
+            "uniform": false,
+            "readable": true,
+            "spread": 255,
+            "context": "2d"
+          }
+        ],
+        "reducedMotion": false,
+        "webglSections": []
+      },
+      "actionErrors": [],
+      "reducedMotion": false
+    }
+  ]
+}

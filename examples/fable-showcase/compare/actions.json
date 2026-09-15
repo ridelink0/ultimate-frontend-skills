@@ -1,0 +1,9 @@
+[
+  {"type":"click","selector":".sky__dot[aria-label=\"Night\"]"},
+  {"type":"expect-visible","selector":".sky__dot[aria-label=\"Night\"][aria-pressed=\"true\"]"},
+  {"type":"click","selector":".sky__dot[aria-label=\"Morning\"]"},
+  {"type":"expect-visible","selector":".sky__dot[aria-label=\"Morning\"][aria-pressed=\"true\"]"},
+  {"type":"click","selector":".sky__dot[aria-label=\"Noon\"]"},
+  {"type":"expect-visible","selector":".sky__dot[aria-label=\"Noon\"][aria-pressed=\"true\"]"},
+  {"type":"focus","selector":".nav__cta"}
+]

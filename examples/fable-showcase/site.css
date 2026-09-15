@@ -7,5 +7,97 @@ body{--bg:oklch(96.4% .008 88);--fg:oklch(22% .018 62);--fg-muted:oklch(44% .022
 .nav .btn--ghost{background:oklch(22% .018 62);color:oklch(96.4% .008 88);border-color:transparent}
 .hero{min-height:87svh}
 
-/* Derive --accent-h from the hero photograph: take the hue of the subject's
-   own material, keep the L and C above. */
+/* ---- header: 68px exactly, the nav is outside <main> so sticky is against the
+   viewport. The preset sets min-height; padding is trimmed so the bar does not
+   grow past it. */
+.nav { padding-block: 0; height: 68px; }
+.nav.is-stuck { background: oklch(96.4% .008 88); color: oklch(22% .018 62);
+  -webkit-backdrop-filter: none; backdrop-filter: none; padding-block: 0; }
+.nav__brand { font-size: 1.15rem; letter-spacing: 0.01em; }
+.nav .btn--ghost:hover { background: oklch(22% .018 62); color: oklch(96.4% .008 88); opacity: .86; }
+
+/* ---- hero, measured off the original: eyebrow 13px +0.16em, display ~76px on
+   two lines with the second pushed ~150px right, contents 15px. */
+.hero__inner { padding-block: var(--s-9) var(--s-10); }
+.hero .eyebrow { font-size: 0.8125rem; letter-spacing: 0.16em; margin-inline-end: -0.16em;
+  color: color-mix(in oklab, var(--bone-50) 92%, transparent); }
+.hero h1 {
+  margin-top: var(--s-6);
+  font-size: clamp(2.5rem, 1.5rem + 3.6vw, 4.75rem);   /* 75.8px at 1440 */
+  line-height: 1.0; letter-spacing: -0.02em;
+  max-width: none; text-wrap: initial;
+  font-variation-settings: "opsz" 72, "wght" 360;
+  /* the original parts its clouds behind the type (shelters); the engine has
+     none, so the halo carries the morning horizon on its own */
+  text-shadow: 0 0 60px rgb(15 11 9 / .5), 0 0 24px rgb(15 11 9 / .34), 0 1px 2px rgb(15 11 9 / .16);
+}
+.hero .display__b { padding-inline-start: clamp(0rem, 10.4vw, 150px); }
+.hero .index { margin-top: var(--s-9); margin-inline: auto; font-size: 0.9375rem;
+  max-width: 26rem; text-align: left; }
+.hero .index li { padding-block: 0.3rem; }
+.hero .index__n { font-family: var(--font-text); font-size: 1em; opacity: 1; }
+.hero .index__dots { opacity: .8; border-bottom-width: 1.5px; }
+.hero .index__label { font-family: var(--font-text); }
+.hero .index a { text-shadow: 0 0 14px rgb(15 11 9 / .35); }
+
+/* the credit, bottom right, 12px */
+.hero__credit { position: absolute; right: var(--gutter); bottom: var(--s-5); z-index: 2;
+  font-family: var(--font-ui); font-size: 0.75rem; letter-spacing: 0.01em;
+  color: color-mix(in oklab, var(--bone-50) 88%, transparent);
+  text-shadow: 0 0 10px rgb(15 11 9 / .4); margin: 0; }
+
+/* the original has no scrim; its clouds part behind the type. Keep the plugin's
+   scrim, but only enough to hold the contents list, not to darken the sky. */
+.hero:has([data-sky]) .hero__scrim { opacity: .18; }
+
+/* ---- the article: warm off-white, one 640px column, serif lede at 28px, body
+   18px / 1.55, bold run-in labels. */
+.article { padding-block: clamp(4rem, 3rem + 5vw, 7rem) clamp(5rem, 4rem + 6vw, 9rem);
+  background: var(--bg); color: var(--fg); }
+.article__col { max-width: 640px; margin-inline: auto; padding-inline: var(--gutter); }
+.lede { font-family: var(--font-text); font-size: 1.75rem; line-height: 1.3;
+  letter-spacing: -0.012em; color: var(--fg); text-wrap: pretty;
+  font-variation-settings: "opsz" 32, "wght" 380; }
+.lede em { font-style: italic; font-variation-settings: "opsz" 32, "wght" 360; }
+.article__section { margin-top: clamp(3.5rem, 2.5rem + 4vw, 6rem); }
+.article__section h2 { font-size: clamp(1.75rem, 1.4rem + 1.3vw, 2.5rem); line-height: 1.1;
+  letter-spacing: -0.014em; max-width: none; display: flex; gap: .6em; align-items: baseline; }
+.article__n { font-family: var(--font-text); font-size: .7em; opacity: .55;
+  font-variant-numeric: lining-nums tabular-nums; flex: none; }
+.article__section p { font-size: 1.125rem; line-height: 1.55; margin-top: 1.2em;
+  color: var(--fg); text-wrap: pretty; }
+.article__section h2 + p { margin-top: 1.4rem; }
+.runin { font-weight: 600; font-variation-settings: "opsz" 18, "wght" 600; }
+.article__section--about { padding-top: var(--s-8); border-top: 1px solid var(--rule); }
+
+/* ---- the progress rail: a thin vertical line of tick marks at the far left,
+   with a marker that travels the length of the document. CSS-only: the mark
+   rides a scroll timeline and the rail itself fades in once the hero is past. */
+.rail { position: fixed; left: clamp(14px, 1.6vw, 28px); top: 50%; z-index: 40;
+  width: 12px; height: min(42vh, 320px); transform: translateY(-50%);
+  pointer-events: none; opacity: 0; color: var(--fg);
+  background:
+    linear-gradient(currentColor, currentColor) 0 0 / 1px 100% no-repeat,
+    repeating-linear-gradient(to bottom, currentColor 0 1px, transparent 1px 16px) 0 0 / 7px 100% no-repeat;
+  background-blend-mode: normal; }
+.rail::before { content: ""; position: absolute; left: 0; bottom: 0; width: 7px; height: 1px; background: currentColor; }
+.rail__mark { position: absolute; left: -3px; top: 0; width: 7px; height: 7px; border-radius: 50%;
+  background: currentColor; transform: translateY(-50%); }
+@supports (animation-timeline: scroll()) {
+  .rail { animation: rail-in linear both; animation-timeline: scroll(root block);
+    animation-range: 0 60vh; }
+  .rail__mark { animation: rail-travel linear both; animation-timeline: scroll(root block); }
+}
+@keyframes rail-in { from { opacity: 0; } to { opacity: .55; } }
+@keyframes rail-travel { from { top: 0; } to { top: 100%; } }
+@media (max-width: 56rem) { .rail { display: none; } }
+@media (prefers-reduced-motion: reduce) { .rail { opacity: .55; } .rail__mark { top: 0; } }
+
+/* ---- phone: the two-line stagger collapses, the credit tucks under the dots */
+@media (max-width: 46rem) {
+  .hero h1 { font-size: clamp(2.25rem, 1.4rem + 5.4vw, 3rem); line-height: 1.04; }
+  .hero .display__b { padding-inline-start: clamp(0rem, 6vw, 2.5rem); }
+  .hero .index { font-size: 0.875rem; max-width: 100%; }
+  .hero__credit { right: auto; left: var(--gutter); bottom: calc(var(--s-5) + 40px); font-size: .6875rem; }
+  .hero__inner { padding-block: var(--s-8) var(--s-11); }
+}

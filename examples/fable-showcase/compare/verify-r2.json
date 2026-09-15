@@ -1,0 +1,237 @@
+{
+  "target": "examples\\fable-showcase",
+  "sections": {
+    "audit": {
+      "errors": 0,
+      "warns": 1,
+      "findings": [
+        {
+          "severity": "warning",
+          "text": "404.html: meta description is 55 chars (aim 80-160)"
+        }
+      ]
+    },
+    "security": {
+      "errors": 0,
+      "warns": 1,
+      "low": 0,
+      "note": 3,
+      "findings": [
+        {
+          "severity": "warning",
+          "text": "index.html:132: import map pulls modules from a CDN with no \"integrity\" block"
+        },
+        {
+          "severity": "note",
+          "text": "404.html: fonts served from Google"
+        },
+        {
+          "severity": "note",
+          "text": "index.html: fonts served from Google"
+        },
+        {
+          "severity": "note",
+          "text": "netlify.toml: a CSP is configured and the pages carry inline scripts or handlers"
+        }
+      ]
+    },
+    "render": {
+      "errors": 0,
+      "warns": 46,
+      "findings": [
+        {
+          "severity": "warning",
+          "text": "1 canvas painted once and never changed"
+        },
+        {
+          "severity": "warning",
+          "text": "longest main-thread task 406 ms"
+        },
+        {
+          "severity": "warning",
+          "text": "contrast 1.44:1 (needs 4.5) at 15px: span.index__n \"[4]\" [sampled from the photo behind it, 1.11:1 at its worst]"
+        },
+        {
+          "severity": "warning",
+          "text": "contrast 1.5:1 (needs 4.5) at 15px: span.index__n \"[1]\" [sampled from the photo behind it, 1.13:1 at its worst]"
+        },
+        {
+          "severity": "warning",
+          "text": "contrast 1.53:1 (needs 4.5) at 15px: span.index__n \"[2]\" [sampled from the photo behind it, 1.26:1 at its worst]"
+        },
+        {
+          "severity": "warning",
+          "text": "contrast 1.64:1 (needs 4.5) at 15px: span.index__n \"[5]\" [sampled from the photo behind it, 1.26:1 at its worst]"
+        },
+        {
+          "severity": "warning",
+          "text": "contrast 1.67:1 (needs 4.5) at 15px: a.index__label.link \"Scientific research\" [sampled from the photo behind it, 1.22:1 at its worst]"
+        },
+        {
+          "severity": "warning",
+          "text": "contrast 1.68:1 (needs 4.5) at 15px: span.index__n \"[3]\" [sampled from the photo behind it, 1.26:1 at its worst]"
+        },
+        {
+          "severity": "warning",
+          "text": "contrast 1.75:1 (needs 4.5) at 15px: a.index__label.link \"Safety, security, and alignment\" [sampled from the photo behind it, 1.26:1 at its worst]"
+        },
+        {
+          "severity": "warning",
+          "text": "contrast 1.8:1 (needs 4.5) at 15px: a.index__label.link \"A new performance frontier\" [sampled from the photo behind it, 1.32:1 at its worst]"
+        },
+        {
+          "severity": "warning",
+          "text": "contrast 1.83:1 (needs 4.5) at 15px: a.index__label.link \"Claude Mythos 5.1\" [sampled from the photo behind it, 1.41:1 at its worst]"
+        },
+        {
+          "severity": "warning",
+          "text": "contrast 1.87:1 (needs 4.5) at 15px: a.index__label.link \"Introduction\" [sampled from the photo behind it, 1.39:1 at its worst]"
+        },
+        {
+          "severity": "warning",
+          "text": "1 canvas painted once and never changed"
+        },
+        {
+          "severity": "warning",
+          "text": "9 distinct type sizes"
+        },
+        {
+          "severity": "warning",
+          "text": "contrast 1.26:1 (needs 4.5) at 14px: span.index__n \"[3]\" [sampled from the photo behind it, 1.17:1 at its worst]"
+        },
+        {
+          "severity": "warning",
+          "text": "contrast 1.27:1 (needs 4.5) at 14px: span.index__n \"[4]\" [sampled from the photo behind it, 1.11:1 at its worst]"
+        },
+        {
+          "severity": "warning",
+          "text": "contrast 1.37:1 (needs 4.5) at 14px: span.index__n \"[2]\" [sampled from the photo behind it, 1.12:1 at its worst]"
+        },
+        {
+          "severity": "warning",
+          "text": "contrast 1.37:1 (needs 4.5) at 14px: span.index__n \"[5]\" [sampled from the photo behind it, 1.13:1 at its worst]"
+        },
+        {
+          "severity": "warning",
+          "text": "contrast 1.47:1 (needs 4.5) at 14px: span.index__n \"[1]\" [sampled from the photo behind it, 1.16:1 at its worst]"
+        },
+        {
+          "severity": "warning",
+          "text": "contrast 1.74:1 (needs 4.5) at 14px: a.index__label.link \"Introduction\" [sampled from the photo behind it, 1.12:1 at its worst]"
+        },
+        {
+          "severity": "warning",
+          "text": "contrast 1.74:1 (needs 4.5) at 14px: a.index__label.link \"A new performance frontier\" [sampled from the photo behind it, 1.22:1 at its worst]"
+        },
+        {
+          "severity": "warning",
+          "text": "contrast 1.76:1 (needs 4.5) at 14px: a.index__label.link \"Scientific research\" [sampled from the photo behind it, 1.36:1 at its worst]"
+        },
+        {
+          "severity": "warning",
+          "text": "contrast 1.79:1 (needs 4.5) at 14px: a.index__label.link \"Safety, security, and alignment\" [sampled from the photo behind it, 1.34:1 at its worst]"
+        },
+        {
+          "severity": "warning",
+          "text": "contrast 2.33:1 (needs 4.5) at 14px: a.index__label.link \"Claude Mythos 5.1\" [sampled from the photo behind it, 1.51:1 at its worst]"
+        },
+        {
+          "severity": "warning",
+          "text": "longest main-thread task 614 ms"
+        },
+        {
+          "severity": "warning",
+          "text": "contrast 1.44:1 (needs 4.5) at 15px: span.index__n \"[4]\" [sampled from the photo behind it, 1.12:1 at its worst]"
+        },
+        {
+          "severity": "warning",
+          "text": "contrast 1.5:1 (needs 4.5) at 15px: span.index__n \"[1]\" [sampled from the photo behind it, 1.13:1 at its worst]"
+        },
+        {
+          "severity": "warning",
+          "text": "contrast 1.52:1 (needs 4.5) at 15px: span.index__n \"[2]\" [sampled from the photo behind it, 1.27:1 at its worst]"
+        },
+        {
+          "severity": "warning",
+          "text": "contrast 1.63:1 (needs 4.5) at 15px: span.index__n \"[5]\" [sampled from the photo behind it, 1.26:1 at its worst]"
+        },
+        {
+          "severity": "warning",
+          "text": "contrast 1.69:1 (needs 4.5) at 15px: span.index__n \"[3]\" [sampled from the photo behind it, 1.26:1 at its worst]"
+        },
+        {
+          "severity": "warning",
+          "text": "contrast 1.69:1 (needs 4.5) at 15px: a.index__label.link \"Scientific research\" [sampled from the photo behind it, 1.22:1 at its worst]"
+        },
+        {
+          "severity": "warning",
+          "text": "contrast 1.77:1 (needs 4.5) at 15px: a.index__label.link \"Safety, security, and alignment\" [sampled from the photo behind it, 1.26:1 at its worst]"
+        },
+        {
+          "severity": "warning",
+          "text": "contrast 1.81:1 (needs 4.5) at 15px: a.index__label.link \"A new performance frontier\" [sampled from the photo behind it, 1.32:1 at its worst]"
+        },
+        {
+          "severity": "warning",
+          "text": "contrast 1.83:1 (needs 4.5) at 15px: a.index__label.link \"Claude Mythos 5.1\" [sampled from the photo behind it, 1.41:1 at its worst]"
+        },
+        {
+          "severity": "warning",
+          "text": "contrast 1.89:1 (needs 4.5) at 15px: a.index__label.link \"Introduction\" [sampled from the photo behind it, 1.41:1 at its worst]"
+        },
+        {
+          "severity": "warning",
+          "text": "9 distinct type sizes"
+        },
+        {
+          "severity": "warning",
+          "text": "contrast 1.27:1 (needs 4.5) at 14px: span.index__n \"[3]\" [sampled from the photo behind it, 1.17:1 at its worst]"
+        },
+        {
+          "severity": "warning",
+          "text": "contrast 1.27:1 (needs 4.5) at 14px: span.index__n \"[4]\" [sampled from the photo behind it, 1.11:1 at its worst]"
+        },
+        {
+          "severity": "warning",
+          "text": "contrast 1.37:1 (needs 4.5) at 14px: span.index__n \"[5]\" [sampled from the photo behind it, 1.13:1 at its worst]"
+        },
+        {
+          "severity": "warning",
+          "text": "contrast 1.38:1 (needs 4.5) at 14px: span.index__n \"[2]\" [sampled from the photo behind it, 1.12:1 at its worst]"
+        },
+        {
+          "severity": "warning",
+          "text": "contrast 1.48:1 (needs 4.5) at 14px: span.index__n \"[1]\" [sampled from the photo behind it, 1.17:1 at its worst]"
+        },
+        {
+          "severity": "warning",
+          "text": "contrast 1.76:1 (needs 4.5) at 14px: a.index__label.link \"Introduction\" [sampled from the photo behind it, 1.12:1 at its worst]"
+        },
+        {
+          "severity": "warning",
+          "text": "contrast 1.76:1 (needs 4.5) at 14px: a.index__label.link \"A new performance frontier\" [sampled from the photo behind it, 1.22:1 at its worst]"
+        },
+        {
+          "severity": "warning",
+          "text": "contrast 1.76:1 (needs 4.5) at 14px: a.index__label.link \"Scientific research\" [sampled from the photo behind it, 1.37:1 at its worst]"
+        },
+        {
+          "severity": "warning",
+          "text": "contrast 1.79:1 (needs 4.5) at 14px: a.index__label.link \"Safety, security, and alignment\" [sampled from the photo behind it, 1.34:1 at its worst]"
+        },
+        {
+          "severity": "warning",
+          "text": "contrast 2.35:1 (needs 4.5) at 14px: a.index__label.link \"Claude Mythos 5.1\" [sampled from the photo behind it, 1.52:1 at its worst]"
+        }
+      ],
+      "reviewFile": "C:\\Users\\OWNER\\AppData\\Local\\Temp\\webdesign-review-xsQyIx\\review.html"
+    }
+  },
+  "totals": {
+    "error": 0,
+    "warning": 48,
+    "low": 0,
+    "note": 3
+  },
+  "exitCode": 0
+}
