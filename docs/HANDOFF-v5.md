@@ -79,6 +79,17 @@ AxonHost.cs read stays in owner-4d's relay note.
   --strict, publint, knip clean; every script parses; suite 80 pass / 0 fail /
   1 cancelled - test 11 (WebGL canvas) hit its 30 s timeout while two build
   agents loaded headless Chrome, and PASSES ALONE. Contention, like 31/33/47.
+- examples/fable-showcase DONE and pushed: 2 rounds, verify exit 0 (agent and
+  my own re-run: 0 errors, 0 warnings). Its BUILD-NOTES.md found three real
+  PLUGIN GAPS to fix: (1) no article/long-read section in the library - the
+  whole article layer (28px lede on 640px, run-in labels, tick-mark progress
+  rail) had to be hand-written; (2) sky.js has NO parameters on data-sky for
+  cloud amount, moon size or branch placement, so its sky cannot match the
+  reference's stacked cloud masses; (3) a debug action found
+  .sky__dot[aria-label="Night"][aria-pressed="true"] missing after clicking
+  Night while Morning and Noon passed - check whether sky.js sets aria-pressed
+  on the Night dot or whether the action fired before the eased transition.
+- examples/houston-roofing: in progress at window close; verify and commit it.
 - STILL TO DO from Gev's 8:05 message: bug pass TWO on the final tree
   (node --test test/*.test.mjs twice, full TAP kept; madge, publint, plugin
   validate --strict, knip, html-validate on a fresh scaffold), stay under 65%.
