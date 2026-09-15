@@ -710,6 +710,24 @@ async function cmdAwards() {
   console.log(A.formatAwards(rows, { verbose: !!flag('verbose') }));
 }
 
+/* The Elements panel on a live site, for reference. look finds defects;
+   this reads what a page actually sets, which is where a teardown starts. */
+async function cmdInspect() {
+  const { inspectStyles, formatInspect } = await import('./inspect.mjs');
+  const target = positional[0] || die('inspect needs a URL: inspect <url> [--selector "h1,p"] [--width 1440]');
+  if (!/^https?:\/\//i.test(target)) die('inspect reads a live URL; for a local directory use look, or serve it and inspect http://127.0.0.1:<port>/');
+  let result;
+  try {
+    result = await inspectStyles(target, {
+      selector: String(flag('selector', 'h1,h2,h3,p,a,button')),
+      width: Number(flag('width', 1440)),
+      wait: Number(flag('wait', 2200)),
+    });
+  } catch (e) { die(e.message); }
+  if (flag('json')) console.log(JSON.stringify(result, null, 2));
+  else console.log(formatInspect(result));
+}
+
 /* The packs this plugin defers to, and getting them. Detection alone left a
    user reading about a handoff to a pack they did not have. */
 async function cmdPacks() {
@@ -761,6 +779,7 @@ switch (cmd) {
   case 'video': await cmdVideo(); break;
   case 'awards': case 'refs': await cmdAwards(); break;
   case 'packs': await cmdPacks(); break;
+  case 'inspect': await cmdInspect(); break;
   case 'blender': await delegate('blender.mjs', argv.slice(1)); break;
   case 'assets': case 'texture': case 'textures': await delegate('assets.mjs', argv.slice(1)); break;
   case 'tools': case 'bench': await delegate('tools.mjs', argv.slice(1)); break;
@@ -788,6 +807,9 @@ switch (cmd) {
   blender <probe|run|glb|bake|frames> ...   author geometry, bake, render (Blender headless)
   assets <search|textures|hdri|gen> ...     CC0 PBR materials, HDRI lighting, generated imagery
   tools                           what else is installed on this bench and what changes because of it
+  inspect <url> [--selector "h1,p,a"] [--width 1440] [--json]
+                                  the Elements panel on a live site: computed type, fonts loaded,
+                                  type scale, colours, and what it fetched - reference, not defects
   packs [--install] [--dry-run] [--only <id>]
                                   the packs this plugin defers to; get the absent ones
   dev <dir> [--port 4321] [--widths 1440] [--scroll 0,900]

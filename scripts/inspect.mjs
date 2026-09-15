@@ -1139,3 +1139,131 @@ async function performAction(session, step) {
   // The click point, so a caller can ask what moved under it.
   return result;
 }
+
+/* The Elements panel, on demand.
+
+   look measures a page for defects. This reads one for REFERENCE: what a live
+   site actually sets - the computed type, the fonts it loaded, the colours it
+   painted, the bundles it shipped - which is what the Fable teardown in
+   references/fable.md was assembled from by hand over the DevTools protocol.
+   Same protocol, same browser, one command.
+
+     inspectStyles('https://example.com', { selector: 'h1,p,a', width: 1440 })
+
+   Returns computed styles for up to twelve matches of the selector, the loaded
+   font faces, the type scale as painted, the most-used colours, and the
+   resources the page fetched with their sizes. Nothing is written. */
+export async function inspectStyles(url, { selector = 'h1,h2,h3,p,a,button', width = 1440, wait = 2200 } = {}) {
+  if (typeof WebSocket === 'undefined') throw new Error('Browser inspection requires Node 22 or newer.');
+  const bin = findBrowser();
+  if (!bin) { const err = new Error('no Chrome, Edge or Chromium found.'); err.code = 'no-browser'; throw err; }
+  const { proc, udd, port } = await launch(bin);
+  let session;
+  try {
+    session = await Session.open(port);
+    await session.send('Page.enable');
+    await session.send('Runtime.enable');
+    await session.send('Network.enable');
+    await session.send('Emulation.setDeviceMetricsOverride', { width, height: 1000, deviceScaleFactor: 1, mobile: width < 700 });
+    session.events.length = 0;
+    const navigation = await session.send('Page.navigate', { url });
+    if (navigation.errorText) throw new Error('Navigation failed: ' + navigation.errorText);
+    if (!await session.waitForEvent('Page.loadEventFired')) throw new Error('Page load timed out.');
+    await new Promise((r) => setTimeout(r, wait));
+
+    // Everything below runs in the page. It is a plain function stringified
+    // so there is exactly one place the probe is written.
+    const probe = function (sel) {
+      const cs = (el) => getComputedStyle(el);
+      const pick = (c) => ({
+        fontFamily: c.fontFamily, fontSize: c.fontSize, fontWeight: c.fontWeight,
+        lineHeight: c.lineHeight, letterSpacing: c.letterSpacing, textTransform: c.textTransform,
+        fontVariationSettings: c.fontVariationSettings, color: c.color,
+        background: c.backgroundColor, opacity: c.opacity, maxWidth: c.maxWidth,
+      });
+      const elements = [];
+      for (const el of document.querySelectorAll(sel)) {
+        if (elements.length >= 12) break;
+        const r = el.getBoundingClientRect();
+        if (!r.width || !r.height) continue;
+        elements.push({
+          tag: el.tagName.toLowerCase(),
+          className: String(el.className || '').slice(0, 60),
+          text: (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 60),
+          rect: { x: Math.round(r.x), y: Math.round(r.y + scrollY), w: Math.round(r.width), h: Math.round(r.height) },
+          style: pick(cs(el)),
+        });
+      }
+      const fonts = [...new Set([...document.fonts].filter((f) => f.status === 'loaded').map((f) => f.family.replace(/["']/g, '') + ' ' + f.weight + ' ' + f.style))];
+      const sizes = new Map();
+      const colours = new Map();
+      for (const el of document.querySelectorAll('h1,h2,h3,h4,p,li,a,button,span,small,label')) {
+        const c = cs(el);
+        if (!(el.textContent || '').trim()) continue;
+        const px = parseFloat(c.fontSize);
+        if (px) sizes.set(px, (sizes.get(px) || 0) + 1);
+        colours.set(c.color, (colours.get(c.color) || 0) + 1);
+      }
+      for (const el of document.querySelectorAll('body,header,main,section,footer,nav,article,div')) {
+        const bg = cs(el).backgroundColor;
+        if (bg && bg !== 'rgba(0, 0, 0, 0)') colours.set(bg, (colours.get(bg) || 0) + 1);
+      }
+      const typeScale = [...sizes.entries()].sort((a, b) => b[0] - a[0]).map(([px, n]) => ({ px, count: n }));
+      const palette = [...colours.entries()].sort((a, b) => b[1] - a[1]).slice(0, 12).map(([colour, n]) => ({ colour, count: n }));
+      return { title: document.title, elements, fonts, typeScale, palette };
+    };
+    const { result } = await session.send('Runtime.evaluate', {
+      expression: '(' + probe.toString() + ')(' + JSON.stringify(selector) + ')',
+      returnByValue: true,
+    });
+    const page = result && result.value ? result.value : { elements: [], fonts: [], typeScale: [], palette: [] };
+
+    // What it fetched, from the network events the session collected.
+    const sizes = new Map();
+    const meta = new Map();
+    for (const e of session.events) {
+      if (e.method === 'Network.responseReceived') {
+        const r = e.params.response || {};
+        meta.set(e.params.requestId, { url: r.url, type: e.params.type, mime: r.mimeType, status: r.status });
+      } else if (e.method === 'Network.loadingFinished') {
+        sizes.set(e.params.requestId, e.params.encodedDataLength || 0);
+      }
+    }
+    const resources = [...meta.entries()]
+      .map(([id, m]) => ({ ...m, bytes: sizes.get(id) || 0 }))
+      .filter((r) => r.url && !r.url.startsWith('data:'))
+      .sort((a, b) => b.bytes - a.bytes)
+      .slice(0, 30);
+    const total = resources.reduce((a, r) => a + r.bytes, 0);
+    return { url, width, selector, ...page, resources, totalBytes: total };
+  } finally {
+    if (session) session.close();
+    try { proc.kill(); } catch {}
+    setTimeout(() => { try { rmSync(udd, { recursive: true, force: true }); } catch {} }, 400);
+  }
+}
+
+export function formatInspect(r) {
+  const kb = (b) => (b / 1024).toFixed(1) + ' KB';
+  const out = [];
+  out.push('', 'inspect  ' + r.url + '  at ' + r.width + 'px' + (r.title ? '  -  ' + r.title : ''), '');
+  if (r.elements.length) {
+    out.push('  ' + r.selector);
+    for (const el of r.elements) {
+      const s = el.style;
+      out.push('    <' + el.tag + (el.className ? ' .' + el.className.split(' ')[0] : '') + '>  "' + el.text + '"');
+      out.push('      ' + s.fontSize + ' / ' + s.lineHeight + '  ' + s.fontWeight + '  ' + s.letterSpacing + '  ' + s.fontFamily.split(',')[0] + (s.fontVariationSettings !== 'normal' ? '  ' + s.fontVariationSettings : '') + (s.textTransform !== 'none' ? '  ' + s.textTransform : ''));
+      out.push('      ' + s.color + ' on ' + s.background + '  ' + el.rect.w + 'x' + el.rect.h + ' at ' + el.rect.x + ',' + el.rect.y + (s.maxWidth !== 'none' ? '  max-width ' + s.maxWidth : ''));
+    }
+    out.push('');
+  }
+  if (r.fonts.length) out.push('  fonts loaded   ' + r.fonts.join(' | '), '');
+  if (r.typeScale.length) out.push('  type scale     ' + r.typeScale.map((t) => t.px + 'px x' + t.count).join('  '), '');
+  if (r.palette.length) out.push('  colours        ' + r.palette.map((c) => c.colour + ' x' + c.count).join('  '), '');
+  if (r.resources.length) {
+    out.push('  resources      ' + r.resources.length + ' shown, ' + kb(r.totalBytes) + ' of the largest');
+    for (const x of r.resources.slice(0, 15)) out.push('    ' + kb(x.bytes).padStart(10) + '  ' + (x.type || '').padEnd(10) + ' ' + x.url.replace(/^https?:\/\//, '').slice(0, 90));
+  }
+  out.push('');
+  return out.join('\n');
+}
