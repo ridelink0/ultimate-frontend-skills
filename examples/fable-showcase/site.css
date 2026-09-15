@@ -27,9 +27,9 @@ body{--bg:oklch(96.4% .008 88);--fg:oklch(22% .018 62);--fg-muted:oklch(44% .022
   line-height: 1.0; letter-spacing: -0.02em;
   max-width: none; text-wrap: initial;
   font-variation-settings: "opsz" 72, "wght" 360;
-  /* the original parts its clouds behind the type (shelters); the engine has
-     none, so the halo carries the morning horizon on its own */
-  text-shadow: 0 0 60px rgb(15 11 9 / .5), 0 0 24px rgb(15 11 9 / .34), 0 1px 2px rgb(15 11 9 / .16);
+  /* the original has no halo, only a very soft shadow; the engine keeps its
+     clouds out of the centre column so the type needs nothing more */
+  text-shadow: 0 1px 2px rgb(15 11 9 / .14), 0 2px 22px rgb(15 11 9 / .12);
 }
 .hero .display__b { padding-inline-start: clamp(0rem, 10.4vw, 150px); }
 .hero .index { margin-top: var(--s-9); margin-inline: auto; font-size: 0.9375rem;
@@ -101,3 +101,8 @@ body{--bg:oklch(96.4% .008 88);--fg:oklch(22% .018 62);--fg-muted:oklch(44% .022
   .hero__credit { right: auto; left: var(--gutter); bottom: calc(var(--s-5) + 40px); font-size: .6875rem; }
   .hero__inner { padding-block: var(--s-8) var(--s-11); }
 }
+
+/* the launch page's header is a wordmark and a menu button, at every width -
+   the fable preset now emits this on scaffold; this example predates it */
+.nav__links,.nav__cta{display:none}
+.nav__menu{display:block}

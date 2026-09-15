@@ -700,12 +700,15 @@ figcaption { margin-top: var(--s-3); font-family: var(--font-ui); font-size: var
 .sky__dot:hover::before { transform: scale(1.15); }
 .sky__dot:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 
-/* sky.js near plane: the branches in the lower corners, out of focus. The blur
-   is what makes the sky read as a camera and not a drawing.                 */
+/* sky.js near plane: the branch in the lower-right corner, out of focus. The
+   engine sets the blur radius inline as a fraction of the frame height; this
+   value only holds until it does.                                           */
 .sky__near { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none;
   filter: blur(2.6px); opacity: .92; }
-/* A sky is bright; the photograph scrim would bury it. Half strength.       */
-.hero:has([data-sky]) .hero__scrim { opacity: .55; }
+/* The reference has no scrim at all: its clouds part behind the type. Keep
+   only enough to hold the contents list; more greys the horizon the engine
+   just painted.                                                             */
+.hero:has([data-sky]) .hero__scrim { opacity: .18; }
 /* exploded.js: a vignette, so the object sits in a lit space and not on a flat fill */
 .exploded__gl::after { content: ""; position: absolute; inset: 0; pointer-events: none;
   background: radial-gradient(ellipse at 50% 55%, transparent 46%, rgb(0 0 0 / .32) 100%); }

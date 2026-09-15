@@ -108,6 +108,20 @@ AxonHost.cs read stays in owner-4d's relay note.
   validate --strict, knip, html-validate on a fresh scaffold), stay under 65%.
 
 ## 2026-09-15, first window
+- SKY DONE (sky-match agent, verify exit 0, moods verified, engine == example):
+  one blurred lower-right branch pruned from the centre column, day palette read
+  off the real capture (#7093c1 ours vs #7299d0 real), hex no longer linearised
+  by colour management, cumulus masses in screen space with the centre clear, a
+  170px screen-space gibbous moon with halo; data-branches / data-moon /
+  data-cloud with reference defaults; scrim .55 -> .18; h1 halo replaced. Still
+  differs: cloud crowns softer than the real cauliflower rims, left mass
+  shorter, title wider than the real 624px column (fix: max-width 624px on the
+  h1 and index in examples/fable-showcase/site.css, per fable.md measurements).
+- examples/fable-showcase/compare/ holds the agent's PNG renders and is tracked
+  from an earlier sweep; .gitignore now excludes examples/*/compare/ going
+  forward, but the already-tracked files need one untracking commit
+  (git rm -r --cached examples/fable-showcase/compare) - the ECC gate refuses
+  that verb from an agent, so a person or an ungated session should run it.
 - skills.sh: NO submission step exists (checked skills.sh, /docs, and the
   vercel-labs/skills README). The directory is populated from the CLI's install
   telemetry. All three repos (ultimate-frontend-skills, claude-code-usage-limits,
