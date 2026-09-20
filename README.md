@@ -1,4 +1,4 @@
-Ultimate Frontend Skills 5.0.0 is the plugin previously named Ultimate Website Skills (4.x) and cinematic-web-design (3.x), which in turn absorbed Atelier. [Migration and aliases](docs/merge.md) · [The pipeline](skills/ultimate-frontend-skills/references/pipeline.md) · [Claude Design routes](skills/ultimate-frontend-skills/references/claude-design.md)
+Ultimate Frontend Skills 6.0.0 is the plugin previously named Ultimate Website Skills (4.x) and cinematic-web-design (3.x), which in turn absorbed Atelier. [Migration and aliases](docs/merge.md) · [The pipeline](skills/ultimate-frontend-skills/references/pipeline.md) · [Claude Design routes](skills/ultimate-frontend-skills/references/claude-design.md)
 
 # Ultimate Frontend Skills
 
@@ -186,6 +186,14 @@ webdesign.mjs packs --install       # get every absent one
 | [addyosmani/web-quality-skills](https://github.com/addyosmani/web-quality-skills) `accessibility` | Accessibility review, from the Chrome team's side |
 | [ibelick/ui-skills](https://github.com/ibelick/ui-skills) `fixing-accessibility` | Fixing accessibility defects, not just finding them |
 | [cloudai-x/threejs-skills](https://github.com/cloudai-x/threejs-skills) | three.js as a general subject, everything outside the scroll-driven product page |
+
+## Credits
+
+[CREDITS.md](CREDITS.md) names every site in the reference corpus and every
+pack the plugin defers to - the studios, the award pages, the games, the apps
+and the people behind them - so the work this plugin learns from is visible.
+It is generated from the data (`webdesign.mjs credits`) and checked in tests,
+so a site cannot enter the corpus without entering the credits.
 
 ## Built on the work of
 

@@ -732,8 +732,33 @@ async function cmdInspect() {
    user reading about a handoff to a pack they did not have. */
 async function cmdPacks() {
   const P = await import('./packs.mjs');
+  const sub = argv[1] && !String(argv[1]).startsWith('--') ? String(argv[1]) : null;
+  if (sub === 'add') {
+    const spec = argv[2];
+    if (!spec) die('packs add <owner/repo | github url | local dir> [--owns "..."] [--why "..."]');
+    const r = P.add(spec, { owns: flag('owns') ? String(flag('owns')) : null, why: flag('why') ? String(flag('why')) : null, dry: !!flag('dry-run') });
+    if (flag('json')) { console.log(JSON.stringify(r, null, 2)); return; }
+    console.log('\n  ' + r.entry.id + '  ' + r.entry.kind + '  ' + r.entry.licence + (r.entry.sha ? '  ' + r.entry.sha : ''));
+    for (const s of r.skills) console.log('    ' + s.name.padEnd(32) + (s.description || '').slice(0, 90));
+    console.log('\n  row for references/skill-packs.md:\n  ' + r.row);
+    console.log(flag('dry-run') ? '\n  (dry run: registry unchanged)' : '\n  registered in data/packs.json. `packs vendor ' + r.entry.id + '` copies it in; `packs --install` gets it.');
+    return;
+  }
+  if (sub === 'remove') {
+    if (!argv[2]) die('packs remove <id>');
+    const gone = P.remove(String(argv[2]));
+    console.log('  removed ' + gone.id + (gone.vendored ? ' (its copy under ' + gone.vendored + ' is left for you to delete)' : ''));
+    return;
+  }
+  if (sub === 'vendor') {
+    if (!argv[2]) die('packs vendor <id> [--force]');
+    const r = P.vendor(String(argv[2]), { force: !!flag('force') });
+    console.log('  copied ' + r.skills.join(', ') + ' (' + r.licence + (r.sha ? ', ' + r.sha : '') + ') into ' + r.dest + '\n  list improvements in its UFS-NOTES.md');
+    return;
+  }
+  if (sub) die('packs: unknown subcommand ' + sub + ' (add, remove, vendor)');
   if (flag('install') || flag('dry-run')) {
-    const report = P.install({ only: flag('only') ? String(flag('only')) : null, dry: !!flag('dry-run') });
+    const report = P.install({ only: flag('only') ? String(flag('only')) : null, dry: !!flag('dry-run'), upstream: !!flag('upstream'), project: !!flag('project') });
     if (flag('json')) { console.log(JSON.stringify(report, null, 2)); return; }
     console.log('');
     for (const r of report) console.log('  ' + r.id.padEnd(40) + r.action);
@@ -779,6 +804,7 @@ switch (cmd) {
   case 'video': await cmdVideo(); break;
   case 'awards': case 'refs': await cmdAwards(); break;
   case 'packs': await cmdPacks(); break;
+  case 'credits': await delegate('credits.mjs', argv.slice(1)); break;
   case 'inspect': await cmdInspect(); break;
   case 'blender': await delegate('blender.mjs', argv.slice(1)); break;
   case 'assets': case 'texture': case 'textures': await delegate('assets.mjs', argv.slice(1)); break;
@@ -810,8 +836,13 @@ switch (cmd) {
   inspect <url> [--selector "h1,p,a"] [--width 1440] [--json]
                                   the Elements panel on a live site: computed type, fonts loaded,
                                   type scale, colours, and what it fetched - reference, not defects
-  packs [--install] [--dry-run] [--only <id>]
+  packs [--install] [--dry-run] [--only <id>] [--upstream] [--project]
                                   the packs this plugin defers to; get the absent ones
+  packs add <owner/repo> [--owns "..."] [--why "..."]
+                                  register a new pack from its repo in one command
+  packs vendor <id>               copy a registered pack into packs/ to improve and ship
+  packs remove <id>               take a pack out of the registry
+  credits [--check]               write CREDITS.md from the corpus and the pack registry
   dev <dir> [--port 4321] [--widths 1440] [--scroll 0,900]
                                   serve + watch: re-audits and re-renders on every save
   serve <dir> [--port 4321]       local preview

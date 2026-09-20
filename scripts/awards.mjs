@@ -107,7 +107,7 @@ export function buildCorpus() {
   return report;
 }
 
-const KINDS = new Set(['3d', 'editorial', 'product', 'portfolio', 'ecommerce', 'brand', 'experiment']);
+const KINDS = new Set(['3d', 'editorial', 'product', 'portfolio', 'ecommerce', 'brand', 'experiment', 'game', 'app', 'studio']);
 
 const NOISE = /^(unverified\b|not individually|listed on|could not|no longer|see also|source:)|not individually fetched|tag feed/i;
 
@@ -238,6 +238,9 @@ const REGISTERS = {
   portfolio: { kind: 'portfolio', q: '' },
   '3d': { kind: '3d', q: '' },
   editorial: { kind: 'editorial', q: '' },
+  game: { kind: 'game', q: '' },
+  app: { kind: 'app', q: '' },
+  studio: { kind: 'studio,portfolio', q: '' },
 };
 
 export function pickReferences(register, n = 3, extra = {}) {

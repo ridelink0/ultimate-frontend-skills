@@ -1,0 +1,243 @@
+[
+  {
+    "id": "emilkowalski/skills",
+    "kind": "skills",
+    "skills": [
+      "animate",
+      "review-animations",
+      "find-animation-opportunities",
+      "animation-vocabulary",
+      "apple-design",
+      "pick-ui-library",
+      "prototype",
+      "emil-design-eng"
+    ],
+    "owns": "UI component motion and the verdict on it. Emil Kowalski, MIT.",
+    "why": "The first pack to install. animate owns dropdowns, toasts, modals and button presses; this plugin owns the page. references/skill-packs.md draws the line.",
+    "licence": "MIT",
+    "added": "2026-09-14"
+  },
+  {
+    "id": "frontend-design@claude-plugins-official",
+    "kind": "plugin",
+    "marketplace": "claude-plugins-official",
+    "marketplaceName": "claude-plugins-official",
+    "plugin": "frontend-design",
+    "owns": "Aesthetic direction at the start of new UI. Anthropic, official.",
+    "why": "When it is present it owns palette, type intent and hero form; this plugin supplies chassis, motion, 3D and verification. The seam is silent either way.",
+    "licence": "Apache-2.0",
+    "added": "2026-09-14"
+  },
+  {
+    "id": "MickeyAlton33/web-designer-plugin",
+    "kind": "plugin",
+    "marketplace": "MickeyAlton33/web-designer-plugin",
+    "marketplaceName": "web-designer-marketplace",
+    "plugin": "web-designer",
+    "owns": "Award-winning site references as a way of teaching a model what good looks like. 48 patterns from 38 sites, March 2026.",
+    "why": "The idea this plugin's 388-entry corpus grew from. Credited in the README; worth having beside it.",
+    "licence": "MIT",
+    "added": "2026-09-14"
+  },
+  {
+    "id": "vercel-labs/agent-skills",
+    "kind": "skills",
+    "skills": [
+      "web-design-guidelines"
+    ],
+    "owns": "A broad web-design review checklist. The most-installed design skill in the ecosystem.",
+    "why": "A second reviewer. Where it and references/tells.md disagree on taste, tells.md is the more specific document.",
+    "licence": null,
+    "added": "2026-09-14"
+  },
+  {
+    "id": "addyosmani/web-quality-skills",
+    "kind": "skills",
+    "skills": [
+      "accessibility"
+    ],
+    "owns": "Accessibility review from the Chrome team's side.",
+    "why": "Run it on forms and navigation beside references/craft.md.",
+    "licence": null,
+    "added": "2026-09-14"
+  },
+  {
+    "id": "ibelick/ui-skills",
+    "kind": "skills",
+    "skills": [
+      "fixing-accessibility"
+    ],
+    "owns": "Fixing accessibility defects, not just finding them.",
+    "why": "Hand off component-pattern fixes; keep landmark and contrast fixes here.",
+    "licence": null,
+    "added": "2026-09-14"
+  },
+  {
+    "id": "cloudai-x/threejs-skills",
+    "kind": "skills",
+    "skills": [
+      "threejs-fundamentals",
+      "threejs-geometry",
+      "threejs-shaders",
+      "threejs-animation",
+      "threejs-materials",
+      "threejs-lighting",
+      "threejs-loaders",
+      "threejs-textures",
+      "threejs-postprocessing",
+      "threejs-interaction"
+    ],
+    "owns": "three.js as a general subject.",
+    "why": "references/three.md is narrower and deeper on the scroll-driven product page; this covers everything outside that.",
+    "licence": null,
+    "added": "2026-09-14"
+  },
+  {
+    "id": "Leonxlnx/taste-skill",
+    "kind": "plugin",
+    "skills": [
+      "brandkit",
+      "brutalist-skill",
+      "gpt-tasteskill",
+      "image-to-code-skill",
+      "imagegen-frontend-mobile",
+      "imagegen-frontend-web",
+      "minimalist-skill",
+      "output-skill",
+      "redesign-skill",
+      "soft-skill",
+      "stitch-skill",
+      "taste-skill",
+      "taste-skill-v1"
+    ],
+    "owns": "Frontend design taste skills including brutalist, minimalist, soft, redesign, stitch, and more",
+    "why": "Added with packs add on 2026-09-20. plugin taste-skill.",
+    "licence": "MIT",
+    "added": "2026-09-20",
+    "plugin": "taste-skill",
+    "marketplace": "Leonxlnx/taste-skill",
+    "marketplaceName": "taste-skill",
+    "sha": "5217fb4"
+  },
+  {
+    "id": "pbakaus/impeccable",
+    "kind": "plugin",
+    "skills": [
+      "impeccable",
+      "impeccable"
+    ],
+    "owns": "Design fluency for frontend development. 1 skill with 24 commands (/impeccable polish, /impeccable audit, /impeccable critique, etc.) and curated anti-pattern detection.",
+    "why": "Added with packs add on 2026-09-20. plugin impeccable.",
+    "licence": "Apache-2.0",
+    "added": "2026-09-20",
+    "plugin": "impeccable",
+    "marketplace": "pbakaus/impeccable",
+    "marketplaceName": "impeccable",
+    "sha": "f2c7051"
+  },
+  {
+    "id": "microsoft/playwright-cli",
+    "kind": "skills",
+    "skills": [
+      "playwright-cli"
+    ],
+    "owns": "Automate browser interactions, test web pages and work with Playwright tests.",
+    "why": "Added with packs add on 2026-09-20. 1 skill(s): playwright-cli.",
+    "licence": "Apache-2.0",
+    "added": "2026-09-20",
+    "sha": "74354ec"
+  },
+  {
+    "id": "bergside/awesome-design-skills",
+    "kind": "skills",
+    "skills": [
+      "agentic",
+      "ant",
+      "artistic",
+      "basic",
+      "bento",
+      "bold",
+      "brutalism",
+      "cafe",
+      "claude",
+      "claymorphism",
+      "clean",
+      "codex",
+      "colorful",
+      "contemporary",
+      "corporate",
+      "cosmic",
+      "creative",
+      "dithered",
+      "doodle",
+      "dramatic",
+      "editorial",
+      "enterprise",
+      "expressive",
+      "fantasy",
+      "fiction",
+      "flat",
+      "friendly",
+      "futuristic",
+      "geometric",
+      "glassmorphism",
+      "gradient",
+      "immersive",
+      "impeccable",
+      "levels",
+      "lingo",
+      "material",
+      "matrix",
+      "minimal",
+      "modern",
+      "mono",
+      "neobrutalism",
+      "neon",
+      "neumorphism",
+      "pacman",
+      "paper",
+      "perspective",
+      "power",
+      "premium",
+      "professional",
+      "pulse",
+      "refined",
+      "retro",
+      "riso",
+      "roku",
+      "sega",
+      "shadcn",
+      "sketch",
+      "skeumorphism",
+      "sleek",
+      "spacious",
+      "square",
+      "stitch",
+      "storytelling",
+      "terracotta",
+      "tetris",
+      "vibrant",
+      "vintage"
+    ],
+    "owns": "Conversational AI-first interface with minimal controls, clear outcomes, and delegated task flows for agentic workflows.",
+    "why": "Added with packs add on 2026-09-20. 67 skill(s): agentic, ant, artistic, basic, bento, bold, brutalism, cafe, claude, claymorphism, clean, codex, colorful, contemporary, corporate, cosmic, creative, dithered, doodle, dramatic, editorial, enterprise, expressive, fantasy, fiction, flat, friendly, futuristic, geometric, glassmorphism, gradient, immersive, impeccable, levels, lingo, material, matrix, minimal, modern, mono, neobrutalism, neon, neumorphism, pacman, paper, perspective, power, premium, professional, pulse, refined, retro, riso, roku, sega, shadcn, sketch, skeumorphism, sleek, spacious, square, stitch, storytelling, terracotta, tetris, vibrant, vintage.",
+    "licence": "MIT",
+    "added": "2026-09-20",
+    "sha": "f631a09"
+  },
+  {
+    "id": "viettranx/3dviz-pro-max",
+    "kind": "plugin",
+    "skills": [
+      "3dviz-pro-max"
+    ],
+    "owns": "Design and build expressive 3D scenes, explainers and interactive models with grounded subject knowledge: authored looks and moods, runnable Three.js rigs and kits, inspection checklists and a capture script.",
+    "why": "Added with packs add on 2026-09-20. plugin 3dviz-pro-max.",
+    "licence": "MIT",
+    "added": "2026-09-20",
+    "plugin": "3dviz-pro-max",
+    "marketplace": "viettranx/3dviz-pro-max",
+    "marketplaceName": "3dviz-pro-max",
+    "sha": "d077e0e"
+  }
+]

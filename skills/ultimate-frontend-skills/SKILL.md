@@ -1,6 +1,6 @@
 ---
 name: ultimate-frontend-skills
-description: Use whenever a website, landing page, marketing site, portfolio, microsite, homepage, or any public-facing web page is being built, redesigned, restyled, or made to "look better" - including plain HTML/CSS pages, Next/React/Astro sites, and single-file pages. Supplies the house style (editorial serif typography, warm-neutral and near-black grounds, cinematic imagery, layered scroll parallax, exploded technical views) plus a copy-in CSS chassis, a motion runtime, a section library, a scaffolder, and an audit.
+description: Use whenever a website, landing page, marketing site, portfolio, microsite, homepage, any public-facing web page, an app screen (mobile, desktop, PWA, Expo), or a game's site, start screen, menu or HUD is being built, redesigned, restyled, or made to "look better" - including plain HTML/CSS pages, Next/React/Astro sites, React Native screens, canvas and three.js games, and single-file pages. Supplies the house style (editorial serif typography, warm-neutral and near-black grounds, cinematic imagery, layered scroll parallax, exploded technical views) plus a copy-in CSS chassis, a motion runtime, a section library, a scaffolder, and an audit.
 ---
 
 # Ultimate Frontend Skills
@@ -58,6 +58,54 @@ start of new UI and this plugin supplies the chassis, the motion, the 3D and the
 verification. If it is not installed, the house style below stands in. Either
 way the seam is silent - never tell the user to go and install something
 mid-build. `references/plugins.md` has the handshake and the rest of the bench.
+
+## Three surfaces: a website, an app, a game
+
+The pipeline was written for websites. Two more surfaces now share the same
+route, the same chassis and the same audit, each with its own reference and
+its own slice of the corpus:
+
+| Surface | Read | What changes |
+|---|---|---|
+| A website, landing page, microsite | this file, `references/pipeline.md` | nothing - the route as written |
+| An app (mobile, desktop, PWA, Expo) | `references/apps.md` | the first screen is a task, not a hero; the navigation model is decided before the palette; empty, loading and error states are designed before the full one; platform conventions outrank the house style; `animate-expo` and the React Native packs own motion when installed. 35 shipped apps: `awards --pick app --n 3` |
+| A game's site and its start screen | `references/games.md` | the start screen is in-world UI, not a marketing template: controls documented exactly, real persisted numbers, names for weapons, waves and deaths. The eyebrow-headline-tagline-two-buttons stack is the tell. `awards --pick game --n 3` |
+
+Copy on all three: `references/copy-tells.md`. Generated pictures on all
+three: `references/image-tells.md` first, then `references/image-gen.md` for
+the pipeline.
+
+### What separates a made thing from a generated one
+
+Measured on the two exhibits in `references/games.md` - Doodle District,
+hand-made, and Whiteout, built with a code agent and credited as such on its
+own credits screen - and holding across the app corpus:
+
+1. **Specificity.** The made thing names its own parts: "L2 aim, R2 fire",
+   "checkpoints WAVE 5 / WAVE 10", "best score: 60393". The generated one names
+   categories: Accelerate, Steer, Brake, Settings.
+2. **Density where the player needs it.** Two full control columns on one card
+   beat three key caps and a footnote. A start screen with nothing to read is
+   a poster, not a start screen.
+3. **Type from the world of the thing.** Patrick Hand and Caveat on lined paper
+   because the game is a doodle. The generated page reaches for a condensed
+   grotesk over black because that is what "cinematic" looks like on average.
+4. **Irregularity that was chosen.** Per-element rotation, hand-set radii,
+   offset shadows, a card that is not centred. Grid-perfect rows of identical
+   buttons read as generated.
+5. **Copy that could only belong here.** "OFF THE PAGE" as the death line of a
+   paper game. Two-beat imperative taglines ("Keep moving. Cross the bridge."),
+   caps eyebrows ("THE CITY DOESN'T WAIT"), "Headphones recommended" and "TAKE
+   A BREATH." recur across generated games and are the verbal fingerprint.
+6. **State that persists.** A best score, a remembered sensitivity, a
+   checkpoint: evidence that someone played it. Generated start screens are
+   stateless.
+7. **Credits that name people and tools plainly**, in a footer, not a hero.
+
+An app is judged the same way: a real first task instead of a three-slide
+onboarding carousel, one accent that came from the brand instead of an indigo
+gradient, a tab bar that sits where the platform puts it, and empty states
+written for the actual thing that is empty.
 
 ## Fix three things before you type
 
@@ -401,6 +449,10 @@ Read one only when you need it. Each is self-contained.
 | `references/imagery.md` | Sourcing and licensing, CSS colour grading, duotone, scrims, gradient-mesh skies with no photograph, film grain, SVG technical drawing |
 | `references/sections.md` | The grid, spacing numbers, dot leaders, glass, forms, and section archetypes the library does not have |
 | `references/tells.md` | What gives a generated page away, and what to do instead |
+| `references/games.md` | Game sites and start screens: the two exhibits measured (hand-made against agent-built), thirteen more across indie, generated and studio pages, and the checkable tells for each |
+| `references/apps.md` | Apps: 35 shipped references with first screen, type, palette, navigation, motion, empty states and copy; the app-specific tells |
+| `references/copy-tells.md` | What makes website, app and game copy read as generated in 2026 - vocabulary, sentence shapes, microcopy - and what human copy does instead |
+| `references/image-tells.md` | What gives a generated picture away, the prompt template that avoids it, the post-processing order, and when to use a photograph instead |
 | `references/checklist.md` | The pre-ship pass, and what the audit cannot see |
 
 The audit enforces mechanically most of what is in `tells.md`, so you do not

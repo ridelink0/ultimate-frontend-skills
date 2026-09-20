@@ -137,6 +137,42 @@ creating a new one. Not exercised here; listed because it is connected on this
 machine and because it is the only documented deploy path straight out of a
 canvas.
 
+## September 2026: what changed, and what was seen from inside a session
+
+Read on 20 September 2026 from Anthropic's own post
+(https://claude.com/blog/claude-design-stays-on-brand-for-daily-work) and from
+the `DesignSync` tool schema as loaded inside a Claude Code 2.1.263 session on
+the machine this was written on:
+
+- **Claude Design now works inside any conversation**, including Claude Code
+  and the Artifacts tab, in beta on paid plans (Pro, Max and Team on by
+  default; Enterprise off until an admin enables it).
+- **It shares usage limits with Claude Code.** A design pass and a build pass
+  now draw on the same 5-hour and weekly windows. Budget them together.
+- Anthropic describes **`/design-sync` as two-way**: it pulls a design system
+  into Claude Code so a build uses the project's real components, and pushes
+  what was written back to the canvas. The tool underneath has both halves:
+  `list_files` and `get_file` are the pull, `finalize_plan` then
+  `write_files` / `delete_files` the push, in that fixed order. The earlier
+  section above says "pushes, it does not import"; that was true of the sync
+  command in June and is superseded for the tool, not for plain HTML: the
+  bundle it syncs is still a React design system, so a UFS page is measured
+  against a canvas with `parity`, not pushed with `/design-sync`.
+- **The Design System pane indexes cards from a marker**: the first line of a
+  preview HTML file, `<!-- @dsCard group="..." -->`, compiled into
+  `_ds_manifest.json`. `register_assets` is legacy. Verified from the tool's
+  own description; which other attributes the marker accepts beyond `group`
+  is UNVERIFIED (the legacy call took `name`, `subtitle` and `viewport`).
+  To hand a UFS section library to Claude Design as a design system, write one
+  preview HTML per section with that marker on line 1, in a directory the user
+  points `/design-sync` at.
+- **This plugin never calls `DesignSync` on its own.** Its schema says it is
+  for the `/design-sync` skill the user starts. UFS reads the result, builds
+  against it, and measures parity; it does not create projects or write files
+  to one.
+- Export from the canvas is PDF, PowerPoint or HTML; connected destinations
+  are Adobe, Base44, Canva, Gamma, Lovable, Miro, Replit, Vercel and Wix.
+
 ## Implementing a supplied design
 
 1. Read the brief. If a Design project, a published canvas or an exported

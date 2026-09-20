@@ -512,6 +512,23 @@
   "checked": "2026-09-14T11:18:54.490Z"
  },
  {
+  "id": "asterism",
+  "name": "Asterism — The Constellation Game",
+  "url": "https://asterism.openai.chatgpt.site",
+  "studio": null,
+  "year": 2026,
+  "award": "reference",
+  "source": "game",
+  "kind": "game",
+  "stack": [],
+  "techniques": [],
+  "palette": "unknown (minimal shell fetched, not rendered)",
+  "type": "unknown (minimal shell fetched, not rendered)",
+  "motion": "unknown",
+  "why": "HTML fetched via curl (7,772 bytes, a minimal shell suggesting most content is client-rendered); not rendered this session. Hosted on openai.chatgpt.site; AI-generated inferred from hosting domain.",
+  "verified": true
+ },
+ {
   "id": "atlason",
   "name": "Atlason",
   "url": "https://atlason.com",
@@ -1843,6 +1860,25 @@
   "verified": true
  },
  {
+  "id": "depop",
+  "name": "Depop",
+  "url": "https://www.depop.com/",
+  "studio": "Depop Ltd (owned by Etsy)",
+  "year": 2026,
+  "award": "described in 2026 fast company/inc. coverage as avoiding ai-generated junk imagery - not an ada/play winner",
+  "source": "app",
+  "kind": "app",
+  "stack": [],
+  "techniques": [
+   "enforcing real-photo community norms (cultural/normative, not just UI) as the actual design decision"
+  ],
+  "palette": "UNVERIFIED",
+  "type": "UNVERIFIED",
+  "motion": "UNVERIFIED",
+  "why": "sourced 2026 reporting explicitly credits Depop's real-photo seller norms as the reason it has resisted AI-generated product-photo drift seen elsewhere in resale apps",
+  "verified": true
+ },
+ {
   "id": "designerpart-brand-studio",
   "name": "designerpart Brand Studio",
   "url": "https://designerpart.com",
@@ -1858,11 +1894,11 @@
   "motion": "UNVERIFIED - the fetch attempt was refused by the server (403); listed on the CSSDA Special Kudos roll but not confirmed here.",
   "why": "UNVERIFIED - real listing, but the site actively blocked automated fetching, so no craft claim can be made.",
   "verified": false,
+  "checked": "2026-09-14T11:18:54.490Z",
   "dead": {
    "status": 403,
    "at": "2026-09-14T11:18:54.490Z"
-  },
-  "checked": "2026-09-14T11:18:54.490Z"
+  }
  },
  {
   "id": "discord",
@@ -1905,6 +1941,31 @@
   "type": "wide-tracked, stacked one-word display lines used for the hero statement rather than a single headline sentence",
   "motion": "not confirmed by a static fetch; the letter-spaced stacked hero text is built for an animated reveal even though the reveal itself isn't visible to a text-only crawl",
   "why": "splitting a tagline into one word per line and tracking it out wide is a cheap, load-bearing typographic move - it forces a stagger-reveal read even before any animation library touches it, so the layout carries motion intent on its own",
+  "verified": true
+ },
+ {
+  "id": "doomfly",
+  "name": "DOOMFLY",
+  "url": "https://fly-brain-doom.awormuth.chatgpt.site",
+  "studio": null,
+  "year": 2026,
+  "award": "reference",
+  "source": "game",
+  "kind": "game",
+  "stack": [
+   "Geist Mono",
+   "Silkscreen"
+  ],
+  "techniques": [
+   "dashboard/telemetry-panel chrome grafted onto a shooter",
+   "numbered instrumentation panels",
+   "monospace data-readout aesthetic",
+   "1px hairline borders"
+  ],
+  "palette": "pure black/white monochrome",
+  "type": "Geist Mono (UI/telemetry text), Silkscreen (pixel display accents)",
+  "motion": "unknown beyond static screenshot",
+  "why": "Rendered successfully via webdesign.mjs study (screenshot captured) and HTML fetched via curl (35,501 bytes). Hosted on chatgpt.site, OpenAI's own subdomain platform for AI-built apps; inferred AI-generated from hosting domain + house style (Geist Mono, telemetry-dashboard conceit) rather than an explicit on-page credit like Whiteout's.",
   "verified": true
  },
  {
@@ -1961,6 +2022,23 @@
   "motion": "UNVERIFIED - listed on the Awwwards Honorable Mention roll; not independently confirmed.",
   "why": "UNVERIFIED - real listing, craft details not checked against the live site in this pass.",
   "verified": false
+ },
+ {
+  "id": "elsewhere",
+  "name": "Elsewhere · A waking dream",
+  "url": "https://elsewhere-dream.domtyler1975.chatgpt.site",
+  "studio": null,
+  "year": 2026,
+  "award": "reference",
+  "source": "game",
+  "kind": "game",
+  "stack": [],
+  "techniques": [],
+  "palette": "#100d27 deep indigo, #b8ffdd mint accent, #faf5ff/#f4eefc/#e9e0f7 pale lavender neutrals, #302045, #24352f",
+  "type": "unknown (render blocked by JS wall)",
+  "motion": "unknown",
+  "why": "HTML fetched via curl (29,917 bytes); webdesign.mjs study render reported a JS wall. Hosted on domtyler1975.chatgpt.site; AI-generated inferred from hosting domain + house-style copy pattern (matches the multi-beat imperative tagline and personified-loading-copy pattern found across the other chatgpt.site exhibits).",
+  "verified": true
  },
  {
   "id": "emi-takahashi",
@@ -2341,6 +2419,26 @@
   "verified": true
  },
  {
+  "id": "glass-towers",
+  "name": "Glass Towers",
+  "url": "https://glass-towers.openai.chatgpt.site",
+  "studio": null,
+  "year": 2026,
+  "award": "reference",
+  "source": "game",
+  "kind": "game",
+  "stack": [],
+  "techniques": [
+   "fully-authored error/failure-state screen",
+   "safe system font stack"
+  ],
+  "palette": "#d8d2dc dusty lavender-grey, #0a2033 deep navy, #ff6256 single coral accent, #fff9f6/#eee8eb near-white neutrals",
+  "type": "\"Helvetica Neue\", Helvetica, Arial, sans-serif (no distinct display font)",
+  "motion": "unknown - render timed out (Page.captureScreenshot timed out)",
+  "why": "HTML fetched via curl (80,444 bytes); webdesign.mjs study render timed out on screenshot capture (heavy client bundle). Hosted on openai.chatgpt.site (OpenAI's own AI-app hosting subdomain); AI-generated inferred from hosting domain, not an explicit on-page credit.",
+  "verified": true
+ },
+ {
   "id": "glossier",
   "name": "Glossier",
   "url": "https://www.glossier.com",
@@ -2590,11 +2688,11 @@
   "motion": "the whole site is built around getting a visitor to the \"Get Capabilities Deck\" button rather than around a spectacle sequence",
   "why": "a two-color agency site that still won a 3D-tagged award shows the bar has moved to restraint and execution, not just render budget",
   "verified": false,
+  "checked": "2026-09-14T11:18:54.490Z",
   "dead": {
    "status": 403,
    "at": "2026-09-14T11:18:54.490Z"
-  },
-  "checked": "2026-09-14T11:18:54.490Z"
+  }
  },
  {
   "id": "honda-wing-mark-history-cssda",
@@ -3363,11 +3461,11 @@
   "motion": "minimal - the page favors a static, stable hero over a rotating or animated device shot",
   "why": "compared to Apple's frame-scrubbed rotation for a comparable hardware category, this page stays intentionally calmer and more static, a useful contrast point when deciding how much motion a hardware launch page actually needs",
   "verified": false,
+  "checked": "2026-09-14T11:18:54.490Z",
   "dead": {
    "status": 400,
    "at": "2026-09-14T11:18:54.490Z"
-  },
-  "checked": "2026-09-14T11:18:54.490Z"
+  }
  },
  {
   "id": "metalab-agency",
@@ -3886,11 +3984,11 @@
   "motion": "scroll-triggered section reveals plus accordion expansion, explicitly invited (\"Scroll down and enter\")",
   "why": "the bracketed numbered-section labels ([01Data]) borrow a print report's table-of-contents logic to make a pharma B2B site read as a structured document instead of a marketing scroll",
   "verified": false,
+  "checked": "2026-09-14T11:18:54.490Z",
   "dead": {
    "status": 403,
    "at": "2026-09-14T11:18:54.490Z"
-  },
-  "checked": "2026-09-14T11:18:54.490Z"
+  }
  },
  {
   "id": "partake-foods",
@@ -5032,6 +5130,27 @@
   "verified": true
  },
  {
+  "id": "tiny-rails",
+  "name": "Tiny Rails",
+  "url": "https://sol-on-rails.openai.chatgpt.site",
+  "studio": null,
+  "year": 2026,
+  "award": "reference",
+  "source": "game",
+  "kind": "game",
+  "stack": [
+   "Barlow Condensed",
+   "Bitter",
+   "Azeret Mono"
+  ],
+  "techniques": [],
+  "palette": "unknown beyond fetched HTML (not rendered this session)",
+  "type": "Barlow Condensed (display), Bitter (serif accents), Azeret Mono (monospace)",
+  "motion": "unknown",
+  "why": "HTML fetched via curl (21,813 bytes); not included in the rendered study batch this session. Hosted on openai.chatgpt.site; AI-generated inferred from hosting domain + shared house-style font (Barlow Condensed, same family as the Whiteout exhibit) rather than an explicit on-page credit.",
+  "verified": true
+ },
+ {
   "id": "trevor-noah",
   "name": "Trevor Noah",
   "url": "https://www.trevornoah.com/",
@@ -5384,11 +5503,11 @@
   "motion": "a horizontal carousel (explicit Previous/Next controls) moves through the director reel rather than a scroll-scrubbed sequence.",
   "why": "a production-company showcase that gets out of the way of its own thumbnails - proof that a gallery-white ground with zero brand colour is still a valid choice when the content is video.",
   "verified": false,
+  "checked": "2026-09-14T11:18:54.490Z",
   "dead": {
    "status": 403,
    "at": "2026-09-14T11:18:54.490Z"
-  },
-  "checked": "2026-09-14T11:18:54.490Z"
+  }
  },
  {
   "id": "we-are-royale-studio",
@@ -5431,6 +5550,38 @@
   "type": "a plain grotesque with a conservative marketing-site hierarchy, no oversized display type",
   "motion": "layered canvas-over-preview screenshots stand in for the product's own layering model instead of animating it separately",
   "why": "the site's own theme system is presented as a live demo of the CMS capability it is selling, so the chrome of the page and the pitch of the page are the same artifact",
+  "verified": true
+ },
+ {
+  "id": "whiteout",
+  "name": "Whiteout",
+  "url": "https://whiteout.plgb.chatgpt.site",
+  "studio": "Philipp Burckhardt (with GPT-6 Astra / Codex, per on-page credit)",
+  "year": 2026,
+  "award": "reference",
+  "source": "game",
+  "kind": "game",
+  "stack": [
+   "three.js",
+   "vite (asset hashes)",
+   "Blender",
+   "ElevenLabs",
+   "Suno",
+   "Poly Haven",
+   "OpenAI image generation"
+  ],
+  "techniques": [
+   "backdrop-filter: blur on dialogs",
+   "clamp() fluid type",
+   "grid-template-columns 1fr 138px action row",
+   "eyebrow kicker label pattern",
+   "parallel three-clause settings prose",
+   "full video-export feature (clip/format/resolution/quality)"
+  ],
+  "palette": "near-black navy #111b24/#101e28, off-white #e3e9eb, copper accent #bf9271/#be866c, muted greys #a4afb4/#b3c3cc/#93a4ae",
+  "type": "Barlow Condensed wght 400-700 (headings/wordmark/eyebrows), Inter wght 400-600 (body)",
+  "motion": "hover brightness/background change on buttons, translateY(-1px) lift on start hover, arrow nudges 3px on hover, letterbox bars grow to 6.5vh in cinematic mode, ending-reveal fade+translateY keyframe",
+  "why": "AI-generated exhibit, explicitly credited on the page itself: 'Built by Philipp Burckhardt with GPT-6 Astra (Codex).' Verified via curl of the live HTML (full overlay markup is static, not canvas-drawn) and the minified CSS bundle. Automated render (webdesign.mjs debug then look) both timed out on Page.loadEventFired for the three.js scene; a screenshot supplied directly by the user was read instead, and the static HTML/CSS was fetched independently, so content claims are still primary-sourced.",
   "verified": true
  },
  {
@@ -5742,11 +5893,11 @@
   "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
   "why": "We built a mobile-first platform with Vue.js, GSAP, and Three.js. A dynamic quiz pairs users with an Acura vehicle matching their personality and energy through varied interactions, offering an engaging way to explore the brand’s premium options while streamlining backend logic.",
   "verified": false,
+  "checked": "2026-09-14T11:18:54.490Z",
   "dead": {
    "status": 0,
    "at": "2026-09-14T11:18:54.490Z"
-  },
-  "checked": "2026-09-14T11:18:54.490Z"
+  }
  },
  {
   "id": "allagi-music",
@@ -6136,11 +6287,30 @@
   "motion": "lottie-driven vector animation is loaded into the page, likely for small looping accents rather than full scenes.",
   "why": "a Sydney food-and-drink content studio using lightweight vector animation instead of video loops, which keeps a media-heavy category's homepage weight down.",
   "verified": false,
+  "checked": "2026-09-14T11:18:54.490Z",
   "dead": {
    "status": 0,
    "at": "2026-09-14T11:18:54.490Z"
-  },
-  "checked": "2026-09-14T11:18:54.490Z"
+  }
+ },
+ {
+  "id": "calm",
+  "name": "Calm",
+  "url": "https://www.calm.com/",
+  "studio": "Calm.com, Inc.",
+  "year": 2025,
+  "award": "google play best of 2025, best for xr headsets",
+  "source": "app",
+  "kind": "app",
+  "stack": [],
+  "techniques": [
+   "gradient reserved for one CTA only so rare color use carries meaning"
+  ],
+  "palette": "near-white canvas, deep navy ink headlines, blue-to-purple CTA gradient (per third-party design-analysis blog raw.studio, not Calm's own brand page - treat hex as sourced-but-unverified)",
+  "type": "Figtree (humanist sans), per raw.studio analysis",
+  "motion": "UNVERIFIED",
+  "why": "restraint (flat, quiet, one gradient used sparingly) is the opposite of the generative default of gradienting every surface",
+  "verified": false
  },
  {
   "id": "captain-goosebumps-p3",
@@ -6319,11 +6489,11 @@
   "motion": "UNVERIFIED",
   "why": "flagged from the Codrops WebGL feed as a raw shader sketch (CodePen, no framework) - useful when the goal is a single self-contained fragment shader rather than a scene-graph technique.",
   "verified": false,
+  "checked": "2026-09-14T11:18:54.490Z",
   "dead": {
    "status": 403,
    "at": "2026-09-14T11:18:54.490Z"
-  },
-  "checked": "2026-09-14T11:18:54.490Z"
+  }
  },
  {
   "id": "company-policy-studio",
@@ -6518,6 +6688,25 @@
   "verified": true
  },
  {
+  "id": "edits-instagram",
+  "name": "Edits (by Instagram)",
+  "url": "https://about.fb.com/news/2025/04/introducing-edits-streamlined-video-creation-app/",
+  "studio": "Meta (Instagram team)",
+  "year": 2025,
+  "award": "google play best of 2025, best for fun",
+  "source": "app",
+  "kind": "app",
+  "stack": [],
+  "techniques": [
+   "separating the pro-grade tool into its own app so it isn't compromised by the social app's competing priorities"
+  ],
+  "palette": "UNVERIFIED",
+  "type": "UNVERIFIED",
+  "motion": "UNVERIFIED",
+  "why": "output is user-supplied raw footage arranged on a real frame-by-frame timeline; nothing for a generative model to contribute",
+  "verified": true
+ },
+ {
   "id": "eternal-blue",
   "name": "Eternal Blue",
   "url": "https://eternalblue.co.nz/",
@@ -6537,6 +6726,28 @@
   "type": "unverified - not present in fetched markup",
   "motion": "lenis is loaded on top of the Shopify storefront to smooth scroll, the main lever a commerce theme has for feeling less like a template.",
   "why": "shows the cheapest brand-differentiation move available to a Shopify store: replace native scroll with lenis and nothing else structural.",
+  "verified": true
+ },
+ {
+  "id": "feather-draw-in-3d",
+  "name": "Feather: Draw in 3D",
+  "url": "https://www.sketchsoft3d.com/",
+  "studio": "Sketchsoft Inc.",
+  "year": 2025,
+  "award": "apple design award 2025, visuals and graphics",
+  "source": "app",
+  "kind": "app",
+  "stack": [
+   "Apple Pencil",
+   "Airbreath rendering engine (proprietary)"
+  ],
+  "techniques": [
+   "front-loading the biggest differentiator (2D-to-3D lift gesture) into the very first onboarding action"
+  ],
+  "palette": "UNVERIFIED",
+  "type": "UNVERIFIED",
+  "motion": "real-time light/shadow response as user rotates or reshapes a drawn object, via the Airbreath engine",
+  "why": "every 3D form originated from a specific user-drawn stroke; no generative fill of geometry, light responds to real user-authored geometry",
   "verified": true
  },
  {
@@ -6563,6 +6774,25 @@
   "type": "clean modern sans throughout, restrained rather than expressive, letting the mosaic and mascot carry the personality",
   "motion": "cursor position drives a grid of shader-mapped icons directly, so pointer movement reads as material interaction rather than a hover state",
   "why": "running several lightweight WebGL canvases through one shared context pool, instead of one large three.js scene, is the pattern worth copying whenever a page needs many small living details rather than one big hero",
+  "verified": true
+ },
+ {
+  "id": "focus-friend",
+  "name": "Focus Friend",
+  "url": "https://focusfriend.me/",
+  "studio": "Hank Green",
+  "year": 2025,
+  "award": "google play best of 2025, best overall app",
+  "source": "app",
+  "kind": "app",
+  "stack": [],
+  "techniques": [
+   "reward loop coupled to a visible, sustained companion state instead of a one-off completion animation"
+  ],
+  "palette": "cozy, room-decorating aesthetic; exact spec UNVERIFIED",
+  "type": "UNVERIFIED",
+  "motion": "Bean character visibly focuses in sync with the Pomodoro timer; specifics UNVERIFIED",
+  "why": "low-fi 'toy' character design is a deliberate constraint, the opposite of over-rendered glossy-3D generative mascots",
   "verified": true
  },
  {
@@ -6608,6 +6838,25 @@
   "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
   "why": "Gianluca Gradogna is a versatile Multidisciplinary Designer based in Florence. With expertise spanning design, advertising, coding and photography.",
   "verified": true
+ },
+ {
+  "id": "goodnotes",
+  "name": "Goodnotes",
+  "url": "https://www.goodnotes.com/",
+  "studio": "Goodnotes",
+  "year": 2025,
+  "award": "google play best of 2025, best for large screens",
+  "source": "app",
+  "kind": "app",
+  "stack": [],
+  "techniques": [
+   "digital tool choices modeled directly on physical stationery categories users already know"
+  ],
+  "palette": "paper texture, pen and highlighter colors mimicking analogue materials",
+  "type": "supports imported handwriting-style OTF fonts; simplified layout on familiar iOS navigation patterns",
+  "motion": "UNVERIFIED; ink-rendering responsiveness is the technical signature",
+  "why": "content canvas is the user's own handwriting - an irreducibly personal, non-generic visual",
+  "verified": false
  },
  {
   "id": "goodside-studio",
@@ -6688,6 +6937,30 @@
   "type": "unverified - not present in fetched markup",
   "motion": "gsap and lenis together suggest scrubbed or timed reveals riding a smoothed scroll rather than native browser scroll behaviour.",
   "why": "a content agency's self-site pairing the two most common studio-site primitives (lenis for feel, gsap for reveals) without reaching for a 3D layer it does not need.",
+  "verified": true
+ },
+ {
+  "id": "igloo-inc",
+  "name": "Igloo Inc.",
+  "url": "https://igloo.inc",
+  "studio": "Igloo Inc.",
+  "year": 2025,
+  "award": "soty",
+  "source": "awwwards",
+  "kind": "portfolio",
+  "stack": [
+   "3D environment rendering",
+   "interactive sound design"
+  ],
+  "techniques": [
+   "monochrome grayscale 3D-rendered environment as the site's entire visual chrome",
+   "ambient sound design tied to scroll and hover interaction",
+   "apocalyptic-minimalist set design instead of a project grid"
+  ],
+  "palette": "flat monochrome/grayscale ground with no brand color at all - contrast and fog stand in for color",
+  "type": "small, quiet type set as captions against oversized environment renders, never competing with the imagery for attention",
+  "motion": "scrolling and hovering both move the camera through a continuous 3D scene and trigger a matched sound cue, so the site is scored rather than silent",
+  "why": "an agency reel is usually a project grid; this one is a single continuous grayscale 3D environment with sound design attached to every scroll step, which is what won it Awwwards Site of the Year and is the reason it reads as a place rather than a page",
   "verified": true
  },
  {
@@ -6913,11 +7186,11 @@
   "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
   "why": "This immersive 3D experience was designed to immerse users into the world of Le Sel d'Issey fragrance, in an innovative and captivating way. User can create its own salt sculpture by adding the fragrance ingredients, personalized background and cymatics.",
   "verified": false,
+  "checked": "2026-09-14T11:18:54.490Z",
   "dead": {
    "status": 0,
    "at": "2026-09-14T11:18:54.490Z"
-  },
-  "checked": "2026-09-14T11:18:54.490Z"
+  }
  },
  {
   "id": "leo-parpeix-portfolio",
@@ -6939,6 +7212,23 @@
   "motion": "a webgl canvas is present alongside the page's typographic system, consistent with the designer's own description of 3D elements woven into the layout.",
   "why": "a French art director's self-portfolio built specifically to demonstrate 3D-plus-typography integration rather than 3D as a standalone hero.",
   "verified": true
+ },
+ {
+  "id": "luminar",
+  "name": "Luminar",
+  "url": "https://skylum.com/luminar",
+  "studio": "Skylum",
+  "year": 2025,
+  "award": "google play best of 2025, best multi-device app",
+  "source": "app",
+  "kind": "app",
+  "stack": [],
+  "techniques": [],
+  "palette": "UNVERIFIED",
+  "type": "UNVERIFIED",
+  "motion": "UNVERIFIED",
+  "why": "cannot be assessed with confidence from sources gathered; flagged rather than guessed - notably an AI-photo-editing tool itself, worth its own audit before citing as an anti-AI-look reference",
+  "verified": false
  },
  {
   "id": "mastering-web-animations",
@@ -7184,11 +7474,11 @@
   "motion": "parallax and cursor-tracking layers move around a guide character that walks the visitor through Web3 concepts, deliberately breaking from typical Web3 sterility",
   "why": "borrowing subway-map iconography to explain an abstract data-security product is a concrete metaphor that does more work than another 3D token spinning in space",
   "verified": false,
+  "checked": "2026-09-14T11:18:54.490Z",
   "dead": {
    "status": 0,
    "at": "2026-09-14T11:18:54.490Z"
-  },
-  "checked": "2026-09-14T11:18:54.490Z"
+  }
  },
  {
   "id": "odd-ritual-golf",
@@ -7348,11 +7638,11 @@
   "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
   "why": "Re-invinted is a data-powered experience that gives people the chance to understand the trends and behaviours of the pre-loved culture movement on Vinted. You can discover insights, dive into personality traits, and take a fun quiz to discover your custom \"pre-loved personality\".",
   "verified": false,
+  "checked": "2026-09-14T11:18:54.490Z",
   "dead": {
    "status": 404,
    "at": "2026-09-14T11:18:54.490Z"
-  },
-  "checked": "2026-09-14T11:18:54.490Z"
+  }
  },
  {
   "id": "richard-mille-art-here-2025",
@@ -7672,6 +7962,44 @@
   "verified": true
  },
  {
+  "id": "soundcloud",
+  "name": "SoundCloud",
+  "url": "https://soundcloud.com/",
+  "studio": "SoundCloud Ltd",
+  "year": 2025,
+  "award": "google play best of 2025, best for cars",
+  "source": "app",
+  "kind": "app",
+  "stack": [],
+  "techniques": [
+   "waveform-as-scrubber turning a transport control into content"
+  ],
+  "palette": "UNVERIFIED beyond signature orange waveform player",
+  "type": "UNVERIFIED",
+  "motion": "UNVERIFIED",
+  "why": "waveform is a literal rendering of the actual audio file's amplitude data, not decoration",
+  "verified": false
+ },
+ {
+  "id": "speechify",
+  "name": "Speechify",
+  "url": "https://speechify.com/",
+  "studio": "Speechify Inc.",
+  "year": 2025,
+  "award": "apple design award 2025, inclusivity",
+  "source": "app",
+  "kind": "app",
+  "stack": [],
+  "techniques": [
+   "accessibility settings (contrast, captions, dyslexia-friendly display) surfaced as primary navigation, not buried settings"
+  ],
+  "palette": "UNVERIFIED",
+  "type": "UNVERIFIED",
+  "motion": "word-for-word highlight synchronized to audio playback",
+  "why": "interface exists to get out of the way of someone else's real document; no decorative illustration layer",
+  "verified": true
+ },
+ {
   "id": "stas-bondar-25",
   "name": "Stas Bondar '25",
   "url": "https://www.stabondar.com/",
@@ -7713,6 +8041,25 @@
   "type": "unverified - not present in fetched markup",
   "motion": "a webgl canvas is present on the page; specific scene behaviour is unverified.",
   "why": "a Brazilian creative studio using a 3D-capable canvas for its own site, in a slice otherwise dominated by DOM-only motion.",
+  "verified": true
+ },
+ {
+  "id": "taobao-vision-pro",
+  "name": "Taobao (Vision Pro spatial shopping)",
+  "url": "https://www.taobao.com/",
+  "studio": "Zhejiang Taobao Network Co. (Alibaba Group)",
+  "year": 2025,
+  "award": "apple design award 2025, interaction",
+  "source": "app",
+  "kind": "app",
+  "stack": [],
+  "techniques": [
+   "scoping a spatial redesign to one specific decision moment (side-by-side product comparison) instead of porting the whole catalog at once"
+  ],
+  "palette": "UNVERIFIED",
+  "type": "UNVERIFIED",
+  "motion": "smooth interactions/transitions for spatial placement and side-by-side 3D comparison, per ADA citation",
+  "why": "3D models are dimensionally accurate representations of real purchasable products; fidelity to real object size/shape, not generative approximation. NOTE: award is for the visionOS feature specifically, not the dense flagship mobile app",
   "verified": true
  },
  {
@@ -7983,6 +8330,27 @@
   "verified": true
  },
  {
+  "id": "watch-duty",
+  "name": "Watch Duty",
+  "url": "https://www.watchduty.org/",
+  "studio": "Watch Duty (nonprofit; listed as Sherwood Forestry Service in the ADA credit)",
+  "year": 2025,
+  "award": "apple design award 2025, social impact; time most influential companies 2025; fast company most innovative companies 2025",
+  "source": "app",
+  "kind": "app",
+  "stack": [
+   "Mapbox"
+  ],
+  "techniques": [
+   "legibility-under-density as the design problem - deciding what to hide by default via layer toggles"
+  ],
+  "palette": "UNVERIFIED",
+  "type": "UNVERIFIED",
+  "motion": "UNVERIFIED",
+  "why": "every map element corresponds to a live, externally-sourced, safety-critical fact reported by volunteer dispatchers - opposite of synthetic content",
+  "verified": true
+ },
+ {
   "id": "watts-pet",
   "name": "Watts Pet",
   "url": "https://wattspet.com/",
@@ -8113,6 +8481,25 @@
   "checked": "2026-09-14T11:18:54.490Z"
  },
  {
+  "id": "alltrails",
+  "name": "AllTrails",
+  "url": "https://www.alltrails.com/",
+  "studio": "AllTrails, LLC",
+  "year": 2024,
+  "award": "independently documented via published ux case studies (ixd@pratt) - not an ada/play winner",
+  "source": "app",
+  "kind": "app",
+  "stack": [],
+  "techniques": [
+   "fixing map-icon legibility with a white background plate under each pin rather than a redesign"
+  ],
+  "palette": "green/earth-tone brand identity distinct from typical maps-app blue",
+  "type": "UNVERIFIED",
+  "motion": "UNVERIFIED",
+  "why": "every trail entry is backed by real GPS-tracked routes and community-submitted photos/reviews of a specific place",
+  "verified": false
+ },
+ {
   "id": "atmos-lamp-ayocin",
   "name": "ATMOS Lamp by AYOCIN",
   "url": "https://ayocin.com",
@@ -8150,6 +8537,25 @@
   "verified": true
  },
  {
+  "id": "bereal",
+  "name": "BeReal",
+  "url": "https://bereal.com/",
+  "studio": "BeReal (acquired by Voodoo, 2024)",
+  "year": 2024,
+  "award": "independently case-studied (researchgate 2024) - not an ada/play winner",
+  "source": "app",
+  "kind": "app",
+  "stack": [],
+  "techniques": [
+   "locked/empty feed as the core retention mechanic (post before you can view)"
+  ],
+  "palette": "deliberately minimal chrome, no filters",
+  "type": "UNVERIFIED",
+  "motion": "UNVERIFIED; dual front/back camera capture flow is the structural signature",
+  "why": "unfilterable, timestamped, dual-camera captures of a random real moment are a structural defense against staged/synthetic content",
+  "verified": false
+ },
+ {
   "id": "cartier-watches-wonders-2024",
   "name": "Cartier Watches & Wonders 2024",
   "url": "https://cartier-waw-dev-0224.dev.60fps.fr/",
@@ -8173,6 +8579,49 @@
   "why": "the campaign treats the scroll position as a camera rig moving through a set, not a list of sections - worth taking for any multi-collection product launch.",
   "verified": false,
   "checked": "2026-09-14T11:18:54.490Z"
+ },
+ {
+  "id": "copilot-money",
+  "name": "Copilot Money",
+  "url": "https://www.copilot.money/",
+  "studio": "Copilot Money, Inc.",
+  "year": 2024,
+  "award": "apple design award finalist 2024; webby award, personal finance",
+  "source": "app",
+  "kind": "app",
+  "stack": [
+   "Swift",
+   "SwiftUI",
+   "Swift Charts"
+  ],
+  "techniques": [
+   "native chart rendering instead of skinned web widgets",
+   "single accent color reserved for gain/loss only"
+  ],
+  "palette": "near-monochrome dark/light surfaces, accent color reserved for category tags and gain/loss; exact hex UNVERIFIED",
+  "type": "native SF-derived system type; no third-party display face confirmed",
+  "motion": "Swift Charts native transition curves (per Apple's own developer case study); UNVERIFIED beyond that",
+  "why": "renders real transactions/balances through native chart APIs; no illustration or stock imagery for an AI look to attach to",
+  "verified": true
+ },
+ {
+  "id": "crouton",
+  "name": "Crouton",
+  "url": "https://crouton.app/",
+  "studio": "Devin Davies",
+  "year": 2024,
+  "award": "apple design award 2024, interaction",
+  "source": "app",
+  "kind": "app",
+  "stack": [],
+  "techniques": [
+   "dedicated hands-free 'cook mode' that changes the interaction model for one physical context"
+  ],
+  "palette": "UNVERIFIED",
+  "type": "UNVERIFIED",
+  "motion": "UNVERIFIED",
+  "why": "core value is parsing someone else's real recipe into structure - content is always sourced, never generated",
+  "verified": false
  },
  {
   "id": "david-whyte-experience-2024",
@@ -8217,6 +8666,25 @@
   "verified": true
  },
  {
+  "id": "djay-pro",
+  "name": "djay Pro",
+  "url": "https://www.algoriddim.com/",
+  "studio": "Algoriddim GmbH",
+  "year": 2024,
+  "award": "apple design award 2024, spatial computing",
+  "source": "app",
+  "kind": "app",
+  "stack": [],
+  "techniques": [
+   "deliberately keeping list-browsing flat (2D) and reserving 3D for the one interaction where physical space helps"
+  ],
+  "palette": "dark, club-lighting-referencing chrome; exact spec UNVERIFIED",
+  "type": "UNVERIFIED",
+  "motion": "physical-metaphor gestures (cupping hand to ear to preview via headphone cue) using Vision Pro hand-tracking",
+  "why": "3D turntable geometry and gestures are modeled on real DJ equipment and real hand ergonomics, not a generic floating-UI aesthetic",
+  "verified": true
+ },
+ {
   "id": "dont-board-me-soty-2024",
   "name": "Don't Board Me",
   "url": "https://dontboardme.com",
@@ -8236,6 +8704,25 @@
   "motion": "the loading screen is a small playable moment (bouncing a ball) rather than a static spinner, before the page settles into a conventional booking-funnel scroll",
   "why": "turning the one screen every visitor is forced to wait through into a two-second game is a cheap, high-return way to make a routine loading state memorable",
   "verified": true
+ },
+ {
+  "id": "gentler-streak",
+  "name": "Gentler Streak",
+  "url": "https://gentlerstreak.com/",
+  "studio": "Gentler Stories",
+  "year": 2024,
+  "award": "apple design award 2024, social impact (2023 finalist, visuals and graphics)",
+  "source": "app",
+  "kind": "app",
+  "stack": [],
+  "techniques": [
+   "designing explicitly for the genre's failure mode (streak burnout) as a first-class state"
+  ],
+  "palette": "soft pastel, health-app-adjacent; exact hex UNVERIFIED",
+  "type": "UNVERIFIED",
+  "motion": "UNVERIFIED",
+  "why": "opinionated, contrarian stance on fitness-app psychology reflects a real design decision, not an averaged category look",
+  "verified": false
  },
  {
   "id": "girard-perregaux-casquette",
@@ -8410,6 +8897,65 @@
   "verified": false
  },
  {
+  "id": "procreate-dreams",
+  "name": "Procreate Dreams",
+  "url": "https://procreate.com/dreams",
+  "studio": "Savage Interactive",
+  "year": 2024,
+  "award": "apple design award 2024, innovation",
+  "source": "app",
+  "kind": "app",
+  "stack": [
+   "PencilKit"
+  ],
+  "techniques": [
+   "extending an established gesture language from the flagship app into a structurally new tool rather than inventing a parallel vocabulary"
+  ],
+  "palette": "UNVERIFIED exact chrome spec",
+  "type": "UNVERIFIED",
+  "motion": "gesture-driven (pinch, hold, swipe) navigation consistent with Procreate's broader product line",
+  "why": "every frame is hand-authored by the artist via pressure-sensitive input; the tool captures human gesture, it doesn't generate imagery",
+  "verified": true
+ },
+ {
+  "id": "rooms-cabinet-of-curiosity",
+  "name": "Rooms (Cabinet of Curiosity)",
+  "url": "https://rooms.xyz/",
+  "studio": "Things, Inc. (Jason Toff) - distinct from Cultured Code, maker of Things 3",
+  "year": 2024,
+  "award": "apple design award 2024, visuals and graphics",
+  "source": "app",
+  "kind": "app",
+  "stack": [],
+  "techniques": [
+   "one deliberately low-fidelity retro constraint applied to every object so a huge asset library still feels coherent"
+  ],
+  "palette": "nostalgic 8-bit-adjacent, blocky, retro",
+  "type": "UNVERIFIED",
+  "motion": "interactive object micro-animations (e.g. lanterns that turn on when tapped)",
+  "why": "chunky, low-poly, deliberately-constrained style is the opposite of generative 3D's smooth, over-detailed default",
+  "verified": true
+ },
+ {
+  "id": "strava",
+  "name": "Strava",
+  "url": "https://www.strava.com/",
+  "studio": "Strava, Inc.",
+  "year": 2024,
+  "award": "apple watch app of the year; editors' choice - not an ada category winner",
+  "source": "app",
+  "kind": "app",
+  "stack": [],
+  "techniques": [
+   "one accent color used only on the desaturated map/route line, grayscale elsewhere"
+  ],
+  "palette": "saturated orange accent on desaturated map background, plus black/white",
+  "type": "Inter (UI/data), Boathouse by Grilli Type (brand/marketing, replaced Maison Neue)",
+  "motion": "UNVERIFIED specifics; known for animated post-activity share-card generation",
+  "why": "graphic treatment is applied to real GPS traces of real routes - evidence of an actual event, not a decorative pattern",
+  "verified": true
+ },
+ {
   "id": "tag-heuer-eyewear",
   "name": "TAG Heuer Eyewear",
   "url": "https://www.tagheuer.com/fr/en/eyewear-collection/collection-eyewear.html",
@@ -8502,6 +9048,25 @@
   "verified": true
  },
  {
+  "id": "any-distance",
+  "name": "Any Distance",
+  "url": "https://anydistance.club/",
+  "studio": "Any Distance Inc.",
+  "year": 2023,
+  "award": "apple design award 2023, visuals and graphics",
+  "source": "app",
+  "kind": "app",
+  "stack": [],
+  "techniques": [
+   "output artifact (shareable card) as the primary design surface rather than the input dashboard"
+  ],
+  "palette": "generative per-activity gradient cards; no single static brand palette",
+  "type": "UNVERIFIED",
+  "motion": "UNVERIFIED",
+  "why": "each card is generated from the user's actual route/activity geometry, so personalization is structurally real, not decorative",
+  "verified": false
+ },
+ {
   "id": "aten7-toom-archives-2023",
   "name": "Aten7 (Toom Archives)",
   "url": "https://www.aten7.com/intro",
@@ -8542,6 +9107,68 @@
   "type": "clean modern sans carrying both English and French copy with a language toggle",
   "motion": "UNVERIFIED beyond a straightforward vertical scroll — the fetch surfaced structure and copy but not the animation layer",
   "why": "putting the countdown and the participant stats directly under the hero turns an event site's biggest asset, its scale, into the first thing a visitor reads",
+  "verified": true
+ },
+ {
+  "id": "citymapper",
+  "name": "Citymapper",
+  "url": "https://citymapper.com/",
+  "studio": "Citymapper Ltd",
+  "year": 2023,
+  "award": "app store editors' choice; long-standing design-press reference - not an ada/play winner",
+  "source": "app",
+  "kind": "app",
+  "stack": [],
+  "techniques": [
+   "consistent color+icon per transport mode so a multi-leg route reads as one continuous journey"
+  ],
+  "palette": "UNVERIFIED exact spec; per-mode color coding",
+  "type": "UNVERIFIED",
+  "motion": "UNVERIFIED",
+  "why": "output is a real-time computed route over real transit schedules and live positions - content changes because the world changed",
+  "verified": false
+ },
+ {
+  "id": "duolingo",
+  "name": "Duolingo",
+  "url": "https://www.duolingo.com/",
+  "studio": "Duolingo, Inc.",
+  "year": 2023,
+  "award": "apple design award 2023, delight and fun",
+  "source": "app",
+  "kind": "app",
+  "stack": [],
+  "techniques": [
+   "writing incidental operational copy (patch notes) in the mascot's voice for brand-character consistency"
+  ],
+  "palette": "signature saturated brand green",
+  "type": "UNVERIFIED",
+  "motion": "celebratory micro-animations on streaks/completion; mascot reactions to mistakes; exact easing UNVERIFIED",
+  "why": "mascot cast is specific, trademarked, continuously-evolving IP with running 'lore' a generic model cannot reproduce faithfully",
+  "verified": true
+ },
+ {
+  "id": "flighty",
+  "name": "Flighty",
+  "url": "https://flightyapp.com/",
+  "studio": "Flighty LLC",
+  "year": 2023,
+  "award": "apple design award 2023, interaction",
+  "source": "app",
+  "kind": "app",
+  "stack": [
+   "Swift",
+   "iOS Liquid Glass materials",
+   "Live Activities",
+   "Dynamic Island"
+  ],
+  "techniques": [
+   "treating the lock-screen Live Activity as a first-class design surface with its own visual system"
+  ],
+  "palette": "iOS Liquid Glass translucent-material chrome (platform-provided, not bespoke)",
+  "type": "UNVERIFIED",
+  "motion": "near-real-time Live Activity progress bar with flight-path visualization from pilot-grade data",
+  "why": "every visual maps to a real, externally-verifiable fact about one specific flight; no generic placeholder possible",
   "verified": true
  },
  {
@@ -8673,6 +9300,46 @@
   "verified": true
  },
  {
+  "id": "swingvision",
+  "name": "SwingVision",
+  "url": "https://swing.tennis/",
+  "studio": "SwingVision Inc.",
+  "year": 2023,
+  "award": "apple design award 2023, innovation",
+  "source": "app",
+  "kind": "app",
+  "stack": [
+   "on-device computer vision"
+  ],
+  "techniques": [
+   "overlay graphics drawn directly onto the user's own real match video instead of an abstracted chart"
+  ],
+  "palette": "UNVERIFIED",
+  "type": "UNVERIFIED",
+  "motion": "real-time trajectory/line-call overlay on live video feed",
+  "why": "every visual is a computed overlay on the user's own real footage; nothing is illustrated or stock",
+  "verified": true
+ },
+ {
+  "id": "universe-website-builder",
+  "name": "Universe (Website Builder)",
+  "url": "https://universeapp.com/",
+  "studio": "Universe Exploration Company",
+  "year": 2023,
+  "award": "apple design award 2023, inclusivity",
+  "source": "app",
+  "kind": "app",
+  "stack": [],
+  "techniques": [
+   "borrowing the Instagram-grid layout metaphor instead of shrinking a desktop page-builder canvas"
+  ],
+  "palette": "UNVERIFIED",
+  "type": "UNVERIFIED",
+  "motion": "UNVERIFIED",
+  "why": "tool arranges a specific person's own content into a grid; an empty site is just an empty grid waiting for real content, no generated filler",
+  "verified": false
+ },
+ {
   "id": "unseen-studio-2023",
   "name": "Unseen Studio",
   "url": "https://unseen.co",
@@ -8691,6 +9358,231 @@
   "type": "refined modern sans, 'UNSEEN STUDIO' tracked out in full caps as the primary brand mark",
   "motion": "visitors choose 'Enter' or 'Enter without audio' before a drag-based world lets them pan around rather than scroll conventionally",
   "why": "offering a silent entry point next to the immersive one is a small, easy-to-copy courtesy that most sound-driven experiences skip",
+  "verified": true
+ },
+ {
+  "id": "halide",
+  "name": "Halide",
+  "url": "https://halide.cam/",
+  "studio": "Lux Optics Inc.",
+  "year": 2022,
+  "award": "apple design award 2022, visuals and graphics (outside the 2023-2026 window; included via apple's own developer feature)",
+  "source": "app",
+  "kind": "app",
+  "stack": [],
+  "techniques": [
+   "sourcing typography from a real physical object category (etched camera-body/lens markings) instead of a digital-native type system",
+   "exposing only the most important tools by default"
+  ],
+  "palette": "dark chrome referencing physical camera bodies; exact spec UNVERIFIED",
+  "type": "completely custom typefaces referencing over a century of etched camera-body/lens type",
+  "motion": "UNVERIFIED",
+  "why": "typographic reference traces to a specific, citable design history a designer had to research, not a statistically-averaged camera-app look",
+  "verified": true
+ },
+ {
+  "id": "monzo",
+  "name": "Monzo",
+  "url": "https://monzo.com/",
+  "studio": "Monzo Bank Ltd",
+  "year": 2019,
+  "award": "independently case-studied (creative review, the drum) - not an ada/play winner",
+  "source": "app",
+  "kind": "app",
+  "stack": [
+   "native iOS/Android - UNVERIFIED specific frameworks"
+  ],
+  "techniques": [
+   "one saturated ownable brand color derived from a physical object (the card)",
+   "conversational first-person-plural copy in a formal category"
+  ],
+  "palette": "hot coral (signature card color) with deep navy and soft white",
+  "type": "Oldschool Grotesk (display), custom Monzo Sans built on Universal Sans (functional UI)",
+  "motion": "UNVERIFIED",
+  "why": "commits to one culturally-specific color with a documented human origin story rather than default trust-blue gradients; copy voice reads as one team's real decision",
+  "verified": true
+ },
+ {
+  "id": "things-3",
+  "name": "Things 3",
+  "url": "https://culturedcode.com/things/",
+  "studio": "Cultured Code",
+  "year": 2017,
+  "award": "apple design award 2009 and 2017 (two separate wins; outside 2023-2026 window, included via own product site)",
+  "source": "app",
+  "kind": "app",
+  "stack": [
+   "native Apple frameworks",
+   "vector icons",
+   "system Dynamic Type"
+  ],
+  "techniques": [
+   "treating the empty state as the resting state of a well-used tool rather than an apology"
+  ],
+  "palette": "muted, mostly monochrome chrome with a small set of category/tag colors",
+  "type": "system type following Dynamic Type since v3.18; vector icons scale together",
+  "motion": "signature checkbox/strike-through completion animation and swipe gestures; exact easing UNVERIFIED",
+  "why": "reductive visual language (one weight of type, one grid, almost no color) is the opposite of filling every surface with gradients or icon tiles to signal 'designed'",
+  "verified": true
+ },
+ {
+  "id": "a-short-hike",
+  "name": "A Short Hike",
+  "url": "https://ashorthike.com",
+  "studio": "adamgryu (Adam Robinson-Yu)",
+  "year": 0,
+  "award": "reference",
+  "source": "game",
+  "kind": "game",
+  "stack": [],
+  "techniques": [
+   "flat vector layered-mountain illustration",
+   "embedded YouTube trailer",
+   "plain-text platform link row"
+  ],
+  "palette": "warm yellow-orange to green gradient sky, flat layered mountain silhouettes",
+  "type": "soft rounded hand-lettered-style wordmark",
+  "motion": "unknown (not captured in static render)",
+  "why": "Rendered successfully via webdesign.mjs study (contact sheet, s06). Used as a Group A reference for modest, specific, self-describing indie marketing voice.",
+  "verified": true
+ },
+ {
+  "id": "balatro",
+  "name": "Balatro (marketing site)",
+  "url": "https://www.playbalatro.com",
+  "studio": "LocalThunk / Playstack",
+  "year": 0,
+  "award": "reference",
+  "source": "game",
+  "kind": "game",
+  "stack": [],
+  "techniques": [],
+  "palette": "unknown beyond fetched HTML (not rendered this session)",
+  "type": "unknown beyond fetched HTML (not rendered this session)",
+  "motion": "unknown",
+  "why": "HTML fetched via curl (295,746 bytes); full visual render was not obtained (canvas/JS-heavy page, not attempted beyond the initial study pass which returned a wall diagnostic in the same run as Bruno Simon). Title and meta description confirmed directly. In-game title-screen visuals (hand-painted joker art, custom warped type) are public knowledge but UNVERIFIED in this session - not independently re-confirmed by render.",
+  "verified": true
+ },
+ {
+  "id": "doodle-district",
+  "name": "Doodle District",
+  "url": "https://doodleshooter.vercel.app",
+  "studio": null,
+  "year": 0,
+  "award": "reference",
+  "source": "game",
+  "kind": "game",
+  "stack": [
+   "three.js",
+   "vercel"
+  ],
+  "techniques": [
+   "mix-blend-mode: multiply on HUD",
+   "per-element asymmetric border-radius",
+   "per-element unique rotate() transforms",
+   "hard offset drop-shadows",
+   "google fonts Patrick Hand + Caveat",
+   "scribble keyframe animation on title reveal"
+  ],
+  "palette": "paper #f6f3e6, ink blue #1a30c0, red #d02030",
+  "type": "Patrick Hand (display), Caveat wght 600 (accents), fallback Comic Sans MS/Marker Felt/Segoe Print/cursive",
+  "motion": "550ms scribble keyframe on title (rotate -7deg scale1.7 blur3px -> rotate-1deg scale.95 -> settle at rotate-2deg); independent small rotate() on nearly every UI element; blinking 'go' text 1.2s",
+  "why": "Human-made exhibit. Verified via curl of style.A4A8BF44.css (224 lines) and game.7LCERBLR.js (302KB, grepped for strings) plus a successful webdesign.mjs debug render (w1440/w390, normal+reduced motion). Copy is dense, mechanically specific (documents wall-jump chaining, dash-slash gauge), names real weapons/enemies, has a joke test map (DOODLE MEXICO), an ugly persisted best score (60393), and a thematic death message (OFF THE PAGE) rather than a generic one.",
+  "verified": true
+ },
+ {
+  "id": "fortnite",
+  "name": "Fortnite",
+  "url": "https://www.fortnite.com",
+  "studio": "Epic Games",
+  "year": 0,
+  "award": "reference",
+  "source": "game",
+  "kind": "game",
+  "stack": [],
+  "techniques": [],
+  "palette": "unknown - render blocked",
+  "type": "unknown - render blocked",
+  "motion": "unknown",
+  "why": "webdesign.mjs study reported 'wall - almost no text rendered - blocked, or a JS-only page'; no separate HTML/meta fetch was performed this session due to time budget. Included only as a third documented attempt at the publisher-storefront pattern; no copy is claimed for it beyond the block diagnostic itself.",
+  "verified": false
+ },
+ {
+  "id": "hollow-knight-silksong",
+  "name": "Hollow Knight: Silksong (marketing site)",
+  "url": "https://www.hollowknightsilksong.com",
+  "studio": "Team Cherry",
+  "year": 0,
+  "award": "reference",
+  "source": "game",
+  "kind": "game",
+  "stack": [],
+  "techniques": [
+   "dark editorial section blocks with real embedded gameplay gifs/screenshots"
+  ],
+  "palette": "near-black background, red/black painted key art",
+  "type": "ornate flourished logo lockup + clean sans body headers",
+  "motion": "unknown (not captured in static render)",
+  "why": "Rendered successfully via webdesign.mjs study (contact sheet, s03). This is the studio's marketing/landing page, not the in-game title screen; used as a Group A reference for how a distinctive indie/mid-size studio markets a game with specific narrative+mechanical copy.",
+  "verified": true
+ },
+ {
+  "id": "krunker",
+  "name": "Krunker.io",
+  "url": "https://krunker.io",
+  "studio": "Sysdotini / Krunker.io team",
+  "year": 0,
+  "award": "reference",
+  "source": "game",
+  "kind": "game",
+  "stack": [],
+  "techniques": [],
+  "palette": "unknown (render blocked)",
+  "type": "unknown (render blocked)",
+  "motion": "unknown",
+  "why": "HTML fetched via curl (43,285 bytes); webdesign.mjs study reported 'skip - Navigation failed: net::ERR_ABORTED' (likely anti-bot handling) for a full render. Used as a deliberate boundary case: a genuinely human-made, long-running browser game whose homepage copy has drifted into generic SEO/ad voice through growth-marketing iteration, showing that generic copy alone does not prove AI authorship.",
+  "verified": true
+ },
+ {
+  "id": "overwatch-2",
+  "name": "Overwatch 2",
+  "url": "https://overwatch.blizzard.com",
+  "studio": "Blizzard Entertainment",
+  "year": 0,
+  "award": "reference",
+  "source": "game",
+  "kind": "game",
+  "stack": [],
+  "techniques": [
+   "cross-game publisher nav",
+   "platform-badge row",
+   "live-ops merchandising panel"
+  ],
+  "palette": "dark hero, orange CTA accent",
+  "type": "unknown beyond rendered screenshot layout",
+  "motion": "unknown",
+  "why": "Rendered successfully via webdesign.mjs study (s03). Used as a Group C reference; the front page is a live-ops storefront/calendar rather than a start screen.",
+  "verified": true
+ },
+ {
+  "id": "valorant",
+  "name": "Valorant",
+  "url": "https://playvalorant.com",
+  "studio": "Riot Games",
+  "year": 0,
+  "award": "reference",
+  "source": "game",
+  "kind": "game",
+  "stack": [],
+  "techniques": [
+   "publisher content-hub nav",
+   "news/promo feed",
+   "cookie-consent banner"
+  ],
+  "palette": "dark hero background, red CTA accent",
+  "type": "unknown beyond rendered screenshot layout",
+  "motion": "unknown",
+  "why": "Rendered successfully via webdesign.mjs study (s01). Used as a Group C reference for the ordinary studio/publisher pattern: a storefront/content-hub, not an in-game start screen.",
   "verified": true
  }
 ]

@@ -71,6 +71,18 @@ the ecosystem's, not an endorsement.
 | `vercel/components.build@building-components` | Building React components to a standard. | Framework work. This plugin's chassis is class names and plain HTML; the handoff is at the React boundary. |
 | `heygen-com/hyperframes@hyperframes-animation` | 417K installs, the most-installed animation skill. | UNVERIFIED: not read in this pass. Listed because a model will see it in `skills find animation` above Emil's and should know it is a different tool for a different job (video-frame composition), not a competitor to `animate`. |
 
+## Added 20 September 2026 with `packs add`
+
+Registered from their repos by `webdesign.mjs packs add <owner/repo>`, which reads the skills, the licence and the commit; the notes on each are in docs/research/2026-09-20-packs.md. A vendored copy (`packs vendor <id>`) is the improved fork and lists its changes in UFS-NOTES.md.
+
+| Pack | Owns when installed | Licence |
+|---|---|---|
+| `Leonxlnx/taste-skill` | Frontend design taste skills including brutalist, minimalist, soft, redesign, stitch, and more | MIT, 13 skill(s), added 2026-09-20 with `packs add` |
+| `pbakaus/impeccable` | Design fluency for frontend development. 1 skill with 24 commands (/impeccable polish, /impeccable audit, /impeccable critique, etc.) and curated anti-pattern detection. | Apache-2.0, 2 skill(s), added 2026-09-20 with `packs add` |
+| `microsoft/playwright-cli` | Automate browser interactions, test web pages and work with Playwright tests. | Apache-2.0, 1 skill(s), added 2026-09-20 with `packs add` |
+| `bergside/awesome-design-skills` | Conversational AI-first interface with minimal controls, clear outcomes, and delegated task flows for agentic workflows. | MIT, 67 skill(s), added 2026-09-20 with `packs add` |
+| `viettranx/3dviz-pro-max` | Design and build expressive 3D scenes, explainers and interactive models with grounded subject knowledge: authored looks and moods, runnable Three.js rigs and kits, inspection checklists and a capture script. | MIT, 1 skill(s), added 2026-09-20 with `packs add` |
+
 ## How to detect, and what not to do
 
 ```bash
