@@ -317,6 +317,33 @@ so the pattern itself is fine.
 Honourable Mention and Nominee detail pages publish **no score at all**. The
 phrase "the gap between an HM and a SOTD" is not a published quantity anywhere.
 
+### Studios
+
+Some of the corpus is harvested from studios directly rather than from an
+award listing: `source: "studio"`, `kind: "studio"`, one row for the studio's
+own site and one per case page that could be fetched, with the live work URL
+in `why`. Added 2026-09-20:
+
+**Shader** (`data/awards/chunk-12-shader.json`, 12 rows) - a creative
+development studio in Norrkoping, Sweden, doing interactive 3D and AI for the
+web. Its own site, `shader.se`, was Awwwards Site of the Day on 20 April 2026
+(7.73; DEV 8.12, Animations 9.40), credited to Shader and Andreas Antonsson.
+The whole site is one canvas element with a hidden DOM and ARIA layer behind
+it, per its own accessibility statement; the bundle carries both
+`WebGPURenderer` and `WebGLRenderer`, React Three Fiber, Lenis, Draco, KTX2 and
+Meshopt, Mux video and one self-hosted serif (STIX Two Text). Rendered here it
+showed its loader at both widths and in both motion modes: a CRT boot screen in
+a single blue, a serif italic wordmark, "Version 1.02", a segmented progress
+bar and a copyright line - real 3D authored for the subject, one colour, no
+cards, copy that names Blender, React Three Fiber, 8th Wall and "we don't
+troubleshoot printers". Everything past the loader is read from the served HTML
+and bundle rather than seen. The eleven case pages (port logistics in 3D, a
+glass configurator priced from an API, a 3D interior planner with over a
+hundred products, an AR grocery game on 8th Wall, an AI retirement-video
+generator, and the plain ticketing site the studio shows beside them) were all
+fetched and answered; their live work URLs answered 200 the same day and were
+not rendered. Founders and founding year are UNVERIFIED here.
+
 ## The technique taxonomy
 
 The centre of this file. Cost is gzipped transfer, measured on 2026-09-14 by

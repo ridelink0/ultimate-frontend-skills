@@ -46,12 +46,7 @@ playwright-cli select e9 "option-value"
 playwright-cli upload ./document.pdf
 playwright-cli check e12
 playwright-cli uncheck e12
-playwright-cli snapshot
-# search the snapshot for text or a regexp, returns matching nodes with surrounding context
-playwright-cli find "Sign in"
-playwright-cli find --regex "Sign (in|up)"
-# wrap the regexp in slashes to add flags, e.g. /i for case-insensitive
-playwright-cli find --regex "/sign (in|up)/i"
+playwright-cli snapshot          # options under "Snapshots" below; find searches it
 playwright-cli eval "document.title"
 playwright-cli eval "el => el.textContent" e5
 # get element id, class, or any attribute not visible in the snapshot
