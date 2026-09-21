@@ -7,10 +7,6 @@ metadata:
 
 > Vendored copy note: this is a typeui.sh style preset named "impeccable". It is not pbakaus/impeccable (the design-review skill installed with `npx impeccable install`) and is not affiliated with it; `npx typeui.sh pull impeccable` fetches this preset only.
 
-> Vendored copy note: this is a typeui.sh style preset named "impeccable". It is not pbakaus/impeccable (the design-review skill installed with `npx impeccable install`) and is not affiliated with it; `npx typeui.sh pull impeccable` fetches this preset only.
-
-> Vendored copy note: this is a typeui.sh style preset named "impeccable". It is not pbakaus/impeccable (the design-review skill installed with `npx impeccable install`) and is not affiliated with it; `npx typeui.sh pull impeccable` fetches this preset only.
-
 <!-- TYPEUI_SH_MANAGED_START -->
 # Impeccable Design System Skill (Universal)
 
@@ -30,7 +26,7 @@ A modern, graphic, editorial-poster aesthetic — warm and confident — built o
 - Font loading: self-host the woff2 from the specimen page rather than linking fonts.googleapis.com (a visitor's IP reaches Google before the page paints). One @font-face per weight actually used, for example:
 
   ```css
-  @font-face { font-family: "Chakra Petch"; font-weight: 300 700; font-style: normal; font-display: swap; src: url("/fonts/chakra-petch.woff2") format("woff2"); }
+  @font-face { font-family: "Chakra Petch"; font-weight: 300; font-style: normal; font-display: swap; src: url("/fonts/chakra-petch.woff2") format("woff2"); }
   ```
 
   The stylesheet Google would serve, if linking it is acceptable for the project: https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;600;700&family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800&display=swap

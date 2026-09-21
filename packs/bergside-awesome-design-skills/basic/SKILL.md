@@ -25,7 +25,7 @@ Basic design style defines the visual language of books, magazines, and reports,
 - Font loading: self-host the woff2 from the specimen page rather than linking fonts.googleapis.com (a visitor's IP reaches Google before the page paints). One @font-face per weight actually used, for example:
 
   ```css
-  @font-face { font-family: "Nunito"; font-weight: 200 1000; font-style: normal; font-display: swap; src: url("/fonts/nunito.woff2") format("woff2"); }
+  @font-face { font-family: "Nunito"; font-weight: 200; font-style: normal; font-display: swap; src: url("/fonts/nunito.woff2") format("woff2"); }
   ```
 
   The stylesheet Google would serve, if linking it is acceptable for the project: https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;500;600;700;800;900;1000&family=Oswald:wght@200;300;400;500;600;700&family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800&display=swap

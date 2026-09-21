@@ -24,7 +24,7 @@ A playful, joyful, two-color risograph print aesthetic — built on a single war
 - Font loading: self-host the woff2 from the specimen page rather than linking fonts.googleapis.com (a visitor's IP reaches Google before the page paints). One @font-face per weight actually used, for example:
 
   ```css
-  @font-face { font-family: "Space Grotesk"; font-weight: 300 700; font-style: normal; font-display: swap; src: url("/fonts/space-grotesk.woff2") format("woff2"); }
+  @font-face { font-family: "Space Grotesk"; font-weight: 300; font-style: normal; font-display: swap; src: url("/fonts/space-grotesk.woff2") format("woff2"); }
   ```
 
   The stylesheet Google would serve, if linking it is acceptable for the project: https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Overpass+Mono:wght@300;400;500;600;700&display=swap
