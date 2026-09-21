@@ -60,6 +60,7 @@ craft move worth taking from it.
 
 ```bash
 webdesign.mjs awards --pick object --n 3        # three that disagree
+webdesign.mjs awards --pick app --n 3           # registers: object|product|place|service|argument|portfolio|3d|editorial|app|game|studio
 webdesign.mjs awards "wireframe dissolve" --verbose
 webdesign.mjs awards --technique "pinned horizontal" --since 2025
 webdesign.mjs awards --techniques               # what it can be searched by

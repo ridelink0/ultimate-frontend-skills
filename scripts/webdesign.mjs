@@ -830,7 +830,7 @@ switch (cmd) {
   awards [query] [--kind 3d|editorial|product|portfolio|ecommerce|brand|experiment]
          [--source awwwards|fwa|threejs|codrops|...] [--award sotd|sotm|soty|honourable]
          [--technique X] [--stack X] [--since YEAR] [--limit N] [--verbose] [--json|--urls]
-  awards --pick object|product|place|service|argument|portfolio|3d|editorial [--n 3]
+  awards --pick object|product|place|service|argument|portfolio|3d|editorial|app|game|studio [--n 3]
                                   three references that disagree with each other
   awards --techniques | --stats | --build
                                   what the corpus knows, how big it is, rebuild it from chunks

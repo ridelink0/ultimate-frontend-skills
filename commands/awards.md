@@ -1,6 +1,6 @@
 ---
 description: Pick award-winning reference sites to build against, and render them
-argument-hint: "[query] or --pick object|place|service|argument"
+argument-hint: "[query] or --pick object|place|service|argument|app|game|studio"
 allowed-tools: Bash, Read, Glob
 ---
 
@@ -13,9 +13,9 @@ Arguments: `$ARGUMENTS`
 
 Run, in this order:
 
-1. If the arguments name a register (`object`, `place`, `service`, `argument`,
-   `3d`, `editorial`, `portfolio`) or are empty, pick three that disagree with
-   each other:
+1. If the arguments name a register (`object`, `product`, `place`, `service`,
+   `argument`, `3d`, `editorial`, `portfolio`, `app`, `game`, `studio`) or are
+   empty, pick three that disagree with each other:
 
    ```bash
    node "${CLAUDE_PLUGIN_ROOT}/scripts/webdesign.mjs" awards --pick <register> --n 3 --verbose
