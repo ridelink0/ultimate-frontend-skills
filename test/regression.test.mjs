@@ -62,6 +62,23 @@ test('flag values do not become paths or study URLs', () => {
   assert.throws(() => parseArgs(['new', '--name']), /Missing value/);
 });
 
+/* Every flag the packs command documents in --help has to get past the
+   whitelist. Five did not: --owns and --why were rejected before add() ran,
+   so the packs registered on 2026-09-20 fell through to the repo's own
+   description, and --force, --upstream and --project were rejected before
+   vendor() and install() could read them. */
+test('the packs flags in --help are accepted by the whitelist', () => {
+  const a = parseArgs(['packs', 'add', 'o/r', '--owns', 'x', '--why', 'y']);
+  assert.deepEqual(a.positional, ['add', 'o/r']);
+  assert.equal(a.flag('owns'), 'x');
+  assert.equal(a.flag('why'), 'y');
+  const b = parseArgs(['packs', '--install', '--upstream', '--project']);
+  assert.equal(b.flag('upstream'), true);
+  assert.equal(b.flag('project'), true);
+  assert.doesNotThrow(() => parseArgs(['packs', 'vendor', 'o/r', '--force']));
+  assert.equal(parseArgs(['packs', 'vendor', 'o/r', '--force']).flag('force'), true);
+});
+
 /* The browser half of this suite guards itself with { skip: !findBrowser() },
    which means a runner with no browser reports every one of those tests as a
    pass and exits 0. CI is the only thing standing between that and a green
