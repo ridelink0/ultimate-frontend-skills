@@ -144,7 +144,8 @@
     "why": "Added with packs add on 2026-09-20. 1 skill(s): playwright-cli.",
     "licence": "Apache-2.0",
     "added": "2026-09-20",
-    "sha": "74354ec"
+    "sha": "74354ec",
+    "vendored": "packs/microsoft-playwright-cli"
   },
   {
     "id": "bergside/awesome-design-skills",
@@ -222,7 +223,8 @@
     "why": "Added with packs add on 2026-09-20. 67 skill(s): agentic, ant, artistic, basic, bento, bold, brutalism, cafe, claude, claymorphism, clean, codex, colorful, contemporary, corporate, cosmic, creative, dithered, doodle, dramatic, editorial, enterprise, expressive, fantasy, fiction, flat, friendly, futuristic, geometric, glassmorphism, gradient, immersive, impeccable, levels, lingo, material, matrix, minimal, modern, mono, neobrutalism, neon, neumorphism, pacman, paper, perspective, power, premium, professional, pulse, refined, retro, riso, roku, sega, shadcn, sketch, skeumorphism, sleek, spacious, square, stitch, storytelling, terracotta, tetris, vibrant, vintage.",
     "licence": "MIT",
     "added": "2026-09-20",
-    "sha": "f631a09"
+    "sha": "f631a09",
+    "vendored": "packs/bergside-awesome-design-skills"
   },
   {
     "id": "viettranx/3dviz-pro-max",
