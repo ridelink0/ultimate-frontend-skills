@@ -189,7 +189,7 @@ page tells above:
 ## 7. What human copy does instead
 
 Synthesized from the contrast implicit in every source above, plus my own reading of the
-Shader.se project pages (see shader.md in this scratchpad — e.g. "All models were made by
+Shader.se project pages (read 2026-09-20; no separate note ships - e.g. "All models were made by
 us using Blender," "The game was developed with 8th wall which is the same software used in
 Pokemon GO," "Prices are being fetched from an API"):
 - **Names the actual thing**: software (Blender, React Three Fiber, 8th Wall), a material

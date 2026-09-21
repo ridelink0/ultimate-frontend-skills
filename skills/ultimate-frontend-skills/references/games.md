@@ -184,9 +184,13 @@ holding across the corpus above. The long form follows it.
    offset shadows, a card that is not centred. Grid-perfect rows of identical
    buttons read as generated.
 5. **Copy that could only belong here.** "OFF THE PAGE" as the death line of a
-   paper game. Two-beat imperative taglines ("Keep moving. Cross the bridge."),
-   caps eyebrows ("THE CITY DOESN'T WAIT"), "Headphones recommended" and "TAKE
-   A BREATH." recur across generated games and are the verbal fingerprint.
+   paper game. The generated fingerprint is the pattern, not a phrase: two-beat
+   imperative taglines and caps eyebrows that name no mechanic. "Keep moving.
+   Cross the bridge." and "THE CITY DOESN'T WAIT" were read from the exhibit
+   pages (checkable tells 17-18 below); `copy-tells.md` could not source either
+   to a critique and marks them illustrative. "Headphones recommended" is a
+   genre convention older than any model and is not a tell on its own; "TAKE A
+   BREATH." is UNVERIFIED and not attributed to any page here.
 6. **State that persists.** A best score, a remembered sensitivity, a
    checkpoint: evidence that someone played it. Generated start screens are
    stateless.
