@@ -188,8 +188,6 @@ playwright-cli video-stop
 playwright-cli video-show-actions --duration=600 --position=top-right --highlight-style="outline: 2px solid #333"
 playwright-cli video-hide-actions
 
-# launch the dashboard for UI review / design feedback — user annotates the page, you receive the annotated screenshot, snapshot, and notes
-playwright-cli show --annotate
 
 # generate a Playwright locator for an element from its ref or selector
 playwright-cli generate-locator e5 --raw
