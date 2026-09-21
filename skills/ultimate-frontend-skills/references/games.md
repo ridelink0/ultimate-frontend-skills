@@ -186,11 +186,12 @@ holding across the corpus above. The long form follows it.
 5. **Copy that could only belong here.** "OFF THE PAGE" as the death line of a
    paper game. The generated fingerprint is the pattern, not a phrase: two-beat
    imperative taglines and caps eyebrows that name no mechanic. "Keep moving.
-   Cross the bridge." and "THE CITY DOESN'T WAIT" were read from the exhibit
-   pages (checkable tells 17-18 below); `copy-tells.md` could not source either
-   to a critique and marks them illustrative. "Headphones recommended" is a
-   genre convention older than any model and is not a tell on its own; "TAKE A
-   BREATH." is UNVERIFIED and not attributed to any page here.
+   Cross the bridge.", "Headphones recommended", "THE CITY DOESN'T WAIT" and
+   "TAKE A BREATH." were all read from Whiteout's live HTML (Exhibit 2 above:
+   tagline, footnote, end-screen eyebrow, pause-menu heading), so they are
+   attributed here; `copy-tells.md` found no critique citing them and marks
+   them illustrative of the pattern rather than sourced tells. "Headphones
+   recommended" alone is a genre convention older than any model, not a tell.
 6. **State that persists.** A best score, a remembered sensitivity, a
    checkpoint: evidence that someone played it. Generated start screens are
    stateless.
