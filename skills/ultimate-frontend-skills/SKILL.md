@@ -278,7 +278,7 @@ for every job beyond them.
 
 Hand-drawn SVG where a photograph exists, a bespoke scroll engine where GSAP
 exists, a guessed layout where a render exists - each is the low-effort
-version. The tool for each need is the table that closes
+version. The tool for each need is the "Tools, by need" table in
 `references/stack.md`: `look <url>` to see what a site does, `inspect <url>
 --selector "h1,p,a"` for what it sets, `awards --pick <register>` then
 `study --awards "<technique>"`, `study --list editorial|object|cinema|product`,
