@@ -30,14 +30,26 @@ const FAKE_DATA = [
   [/\b(john|jane) (doe|smith)\b/i, 'a placeholder person'],
 ];
 
-// Marketing language that reads as machine-written.
+// Marketing language that reads as machine-written. The 2023 words (delve,
+// tapestry) are not here: models were patched off them and tells.md says not
+// to fight the last war. The tell moved to canned emphasis - phrases that
+// manufacture importance - which references/copy-tells.md sources.
 const SLOP_COPY = [
   "in today's fast-paced", 'fast-paced world', 'unleash the power', 'unlock the power',
   'take it to the next level', 'elevate your', 'seamlessly integrat', 'revolutioniz',
   'cutting-edge solution', 'empower your team', 'game-changer', 'game changing',
-  'best-in-class', 'world-class solution', 'transform your business', 'delve into',
-  'in the ever-evolving', 'look no further', "we've got you covered", 'the future of',
+  'best-in-class', 'world-class solution', 'transform your business',
+  'is a testament to', 'plays a crucial role', 'marks a turning point', 'sets the stage for',
+  'ever-evolving', 'look no further', "we've got you covered", 'the future of',
 ];
+
+// The rest of what copy-tells.md marks as scannable. All warnings: copy is a
+// judgement in the end, and a checker that fails a build over a button label
+// is a checker people turn off.
+const BUTTON_VERBS = /^\s*(get started|learn more|explore|unlock|unleash|discover|elevate your\b.*)\s*$/i;
+const NO_NO_JUST = /\bno \w+,\s*no \w+,\s*just\b/gi;
+const COPULA_SUBS = /\b(serves as|stands as|functions as|represents|boasts)\b/gi;
+const LEAKED_REFUSAL = /as an ai language model|i do not have enough information/i;
 
 /* The marks of a generated page. Weighted the way the public scanners weight
    them: the default font stack and the purple accent score highest, then the
@@ -62,6 +74,7 @@ function slopChecks(hRaw, css, n, E, W) {
     .replace(/(?:href|src|content)="data:[^"]*"/gi, 'href="data:"')
     .replace(/(?:href|src|content)='data:[^']*'/gi, "href='data:'");
   const blob = h + '\n' + css;
+  const text = h.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/gi, ' ').replace(/<[^>]+>/g, ' ');
 
   // 1. the display face
   const fontHit = SLOP_FONTS.filter(
@@ -113,9 +126,27 @@ function slopChecks(hRaw, css, n, E, W) {
   const b = h.match(BUILDERS);
   if (b) W(`${n}: "${b[1]}" left in the source`);
 
-  // 11. negative parallelism
+  // 11. negative parallelism, both shapes
   const np = (h.match(/not just [^.<]{1,50}?,? (it['’]s|but|it is)\b/gi) || []).length;
   if (np) W(`${n}: "not just X, it's Y" x${np} - now roughly three times its 2023 rate on the open web`);
+  const nnj = (text.match(NO_NO_JUST) || []).length;
+  if (nnj) W(`${n}: "no X, no Y, just Z" x${nnj} - the other shape of the same reflex`);
+
+  // 11b. buttons named after nothing. Only button-shaped elements: the same
+  //      words in prose are words.
+  const labels = [...h.matchAll(/<button\b[^>]*>([\s\S]*?)<\/button>|<a\b[^>]*class=["'][^"']*\bbtn\b[^"']*["'][^>]*>([\s\S]*?)<\/a>/gi)]
+    .map((m) => (m[1] ?? m[2] ?? '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()).filter(Boolean);
+  const generic = labels.filter((t) => BUTTON_VERBS.test(t));
+  if (generic.length)
+    W(`${n}: button text "${generic[0]}"${generic.length > 1 ? ` (+${generic.length - 1} more)` : ''} - name the action, not the category`);
+
+  // 11c. "is" and "are" replaced with importance. Three on a page is prose;
+  //      more is the pattern.
+  const subs = (text.match(COPULA_SUBS) || []).length;
+  if (subs > 3) W(`${n}: ${subs} copula substitutes (serves as, stands as, represents, boasts) - write "is"`);
+
+  // 11d. the model's own voice left in the copy. Rare, and certain when it is there.
+  if (LEAKED_REFUSAL.test(text)) W(`${n}: leaked model refusal in the copy ("as an AI language model" / "I do not have enough information")`);
 
   // 12. em dash density
   const words = (h.replace(/<[^>]+>/g, ' ').match(/\S+/g) || []).length || 1;
