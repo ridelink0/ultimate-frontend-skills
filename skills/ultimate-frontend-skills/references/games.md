@@ -165,6 +165,33 @@ Render attempted: `webdesign.mjs study` reported `wall — almost no text render
 
 ## Synthesis
 
+### The short form
+
+Measured on the two exhibits - Doodle District, hand-made, and Whiteout,
+built with a code agent and credited as such on its own credits screen - and
+holding across the corpus above. The long form follows it.
+
+1. **Specificity.** The made thing names its own parts: "L2 aim, R2 fire",
+   "checkpoints WAVE 5 / WAVE 10", "best score: 60393". The generated one names
+   categories: Accelerate, Steer, Brake, Settings.
+2. **Density where the player needs it.** Two full control columns on one card
+   beat three key caps and a footnote. A start screen with nothing to read is
+   a poster, not a start screen.
+3. **Type from the world of the thing.** Patrick Hand and Caveat on lined paper
+   because the game is a doodle. The generated page reaches for a condensed
+   grotesk over black because that is what "cinematic" looks like on average.
+4. **Irregularity that was chosen.** Per-element rotation, hand-set radii,
+   offset shadows, a card that is not centred. Grid-perfect rows of identical
+   buttons read as generated.
+5. **Copy that could only belong here.** "OFF THE PAGE" as the death line of a
+   paper game. Two-beat imperative taglines ("Keep moving. Cross the bridge."),
+   caps eyebrows ("THE CITY DOESN'T WAIT"), "Headphones recommended" and "TAKE
+   A BREATH." recur across generated games and are the verbal fingerprint.
+6. **State that persists.** A best score, a remembered sensitivity, a
+   checkpoint: evidence that someone played it. Generated start screens are
+   stateless.
+7. **Credits that name people and tools plainly**, in a footer, not a hero.
+
 ### Checkable tells that mark an AI-generated game start screen
 
 **Typographic**

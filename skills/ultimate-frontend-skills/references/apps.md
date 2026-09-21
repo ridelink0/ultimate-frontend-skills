@@ -546,3 +546,8 @@ Sourced from 2026 design-criticism coverage of "AI slop" interfaces (Medium/Sami
 9. **Lorem-style/tonally-flat copy.** Related to #6: copy that could belong to any app in the category (compare to the sourced, specific verbatim lines above — Monzo's "Numbers are kind of our thing," Duolingo's mascot-voiced patch notes, Flighty's "the flight tracker your pilot uses" — all of which are legible as one team's actual voice rather than averaged category language).
 
 **Net pattern**: nearly every sourced "app AI tell" above is specifically a *default applied without a reason tied to the app's own content* — a gradient because gradients test well, a carousel because carousels are common, a glass panel because glass is current. Every app in this corpus that was checked against "why doesn't it read as AI" above earns that distinction by tying its visual decision to something real and specific to itself (a physical card color with an origin story, a real GPS trace, a real photographed object, a real flight, a real fire perimeter) rather than to a category average.
+
+**The short form.** An app is judged the way a game start screen is: a real
+first task instead of a three-slide onboarding carousel, one accent that came
+from the brand instead of an indigo gradient, a tab bar that sits where the
+platform puts it, and empty states written for the actual thing that is empty.

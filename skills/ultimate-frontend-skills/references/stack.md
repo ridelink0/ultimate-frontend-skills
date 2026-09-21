@@ -34,6 +34,44 @@ free, CDN-loadable, and needs no build step.
 | Text splitting without GSAP | **splitting** | ~3 KB gz |
 | Flat-shaded pseudo-3D from a few primitives | **zdog** | ~10 KB gz |
 
+## The engines that ship here
+
+Three runtimes beyond `motion.js`, all zero-dependency, all copied in by the
+scaffolder. Use them before reaching for anything heavier.
+
+- **`gradient.js`** - an animated WebGL mesh gradient. Layered simplex noise
+  with domain warping, mixed in linear space, dithered against banding.
+  `<canvas class="gradient" data-gradient="#0b1226,#2c3a56,#a5735a,#e8ac66">`.
+  This is the colour field the reference pages have and a CSS radial stack
+  never gets to. Falls back to a static CSS mesh, renders one frame under
+  reduced motion, and stops entirely when off screen.
+- **`depth.js`** - real three-plane parallax. Signed `data-depth` on each plane
+  sets its rate against *both* scroll and pointer, and drives blur and haze
+  from the same number, so a far plane is automatically hazier and a near one
+  softer. Negative is behind and lags, positive is in front and leads. Also
+  does single-photo 3D from a depth map (`data-photo` + `data-depthmap`,
+  generate with Depth Anything V2).
+- **`sky.js`** - the launch-page hero itself: a WebGL sky you re-light with
+  three palette dots. Not a crossfade - one weight vector, eased with
+  `1 - exp(-dt * 2.2)`, barycentrically blends every sky and light colour and
+  the sun direction, so the world re-lights the way the reference does. In
+  the frame: cloud kept to the edges and lit from the sun's side, a crescent
+  moon top-right that is faint by day and the light by night, stars after
+  dark, and an out-of-focus branch in each lower corner with a little pointer
+  parallax - depth of field is what makes it read as a camera.
+  `data-mood="Night"` starts it in a mood. `hero-fable` uses it. Real buttons,
+  keyboard-operable, CSS fallback.
+- **`exploded.js`** - any made thing taken apart, in three.js. Reads its
+  parts from a `<ol>` in the markup, so the semantic list is also the no-JS
+  fallback. Each `<li>` is a shape (`ring`, `disc`, `dome`, `box`, `torus`,
+  `cone`, `sphere`, `hands`, `chain`, or the default `slab`), a size, a
+  material preset and `data-y`, its place on the axis; `data-repeat="12"`
+  puts copies round a circle for markers and screws; `data-model="thing.glb"`
+  loads a real model instead and pulls its named parts apart. `data-axis="x"`
+  takes it apart sideways. Physical materials lit by a room environment, a
+  contact shadow, a vignette, and callouts projected onto each part's real
+  position that track it through the turn.
+
 ## Exact specifiers, verified
 
 ```
@@ -167,6 +205,32 @@ new Plane(curtains, document.querySelector('.morph'), {
 
 Keep the displacement under ~0.06 of the frame or it stops reading as a
 material and starts reading as a glitch filter.
+
+## Tools, by need
+
+The tools are friends, not competitors. Hand-drawn SVG where a photograph
+exists, a bespoke scroll engine where GSAP exists, a guessed layout where a
+render exists - each of those is the low-effort version.
+
+| Need | Reach for |
+|---|---|
+| The order to do all of this in | `references/pipeline.md` - nine stages, a gate at each |
+| Anything beyond the engines above | `references/stack.md` - the table of which library for which job, with verified specifiers and CDN URLs |
+| To see what a site you are imitating actually does | `webdesign.mjs look <url>` - real render, two scroll positions, PNGs. Study the reference as an image, not as a description of one |
+| What a site you are imitating actually SETS - its computed type, the fonts it loaded, its colours, what it fetched | `webdesign.mjs inspect <url> --selector "h1,p,a"` - the Elements panel over the DevTools protocol. Numbers read from the browser beat numbers read from a picture; a teardown starts here |
+| Three references that disagree with each other | `webdesign.mjs awards --pick <register>`, then `study --awards "<technique>"` to render them. `awards --techniques` lists what the corpus can be searched by |
+| Visual research on a style, a palette, a font in the wild | `webdesign.mjs study --list editorial\|object\|cinema\|product` renders a curated batch into contact sheets; the `visual-research` skill for anything it does not cover |
+| Photographs | Unsplash, Pexels, Wikimedia, museum IIIF - `references/imagery.md` has the URL formats and licences. Verify every hotlink with a HEAD request |
+| Detailed PBR textures and real environment lighting, free | `webdesign.mjs assets textures <slug>` and `assets hdri <slug>` - CC0, no key. `references/image-gen.md` wires the maps into the material |
+| A generated image, when no photograph exists | `webdesign.mjs assets gen "<prompt>"` - it detects what this machine can do and never invents a key. Remember a generated image cannot be relit |
+| Geometry primitives cannot carry - knurling, guilloché, a movement bridge | `webdesign.mjs blender glb <script.py> --out <file>`, then `data-model` on the exploded list. `references/blender.md`; skip it when primitives would do |
+| To know what else is installed and what changes because of it | `webdesign.mjs tools` - and `references/plugins.md` for the handoffs |
+| Depth from one photograph | `webdesign.mjs cut` (rembg, local) |
+| Pinning, scrubbing, sequenced choreography | GSAP 3.15 + ScrollTrigger from cdnjs, free for everything now. `gsap.matchMedia()` for the reduced-motion and narrow-screen branches |
+| A real 3D object the visitor must turn | three.js from jsDelivr, or `<model-viewer>` for hotspots with near-zero code |
+| Whole-page inertia as a brand decision | Lenis 1.3.26+, never ScrollSmoother alongside CSS scroll timelines |
+| A design that exists in Figma | the Figma MCP tools, when attached: `get_design_context`, `get_screenshot` |
+| To know whether it looks right | `webdesign.mjs look`, then your own eyes on the PNGs. Nothing else counts |
 
 ## The rule
 

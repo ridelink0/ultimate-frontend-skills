@@ -135,10 +135,34 @@ near silhouette - being cropped by the subject is the effect.
 Verify it by rendering, never by reading the CSS:
 `node scripts/webdesign.mjs look <dir>` and read the PNGs.
 
-**The foreground layer does not need an image.** A hand-written SVG silhouette -
-a roofline, an arch, a treeline, a skyline - is sharper, weighs nothing, and
-takes `currentColor`. Use it by default; reach for a cut-out PNG only for a
-photographic subject.
+**The planes are photographs, cut.** `webdesign.mjs cut <photo>` splits one
+photograph into a transparent subject and a dissolved background, and
+`depth.js` drives blur and haze from the same signed `data-depth`. Hand-drawn
+SVG silhouettes were how depth used to be faked here and they read as exactly
+that; SVG stays for line art, blueprints and small occluders.
+
+Five things decide whether a layered hero reads as depth or as one flat shape.
+Get any of them wrong and it is the second one:
+
+1. **Bands, not full-height planes.** Every layer except the sky gets an explicit
+   `height` (say 30% / 24% / 22%) and `align-self: end`. A foreground drawn at
+   full height covers the entire composition and nothing behind it is ever seen.
+2. **Lift each band clear of the one in front** with `margin-bottom`, or the near
+   plane simply hides the middle one. The offsets *are* the composition.
+3. **Aerial perspective.** Each further plane sits closer to the sky's own colour
+   and loses contrast. This, not size, is what reads as distance.
+4. **Two faces per object.** A lit slope and a slope in shadow. A single flat
+   fill reads as a sticker; the fold is what makes it a thing.
+5. **Put the bright band of the sky where it will still be visible** - above the
+   silhouettes, not behind them.
+
+At equal `z-index`, DOM order decides who occludes whom. The giant wordmark goes
+*before* the near silhouette in the markup, so the subject crops it. That
+occlusion is the whole effect.
+
+Rates that work, back to front: sky `-18`, far ridge `-34`, mid silhouette
+`-58`, wordmark `+104` (positive, so it swims against the rest), near plane
+`-14`. Depth comes from the differences between them, not from any one value.
 
 Cut-outs, when you do need one: AVIF with alpha (20-40% smaller than WebP),
 inside a `<picture>` with a WebP source and a PNG `<img>` fallback. Budget 120 KB
@@ -171,11 +195,25 @@ headline 0.5, subject 0.8, foreground 1.2, and **negate the sign between the
 subject and the type** so they counter-move. That sells depth far more than
 magnitude. Gate on `(hover: hover) and (pointer: fine)`.
 
-## Depth without a 3D engine
+## The exploded view is three.js
 
-The exploded view is the same mechanism as the layered hero: stack the components
-in `.exploded`, give each `.part` a different `data-px`, and they separate as the
-page scrolls. Annotate with `.callout` (dot, hairline leader, label).
+**When the subject is a made thing being taken apart, use real 3D.** Flat SVG
+diamonds cannot do the one thing that sells an exploded view - the layers
+moving against each other while the camera holds still. `exploded.js` builds
+the object from parts named in the markup - a ring, a dome, a disc, hands, a
+chain of links - each with a physical material (steel, brushed, gold, lacquer,
+ceramic, glass, lume), or loads a real GLB and pulls its named parts apart;
+`RoomEnvironment` lighting, scroll driving separation and a slow turn, HTML
+callouts projected onto the real world positions, and the numbered list as the
+fallback. Describe the actual object: a watch is a bezel ring, a crystal dome,
+a lacquer dial with twelve lume markers, a brushed movement, a steel case and
+a bracelet chain, taken apart sideways (`data-axis="x"`) the way a watch is
+photographed. Six anonymous slabs are the low-effort version. The part syntax
+is under "Parts and materials in exploded.js" below, and the audit refuses
+`.exploded` markup that does not load `exploded.js`.
+
+The `.callout` (dot, hairline leader, label) also annotates SVG line art - the
+blueprint section - and that is where the following applies.
 
 If the parts are an SVG, position callouts with percentages against a container
 whose `aspect-ratio` **equals the viewBox ratio**, plus
@@ -187,7 +225,7 @@ For a CSS/JS explode of SVG parts, `transform-box: fill-box` is mandatory before
 `transform-origin: center` - the default `view-box` resolves against the whole
 canvas.
 
-## When you genuinely need three.js
+## When you genuinely need three.js beyond exploded.js
 
 Only when the visitor must turn a real object. jsDelivr, matched versions in the
 importmap, or you get two copies of three and `instanceof` failures:

@@ -29,6 +29,30 @@ The "~76px" display size below was read off a screenshot; the browser says
 the +0.16em estimated. Run `inspect` before trusting any number in a teardown,
 including this one.
 
+## Read off a screenshot at 1440, then corrected
+
+The first readings, from a screenshot rather than the browser; where the
+table above disagrees, the table wins.
+
+- A **solid cream header bar, 68px**, wordmark left, nav right, one dark pill
+  button. The scene starts *under* it, not behind it.
+- Hero **~87vh**: sky, a moon top-right, warm cloud at the edges, and
+  **soft-blurred branches in the corners** - the nearest plane is out of
+  focus. Depth of field is what makes a cut-out read as a camera and not a
+  collage: `filter: blur(3px)` on the nearest plane, sharp in the middle
+  distance, slightly hazed at the back.
+- Eyebrow uppercase, centred: read as 13px +0.16em, measured as 14px +1.68px
+  (+0.12em). Display serif, two lines, the second pushed right ~150px in the
+  screenshot: read as ~76px, measured as 67.84px in a centred 624px column.
+  Dot-leader contents **15px**, `[n]` numerals left, labels right, five rows.
+  All white with a soft shadow.
+- Three small dots bottom-left re-light the scene (day / night / morning; the
+  next section - it is not a photograph swap). "Made with ..." credit
+  bottom-right, 12px.
+- Then a **warm off-white article**: a serif lede at **~28px on a 640px
+  column**, body serif **18px / 1.55**, bold run-in labels (`**Price.**`),
+  and a thin vertical progress rail of tick marks at the far left.
+
 **`references/fable-showcase.md` corrects four things in this file** - the
 bokeh kernel, the post order, the tree seeds and the size of the GSAP waste -
 and all four corrections are folded in below. It also carries the one idea this

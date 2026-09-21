@@ -43,6 +43,36 @@ Art Institute of Chicago is the best of these:
 `https://www.artic.edu/iiif/2/{id}/full/1686,/0/default.jpg`, CORS `*`,
 60 req/min.
 
+## The page is a photograph
+
+The reference sites are photographic: a night sky, a stone bridge, a rendered
+watch. Not one of them is a drawing. Flat SVG silhouettes read as low-effort
+next to a photograph, however carefully they are shaded, so hand-drawn SVG is
+for line-art (the blueprint), small occluders, and nothing else.
+
+**One photographic moment per page.** The reference pages use a single
+photograph, full-bleed, and put the craft into the type on top of it; every
+other section is a plain ground. Two photographs butted against each other is
+a seam, and a stock photo behind body copy is texture fighting the words. If a
+second section needs a picture, frame it as a figure, do not bleed it.
+
+**Never composite a cut-out that `cut` refused.** It exits 3 and says why -
+subject fills the frame, or its box touches an edge, so the "cut-out" is the
+original rectangle and will show a hard straight side. A house floating in a
+sky with a razor edge under it is a collage, and no amount of grading hides
+it. Pick a photo with sky or wall around the subject, or use the photograph
+whole.
+
+Then cut the photograph into planes. That is the whole trick of the bridge
+video - one scene, several depths.
+
+`cut` runs rembg, local AI background removal - no service, no key
+(`python -m pip install "rembg[cpu]"` once). A sky photograph as the back plane,
+one or two cut-out subjects resting on the bottom edge at different rates, a
+colour grade between them so several photographs read as one evening, and the
+type as ordinary content at page speed. The sourcing,
+the verified-licence sources and the grade recipes are below.
+
 ## One photograph into several planes
 
 `webdesign.mjs cut <photo> [--out DIR] [--model isnet-general-use|u2net] [--alpha-matting]`
