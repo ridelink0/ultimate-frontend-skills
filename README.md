@@ -14,8 +14,8 @@ enough that people have built scanners for it.
 
 ultimate-frontend-skills replaces that default with a different one: editorial serif typography at
 real optical sizes, warm-neutral and near-black grounds in OKLCH, cinematic
-photography with eased scrims, layered scroll parallax, and exploded technical
-views built from stacked 2D layers rather than a 3D engine.
+photography with eased scrims, layered scroll parallax, and procedural or
+Blender-modelled three.js exploded views of a made thing taken apart.
 
 **No more SVGs.** Hand-drawn vector silhouettes were how this plugin used to
 fake depth, and they read as exactly that. Depth now comes from real WebGL and

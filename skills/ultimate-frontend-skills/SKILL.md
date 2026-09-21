@@ -185,9 +185,9 @@ globally and translate the section markup to components - keep the class names.
 6. **Grain is always on.** `<div class="grain">` before `</body>`. If you can see
    it, it is too strong.
 7. **Depth comes from layers, not effects.** One parallax relationship in the
-   hero and, where the subject is a made thing, one exploded view. Both are the
-   same mechanism: stack elements in one grid cell, give each a different
-   `data-px`, let scroll pull them apart. No 3D engine, no library.
+   hero and, where the subject is a made thing, one exploded view. Photographic
+   depth is `depth.js` planes cut from one photograph; a made thing taken apart
+   is `exploded.js`, which is three.js. Never hand-rolled SVG silhouettes.
 8. **Motion earns its place.** Reveal on enter (`.r`), the one parallax, nav
    shrink, and the page's single orchestrated moment. Nothing else unless the
    subject asks for it - scattered effects read as generated.
@@ -313,12 +313,11 @@ impressions:
   column**, body serif **18px / 1.55**, bold run-in labels (`**Price.**`),
   and a thin vertical progress rail of tick marks at the far left.
 
-## Depth without a 3D engine
+## Layered heroes
 
-The exploded view and the layered hero are the same trick: stack elements in one
-grid cell (`.layers` / `.exploded`), give each a different `data-px`, and they
-separate as the page scrolls. Foreground silhouettes can be hand-written SVG, so
-a convincing layered hero needs no image asset at all.
+The layered hero stacks elements in one grid cell (`.layers`), gives each a
+different `data-px`, and lets them separate as the page scrolls; the planes are
+photographs cut by `cut`, not drawn.
 
 Five things decide whether a layered hero reads as depth or as one flat shape.
 Get any of them wrong and it is the second one:

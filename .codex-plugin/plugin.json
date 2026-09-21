@@ -1,7 +1,7 @@
 {
   "name": "ultimate-frontend-skills",
   "version": "6.0.1",
-  "description": "Ultimate Frontend Skills (UFS for Claude). Build cinematic, editorial websites the way an award-winning studio does, on one route from brief to ship: a corpus of award-winning reference sites to decide against, WebGL mesh gradients, three-plane parallax with real depth, procedural and Blender-modelled three.js exploded product views, CC0 PBR materials and HDRI lighting, scroll choreography in GSAP and anime.js, and a typographic system that does not read as AI-generated. Ships a copy-in CSS chassis, motion and WebGL runtimes, a section library, a scaffolder, a headless render check, a bench detector that defers to frontend-design when it is installed, and one verify verdict.",
+  "description": "Ultimate Frontend Skills (UFS for Claude). Build cinematic, editorial websites, app screens and game start screens the way an award-winning studio does, on one route from brief to ship: a corpus of award-winning reference sites to decide against, WebGL mesh gradients, three-plane parallax with real depth, procedural and Blender-modelled three.js exploded product views, CC0 PBR materials and HDRI lighting, scroll choreography in GSAP and anime.js, and a typographic system that does not read as AI-generated. Ships a copy-in CSS chassis, motion and WebGL runtimes, a section library, a scaffolder, a headless render check, a bench detector that defers to frontend-design when it is installed, and one verify verdict.",
   "author": {
     "name": "Gev",
     "url": "https://github.com/ridelink0"
@@ -45,7 +45,7 @@
   "interface": {
     "displayName": "Ultimate Frontend Skills",
     "shortDescription": "UFS for Claude: websites that look like a studio made them, not a model",
-    "longDescription": "A pinned art direction plus the code that produces it. Editorial serif typography at real optical sizes, warm-neutral and near-black grounds in OKLCH, cinematic photography with eased scrims, layered scroll parallax, and exploded technical views built from stacked 2D layers rather than a 3D engine. Ships a copy-in CSS chassis, a dependency-free motion runtime, a library of section archetypes, a scaffolder, and an audit that fails the build on placeholder copy, missing image dimensions, pure black and white, absent reduced-motion handling, and the other marks of a generated page.",
+    "longDescription": "A pinned art direction plus the code that produces it. Editorial serif typography at real optical sizes, warm-neutral and near-black grounds in OKLCH, cinematic photography with eased scrims, layered scroll parallax, and procedural or Blender-modelled three.js exploded views of a made thing taken apart. Ships a copy-in CSS chassis, motion and WebGL runtimes, a library of section archetypes, a scaffolder, and an audit that fails the build on placeholder copy, missing image dimensions, pure black and white, absent reduced-motion handling, and the other marks of a generated page.",
     "developerName": "Ridelink",
     "category": "Developer Tools",
     "capabilities": [
