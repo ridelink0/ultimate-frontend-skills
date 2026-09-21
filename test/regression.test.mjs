@@ -108,7 +108,7 @@ test('packs: a plugin enabled in the Codex config counts as installed, and a mis
     const report = P.install({ rows, host, log: (l) => lines.push(l) });
     assert.deepEqual(report.map((r) => r.action), ['printed', 'printed']);
     assert.ok(report.every((r) => r.ok), 'printing instructions is not a failure');
-    const text = lines.join('\n');
+    const text = lines.join('\n').replace(/^ +/gm, ''); // the printer indents the block
     assert.match(text, /\[marketplaces\.y\]\nsource_type = "git"\nsource = "https:\/\/github\.com\/x\/y\.git"/);
     assert.match(text, /\[plugins\."y@y"\]\nenabled = true/);
     assert.match(text, /npx -y skills@latest add a\/b --all -y/);
