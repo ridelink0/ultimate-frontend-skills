@@ -79,6 +79,24 @@ test('the packs flags in --help are accepted by the whitelist', () => {
   assert.equal(parseArgs(['packs', 'vendor', 'o/r', '--force']).flag('force'), true);
 });
 
+/* Four files carry the version. Two of them said 5.0.0 while the other two
+   said 6.0.1, so the Codex manifest and the marketplace catalogue advertised
+   a version two majors behind, and `claude plugin validate` warned that the
+   catalogue entry is silently ignored at install time. */
+test('package.json, both plugin manifests and the marketplace entry agree on the version', () => {
+  const here = dirname(fileURLToPath(import.meta.url));
+  const read = (...p) => JSON.parse(readFileSync(join(here, '..', ...p), 'utf8'));
+  const versions = {
+    'package.json': read('package.json').version,
+    '.claude-plugin/plugin.json': read('.claude-plugin', 'plugin.json').version,
+    '.codex-plugin/plugin.json': read('.codex-plugin', 'plugin.json').version,
+    '.claude-plugin/marketplace.json': read('.claude-plugin', 'marketplace.json').plugins[0].version,
+  };
+  const distinct = [...new Set(Object.values(versions))];
+  assert.equal(distinct.length, 1, 'versions disagree: ' + JSON.stringify(versions));
+  assert.match(distinct[0], /^\d+\.\d+\.\d+$/);
+});
+
 /* The browser half of this suite guards itself with { skip: !findBrowser() },
    which means a runner with no browser reports every one of those tests as a
    pass and exits 0. CI is the only thing standing between that and a green
