@@ -79,6 +79,47 @@ test('the packs flags in --help are accepted by the whitelist', () => {
   assert.equal(parseArgs(['packs', 'vendor', 'o/r', '--force']).flag('force'), true);
 });
 
+/* packs read presence from Claude Code's registry only and installed by
+   spawning `claude`, so on Codex every plugin-kind pack read as absent and
+   --install spawned a binary that does not exist. Presence now comes from
+   either host's record, and a missing binary is printed, never spawned. */
+test('packs: a plugin enabled in the Codex config counts as installed, and a missing binary is printed, never spawned', async () => {
+  const P = await import('../scripts/packs.mjs');
+  const temp = mkdtempSync(join(tmpdir(), 'ufs-packs-'));
+  try {
+    mkdirSync(join(temp, '.codex'), { recursive: true });
+    writeFileSync(join(temp, '.codex', 'config.toml'),
+      '[plugins."frontend-design@claude-plugins-official"]\nenabled = true\n[plugins."impeccable@impeccable"]\nenabled = false\n');
+    const byId = Object.fromEntries(P.status(temp, { home: temp }).map((r) => [r.id, r]));
+    assert.equal(byId['frontend-design@claude-plugins-official'].installed, true, 'enabled in the Codex config');
+    assert.equal(byId['pbakaus/impeccable'].installed, false, 'enabled = false is not installed');
+    assert.equal(byId['viettranx/3dviz-pro-max'].installed, false, 'not in either record');
+
+    // A host with a Codex config, no claude CLI and no npx: nothing on PATH.
+    const config = join(temp, '.codex', 'config.toml');
+    const host = P.hostState({ env: { PATH: temp }, home: temp, exists: (p) => p === config });
+    assert.deepEqual(host, { claude: false, npx: false, codex: true });
+
+    const lines = [];
+    const rows = [
+      { id: 'x/y', kind: 'plugin', plugin: 'y', marketplace: 'x/y', marketplaceName: 'y', owns: 'o', installed: false },
+      { id: 'a/b', kind: 'skills', skills: ['b'], owns: 'o', installed: false },
+    ];
+    const report = P.install({ rows, host, log: (l) => lines.push(l) });
+    assert.deepEqual(report.map((r) => r.action), ['printed', 'printed']);
+    assert.ok(report.every((r) => r.ok), 'printing instructions is not a failure');
+    const text = lines.join('\n');
+    assert.match(text, /\[marketplaces\.y\]\nsource_type = "git"\nsource = "https:\/\/github\.com\/x\/y\.git"/);
+    assert.match(text, /\[plugins\."y@y"\]\nenabled = true/);
+    assert.match(text, /npx -y skills@latest add a\/b --all -y/);
+    assert.doesNotMatch(text, /\$ claude plugin/, 'a Codex host gets TOML, not a claude command');
+
+    // The official marketplace has no owner/repo id; its source is the repo credits.mjs names.
+    assert.match(P.codexToml({ plugin: 'frontend-design', marketplace: 'claude-plugins-official', marketplaceName: 'claude-plugins-official' }),
+      /source = "https:\/\/github\.com\/anthropics\/claude-plugins-official\.git"/);
+  } finally { rmSync(temp, { recursive: true, force: true }); }
+});
+
 /* Four files carry the version. Two of them said 5.0.0 while the other two
    said 6.0.1, so the Codex manifest and the marketplace catalogue advertised
    a version two majors behind, and `claude plugin validate` warned that the

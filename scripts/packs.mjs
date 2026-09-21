@@ -20,17 +20,26 @@
    Two kinds of pack, two installers:
      skills packs         npx skills add <owner/repo>   -> ./.claude/skills or ~/.claude/skills
      Claude Code plugins  claude plugin ...             -> the plugin cache
+                          on Codex: a [marketplaces.*] + [plugins.*] block in
+                          ~/.codex/config.toml, printed for the user
 
    Every command is spawned with an argv array - never a shell string - and
-   printed before it runs. No pack is ever reinstalled over one that exists.
+   printed before it runs. A binary that is not on this machine is never
+   spawned: the command (or the Codex TOML) is printed and the report says
+   'printed'. No pack is ever reinstalled over one that exists. A plugin-kind
+   pack counts as installed when either host has it: Claude Code's
+   installed_plugins.json, or an enabled [plugins."<name>@..."] table in the
+   Codex config that tools.mjs already reads.
 
    No dependencies. Node 18+. */
 
 import { existsSync, readFileSync, writeFileSync, readdirSync, mkdirSync, cpSync, rmSync, statSync } from 'node:fs';
-import { join, dirname, basename, resolve } from 'node:path';
+import { join, dirname, basename, resolve, delimiter } from 'node:path';
 import { homedir, tmpdir } from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { codexBench } from './tools.mjs';
+import { findClaude } from './claude-cli.mjs';
 
 /* The recommendations live in data/packs.json so that adding one is a data
    change, made by `packs add <owner/repo>`, not an edit to this file. `skills`
@@ -52,36 +61,78 @@ export const PACKS = loadPacks();
 
 /* ------------------------------------------------------------ detection -- */
 
-const skillDirs = (cwd) => [
-  join(homedir(), '.claude', 'skills'),
+const skillDirs = (cwd, home) => [
+  join(home, '.claude', 'skills'),
   join(cwd, '.claude', 'skills'),
-  join(homedir(), '.agents', 'skills'),
+  join(home, '.agents', 'skills'),
   join(cwd, '.agents', 'skills'),
 ];
 
-function skillPresent(name, cwd) {
-  return skillDirs(cwd).some((d) => existsSync(join(d, name, 'SKILL.md')));
+function skillPresent(name, cwd, home) {
+  return skillDirs(cwd, home).some((d) => existsSync(join(d, name, 'SKILL.md')));
 }
 
-function pluginPresent(pack) {
-  const file = join(homedir(), '.claude', 'plugins', 'installed_plugins.json');
+/* Plugin ids as each host records them: "<name>@<marketplace>". Claude Code
+   keeps a JSON registry; Codex keeps enabled = true tables in config.toml,
+   which tools.mjs already parses. Read once per status() call. */
+function installedPluginIds({ home = homedir() } = {}) {
+  const ids = [];
   try {
-    const data = JSON.parse(readFileSync(file, 'utf8'));
-    const plugins = data && data.plugins ? data.plugins : {};
-    return Object.keys(plugins).some((key) => key.split('@')[0] === pack.plugin);
-  } catch {
-    return false;
-  }
+    const data = JSON.parse(readFileSync(join(home, '.claude', 'plugins', 'installed_plugins.json'), 'utf8'));
+    ids.push(...Object.keys(data && data.plugins ? data.plugins : {}));
+  } catch { /* no Claude Code registry here */ }
+  try { ids.push(...codexBench({ home }).enabled); } catch { /* no Codex config here */ }
+  return ids;
 }
 
-export function status(cwd = process.cwd()) {
+function pluginPresent(pack, ids) {
+  return ids.some((key) => key.split('@')[0] === pack.plugin);
+}
+
+/* `home` is injectable so a test can point detection at a directory it built. */
+export function status(cwd = process.cwd(), { home = homedir() } = {}) {
+  const ids = installedPluginIds({ home });
   return PACKS.map((pack) => {
     if (pack.kind === 'skills') {
-      const have = pack.skills.filter((s) => skillPresent(s, cwd));
+      const have = pack.skills.filter((s) => skillPresent(s, cwd, home));
       return { ...pack, installed: have.length === pack.skills.length, partial: have.length > 0 && have.length < pack.skills.length, have };
     }
-    return { ...pack, installed: pluginPresent(pack), partial: false, have: [] };
+    return { ...pack, installed: pluginPresent(pack, ids), partial: false, have: [] };
   });
+}
+
+/* ------------------------------------------------------------------ host -- */
+
+/* Which installers are actually here. `claude` is found the way tools.mjs
+   finds it; `npx` ships beside node, so that directory is searched as well as
+   PATH. A Codex host is one with CODEX_HOME set or a ~/.codex/config.toml. */
+function onPath(name, { env = process.env, platform = process.platform, exists = existsSync } = {}) {
+  const dirs = (env.PATH || env.Path || '').split(platform === 'win32' ? ';' : delimiter).filter(Boolean);
+  dirs.push(dirname(process.execPath));
+  const names = platform === 'win32' ? [name + '.cmd', name + '.exe', name] : [name];
+  return dirs.some((d) => names.some((n) => exists(join(d, n))));
+}
+
+export function hostState({ env = process.env, home = homedir(), exists = existsSync } = {}) {
+  return {
+    claude: !!findClaude({ env, exists }),
+    npx: onPath('npx', { env, exists }),
+    codex: !!env.CODEX_HOME || exists(join(home, '.codex', 'config.toml')),
+  };
+}
+
+/* The Codex equivalent of `claude plugin marketplace add` + `claude plugin
+   install`: two TOML tables in ~/.codex/config.toml, the same shape the README
+   gives for installing this plugin itself. The official marketplace has no
+   owner/repo id in the registry; its git source is the repository credits.mjs
+   already names for it. */
+export function codexToml(pack) {
+  const source = pack.marketplace === 'claude-plugins-official'
+    ? 'https://github.com/anthropics/claude-plugins-official.git'
+    : 'https://github.com/' + pack.marketplace + '.git';
+  const key = /^[A-Za-z0-9_-]+$/.test(pack.marketplaceName) ? pack.marketplaceName : JSON.stringify(pack.marketplaceName);
+  return ['[marketplaces.' + key + ']', 'source_type = "git"', 'source = "' + source + '"', '',
+    '[plugins."' + pack.plugin + '@' + pack.marketplaceName + '"]', 'enabled = true'].join('\n');
 }
 
 /* --------------------------------------------------------------- install -- */
@@ -101,8 +152,8 @@ function commandsFor(pack) {
   return cmds;
 }
 
-function run(cmd, args, dry) {
-  console.log('  $ ' + cmd + ' ' + args.join(' '));
+function run(cmd, args, dry, log = console.log) {
+  log('  $ ' + cmd + ' ' + args.join(' '));
   if (dry) return { ok: true, dry: true };
   // npx and claude are .cmd shims on Windows and need a shell to launch; the
   // arguments stay an array, so nothing the user typed is ever interpolated.
@@ -116,12 +167,15 @@ function run(cmd, args, dry) {
   return { ok: res.status === 0, status: res.status, error: res.error && res.error.message };
 }
 
-export function install({ cwd = process.cwd(), only = null, dry = false, upstream = false, project = false } = {}) {
+/* `rows`, `host` and `log` are injectable so a test can drive this against a
+   machine it is not running on; the defaults read the real one. */
+export function install({ cwd = process.cwd(), only = null, dry = false, upstream = false, project = false, rows = null, host = null, log = console.log } = {}) {
   const report = [];
-  for (const pack of status(cwd)) {
+  const here = host || hostState();
+  for (const pack of rows || status(cwd)) {
     if (only && pack.id !== only && pack.plugin !== only) continue;
     if (pack.installed) { report.push({ id: pack.id, action: 'kept', ok: true }); continue; }
-    console.log('\n' + pack.id + '  -  ' + pack.owns);
+    log('\n' + pack.id + '  -  ' + pack.owns);
     let ok = true;
     if (pack.vendored && !upstream && pack.kind === 'skills') {
       // The copy in packs/ is the improved fork; the upstream is one flag away.
@@ -129,18 +183,34 @@ export function install({ cwd = process.cwd(), only = null, dry = false, upstrea
       const dest = project ? join(cwd, '.claude', 'skills') : join(homedir(), '.claude', 'skills');
       for (const skill of pack.skills) {
         const srcDir = join(from, skill);
-        console.log('  copy ' + srcDir + ' -> ' + join(dest, skill));
+        log('  copy ' + srcDir + ' -> ' + join(dest, skill));
         if (dry) continue;
-        if (!existsSync(srcDir)) { ok = false; console.log('  missing vendored skill ' + skill); break; }
+        if (!existsSync(srcDir)) { ok = false; log('  missing vendored skill ' + skill); break; }
         mkdirSync(dest, { recursive: true });
         cpSync(srcDir, join(dest, skill), { recursive: true });
       }
       report.push({ id: pack.id, action: dry ? 'would copy vendored' : ok ? 'installed (vendored)' : 'failed', ok });
       continue;
     }
-    for (const [cmd, args] of commandsFor(pack)) {
-      const r = run(cmd, args, dry);
-      if (!r.ok) { ok = false; console.log('  failed' + (r.error ? ': ' + r.error : ' (exit ' + r.status + ')')); break; }
+    // A binary that is not here is never spawned. On a Codex host with no
+    // claude CLI the plugin installs through config.toml, so that block is
+    // what gets printed; otherwise the exact commands, for the user to run.
+    const cmds = commandsFor(pack);
+    const missing = pack.kind === 'plugin' ? (here.claude ? null : 'claude') : (here.npx ? null : 'npx');
+    if (missing) {
+      if (missing === 'claude' && here.codex) {
+        log('  no claude CLI here. Add this to ~/.codex/config.toml; Codex reads it on its next start:');
+        log(codexToml(pack).split('\n').map((l) => (l ? '    ' + l : l)).join('\n'));
+      } else {
+        log('  ' + missing + ' is not on this machine. ' + (missing === 'claude' ? 'Install Claude Code, then run:' : 'Install Node with npm, then run:'));
+        for (const [cmd, args] of cmds) log('  $ ' + cmd + ' ' + args.join(' '));
+      }
+      report.push({ id: pack.id, action: 'printed', ok: true });
+      continue;
+    }
+    for (const [cmd, args] of cmds) {
+      const r = run(cmd, args, dry, log);
+      if (!r.ok) { ok = false; log('  failed' + (r.error ? ': ' + r.error : ' (exit ' + r.status + ')')); break; }
     }
     report.push({ id: pack.id, action: dry ? 'would install' : ok ? 'installed' : 'failed', ok });
   }
@@ -266,7 +336,7 @@ export function vendor(id, { force = false, log = console.log } = {}) {
   const list = loadPacks();
   const pack = list.find((p) => p.id === id);
   if (!pack) throw new Error(id + ' is not in the registry; packs add it first');
-  if (pack.kind !== 'skills') throw new Error('only skills packs are vendored; a plugin installs through claude plugin');
+  if (pack.kind !== 'skills') throw new Error('only skills packs are vendored; a plugin installs through claude plugin, or through ~/.codex/config.toml on Codex');
   const spec = parseSpec(id);
   const { dir, cleanup } = clone(spec, log);
   try {
@@ -307,7 +377,7 @@ export function format(rows) {
   const absent = rows.filter((p) => !p.installed).length;
   out.push('');
   out.push(absent
-    ? absent + ' absent. `packs --install` gets them; `packs --dry-run` shows the exact commands first.'
+    ? absent + ' absent. `packs --install` gets them; `packs --dry-run` shows the exact commands first. On Codex a plugin is a config.toml block, printed rather than run.'
     : 'Everything recommended is installed.');
   return out.join('\n');
 }

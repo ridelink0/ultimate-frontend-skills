@@ -106,6 +106,17 @@ because of it. Detection reads the three skill directories and resolves
 symlinks, because the CLI's default install is a symlink to a canonical copy
 and a check that only looks for real directories reports every pack as absent.
 
+A plugin-kind pack (`frontend-design`, `web-designer`, `taste-skill`,
+`impeccable`, `3dviz-pro-max`) counts as installed on either host: Claude
+Code's `~/.claude/plugins/installed_plugins.json`, or an `enabled = true`
+table under `[plugins."<name>@<marketplace>"]` in `~/.codex/config.toml`.
+`packs --install` never spawns a binary that is not on the machine. On a
+Codex host without the `claude` CLI it prints the `[marketplaces.*]` and
+`[plugins.*]` block to paste into `config.toml` and reports `printed`;
+without `npx` it prints the `npx skills add` command the same way. Where
+Codex puts a `skills` CLI install is UNVERIFIED; `.agents/skills`, which the
+CLI writes, is among the directories checked.
+
 Do not copy a pack's files into a project. They are the user's, installed at
 the user's scope, and they update through the CLI; a copy drifts. Do not
 recommend installing one mid-build. If a build would clearly benefit and the
