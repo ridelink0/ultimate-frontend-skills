@@ -736,7 +736,9 @@ async function cmdPacks() {
   if (sub === 'add') {
     const spec = argv[2];
     if (!spec) die('packs add <owner/repo | github url | local dir> [--owns "..."] [--why "..."]');
-    const r = P.add(spec, { owns: flag('owns') ? String(flag('owns')) : null, why: flag('why') ? String(flag('why')) : null, dry: !!flag('dry-run') });
+    let r;
+    try { r = P.add(spec, { owns: flag('owns') ? String(flag('owns')) : null, why: flag('why') ? String(flag('why')) : null, dry: !!flag('dry-run') }); }
+    catch (err) { die(err.message); }
     if (flag('json')) { console.log(JSON.stringify(r, null, 2)); return; }
     console.log('\n  ' + r.entry.id + '  ' + r.entry.kind + '  ' + r.entry.licence + (r.entry.sha ? '  ' + r.entry.sha : ''));
     for (const s of r.skills) console.log('    ' + s.name.padEnd(32) + (s.description || '').slice(0, 90));
@@ -746,13 +748,15 @@ async function cmdPacks() {
   }
   if (sub === 'remove') {
     if (!argv[2]) die('packs remove <id>');
-    const gone = P.remove(String(argv[2]));
+    let gone;
+    try { gone = P.remove(String(argv[2])); } catch (err) { die(err.message); }
     console.log('  removed ' + gone.id + (gone.vendored ? ' (its copy under ' + gone.vendored + ' is left for you to delete)' : ''));
     return;
   }
   if (sub === 'vendor') {
     if (!argv[2]) die('packs vendor <id> [--force]');
-    const r = P.vendor(String(argv[2]), { force: !!flag('force') });
+    let r;
+    try { r = P.vendor(String(argv[2]), { force: !!flag('force') }); } catch (err) { die(err.message); }
     console.log('  copied ' + r.skills.join(', ') + ' (' + r.licence + (r.sha ? ', ' + r.sha : '') + ') into ' + r.dest + '\n  list improvements in its UFS-NOTES.md');
     return;
   }
