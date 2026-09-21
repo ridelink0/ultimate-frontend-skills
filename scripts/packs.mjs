@@ -230,7 +230,7 @@ export function add(specText, { owns = null, why = null, dry = false, log = cons
   try {
     const skills = findSkills(dir);
     const manifest = join(dir, '.claude-plugin', 'plugin.json');
-    const entry = { id: spec.id, kind: 'skills', skills: skills.map((s) => s.name), owns: '', why: '', licence: detectLicence(dir), added: new Date().toISOString().slice(0, 10) };
+    const entry = { id: spec.id, kind: 'skills', skills: [...new Set(skills.map((s) => s.name))], owns: '', why: '', licence: detectLicence(dir), added: new Date().toISOString().slice(0, 10) };
     if (existsSync(manifest)) {
       const pj = JSON.parse(readFileSync(manifest, 'utf8'));
       entry.kind = 'plugin';
