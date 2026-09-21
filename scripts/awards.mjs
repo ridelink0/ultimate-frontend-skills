@@ -284,7 +284,15 @@ export function formatAwards(rows, opts = {}) {
     const tags = [e.year || null, e.award !== 'reference' ? e.award : null, e.kind, e.source]
       .filter(Boolean).join(' / ');
     out.push(`${e.name}${e.studio ? '  -  ' + e.studio : ''}`);
-    out.push(`  ${e.url}${e.verified ? '' : '   (url unverified)'}`);
+    // "Unverified" and "gone" are not the same thing and must not print the
+    // same words: the first is a site nobody has checked, the second is one
+    // that was checked and answered with an error. Telling a model to go and
+    // look at the second wastes a render and invites it to describe a page it
+    // never saw.
+    const state = e.dead
+      ? `   (offline when last checked${e.dead.status ? ', ' + e.dead.status : ''} - do not render it)`
+      : e.verified ? '' : '   (url unverified)';
+    out.push(`  ${e.url}${state}`);
     out.push(`  ${tags}`);
     if (e.techniques.length) out.push(`  technique  ${e.techniques.join(', ')}`);
     if (e.stack.length) out.push(`  stack      ${e.stack.join(', ')}`);

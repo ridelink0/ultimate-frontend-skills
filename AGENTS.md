@@ -45,6 +45,7 @@ commands/webdesign.md           the /ultimate-frontend-skills:webdesign slash co
 commands/debug-website.md       /ultimate-frontend-skills:debug-website
 commands/design-handoff.md      /ultimate-frontend-skills:design-handoff
 commands/awards.md              /ultimate-frontend-skills:awards
+commands/security-check.md      /ultimate-frontend-skills:security-check
 commands/atelier.md             the compatibility alias for the old name
 hooks/                          UserPromptSubmit nudge
 ```
