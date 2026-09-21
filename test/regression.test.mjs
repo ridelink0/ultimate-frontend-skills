@@ -138,6 +138,20 @@ test('package.json, both plugin manifests and the marketplace entry agree on the
   assert.match(distinct[0], /^\d+\.\d+\.\d+$/);
 });
 
+/* The two plugin manifests had drifted in description and keywords. Every
+   field both carry has to be the same text. $schema is Claude Code's schema
+   and describes none of the Codex-only fields (skills, interface), so it stays
+   on the Claude side. */
+test('the Claude and Codex plugin manifests agree on every shared field', () => {
+  const here = dirname(fileURLToPath(import.meta.url));
+  const read = (...p) => JSON.parse(readFileSync(join(here, '..', ...p), 'utf8'));
+  const claude = read('.claude-plugin', 'plugin.json');
+  const codex = read('.codex-plugin', 'plugin.json');
+  for (const k of ['name', 'version', 'description', 'author', 'homepage', 'repository', 'license', 'keywords'])
+    assert.deepEqual(codex[k], claude[k], k + ' differs between the two manifests');
+  assert.ok(claude.$schema, 'the Claude manifest declares its schema');
+});
+
 /* The browser half of this suite guards itself with { skip: !findBrowser() },
    which means a runner with no browser reports every one of those tests as a
    pass and exits 0. CI is the only thing standing between that and a green

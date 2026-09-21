@@ -196,6 +196,18 @@ and the people behind them - so the work this plugin learns from is visible.
 It is generated from the data (`webdesign.mjs credits`) and checked in tests,
 so a site cannot enter the corpus without entering the credits.
 
+### The corpus, its licence, and what it is not
+
+The reference corpus (`skills/ultimate-frontend-skills/data/awards.json`)
+stores, for each site CREDITS.md names (444 at 6.1.0), its name, URL, studio,
+year, award and a one-line description of the craft move worth taking from
+it. It copies nothing from any site: no markup, no CSS, no image, no copy. The
+sites are pointed at so `study` can render them and a person or a model can
+look; nothing in the plugin reproduces one. An entry is removed on request
+from the site's owner or studio - open an issue naming the URL. The plugin's
+MIT licence covers the plugin's own files only; it grants nothing over any
+site the corpus names, whose rights stay with their owners.
+
 ## Built on the work of
 
 This plugin exists because of other people's work, and it should say so where
