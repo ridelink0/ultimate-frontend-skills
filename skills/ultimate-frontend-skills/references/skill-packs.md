@@ -77,11 +77,11 @@ Registered from their repos by `webdesign.mjs packs add <owner/repo>`, which rea
 
 | Pack | Owns when installed | Licence |
 |---|---|---|
-| `Leonxlnx/taste-skill` | Frontend design taste skills including brutalist, minimalist, soft, redesign, stitch, and more | MIT, 13 skill(s), added 2026-09-20 with `packs add` |
-| `pbakaus/impeccable` | Design fluency for frontend development. 1 skill with 24 commands (/impeccable polish, /impeccable audit, /impeccable critique, etc.) and curated anti-pattern detection. | Apache-2.0, 2 skill(s), added 2026-09-20 with `packs add` |
-| `microsoft/playwright-cli` | Automate browser interactions, test web pages and work with Playwright tests. | Apache-2.0, 1 skill(s), added 2026-09-20 with `packs add` |
-| `bergside/awesome-design-skills` | Conversational AI-first interface with minimal controls, clear outcomes, and delegated task flows for agentic workflows. | MIT, 67 skill(s), added 2026-09-20 with `packs add` |
-| `viettranx/3dviz-pro-max` | Design and build expressive 3D scenes, explainers and interactive models with grounded subject knowledge: authored looks and moods, runnable Three.js rigs and kits, inspection checklists and a capture script. | MIT, 1 skill(s), added 2026-09-20 with `packs add` |
+| `Leonxlnx/taste-skill` | Named taste directions - minimalist, brutalist, soft - and a redesign pass on an existing UI, at component grain. Leonxlnx, MIT. | MIT |
+| `pbakaus/impeccable` | Polishing a UI that already exists: 24 commands (audit, critique, polish, typeset, colorize, harden) that own the review-and-refine loop. Paul Bakaus, Apache-2.0. | Apache-2.0 |
+| `microsoft/playwright-cli` | Driving a real browser from the terminal - clicks, forms, logins, multi-step flows and Playwright tests. Microsoft, Apache-2.0. | Apache-2.0 |
+| `bergside/awesome-design-skills` | A registry of 67 single-aesthetic directions (glassmorphism, riso, neobrutalism, terracotta, sega) for naming a look the four house presets do not have. bergside, MIT. | MIT |
+| `viettranx/3dviz-pro-max` | Expressive three.js scenes, explainers and interactive models - authored looks, runnable rigs, a capture script. viettranx, MIT. | MIT |
 
 ### The three plugin-kind packs: what to take, what to avoid
 

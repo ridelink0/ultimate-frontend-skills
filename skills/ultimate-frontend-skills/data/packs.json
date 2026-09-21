@@ -110,8 +110,8 @@
       "taste-skill",
       "taste-skill-v1"
     ],
-    "owns": "Frontend design taste skills including brutalist, minimalist, soft, redesign, stitch, and more",
-    "why": "Added with packs add on 2026-09-20. plugin taste-skill.",
+    "owns": "Named taste directions - minimalist, brutalist, soft - and a redesign pass on an existing UI, at component grain. Leonxlnx, MIT.",
+    "why": "Overlaps tells.md and typography.md on banned palettes and fonts; when it is live it owns the anti-slop defaults for a component and UFS keeps the page.",
     "licence": "MIT",
     "added": "2026-09-20",
     "plugin": "taste-skill",
@@ -125,8 +125,8 @@
     "skills": [
       "impeccable"
     ],
-    "owns": "Design fluency for frontend development. 1 skill with 24 commands (/impeccable polish, /impeccable audit, /impeccable critique, etc.) and curated anti-pattern detection.",
-    "why": "Added with packs add on 2026-09-20. plugin impeccable.",
+    "owns": "Polishing a UI that already exists: 24 commands (audit, critique, polish, typeset, colorize, harden) that own the review-and-refine loop. Paul Bakaus, Apache-2.0.",
+    "why": "The largest overlap of the five - it covers what audit, look, quality and craft.md do for an existing page. Run it on a restyle; UFS still owns the scaffold and verify.",
     "licence": "Apache-2.0",
     "added": "2026-09-20",
     "plugin": "impeccable",
@@ -140,8 +140,8 @@
     "skills": [
       "playwright-cli"
     ],
-    "owns": "Automate browser interactions, test web pages and work with Playwright tests.",
-    "why": "Added with packs add on 2026-09-20. 1 skill(s): playwright-cli.",
+    "owns": "Driving a real browser from the terminal - clicks, forms, logins, multi-step flows and Playwright tests. Microsoft, Apache-2.0.",
+    "why": "No design overlap. Reach for it where look and debug stop: a login wall, a drag gesture, a native dialog.",
     "licence": "Apache-2.0",
     "added": "2026-09-20",
     "sha": "74354ec",
@@ -219,8 +219,8 @@
       "vibrant",
       "vintage"
     ],
-    "owns": "Conversational AI-first interface with minimal controls, clear outcomes, and delegated task flows for agentic workflows.",
-    "why": "Added with packs add on 2026-09-20. 67 skill(s): agentic, ant, artistic, basic, bento, bold, brutalism, cafe, claude, claymorphism, clean, codex, colorful, contemporary, corporate, cosmic, creative, dithered, doodle, dramatic, editorial, enterprise, expressive, fantasy, fiction, flat, friendly, futuristic, geometric, glassmorphism, gradient, immersive, impeccable, levels, lingo, material, matrix, minimal, modern, mono, neobrutalism, neon, neumorphism, pacman, paper, perspective, power, premium, professional, pulse, refined, retro, riso, roku, sega, shadcn, sketch, skeumorphism, sleek, spacious, square, stitch, storytelling, terracotta, tetris, vibrant, vintage.",
+    "owns": "A registry of 67 single-aesthetic directions (glassmorphism, riso, neobrutalism, terracotta, sega) for naming a look the four house presets do not have. bergside, MIT.",
+    "why": "Same problem as the presets at a different grain: UFS is four deep, this is 67 shallow. Pick one direction by name; the chassis and audit still apply.",
     "licence": "MIT",
     "added": "2026-09-20",
     "sha": "f631a09",
@@ -232,8 +232,8 @@
     "skills": [
       "3dviz-pro-max"
     ],
-    "owns": "Design and build expressive 3D scenes, explainers and interactive models with grounded subject knowledge: authored looks and moods, runnable Three.js rigs and kits, inspection checklists and a capture script.",
-    "why": "Added with packs add on 2026-09-20. plugin 3dviz-pro-max.",
+    "owns": "Expressive three.js scenes, explainers and interactive models - authored looks, runnable rigs, a capture script. viettranx, MIT.",
+    "why": "Everything 3D outside the scroll-driven product page that three.md covers; blender.mjs stays the modelling route.",
     "licence": "MIT",
     "added": "2026-09-20",
     "plugin": "3dviz-pro-max",
