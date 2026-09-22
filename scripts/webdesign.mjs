@@ -673,19 +673,29 @@ async function cmdAwards() {
       limit,
       concurrency: Number(flag('concurrency', 8)),
       onResult: (r, done, total) => {
-        if (!flag('json') && !r.ok) console.log(`  dead  ${String(r.status).padStart(3)}  ${r.url}${r.error ? '  (' + r.error + ')' : ''}`);
+        if (!flag('json') && !r.ok) console.log(`  ${({ blocked: 'block ', unsure: 'unsure', dead: 'dead  ' })[r.verdict] || 'dead  '} ${String(r.status).padStart(3)}  ${r.url}${r.error ? '  (' + r.error + ')' : ''}`);
         if (!flag('json') && done % 50 === 0) console.log(`  ...   ${done}/${total}`);
       },
     });
     report.stampedAt = new Date().toISOString();
+    // Read before --fix: applyCheck edits the cached corpus in place.
+    const wasDead = new Set(A.loadCorpus().filter((e) => e.dead).map((e) => e.id));
+    const back = report.reachable.filter((id) => wasDead.has(id)).length;
+    if (flag('fix') && report.offline) {
+      console.error('Most requests failed before any server answered - that is this machine\'s network, not the corpus. Nothing was written.');
+      process.exitCode = 2;
+      return;
+    }
     if (flag('fix')) {
       const changed = A.applyCheck(report);
       report.corpusUpdated = changed;
     }
     if (flag('json')) { console.log(JSON.stringify(report, null, 2)); return; }
-    console.log(`\n${report.alive}/${report.checked} reachable, ${report.dead.length} dead, ${report.moved.length} moved.`);
+    console.log(`\n${report.alive}/${report.checked} reachable, ${report.dead.length} dead, ${report.moved.length} moved; `
+      + `${report.blocked.length} refused a script and ${report.unsure.length} could not be judged from here (left as they were).`
+      + (back ? ` ${back} marked dead earlier ${back === 1 ? 'answers' : 'answer'} again${flag('fix') ? (back === 1 ? ' and is' : ' and are') + ' back in the corpus' : ''}.` : ''));
     if (report.moved.length) for (const m of report.moved.slice(0, 10)) console.log(`  moved  ${m.url}\n      -> ${m.movedTo}`);
-    if (!flag('fix') && (report.dead.length || report.moved.length)) console.log('Re-run with --fix to mark the dead ones unverified and follow the redirects.');
+    if (!flag('fix') && (report.dead.length || report.moved.length || back)) console.log('Re-run with --fix to mark the dead ones unverified, bring back the ones that answer again and follow the redirects.');
     return;
   }
   if (flag('techniques')) {
@@ -790,6 +800,13 @@ async function delegate(script, rest) {
 }
 
 /* ------------------------------------------------------------------ main -- */
+/* One place for a command that fails at run time. The synchronous commands
+   already end through die(); the ones that drive a browser did not, so a page
+   that kept its main thread busy past the DevTools timeout - a heavy WebGPU
+   scene in headless Chrome does exactly that - ended the run in a Node stack
+   trace instead of a sentence. Exit 2 is the existing "could not run" code
+   (no browser): an unmeasured page must never read as a passing one. */
+try {
 switch (cmd) {
   case 'new': cmdNew(); break;
   case 'sections': case 'list': cmdSections(); break;
@@ -863,4 +880,13 @@ switch (cmd) {
   video <file> [--frames 8] [--out DIR]   inspect timestamped local video frames
 `);
     process.exit(cmd ? 1 : 0);
+}
+} catch (e) {
+  const message = String((e && e.message) || e);
+  console.error(`ultimate-frontend-skills ${cmd}: ${message}`);
+  if (/\btimed out\b/i.test(message)) {
+    console.error('  The page did not answer the browser in time. A heavy WebGL or WebGPU page can hold the main thread'
+      + ' that long in headless Chrome; this says nothing about whether the page is good or bad. Look at it in a real browser.');
+  }
+  process.exitCode = 2;
 }

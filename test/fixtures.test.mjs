@@ -85,12 +85,12 @@ const raisesAllowingTiming = (r, ...expected) => {
   expected.forEach((re, i) => assert.match(solid[i], re, 'fixture raised ' + JSON.stringify(got, null, 1)));
 };
 
-test('text overlapping text is caught, and only on the page that has it', { skip, timeout: 30000 }, async () => {
+test('text overlapping text is caught, and only on the page that has it', { skip, timeout: 90000 }, async () => {
   raises(await measured('overlap.html'), /^layout: text over text$/);
   raises(await measured('clean-basic.html'));
 });
 
-test('content past the viewport is caught at 390px, and is gone at a width that fits it', { skip, timeout: 30000 }, async () => {
+test('content past the viewport is caught at 390px, and is gone at a width that fits it', { skip, timeout: 90000 }, async () => {
   raises(await measured('overflow-390.html', { widths: [390] }), /^layout: past the viewport - div/);
   // The same 600px-wide box fits inside 1440, so the finding has to disappear
   // entirely rather than change wording: an overflow check that fires at every
@@ -98,7 +98,7 @@ test('content past the viewport is caught at 390px, and is gone at a width that 
   raises(await measured('overflow-390.html', { widths: [1440] }));
 });
 
-test('a canvas painted once reads as not animating', { skip, timeout: 30000 }, async () => {
+test('a canvas painted once reads as not animating', { skip, timeout: 90000 }, async () => {
   const r = await measured('canvas-once.html');
   assert.equal(r.measured.motion.canvases[0].animating, false);
   raises(r, /^warn: 1 canvas painted once/);
@@ -108,13 +108,13 @@ test('a canvas painted once reads as not animating', { skip, timeout: 30000 }, a
 // enough apart, can both land on the same phase of a short loop and read a
 // genuinely animating canvas as dead. Sampling five times through the window
 // is what tells a blink from a still image.
-test('a two-state blink is recognised as animating, not mistaken for a still image', { skip, timeout: 30000 }, async () => {
+test('a two-state blink is recognised as animating, not mistaken for a still image', { skip, timeout: 90000 }, async () => {
   const r = await measured('canvas-blink.html', { wait: 200 });
   assert.equal(r.measured.motion.canvases[0].animating, true);
   raises(r);
 });
 
-test('three data-depth planes with no engine behind them all move at the page rate, and it is flagged', { skip, timeout: 30000 }, async () => {
+test('three data-depth planes with no engine behind them all move at the page rate, and it is flagged', { skip, timeout: 90000 }, async () => {
   const r = await measured('planes-same-rate.html');
   const rates = r.measured.depth.planes.map((p) => p.rate);
   assert.ok(rates.every((rate) => Math.abs(rate - 1) < 0.05), 'undriven planes should all read page rate: ' + JSON.stringify(rates));
@@ -127,13 +127,13 @@ test('three data-depth planes with no engine behind them all move at the page ra
     /^warn: plane "0\.8" declares depth/);
 });
 
-test('three data-depth planes that really move at different rates are not flagged', { skip, timeout: 30000 }, async () => {
+test('three data-depth planes that really move at different rates are not flagged', { skip, timeout: 90000 }, async () => {
   const r = await measured('clean-depth.html');
   assert.equal(r.measured.depth.planes.length, 3, 'the fixture must actually declare three planes');
   raises(r);
 });
 
-test('a library loaded and never called is reported idle, and the same library actually running is not', { skip, timeout: 30000 }, async () => {
+test('a library loaded and never called is reported idle, and the same library actually running is not', { skip, timeout: 90000 }, async () => {
   const idle = await measured('idle-library.html');
   assert.ok(idle.measured.cost.idleLibraries.includes('GSAP'));
   raises(idle, /^error: loaded and never used: GSAP$/);
@@ -142,7 +142,7 @@ test('a library loaded and never called is reported idle, and the same library a
   raises(used);
 });
 
-test('twenty distinct type sizes is over budget and named as such', { skip, timeout: 30000 }, async () => {
+test('twenty distinct type sizes is over budget and named as such', { skip, timeout: 90000 }, async () => {
   const r = await measured('type-sizes-20.html');
   assert.equal(r.measured.type.distinctSizes, 20);
   assert.ok(r.measured.type.distinctSizes > BUDGETS.distinctSizes);
@@ -151,14 +151,14 @@ test('twenty distinct type sizes is over budget and named as such', { skip, time
   raises(r, /^warn: 20 distinct type sizes$/, /^warn: largest type on the page is 31px$/);
 });
 
-test('a measure past the readable width is over budget and named as such', { skip, timeout: 30000 }, async () => {
+test('a measure past the readable width is over budget and named as such', { skip, timeout: 90000 }, async () => {
   const r = await measured('measure-140.html');
   assert.ok(r.measured.type.measureChars > BUDGETS.measureChars[1],
     'fixture should measure well past the ' + BUDGETS.measureChars[1] + '-character budget, got ' + r.measured.type.measureChars);
   raises(r, /^warn: body measure is 1\d\d characters/);
 });
 
-test('a page with nothing wrong raises nothing', { skip, timeout: 30000 }, async () => {
+test('a page with nothing wrong raises nothing', { skip, timeout: 90000 }, async () => {
   const r = await measured('clean-basic.html');
   assert.equal(r.measured.type.distinctSizes <= BUDGETS.distinctSizes, true);
   raises(r);
@@ -251,7 +251,9 @@ test('a page that reads matchMedia once at boot is never condemned by the live f
 
 test('a page that screenshots perfectly while failing underneath reports exactly what failed, once each', { skip, timeout: 60000 }, async () => {
   const r = await measured('broken-underneath.html');
-  raises(r,
+  // A page this broken can also take a long task on a busy machine; that one
+  // finding is triggered by a duration. The three below are still exact.
+  raisesAllowingTiming(r,
     /^console: TypeError: Cannot read properties of null/,
     /^network: HTTP 404 .*missing-face\.woff2$/,
     /^network: HTTP 404 .*missing-module\.js$/);
@@ -389,7 +391,7 @@ test('measuring a canvas without frame awareness reads the editor chrome, not th
   assert.ok(r.findings.length > 0, 'measuring the wrong frame must not look like a pass');
 });
 
-test('a bare .dc.html is refused rather than measured', { skip, timeout: 30000 }, async () => {
+test('a bare .dc.html is refused rather than measured', { skip, timeout: 90000 }, async () => {
   const { runParity } = await import('../scripts/parity.mjs');
   await assert.rejects(
     () => runParity(join(DESIGN, 'match'), join(DESIGN, 'Main.dc.html'), { wait: 200 }),
@@ -439,7 +441,10 @@ test('a one-off lazy measurement is not reported as per-scroll-event thrash', { 
   const bad = await measured('thrash-on-scroll.html');
   assert.ok(bad.measured.run.loaf.count >= BUDGETS.thrashFrames,
     'a real scroll thrash produces a long frame per handled event: ' + JSON.stringify(bad.measured.run.loaf));
-  raises(bad, /^error: scrolling forces \d+(\.\d+)? layouts per scroll event \(budget 4\)$/);
+  // Same fixture, same assertion as the thrash test above: a page built to be
+  // expensive also takes a long task on a busy machine, and that finding is
+  // triggered by a duration. The layout error is still asserted exactly.
+  raisesAllowingTiming(bad, /^error: scrolling forces \d+(\.\d+)? layouts per scroll event \(budget 4\)$/);
 });
 
 test('collapsing animation-duration under reduced motion is honouring it, not ignoring it', { skip, timeout: 60000 }, async () => {

@@ -221,7 +221,7 @@ it can be seen.
   published first, in March 2026, the idea of naming the specific award-winning
   site beside each technique so a model decides against something real rather
   than from memory: 48 patterns from 38 sites, each attributed to where it was taken from.
-  This plugin's corpus is that idea as structured data - **388 entries, 336 with
+  This plugin's corpus is that idea as structured data - **446 entries, 389 with
   a URL that was fetched and answered**, each carrying its stack, techniques,
   palette, type, motion and the one craft move worth taking - so it can be
   queried by the problem and rendered into contact sheets. The idea was his.

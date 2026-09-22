@@ -17,12 +17,8 @@
   "type": "custom wordmark logo carrying the pun in its title (sans toit / sans toi)",
   "motion": "a loading globe component implies the core interaction is a rotating/zoomable 3D map tracking a round-the-world route, though the fetch could not confirm the renderer.",
   "why": "a two-person travel-journal site built around a single centerpiece - an interactive globe - rather than a scroll sequence; the globe-as-navigation idea is the transferable part.",
-  "verified": false,
-  "checked": "2026-09-14T11:18:54.490Z",
-  "dead": {
-   "status": 404,
-   "at": "test"
-  }
+  "verified": true,
+  "checked": "2026-09-22T22:59:10.940Z"
  },
  {
   "id": "1password",
@@ -526,7 +522,8 @@
   "type": "unknown (minimal shell fetched, not rendered)",
   "motion": "unknown",
   "why": "HTML fetched via curl (7,772 bytes, a minimal shell suggesting most content is client-rendered); not rendered this session. Hosted on openai.chatgpt.site; AI-generated inferred from hosting domain.",
-  "verified": true
+  "verified": true,
+  "aiGenerated": true
  },
  {
   "id": "atlason",
@@ -1522,7 +1519,13 @@
   "type": "UNVERIFIED",
   "motion": "UNVERIFIED",
   "why": "flagged from the Codrops feed by title only - the tunnel-fly-through is a recurring three.js technique (repeat-wrapped geometry along a camera path) worth confirming directly before citing specifics.",
-  "verified": false
+  "verified": false,
+  "checked": "2026-09-22T22:59:10.940Z",
+  "dead": {
+   "status": 402,
+   "at": "2026-09-22T22:59:10.940Z",
+   "wasVerified": false
+  }
  },
  {
   "id": "codrops-infinite-canvas",
@@ -1894,11 +1897,7 @@
   "motion": "UNVERIFIED - the fetch attempt was refused by the server (403); listed on the CSSDA Special Kudos roll but not confirmed here.",
   "why": "UNVERIFIED - real listing, but the site actively blocked automated fetching, so no craft claim can be made.",
   "verified": false,
-  "checked": "2026-09-14T11:18:54.490Z",
-  "dead": {
-   "status": 403,
-   "at": "2026-09-14T11:18:54.490Z"
-  }
+  "checked": "2026-09-22T22:59:10.940Z"
  },
  {
   "id": "discord",
@@ -1966,7 +1965,8 @@
   "type": "Geist Mono (UI/telemetry text), Silkscreen (pixel display accents)",
   "motion": "unknown beyond static screenshot",
   "why": "Rendered successfully via webdesign.mjs study (screenshot captured) and HTML fetched via curl (35,501 bytes). Hosted on chatgpt.site, OpenAI's own subdomain platform for AI-built apps; inferred AI-generated from hosting domain + house style (Geist Mono, telemetry-dashboard conceit) rather than an explicit on-page credit like Whiteout's.",
-  "verified": true
+  "verified": true,
+  "aiGenerated": true
  },
  {
   "id": "door-dennis",
@@ -2038,7 +2038,8 @@
   "type": "unknown (render blocked by JS wall)",
   "motion": "unknown",
   "why": "HTML fetched via curl (29,917 bytes); webdesign.mjs study render reported a JS wall. Hosted on domtyler1975.chatgpt.site; AI-generated inferred from hosting domain + house-style copy pattern (matches the multi-beat imperative tagline and personified-loading-copy pattern found across the other chatgpt.site exhibits).",
-  "verified": true
+  "verified": true,
+  "aiGenerated": true
  },
  {
   "id": "emi-takahashi",
@@ -2436,7 +2437,8 @@
   "type": "\"Helvetica Neue\", Helvetica, Arial, sans-serif (no distinct display font)",
   "motion": "unknown - render timed out (Page.captureScreenshot timed out)",
   "why": "HTML fetched via curl (80,444 bytes); webdesign.mjs study render timed out on screenshot capture (heavy client bundle). Hosted on openai.chatgpt.site (OpenAI's own AI-app hosting subdomain); AI-generated inferred from hosting domain, not an explicit on-page credit.",
-  "verified": true
+  "verified": true,
+  "aiGenerated": true
  },
  {
   "id": "glossier",
@@ -2687,12 +2689,8 @@
   "type": "hierarchical text organization with the agency name repeated as the sole recurring visual anchor",
   "motion": "the whole site is built around getting a visitor to the \"Get Capabilities Deck\" button rather than around a spectacle sequence",
   "why": "a two-color agency site that still won a 3D-tagged award shows the bar has moved to restraint and execution, not just render budget",
-  "verified": false,
-  "checked": "2026-09-14T11:18:54.490Z",
-  "dead": {
-   "status": 403,
-   "at": "2026-09-14T11:18:54.490Z"
-  }
+  "verified": true,
+  "checked": "2026-09-22T22:59:10.940Z"
  },
  {
   "id": "honda-wing-mark-history-cssda",
@@ -2978,6 +2976,45 @@
   "verified": true
  },
  {
+  "id": "jelly-baby",
+  "name": "Jelly Baby",
+  "url": "https://jelly.scottsun.io/",
+  "studio": "Scott Sun (@scottstts), built with GPT-6 Astra (Codex) per the author's post and the repo's .codex/AGENTS.md",
+  "year": 2026,
+  "award": "showcase",
+  "source": "threejs",
+  "kind": "game",
+  "stack": [
+   "three.js r185 (three/webgpu, package.json ^0.185.0)",
+   "WebGPU only - the r185 WebGL fallback is explicitly disabled",
+   "TSL with Mesh*NodeMaterial",
+   "Vite + TypeScript",
+   "delaunator",
+   "a Web Worker for the optical transport",
+   "GPL-3.0 source at github.com/scottstts/Jelly-Baby"
+  ],
+  "techniques": [
+   "XPBD soft body: a 980-node tetrahedral cage with 4,026 elements, 1/240 s fixed step, 3 iterations",
+   "72,234-vertex visible surface embedded in the cage by barycentric weights, not a canned squash-and-stretch pose",
+   "grab, stretch and throw the character through a force-limited grab constraint",
+   "GPU caustic field plus a worker-computed thickness and shadow field from a 10,090-vertex optical proxy",
+   "AgX tone mapping at exposure 1.05 with sRGB output",
+   "drawing buffer capped at four million pixels: dpr = min(devicePixelRatio, 1.7, sqrt(4e6 / (w * h)))",
+   "compileAsync warmup with visibility and frustum culling disabled so no pipeline compiles mid-play",
+   "80 physics settle steps before the first frame is shown",
+   "day and night HDR environments preloaded as RGBA16F",
+   "four flavours (lime, strawberry, blueberry, lemon) as a palette picker",
+   "facilities: swing, trampoline, bed, tricycle, soccer, portal worlds",
+   "touch joystick and hop button; sound starts on the first interaction and can be muted"
+  ],
+  "palette": "warm studio cream: theme and ground #e8d9c3, loader #eee7d9, olive ink #394028, sage #799342, joystick knob #b8cf8d, frosted panels #f7f3e7 at 30-85% alpha; the jelly is lime by default",
+  "type": "Georgia italic for the display lines ('A little life.' - h1 44px, -2.4px tracking; loader h2 39px), a ui-sans-serif system stack for the interface, 9px sans key caps",
+  "motion": "the wobble is simulated, not keyframed - gravity is a deliberately low 2.4 m/s2 so the elastic response has time to show; the loader fades over .7s; prefers-reduced-motion stops the loader mark's animation and the transitions",
+  "why": "On the threejs.org homepage showcase, posted by @threejs on 6 September 2026 (https://x.com/threejs/status/2096433465755369854) quoting the author's post: 'People seem to love the bouncy jelly, so I made this Jelly Baby game with Astra in @threejs' (https://x.com/scottstts/status/2096364764054131119). An agent-built exhibit like Whiteout, but documented: every number above is stated in the repo's own docs. The transferable idea: simulate the one property the thing is about - softness - and spend the budget there; a 7 cm character on a tabletop with no score and no errands, with the physics tuned for feel (gentle gravity) over realism. Worth copying on any 3D page: warm every pipeline and settle the physics behind the loader so the first visible frame is already stable. WebGPU-only, so the headless render stopped at the loader ('A little life. Loading the little room'). Verified from the source (README, docs/architecture.md, docs/soft-body-and-interaction.md, docs/rendering-and-materials.md, src/style.css, index.html, package.json) and a UFS look render at 1440.",
+  "verified": true,
+  "aiGenerated": true
+ },
+ {
   "id": "just-married-booth-cssda",
   "name": "Just Married Booth",
   "url": "https://www.justmarriedbooth.com/",
@@ -3205,6 +3242,44 @@
   "motion": "product captures animate in place - a cursor moves, a status updates - so the page's only motion is the product demonstrating its own responsiveness",
   "why": "every speed claim is shown as an actual UI recording at native pace rather than an abstract motion-graphics stand-in, which is the opposite of how most SaaS marketing sites illustrate the word 'fast'",
   "verified": true
+ },
+ {
+  "id": "loic-pix-playable-portfolio",
+  "name": "Loic Pix - playable portfolio",
+  "url": "https://loicpix.com/",
+  "studio": "Loic Picon (Loic Pix, one-man animation studio)",
+  "year": 2026,
+  "award": "showcase",
+  "source": "threejs",
+  "kind": "portfolio",
+  "stack": [
+   "three.js r180 (REVISION \"180\" in the shipped three.module chunk)",
+   "Vite (hashed /assets chunks)",
+   "Blender (baked animation exported as GLB under /blender/bakes/)",
+   "GLTFLoader + MeshoptDecoder",
+   "fflate",
+   "Web Audio (AudioContext, decodeAudioData)"
+  ],
+  "techniques": [
+   "portfolio staged as a playable arcade run instead of a project grid",
+   "Blender-baked animation shipped as one GLB spanning frames 0000-1185 (/blender/bakes/pix_experience_0000_1185.glb)",
+   "meshopt-compressed mobile variants of the scene, floor and character GLBs",
+   "SkinnedMesh character with morph targets and an atlas-textured deform rig",
+   "shader patches through onBeforeCompile",
+   "Web Audio rhythm transport at 138 BPM driving combo, multiplier and PERFECT timing",
+   "skills presented as a 13-item CREATIVE LOADOUT and software as EQUIPPED items",
+   "public high-score board with an optional, explicitly unverified Instagram handle",
+   "pixel ratio adapted at runtime from measured performance, clamped between 0.5 and 1.25",
+   "Quality / Performance toggle on the loader ('Older computer? Choose Performance.')",
+   "rotate-your-phone gate and a STOP control for the whole experience",
+   "binary intro sequence with its own loading atlas (/ui/gauntlet-intro/sequence.bin)"
+  ],
+  "palette": "near-black #050505 ground with a warm gold ramp #ffe44f / #ffba16 / #f58b09 / #ca6900, deep navy #151c2d and cream #fffdf2, read from the served HTML; the 1440 render of the loader shows a gold-rimmed orange character in a teal glow on black",
+  "type": "Oxanium, self-hosted as 'Pix Oxanium' (variable, weight 200-800) for the interface; 'Secret Power', a pixel display face, for titles and counters - the loader percentage renders in blocky pixel digits",
+  "motion": "loader: the character turns in a glow over a pixel-digit percentage counter; the experience runs on a 138 BPM rhythm lane with combos, a SCROLL TO ASSEMBLE step, drag-and-drop side quests and a MISSION COMPLETE score card. prefers-reduced-motion removes the CSS transitions on the stop control and the legal link; whether the 3D run itself changes under reduced motion was not observed.",
+  "why": "On the threejs.org homepage showcase, posted by @threejs on 16 September 2026 (https://x.com/threejs/status/2100224277064904830) quoting the author's post: 'THIS IS NOT A VIDEO. THIS IS MY PLAYABLE PORTFOLIO. I could've made a normal portfolio. But I'm me. So I turned every idea in my head into one playable web experience.' (https://x.com/LoicPix/status/2100209698204950760, tagged @Blender @threejs). The transferable idea: the portfolio is the proof - an animator demonstrates animation, timing and character work with a rhythm-timed piece instead of listing them, and the CV survives as game UI (a loadout of skills, equipped software, a high-score table). Caveat worth knowing before copying it: the served HTML still carries placeholder rows ('PROJECT TITLE / VIDEO / IMAGE / LINK') under SELECTED WORK and a shipped debug panel (ANIMATION LANES, GANT DEBUG); whether the runtime fills or hides them was not observed. Verified from the live HTML, both CSS files, the entry and viewer chunks, and a UFS look render at 1440 (loader only).",
+  "verified": true,
+  "aiGenerated": false
  },
  {
   "id": "longbow-motors",
@@ -3460,12 +3535,8 @@
   "type": "a bold sans headline paired with a lighter tagline weight directly beneath it",
   "motion": "minimal - the page favors a static, stable hero over a rotating or animated device shot",
   "why": "compared to Apple's frame-scrubbed rotation for a comparable hardware category, this page stays intentionally calmer and more static, a useful contrast point when deciding how much motion a hardware launch page actually needs",
-  "verified": false,
-  "checked": "2026-09-14T11:18:54.490Z",
-  "dead": {
-   "status": 400,
-   "at": "2026-09-14T11:18:54.490Z"
-  }
+  "verified": true,
+  "checked": "2026-09-22T22:59:10.940Z"
  },
  {
   "id": "metalab-agency",
@@ -3983,12 +4054,8 @@
   "type": "clean contemporary sans-serif with generous spacing, editorial sequencing standing in for a hero statement",
   "motion": "scroll-triggered section reveals plus accordion expansion, explicitly invited (\"Scroll down and enter\")",
   "why": "the bracketed numbered-section labels ([01Data]) borrow a print report's table-of-contents logic to make a pharma B2B site read as a structured document instead of a marketing scroll",
-  "verified": false,
-  "checked": "2026-09-14T11:18:54.490Z",
-  "dead": {
-   "status": 403,
-   "at": "2026-09-14T11:18:54.490Z"
-  }
+  "verified": true,
+  "checked": "2026-09-22T22:59:10.940Z"
  },
  {
   "id": "partake-foods",
@@ -4280,6 +4347,44 @@
   "motion": "a sticky-nav single-pager moves through hero, features, story and use-cases with layered parallax and progressive reveals as the visitor scrolls.",
   "why": "the numbered section counter (01/09) gives a scroll-only single page the sense of a fixed, finite spec sheet rather than an endless feed - cheap trick, real payoff for a product with a real number of talking points.",
   "verified": true
+ },
+ {
+  "id": "rainy-worlds",
+  "name": "Rainy Worlds",
+  "url": "https://rainyworlds.com/",
+  "studio": "Murat (@mkcuriosity)",
+  "year": 2026,
+  "award": "showcase",
+  "source": "threejs",
+  "kind": "experiment",
+  "stack": [
+   "three.js WebGPURenderer (three/webgpu), with a forceWebGL fallback",
+   "TSL node materials and GPU compute (computeAsync, instancedArray)",
+   "Vite (single hashed /assets/index chunk)",
+   "GLTFLoader + DRACO + KTX2 + meshopt",
+   "RGBELoader (HDR)",
+   "YouTube iframe API",
+   "Web Audio (decodeAudioData)"
+  ],
+  "techniques": [
+   "six walkable worlds behind one menu: Exploring Woods, The Headland, Night Drive, The Canyon, Wheat Field, The Pass",
+   "three ways to move through the rain: walk and run, pedal a bike, drive a car",
+   "car interior controls: wipers (E), headlights (H), radio (R)",
+   "rain and wind intensity on keys 1-4",
+   "Y opens a dialog: paste a YouTube link and it plays under the rain",
+   "WebGPU adapter asked for up to 32 sampled textures per shader stage, falling back to WebGL through forceWebGL",
+   "TSL post chain: TAA with a 0.14 sharpen, bloom, quality-tiered motion blur (6 or 8 samples), saturation 1.58 and contrast 1.13 grade, vignette 0.28, grain 0.022, chromatic aberration 0.006",
+   "range and density fog",
+   "LOW / MEDIUM / HIGH quality chooser and a backend note on the start card",
+   "pointer-lock mouse look",
+   "'Best experienced with headphones'"
+  ],
+  "palette": "cold wet greys: ground #0b0d0f, text #cfd6dc, overlay rgba(6,8,10,.78), greys #a5b2b6 / #819398 / #98a6ab, warm accents #e9b9ad / #ffd9c2 - all read from the served HTML",
+  "type": "ui-monospace, Menlo, monospace for the whole interface; the h1 is weight 300 at 30px with .42em tracking, buttons carry .22em tracking in capitals; Georgia, serif is also declared in the page CSS",
+  "motion": "the start overlay fades out over 0.8s into a first-person wander; the rain scene itself was not observed here - the UFS look render timed out on this WebGPU page in headless Chrome",
+  "why": "On the threejs.org homepage showcase, posted by @threejs on 6 September 2026 (https://x.com/threejs/status/2096467352783356011) quoting the author's post: 'Rainy Worlds is live. Six rainy worlds you can wander in your browser, built with @threejs WebGPU. Press Y, paste a song, walk in the rain. Made for Pluviophiles: the one who is happiest when it pours.' (https://x.com/mkcuriosity/status/2096244054556057918). The transferable idea: hold one feeling constant (rain) across six places and three ways of moving instead of stuffing one world with features, and let the visitor bring the soundtrack - a one-field feature that turns a rendering demo into something personal. The grade lives as named, tunable renderer uniforms (vignette, grain, CA, saturation, contrast, sharpen), a clean shape for a TSL post chain. The page now also offers an 'Act 1' story mode ('Your sister is missing. Follow what she left behind.'). Verified from the served HTML and the Vite bundle; not visually rendered.",
+  "verified": true,
+  "aiGenerated": false
  },
  {
   "id": "ramp",
@@ -4603,7 +4708,8 @@
   "type": "STIX Two Text (serif, self-hosted, the only webfont in the CSS); the loader draws a serif italic SHADER wordmark and a bitmap monospace face on the canvas",
   "motion": "segmented progress bar filling during boot; Lenis smooth scroll and three.js scene once loaded (not observed in the headless render, which showed the loader at 1440 and 390 in both normal and reduced motion)",
   "why": "Awwwards Site of the Day 20 April 2026 (7.73, DEV 8.12 with Animations 9.40 and Accessibility 7.40), credited to Shader and Andreas Antonsson; tags Retro, Storytelling, 3D, 404 pages, next.js, WebGL, Three.js, React. Rendered here with webdesign.mjs debug: at 1440 and 390, normal and reduced motion, the page showed its loader - a CRT boot screen in one blue with a striped-globe mark, an italic serif SHADER wordmark, 'Shader Development Studio, Website / Version 1.02', a segmented progress bar and 'Copyright (c) Shader Development Studio AB, 2026' ('Shader Sweden AB' at 390). Everything past the loader is read from the served HTML and the bundle, not seen. What makes it good and not AI-looking: the 3D is authored for the subject - a development studio staging its own corporate site as an operating system booting on an old monitor is a joke only this company could make, not a hero that could front anything; restraint - one colour, one wordmark, one progress bar, no gradient, no cards, no icon grid; copy that names concrete things - Norrkoping, Blender, React Three Fiber, 8th Wall, Scenkonst Ost, 'Version 1.02', 'We don't troubleshoot printers', 'Scroll to Inspect Our Closed Deals'; sequencing - boot screen, then one continuous canvas (the accessibility statement says the whole enterprise is on a single canvas element with a hidden DOM and ARIA layer and custom keyboard navigation behind it), then a project carousel, the studio text, and a cal.com booking; sound - an AudioContext is in the bundle, but whether the site plays sound was not observed. The accessibility statement is written in the same shoulder-pads voice and says plainly that the canvas 'might not be 100 percent seamless for everyone', which is a human admission no template writes. Studio in Norrkoping, Sweden; the booking link on the page is Filip Kantedal's. Founding year and founders (2021, Simon Hedlund and Filip Kantedal, per a Norrkoping Science Park article surfaced by search) are UNVERIFIED here.",
-  "verified": true
+  "verified": true,
+  "aiGenerated": false
  },
  {
   "id": "shopify-editions-spring-2026",
@@ -5183,7 +5289,8 @@
   "type": "Barlow Condensed (display), Bitter (serif accents), Azeret Mono (monospace)",
   "motion": "unknown",
   "why": "HTML fetched via curl (21,813 bytes); not included in the rendered study batch this session. Hosted on openai.chatgpt.site; AI-generated inferred from hosting domain + shared house-style font (Barlow Condensed, same family as the Whiteout exhibit) rather than an explicit on-page credit.",
-  "verified": true
+  "verified": true,
+  "aiGenerated": true
  },
  {
   "id": "trevor-noah",
@@ -5537,12 +5644,8 @@
   "type": "plain sans-serif nav, large display type only on individual project titles",
   "motion": "a horizontal carousel (explicit Previous/Next controls) moves through the director reel rather than a scroll-scrubbed sequence.",
   "why": "a production-company showcase that gets out of the way of its own thumbnails - proof that a gallery-white ground with zero brand colour is still a valid choice when the content is video.",
-  "verified": false,
-  "checked": "2026-09-14T11:18:54.490Z",
-  "dead": {
-   "status": 403,
-   "at": "2026-09-14T11:18:54.490Z"
-  }
+  "verified": true,
+  "checked": "2026-09-22T22:59:10.940Z"
  },
  {
   "id": "we-are-royale-studio",
@@ -5617,7 +5720,8 @@
   "type": "Barlow Condensed wght 400-700 (headings/wordmark/eyebrows), Inter wght 400-600 (body)",
   "motion": "hover brightness/background change on buttons, translateY(-1px) lift on start hover, arrow nudges 3px on hover, letterbox bars grow to 6.5vh in cinematic mode, ending-reveal fade+translateY keyframe",
   "why": "AI-generated exhibit, explicitly credited on the page itself: 'Built by Philipp Burckhardt with GPT-6 Astra (Codex).' Verified via curl of the live HTML (full overlay markup is static, not canvas-drawn) and the minified CSS bundle. Automated render (webdesign.mjs debug then look) both timed out on Page.loadEventFired for the three.js scene; a screenshot supplied directly by the user was read instead, and the static HTML/CSS was fetched independently, so content claims are still primary-sourced.",
-  "verified": true
+  "verified": true,
+  "aiGenerated": true
  },
  {
   "id": "whole-earth-index",
@@ -5928,16 +6032,16 @@
   "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
   "why": "We built a mobile-first platform with Vue.js, GSAP, and Three.js. A dynamic quiz pairs users with an Acura vehicle matching their personality and energy through varied interactions, offering an engaging way to explore the brand’s premium options while streamlining backend logic.",
   "verified": false,
-  "checked": "2026-09-14T11:18:54.490Z",
+  "checked": "2026-09-22T22:59:10.940Z",
   "dead": {
    "status": 0,
-   "at": "2026-09-14T11:18:54.490Z"
+   "at": "2026-09-22T22:59:10.940Z"
   }
  },
  {
   "id": "allagi-music",
   "name": "Allagi",
-  "url": "https://allagi.music/",
+  "url": "https://allagi.webflow.io/",
   "studio": "Allagi",
   "year": 2025,
   "award": "showcase",
@@ -5955,7 +6059,8 @@
   "type": "unverified - not present in fetched markup",
   "motion": "gsap and lottie both load on the page, indicating scroll or state-triggered reveals combined with vector animation rather than video.",
   "why": "a music brand combining a no-code Webflow base with real animation libraries - evidence that gsap and lottie are common add-ons to page builders, not just hand-rolled stacks.",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-22T22:59:10.940Z"
  },
  {
   "id": "alpine-bio",
@@ -6321,12 +6426,8 @@
   "type": "unverified - not present in fetched markup",
   "motion": "lottie-driven vector animation is loaded into the page, likely for small looping accents rather than full scenes.",
   "why": "a Sydney food-and-drink content studio using lightweight vector animation instead of video loops, which keeps a media-heavy category's homepage weight down.",
-  "verified": false,
-  "checked": "2026-09-14T11:18:54.490Z",
-  "dead": {
-   "status": 0,
-   "at": "2026-09-14T11:18:54.490Z"
-  }
+  "verified": true,
+  "checked": "2026-09-22T22:59:10.940Z"
  },
  {
   "id": "calm",
@@ -6524,11 +6625,7 @@
   "motion": "UNVERIFIED",
   "why": "flagged from the Codrops WebGL feed as a raw shader sketch (CodePen, no framework) - useful when the goal is a single self-contained fragment shader rather than a scene-graph technique.",
   "verified": false,
-  "checked": "2026-09-14T11:18:54.490Z",
-  "dead": {
-   "status": 403,
-   "at": "2026-09-14T11:18:54.490Z"
-  }
+  "checked": "2026-09-22T22:59:10.940Z"
  },
  {
   "id": "company-policy-studio",
@@ -6972,30 +7069,6 @@
   "type": "unverified - not present in fetched markup",
   "motion": "gsap and lenis together suggest scrubbed or timed reveals riding a smoothed scroll rather than native browser scroll behaviour.",
   "why": "a content agency's self-site pairing the two most common studio-site primitives (lenis for feel, gsap for reveals) without reaching for a 3D layer it does not need.",
-  "verified": true
- },
- {
-  "id": "igloo-inc",
-  "name": "Igloo Inc.",
-  "url": "https://igloo.inc",
-  "studio": "Igloo Inc.",
-  "year": 2025,
-  "award": "soty",
-  "source": "awwwards",
-  "kind": "portfolio",
-  "stack": [
-   "3D environment rendering",
-   "interactive sound design"
-  ],
-  "techniques": [
-   "monochrome grayscale 3D-rendered environment as the site's entire visual chrome",
-   "ambient sound design tied to scroll and hover interaction",
-   "apocalyptic-minimalist set design instead of a project grid"
-  ],
-  "palette": "flat monochrome/grayscale ground with no brand color at all - contrast and fog stand in for color",
-  "type": "small, quiet type set as captions against oversized environment renders, never competing with the imagery for attention",
-  "motion": "scrolling and hovering both move the camera through a continuous 3D scene and trigger a matched sound cue, so the site is scored rather than silent",
-  "why": "an agency reel is usually a project grid; this one is a single continuous grayscale 3D environment with sound design attached to every scroll step, which is what won it Awwwards Site of the Year and is the reason it reads as a place rather than a page",
   "verified": true
  },
  {
@@ -7509,10 +7582,10 @@
   "motion": "parallax and cursor-tracking layers move around a guide character that walks the visitor through Web3 concepts, deliberately breaking from typical Web3 sterility",
   "why": "borrowing subway-map iconography to explain an abstract data-security product is a concrete metaphor that does more work than another 3D token spinning in space",
   "verified": false,
-  "checked": "2026-09-14T11:18:54.490Z",
+  "checked": "2026-09-22T22:59:10.940Z",
   "dead": {
-   "status": 0,
-   "at": "2026-09-14T11:18:54.490Z"
+   "status": 525,
+   "at": "2026-09-22T22:59:10.940Z"
   }
  },
  {
@@ -7656,7 +7729,7 @@
  {
   "id": "reinvinted",
   "name": "Re-invinted",
-  "url": "https://reinvinted.vinted.com/",
+  "url": "https://www.vinted.com/",
   "studio": "Stink Studios",
   "year": 2025,
   "award": "sotd",
@@ -7672,12 +7745,8 @@
   "type": "UNVERIFIED: no distinct font-family declarations found in the fetched markup (likely inlined in a bundled stylesheet or canvas-drawn)",
   "motion": "UNVERIFIED: no motion library was detectable server-side; behaviour not independently observed",
   "why": "Re-invinted is a data-powered experience that gives people the chance to understand the trends and behaviours of the pre-loved culture movement on Vinted. You can discover insights, dive into personality traits, and take a fun quiz to discover your custom \"pre-loved personality\".",
-  "verified": false,
-  "checked": "2026-09-14T11:18:54.490Z",
-  "dead": {
-   "status": 404,
-   "at": "2026-09-14T11:18:54.490Z"
-  }
+  "verified": true,
+  "checked": "2026-09-22T22:59:10.940Z"
  },
  {
   "id": "richard-mille-art-here-2025",
@@ -8743,7 +8812,7 @@
  {
   "id": "gentler-streak",
   "name": "Gentler Streak",
-  "url": "https://gentlerstreak.com/",
+  "url": "https://gentlerstories.com/gentlerstreak",
   "studio": "Gentler Stories",
   "year": 2024,
   "award": "apple design award 2024, social impact (2023 finalist, visuals and graphics)",
@@ -8757,7 +8826,8 @@
   "type": "UNVERIFIED",
   "motion": "UNVERIFIED",
   "why": "opinionated, contrarian stance on fitness-app psychology reflects a real design decision, not an averaged category look",
-  "verified": false
+  "verified": false,
+  "checked": "2026-09-22T22:59:10.940Z"
  },
  {
   "id": "girard-perregaux-casquette",
@@ -8993,7 +9063,8 @@
   "type": "",
   "motion": "not observed (case page fetched, not rendered)",
   "why": "Case page fetched (200), not rendered. No live link on the case page (a Christmas 2024 campaign for ICA, one of Sweden's largest grocers). Why it is a reference: the copy explains the platform choice in one line a buyer can check - 8th Wall, 'the same software used in Pokemon GO', chosen so the AR works on both phone platforms - and says the models and textures were made in Blender.",
-  "verified": true
+  "verified": true,
+  "aiGenerated": false
  },
  {
   "id": "strava",
@@ -9209,7 +9280,7 @@
  {
   "id": "flighty",
   "name": "Flighty",
-  "url": "https://flightyapp.com/",
+  "url": "https://flighty.com/",
   "studio": "Flighty LLC",
   "year": 2023,
   "award": "apple design award 2023, interaction",
@@ -9228,12 +9299,13 @@
   "type": "UNVERIFIED",
   "motion": "near-real-time Live Activity progress bar with flight-path visualization from pilot-grade data",
   "why": "every visual maps to a real, externally-verifiable fact about one specific flight; no generic placeholder possible",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-22T22:59:10.940Z"
  },
  {
   "id": "locomotive-agency-2023",
   "name": "Locomotive",
-  "url": "https://locomotive.ca",
+  "url": "https://locomotive.ca/en",
   "studio": "Locomotive",
   "year": 2023,
   "award": "sotm",
@@ -9251,7 +9323,8 @@
   "type": "clean modern sans with a rhythmic repeated-phrase opener ('Digital-First', 'Based in Montreal')",
   "motion": "the agency runs its own open-source Locomotive Scroll library on its marketing site, so the smooth, slightly elastic scroll feel doubles as a live demo of the product",
   "why": "an agency that ships a scroll library dogfoods it on the site that sells the agency — the best case study for a dev tool is the studio's own homepage",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-22T22:59:10.940Z"
  },
  {
   "id": "lusion-v3-2023",
@@ -9361,7 +9434,7 @@
  {
   "id": "swingvision",
   "name": "SwingVision",
-  "url": "https://swing.tennis/",
+  "url": "https://swing.vision/",
   "studio": "SwingVision Inc.",
   "year": 2023,
   "award": "apple design award 2023, innovation",
@@ -9377,7 +9450,8 @@
   "type": "UNVERIFIED",
   "motion": "real-time trajectory/line-call overlay on live video feed",
   "why": "every visual is a computed overlay on the user's own real footage; nothing is illustrated or stock",
-  "verified": true
+  "verified": true,
+  "checked": "2026-09-22T22:59:10.940Z"
  },
  {
   "id": "universe-website-builder",
@@ -9503,7 +9577,8 @@
   "type": "soft rounded hand-lettered-style wordmark",
   "motion": "unknown (not captured in static render)",
   "why": "Rendered successfully via webdesign.mjs study (contact sheet, s06). Used as a Group A reference for modest, specific, self-describing indie marketing voice.",
-  "verified": true
+  "verified": true,
+  "aiGenerated": false
  },
  {
   "id": "balatro",
@@ -9520,7 +9595,8 @@
   "type": "unknown beyond fetched HTML (not rendered this session)",
   "motion": "unknown",
   "why": "HTML fetched via curl (295,746 bytes); full visual render was not obtained (canvas/JS-heavy page, not attempted beyond the initial study pass which returned a wall diagnostic in the same run as Bruno Simon). Title and meta description confirmed directly. In-game title-screen visuals (hand-painted joker art, custom warped type) are public knowledge but UNVERIFIED in this session - not independently re-confirmed by render.",
-  "verified": true
+  "verified": true,
+  "aiGenerated": false
  },
  {
   "id": "doodle-district",
@@ -9547,7 +9623,8 @@
   "type": "Patrick Hand (display), Caveat wght 600 (accents), fallback Comic Sans MS/Marker Felt/Segoe Print/cursive",
   "motion": "550ms scribble keyframe on title (rotate -7deg scale1.7 blur3px -> rotate-1deg scale.95 -> settle at rotate-2deg); independent small rotate() on nearly every UI element; blinking 'go' text 1.2s",
   "why": "Human-made exhibit. Verified via curl of style.A4A8BF44.css (224 lines) and game.7LCERBLR.js (302KB, grepped for strings) plus a successful webdesign.mjs debug render (w1440/w390, normal+reduced motion). Copy is dense, mechanically specific (documents wall-jump chaining, dash-slash gauge), names real weapons/enemies, has a joke test map (DOODLE MEXICO), an ugly persisted best score (60393), and a thematic death message (OFF THE PAGE) rather than a generic one.",
-  "verified": true
+  "verified": true,
+  "aiGenerated": false
  },
  {
   "id": "fortnite",
@@ -9564,12 +9641,13 @@
   "type": "unknown - render blocked",
   "motion": "unknown",
   "why": "webdesign.mjs study reported 'wall - almost no text rendered - blocked, or a JS-only page'; no separate HTML/meta fetch was performed this session due to time budget. Included only as a third documented attempt at the publisher-storefront pattern; no copy is claimed for it beyond the block diagnostic itself.",
-  "verified": false
+  "verified": false,
+  "aiGenerated": false
  },
  {
   "id": "hollow-knight-silksong",
   "name": "Hollow Knight: Silksong (marketing site)",
-  "url": "https://www.hollowknightsilksong.com",
+  "url": "https://hollowknightsilksong.com/",
   "studio": "Team Cherry",
   "year": 0,
   "award": "reference",
@@ -9583,7 +9661,9 @@
   "type": "ornate flourished logo lockup + clean sans body headers",
   "motion": "unknown (not captured in static render)",
   "why": "Rendered successfully via webdesign.mjs study (contact sheet, s03). This is the studio's marketing/landing page, not the in-game title screen; used as a Group A reference for how a distinctive indie/mid-size studio markets a game with specific narrative+mechanical copy.",
-  "verified": true
+  "verified": true,
+  "aiGenerated": false,
+  "checked": "2026-09-22T22:59:10.940Z"
  },
  {
   "id": "krunker",
@@ -9600,7 +9680,8 @@
   "type": "unknown (render blocked)",
   "motion": "unknown",
   "why": "HTML fetched via curl (43,285 bytes); webdesign.mjs study reported 'skip - Navigation failed: net::ERR_ABORTED' (likely anti-bot handling) for a full render. Used as a deliberate boundary case: a genuinely human-made, long-running browser game whose homepage copy has drifted into generic SEO/ad voice through growth-marketing iteration, showing that generic copy alone does not prove AI authorship.",
-  "verified": true
+  "verified": true,
+  "aiGenerated": false
  },
  {
   "id": "overwatch-2",
@@ -9621,7 +9702,8 @@
   "type": "unknown beyond rendered screenshot layout",
   "motion": "unknown",
   "why": "Rendered successfully via webdesign.mjs study (s03). Used as a Group C reference; the front page is a live-ops storefront/calendar rather than a start screen.",
-  "verified": true
+  "verified": true,
+  "aiGenerated": false
  },
  {
   "id": "shader-alamance-foods",
@@ -9645,7 +9727,8 @@
   "type": "",
   "motion": "not observed (case page fetched, not rendered)",
   "why": "Case page fetched (200), not rendered. Live at https://www.alamancefoods.com/brands/coffee-toppers (answered 200 on 2026-09-20; not rendered). Why it is a reference: the 3D is the product itself, modelled by the studio in Blender rather than a stock scene, and the one technical sentence on the page is about a real constraint - materials written as shaders so they behave realistically and still run on slow phones. That is the trade-off a template never mentions.",
-  "verified": true
+  "verified": true,
+  "aiGenerated": false
  },
  {
   "id": "shader-design-is-funny",
@@ -9667,7 +9750,8 @@
   "type": "",
   "motion": "not observed (case page fetched, not rendered)",
   "why": "Case page fetched (200), not rendered. Live at https://www.designisfunny.co/ (answered 200 on 2026-09-20; not rendered). Why it is a reference: a development studio building a designer's own portfolio, credited as a collaboration, with the name explained ('Buffa, from the Italian, means funny, comic, or droll') - specific copy about a specific person.",
-  "verified": true
+  "verified": true,
+  "aiGenerated": false
  },
  {
   "id": "shader-ehealth-arena",
@@ -9689,7 +9773,8 @@
   "type": "",
   "motion": "not observed (case page fetched, not rendered)",
   "why": "Case page fetched (200), not rendered. Live at https://www.ehealtharena.se/digitalt-showroom (answered 200 on 2026-09-20; not rendered). Why it is a reference: the 3D space is an explanation - how e-health solutions connect across real places in a care journey - and the copy names the places rather than the feelings.",
-  "verified": true
+  "verified": true,
+  "aiGenerated": false
  },
  {
   "id": "shader-gamily",
@@ -9711,7 +9796,8 @@
   "type": "",
   "motion": "not observed (case page fetched, not rendered)",
   "why": "Case page fetched (200), not rendered. Live at https://gamilyapp.com/ (answered 200 on 2026-09-20; not rendered). Why it is a reference: the 3D assets were built for this brand, and the studio states its role narrowly - it contributed to development and deployment of the landing page - rather than claiming the whole product.",
-  "verified": true
+  "verified": true,
+  "aiGenerated": false
  },
  {
   "id": "shader-glasbolaget",
@@ -9735,7 +9821,8 @@
   "type": "",
   "motion": "not observed (case page fetched, not rendered)",
   "why": "Case page fetched (200), not rendered. Live at https://glasbolaget-configurator.vercel.app/ (answered 200 on 2026-09-20; not rendered). Why it is a reference: the honest split between hand-modelled and parametrically generated geometry is stated on the page, and the price updates from the seller's API while the user designs - the 3D serves a purchase, not a mood.",
-  "verified": true
+  "verified": true,
+  "aiGenerated": false
  },
  {
   "id": "shader-heip",
@@ -9757,7 +9844,8 @@
   "type": "",
   "motion": "not observed (case page fetched, not rendered)",
   "why": "Case page fetched (200), not rendered. Live at https://heip-vis.vercel.app/sv (answered 200 on 2026-09-20; not rendered). Why it is a reference: a 3D diagram of a real place - Handelo Eco-Industrial Park - showing which unit's waste becomes which unit's input. The subject dictates the scene.",
-  "verified": true
+  "verified": true,
+  "aiGenerated": false
  },
  {
   "id": "shader-norrkopings-hamn",
@@ -9784,7 +9872,8 @@
   "type": "",
   "motion": "not observed: the case page rendered as the studio's CRT boot loader at 1440 and 390 in both motion modes",
   "why": "Case page fetched (200) and rendered; the render showed the studio loader, so the visualisation itself is described from the page text only. The live application is at https://visual-of-sweden.vercel.app/hamnen (answered 200 on 2026-09-20, redirecting to /hamnen/1; not rendered). Why it is a reference: the 3D exists to explain a real logistics operation at the docks of Norrkoping - two named containers on a physical journey - rather than to decorate; the stack is stated plainly (Next.js, React, TypeScript, models made in Blender, integrated with React Three Fiber). Copy is one paragraph about the objective and the tools, nothing about empowering anything.",
-  "verified": true
+  "verified": true,
+  "aiGenerated": false
  },
  {
   "id": "shader-select-concept",
@@ -9808,7 +9897,8 @@
   "type": "",
   "motion": "not observed (case page fetched, not rendered)",
   "why": "Case page fetched (200), not rendered. Live at https://selectconcept.com/planner (answered 200 on 2026-09-20 at www.selectconcept.com/planner; not rendered). Why it is a reference: a 3D tool with a job - plan a room, add the products, request a quote - for a Swedish hospitality supplier, with a concrete number (over 100 modelled products) instead of an adjective.",
-  "verified": true
+  "verified": true,
+  "aiGenerated": false
  },
  {
   "id": "shader-son",
@@ -9831,7 +9921,8 @@
   "type": "",
   "motion": "not observed (case page fetched, not rendered)",
   "why": "Case page fetched (200), not rendered. Live at https://www.norrkopingssymfoniorkester.se/ (answered 200 on 2026-09-20; not rendered). Why it is in the corpus: the one non-3D entry in the studio's selected work, and the studio says so - it manages the orchestra's entire platform for Scenkonst Ost. A studio that shows the plain ticketing site beside the WebGPU work is telling you what it actually does.",
-  "verified": true
+  "verified": true,
+  "aiGenerated": false
  },
  {
   "id": "shader-spp-dream-generator",
@@ -9855,12 +9946,13 @@
   "type": "",
   "motion": "not observed: the case page rendered as the studio's CRT boot loader at 1440 in both motion modes",
   "why": "Case page fetched (200) and rendered; the render showed the studio loader. The live piece is at https://retirement-dream-generator.se (answered 200 on 2026-09-20, redirecting to /en; not rendered). Why it is a reference: the AI is put to one concrete use for one client (a pension company showing a visitor their own retirement) and the copy says what happened afterwards - 'What was supposed to be a one shot PR event became a lasting piece of the SPP website' and that it moved customers on its own - a result, not a promise. The generation vendor is not named on the page.",
-  "verified": true
+  "verified": true,
+  "aiGenerated": false
  },
  {
   "id": "valorant",
   "name": "Valorant",
-  "url": "https://playvalorant.com",
+  "url": "https://playvalorant.com/en-us/",
   "studio": "Riot Games",
   "year": 0,
   "award": "reference",
@@ -9876,6 +9968,8 @@
   "type": "unknown beyond rendered screenshot layout",
   "motion": "unknown",
   "why": "Rendered successfully via webdesign.mjs study (s01). Used as a Group C reference for the ordinary studio/publisher pattern: a storefront/content-hub, not an in-game start screen.",
-  "verified": true
+  "verified": true,
+  "aiGenerated": false,
+  "checked": "2026-09-22T22:59:10.940Z"
  }
 ]

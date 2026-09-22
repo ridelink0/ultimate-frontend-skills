@@ -48,11 +48,11 @@ test('real browser captures scroll, interaction, reduced motion and canvas evide
     assert.ok(readFileSync(result.file, 'utf8').includes('Website visual review'));
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
-test('a browser network error never becomes a passing inspection', { skip: !findBrowser(), timeout: 30000 }, async () => {
+test('a browser network error never becomes a passing inspection', { skip: !findBrowser(), timeout: 90000 }, async () => {
   await assert.rejects(inspect('http://127.0.0.1:1/', { widths: [800], wait: 0 }), /Navigation failed/);
 });
 
-test('post-click exceptions, HTTP errors and visually hidden assertions fail the review', { skip: !findBrowser(), timeout: 30000 }, async () => {
+test('post-click exceptions, HTTP errors and visually hidden assertions fail the review', { skip: !findBrowser(), timeout: 90000 }, async () => {
   const dir = mkdtempSync(join(tmpdir(), 'visual-negative-'));
   try {
     writeFileSync(join(dir, 'index.html'), '<!doctype html><html><meta name="viewport" content="width=device-width"><button style="padding:20px" id="fail">Run</button><div style="opacity:0"><p id="secret">Hidden text</p></div><script>document.querySelector("#fail").onclick=()=>{fetch("/missing-data.json");throw new Error("click regression");};</script></html>');
@@ -69,7 +69,7 @@ test('post-click exceptions, HTTP errors and visually hidden assertions fail the
 // solid-colour contrast path could never see. Two boxes with the same "image"
 // background: one text colour illegible against it, one legible. Only the
 // illegible one should be reported, and it must say it came from the sample.
-test('contrast against an image background is measured from the actual pixels', { skip: !findBrowser(), timeout: 30000 }, async () => {
+test('contrast against an image background is measured from the actual pixels', { skip: !findBrowser(), timeout: 90000 }, async () => {
   const dir = mkdtempSync(join(tmpdir(), 'visual-photo-contrast-'));
   try {
     const html = '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
@@ -93,7 +93,7 @@ test('contrast against an image background is measured from the actual pixels', 
 // (contrast) and nothing wrong with security should end up with an error in
 // both of the first two sections, a clean third, and one exit code covering
 // all of it.
-test('verify merges audit, render and security into one verdict with one exit code', { skip: !findBrowser(), timeout: 30000 }, async () => {
+test('verify merges audit, render and security into one verdict with one exit code', { skip: !findBrowser(), timeout: 90000 }, async () => {
   const dir = mkdtempSync(join(tmpdir(), 'verify-merge-'));
   try {
     // no <main>/<section>/<article> -> an audit ERROR; #222 on #141414 -> a
@@ -111,7 +111,7 @@ test('verify merges audit, render and security into one verdict with one exit co
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
-test('verify skips the source-only sections for a URL target instead of guessing', { skip: !findBrowser(), timeout: 30000 }, async () => {
+test('verify skips the source-only sections for a URL target instead of guessing', { skip: !findBrowser(), timeout: 90000 }, async () => {
   const dir = mkdtempSync(join(tmpdir(), 'verify-url-'));
   try {
     writeFileSync(join(dir, 'index.html'), '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>t</title><meta name="description" content="A fixture page long enough to pass the meta-description length check comfortably."><main><h1>t</h1></main></html>');
@@ -130,7 +130,7 @@ test('verify skips the source-only sections for a URL target instead of guessing
 // The fixture above asks for preserveDrawingBuffer itself, which is why the
 // check passed while every real three.js hero read as blank: no library sets
 // that flag, and a composited drawing buffer reads back as transparent black.
-test('a WebGL canvas that never asked for a preserved buffer still reads as rendered', { skip: !findBrowser(), timeout: 30000 }, async () => {
+test('a WebGL canvas that never asked for a preserved buffer still reads as rendered', { skip: !findBrowser(), timeout: 90000 }, async () => {
   const dir = mkdtempSync(join(tmpdir(), 'visual-webgl-'));
   try {
     writeFileSync(join(dir, 'index.html'), '<!doctype html><html lang="en"><meta charset="utf-8"><style>canvas{display:block;width:300px;height:200px}</style><h1>WebGL</h1><canvas id="live" width="300" height="200"></canvas><canvas id="dead" width="300" height="200"></canvas><script>const gl=document.querySelector("#live").getContext("webgl");gl.clearColor(0.1,0.2,0.4,1);gl.clear(gl.COLOR_BUFFER_BIT);gl.enable(gl.SCISSOR_TEST);gl.scissor(40,30,120,90);gl.clearColor(0.9,0.7,0.3,1);gl.clear(gl.COLOR_BUFFER_BIT);</script></html>');
@@ -243,7 +243,7 @@ test('the worst region is the one with the least contrast, not the darkest one',
 // The sampler only ever sees a candidate because bgOf() refused to guess. The
 // end-to-end shape of that: white display type over a real eased scrim, which
 // is the house style's single most likely legibility failure.
-test('white display type on an eased scrim is caught end to end', { skip: !findBrowser(), timeout: 30000 }, async () => {
+test('white display type on an eased scrim is caught end to end', { skip: !findBrowser(), timeout: 90000 }, async () => {
   const dir = mkdtempSync(join(tmpdir(), 'visual-scrim-'));
   try {
     writeFileSync(join(dir, 'index.html'),

@@ -42,7 +42,10 @@ export function loadCorpus() {
 /* The corpus ships merged, but it is harvested in chunks and a chunk may be
    re-run. Rebuilding is deterministic: same chunks in, same file out, so the
    diff is reviewable rather than a reshuffle. */
-export function buildCorpus() {
+export function buildCorpus(options = {}) {
+  // `write: false` builds in memory and returns the rows - how a test asks
+  // "is the shipped file what the chunks make" without touching it.
+  const write = options.write !== false;
   if (!existsSync(CHUNK_DIR)) throw new Error(`no chunk directory at ${CHUNK_DIR}`);
 
   // What `awards --check` learned lives in the merged file, not in the chunks -
@@ -55,8 +58,8 @@ export function buildCorpus() {
   // the source of truth for everything a harvester knows; the check stays the
   // source of truth for whether the page is still there.
   const prior = new Map();
-  for (const e of loadCorpus()) if (e.dead || e.checked) prior.set(e.id, e);
-  cache = null;
+  for (const e of Array.isArray(options.prior) ? options.prior : loadCorpus()) if (e.dead || e.checked) prior.set(e.id, e);
+  if (write) cache = null;
 
   const files = readdirSync(CHUNK_DIR).filter((f) => f.endsWith('.json')).sort();
   const byId = new Map();
@@ -78,15 +81,11 @@ export function buildCorpus() {
       if (!clean) continue;
       // Same site found by two harvesters is the normal case, not an error.
       // Keep the richer record: more techniques means more to study.
-      // Carry the check's verdict over the harvester's optimism.
-      const seen = prior.get(clean.id);
-      if (seen) {
-        if (seen.checked) clean.checked = seen.checked;
-        if (seen.dead) { clean.dead = seen.dead; clean.verified = false; }
-        // A redirect the check followed is the live address; the chunk still
-        // holds the one that redirected.
-        if (seen.checked && seen.url) clean.url = seen.url;
-      }
+      //
+      // The key is the CHUNK's url, never the address a check followed. Keyed
+      // on the followed one, two rows for igloo.inc merged or did not depending
+      // on the previous build's output, so every rebuild flipped an entry in or
+      // out; from the chunks alone the merge is the same every time.
       const key = clean.url.replace(/\/+$/, '').toLowerCase();
       const already = byUrl.get(key) || byId.get(clean.id);
       if (already) {
@@ -99,8 +98,21 @@ export function buildCorpus() {
     }
   }
 
+  // Carry the check's verdict over the harvester's optimism, by the id the
+  // merge settled on.
+  for (const clean of byId.values()) {
+    const seen = prior.get(clean.id);
+    if (!seen) continue;
+    if (seen.checked) clean.checked = seen.checked;
+    if (seen.dead) { clean.dead = seen.dead; clean.verified = false; }
+    // A redirect the check followed is the live address; the chunk still
+    // holds the one that redirected.
+    if (seen.checked && seen.url) clean.url = seen.url;
+  }
+
   const all = [...byId.values()].sort((a, b) => (b.year - a.year) || a.id.localeCompare(b.id));
   report.entries = all.length;
+  if (!write) return { ...report, rows: all };
   mkdirSync(DATA_DIR, { recursive: true });
   writeFileSync(CORPUS, JSON.stringify(all, null, 1) + '\n');
   cache = all;
@@ -162,7 +174,7 @@ function normalise(row, file, report) {
     .map((s) => String(s).trim())
     .filter((s) => s && !(drop && NOISE.test(s)));
   const year = Number(row.year);
-  return {
+  const clean = {
     id,
     name: String(row.name || id).trim(),
     url,
@@ -179,7 +191,16 @@ function normalise(row, file, report) {
     why: str(row.why),
     verified: row.verified === true,
   };
+  // Whether a person or an agent made the site is the axis games.md is built
+  // on - Doodle District against Whiteout - and the harvesters record it. The
+  // merge used to drop it, so the corpus every query reads could not tell the
+  // two apart. Carried only when a harvester actually said so: a missing flag
+  // is "not recorded", never "made by a person".
+  if (typeof row.aiGenerated === 'boolean') clean.aiGenerated = row.aiGenerated;
+  return clean;
 }
+
+export { normalise as normaliseRow };
 
 const str = (v) => (v == null ? '' : String(v).replace(/\s+/g, ' ').trim());
 const score = (e) => e.techniques.length * 2 + e.stack.length + (e.why ? 3 : 0) + (e.verified ? 4 : 0)
@@ -281,7 +302,8 @@ export function formatAwards(rows, opts = {}) {
   if (!rows.length) return 'no matching reference sites. Try a broader query, or `awards --techniques` to see what is in the corpus.';
   const out = [];
   for (const e of rows) {
-    const tags = [e.year || null, e.award !== 'reference' ? e.award : null, e.kind, e.source]
+    const tags = [e.year || null, e.award !== 'reference' ? e.award : null, e.kind, e.source,
+      e.aiGenerated === true ? 'agent-built' : null]
       .filter(Boolean).join(' / ');
     out.push(`${e.name}${e.studio ? '  -  ' + e.studio : ''}`);
     // "Unverified" and "gone" are not the same thing and must not print the
@@ -326,6 +348,35 @@ export function techniqueIndex(corpus) {
     .map(([technique, count]) => ({ technique, count }));
 }
 
+/* What one HTTP status says about a reference page.
+   401, 403 and 429 are a server that answered and refused a script - a bot wall,
+   a login, a rate limit. fortnite.com answers a Chrome user-agent with 403, and
+   marking it dead told the next model not to look at a site that is plainly
+   there. So they are their own verdict: not dead, not proven alive. */
+const BLOCKED = new Set([401, 403, 429]);
+// A gateway that timed out or a service briefly down is weather, not a verdict.
+const TRANSIENT = new Set([502, 503, 504]);
+export function statusVerdict(status) {
+  if (status >= 200 && status < 400) return 'ok';
+  if (BLOCKED.has(status)) return 'blocked';
+  if (TRANSIENT.has(status)) return 'unsure';
+  return 'dead';
+}
+
+/* And what a request that never got a status says. A name that no longer
+   resolves, or a certificate a browser would refuse, is the site gone or broken
+   for anyone who visits. A connect timeout or a redirect loop is this machine's
+   view of it: overwatch.blizzard.com loops for a client without cookies and
+   opens in any browser. */
+const GONE_CODES = new Set([
+  'ENOTFOUND', 'ERR_TLS_CERT_ALTNAME_INVALID', 'CERT_HAS_EXPIRED', 'DEPTH_ZERO_SELF_SIGNED_CERT',
+  'SELF_SIGNED_CERT_IN_CHAIN', 'UNABLE_TO_VERIFY_LEAF_SIGNATURE',
+]);
+export function errorVerdict(err) {
+  const code = err && err.cause && err.cause.code;
+  return code && GONE_CODES.has(code) ? 'dead' : 'unsure';
+}
+
 /* Does the corpus still point at real pages?
 
    A reference site is the one thing in this plugin with a shelf life. Studios
@@ -347,11 +398,11 @@ export async function checkCorpus(options = {}) {
   let cursor = 0;
 
   async function probe(entry) {
-    const attempt = async (method, headers) => {
+    const attempt = async (method, headers, url = entry.url) => {
       const control = new AbortController();
       const timer = setTimeout(() => control.abort(), timeoutMs);
       try {
-        const res = await fetch(entry.url, {
+        const res = await fetch(url, {
           method,
           redirect: 'follow',
           signal: control.signal,
@@ -367,20 +418,47 @@ export async function checkCorpus(options = {}) {
         clearTimeout(timer);
       }
     };
-    try {
+    const once = async () => {
       let r = await attempt('HEAD');
-      if (r.status === 405 || r.status === 403 || r.status === 501) {
+      // 400 joins the list: several large sites answer a HEAD with it and a GET
+      // with the page.
+      if (r.status === 400 || r.status === 405 || r.status === 403 || r.status === 501) {
         r = await attempt('GET', { range: 'bytes=0-2047' });
       }
-      const moved = r.url && r.url.replace(/\/+$/, '') !== entry.url.replace(/\/+$/, '');
-      return {
-        id: entry.id, url: entry.url, status: r.status,
-        ok: r.status >= 200 && r.status < 400,
-        movedTo: moved ? r.url : null,
-      };
-    } catch (err) {
-      return { id: entry.id, url: entry.url, status: 0, ok: false, error: String(err && err.message || err).slice(0, 80) };
+      return r;
+    };
+    let r;
+    try {
+      r = await once();
+    } catch (first) {
+      // A network error is as often this machine or a busy moment as the site -
+      // animejs.com and overwatch.blizzard.com both "failed" in one full run and
+      // answered 200 and 302 a minute later. One retry before it counts.
+      try {
+        await new Promise((res) => setTimeout(res, 1500));
+        r = await once();
+      } catch (err) {
+        const why = (err && err.cause && err.cause.code) || String(err && err.message || err);
+        return { id: entry.id, url: entry.url, status: 0, ok: false, verdict: errorVerdict(err), error: String(why).slice(0, 80) };
+      }
     }
+    const moved = r.url && r.url.replace(/\/+$/, '') !== entry.url.replace(/\/+$/, '');
+    let verdict = statusVerdict(r.status);
+    // Some walls answer 400 rather than 403: meta.com gives its own home page a
+    // 400 for any client that is not a browser. A page's 400 only says the page
+    // is gone when the site's root answers differently.
+    if (r.status === 400) {
+      try {
+        const root = await attempt('GET', { range: 'bytes=0-2047' }, new URL('/', entry.url).href);
+        if (root.status === 400) verdict = 'blocked';
+      } catch {}
+    }
+    return {
+      id: entry.id, url: entry.url, status: r.status,
+      ok: verdict === 'ok',
+      verdict,
+      movedTo: verdict === 'ok' && moved ? r.url : null,
+    };
   }
 
   async function worker() {
@@ -393,38 +471,92 @@ export async function checkCorpus(options = {}) {
   }
 
   await Promise.all(Array.from({ length: concurrency }, worker));
-  const dead = results.filter((r) => !r.ok);
+  const dead = results.filter((r) => r.verdict === 'dead');
+  // Offline, every name fails to resolve and ENOTFOUND reads as "gone" -
+  // one run would mark the whole corpus dead. When a quarter of a run failed
+  // before any server answered, the run is about this machine's network.
+  const noAnswer = results.filter((r) => r.status === 0).length;
+  const offline = results.length >= 10 && noAnswer / results.length > 0.25;
   return {
+    offline,
     checked: results.length,
-    alive: results.length - dead.length,
+    alive: results.filter((r) => r.ok).length,
     dead,
+    // Answered, but refused a script; or could not be reached from here for a
+    // reason that says nothing about the site. Neither is evidence of death,
+    // so these are reported and left as they were.
+    blocked: results.filter((r) => r.verdict === 'blocked'),
+    unsure: results.filter((r) => r.verdict === 'unsure'),
     moved: results.filter((r) => r.ok && r.movedTo),
+    // Every id that answered, so a site marked dead by an earlier check can be
+    // brought back when it answers again.
+    reachable: results.filter((r) => r.ok).map((r) => r.id),
   };
 }
 
 /* Write the check back into the corpus, so a dead entry stops being offered.
    It is marked rather than deleted: a studio's site being down for a day is not
-   the same as the reference being worthless, and a human should decide which. */
-export function applyCheck(report) {
-  const all = loadCorpus();
+   the same as the reference being worthless, and a human should decide which.
+
+   The same reasoning runs the other way. A mark that only ever goes on kept a
+   site that was down for one check dead for good - the rebuild carries `dead`
+   forward on purpose - so an entry that answers again is un-marked here, and
+   gets back the verified flag it had before the check took it away.
+
+   `options.rows` works on an in-memory corpus and writes nothing, which is how
+   the tests run it: a check stamp that reached the shipped file from a test
+   run is how one entry came to say it died "at test". */
+export function applyCheck(report, options = {}) {
+  const inMemory = Array.isArray(options.rows);
+  const all = inMemory ? options.rows : loadCorpus();
   const byId = new Map(all.map((e) => [e.id, e]));
   let changed = 0;
-  for (const row of report.dead) {
+  for (const row of report.dead || []) {
     const entry = byId.get(row.id);
     if (!entry) continue;
+    const wasVerified = entry.dead ? entry.dead.wasVerified : entry.verified;
     entry.verified = false;
     entry.dead = { status: row.status, at: report.stampedAt || null };
+    if (typeof wasVerified === 'boolean') entry.dead.wasVerified = wasVerified;
     entry.checked = report.stampedAt || null;
     changed++;
   }
-  for (const row of report.moved) {
+  for (const id of report.reachable || []) {
+    const entry = byId.get(id);
+    if (!entry || !entry.dead) continue;
+    // A mark made before `wasVerified` was recorded does not know what the
+    // harvester claimed, so it stays unverified here; the next `--build`
+    // re-reads the chunk's own claim now that nothing forces it false.
+    entry.verified = entry.dead.wasVerified === true;
+    delete entry.dead;
+    entry.checked = report.stampedAt || null;
+    changed++;
+  }
+  // A mark whose own evidence the rules no longer count as death - a 403 from a
+  // bot wall, recorded before blocked was its own verdict - is withdrawn when
+  // this check found nothing worse. So is a mark made on the very status a wall
+  // answered with again today (meta.com's site-wide 400): same evidence, now
+  // judged for what it is. An old network failure stays - nothing recorded why
+  // it failed, and some reasons (a certificate a browser refuses) are death.
+  const withdraw = (row, sameWall) => {
+    const entry = byId.get(row.id);
+    if (!entry || !entry.dead) return;
+    if (statusVerdict(entry.dead.status) === 'dead' && !(sameWall && entry.dead.status === row.status)) return;
+    entry.verified = entry.dead.wasVerified === true;
+    delete entry.dead;
+    entry.checked = report.stampedAt || null;
+    changed++;
+  };
+  for (const row of report.blocked || []) withdraw(row, true);
+  for (const row of report.unsure || []) withdraw(row, false);
+  for (const row of report.moved || []) {
     const entry = byId.get(row.id);
     if (!entry || !row.movedTo) continue;
     entry.url = row.movedTo;
     entry.checked = report.stampedAt || null;
     changed++;
   }
-  if (changed) writeFileSync(CORPUS, JSON.stringify(all, null, 1) + '\n');
+  if (changed && !inMemory) writeFileSync(CORPUS, JSON.stringify(all, null, 1) + '\n');
   return changed;
 }
 

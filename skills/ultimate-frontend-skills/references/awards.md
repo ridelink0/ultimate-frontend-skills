@@ -32,11 +32,14 @@ teaches the decision. The registers are fixed in `awards.mjs`:
 | `object` | `3d,product` | a physical thing you can turn |
 | `product` | `product,3d` | software with a UI to show |
 | `place` | `brand,editorial` | a location, a property, a venue |
-| `service` | `brand,editorial` | a practice selling judgement |
+| `service` | `portfolio`, filtered to rows mentioning "agency" | a practice selling judgement |
 | `argument` | `editorial` | a thesis, a report, a manifesto |
 | `portfolio` | `portfolio` | someone's own work |
 | `3d` | `3d` | the technique is the brief |
 | `editorial` | `editorial` | long-form type |
+| `game` | `game` | something you play, in the browser |
+| `app` | `app` | an installed or web application; see `apps.md` |
+| `studio` | `studio,portfolio` | a studio's own site |
 
 Anything else is treated as a free-text query and is not diversified by register.
 Free text goes through the ordinary query path, where **every term must appear
@@ -197,7 +200,7 @@ harvested in chunks under `data/awards/` and merged by `awards --build`.
 | `year` | number | 0 unless it parses and lands strictly between 2000 and 2100 |
 | `award` | string | lowercased, **not validated**; defaults to `reference` |
 | `source` | string | lowercased, **not validated**; defaults to `editorial` |
-| `kind` | string | one of the seven kinds; anything else becomes `editorial` |
+| `kind` | string | one of the ten kinds (`3d`, `editorial`, `product`, `portfolio`, `ecommerce`, `brand`, `experiment`, `game`, `app`, `studio`); anything else becomes `editorial` |
 | `stack` | string[] | libraries, as named by the source; provenance notes stripped |
 | `techniques` | string[] | **sentences**, not tags - the mechanism is the point |
 | `palette` | string | prose, with hexes where the source gave them |
@@ -205,6 +208,7 @@ harvested in chunks under `data/awards/` and merged by `awards --build`.
 | `motion` | string | what moves and what drives it |
 | `why` | string | the one transferable move. This is the payload |
 | `verified` | boolean | strictly `row.verified === true`; a harvest convention, not a check the code performs |
+| `aiGenerated` | boolean, optional | whether an agent built the site; kept only when the harvester recorded it, shown as `agent-built` in the listing |
 
 `kind` is the only enumerated field. `award` and `source` are whatever the
 harvester wrote, lowercased - which is why `--stats` is the only honest list of
@@ -279,6 +283,7 @@ from curl with a browser user agent and **without** following redirects.
 | `tympanus.net/codrops/webzibition/` | 200 | none | **2,378 hand-picked sites** (its own printed count, which climbs daily), each linking straight to the live site. The best harvest target here: no detail-page hop, no bot wall, curation that matches this skill's technique class |
 | `tympanus.net/codrops/` | 200 | `/feed/` and `/wp-json/wp/v2/posts` | Where the technique is explained before it reaches an award page |
 | `threejs.org/examples/files.json` | 200 | **yes - a real index, 607 entries** | Runnable technique, versioned, free. Not usually called a showcase; it is the most useful one on this list |
+| `threejs.org` (the homepage grid) | 200 | the homepage HTML itself: 400 `<a href>` links, newest first, each with a `files/projects/<id>.jpg` thumbnail | The library's own showcase of submitted projects. The thumbnail id is the @threejs post that featured it and decodes to a date (`(id >> 22) + 1288834974657` ms); `cdn.syndication.twimg.com/tweet-result?id=<id>&token=4` returns that post without a login, and its video links to the author's own post - the primary source for who made it and in what words. Harvested 2026-09-22 into `chunk-13-threejs.json` |
 | `webdesignawards.io` | 308 to `www.`, then 200 | none | The only platform found that publishes criterion **weights** rewarding what Awwwards underweights. They are on `/judging-rubric`, not the home page (see below) |
 | `cssdesignawards.com` | 200 to curl | none | Per-judge score breakdowns, which Awwwards does not publish. Winner pages route on the trailing numeric id and ignore the slug |
 | `winners.webbyawards.com` | 200 | none; listing is JS-rendered | Criteria definitions, not a harvest target |

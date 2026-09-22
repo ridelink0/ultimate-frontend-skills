@@ -1,6 +1,6 @@
 {
   "name": "ultimate-frontend-skills",
-  "version": "6.1.1",
+  "version": "6.1.2",
   "description": "Ultimate Frontend Skills (UFS) for Claude Code and Codex. One route from brief to shipped page: a corpus of award-winning reference sites to decide against, WebGL gradients, real three-plane parallax, procedural and Blender-modelled three.js exploded views, CC0 PBR materials and HDRI lighting, scroll choreography, and an audit that fails the usual AI-generated tells.",
   "keywords": [
     "claude",
@@ -53,7 +53,7 @@
     "README.md"
   ],
   "scripts": {
-    "test": "node --test test/*.test.mjs",
+    "test": "node --test --test-concurrency=1 test/*.test.mjs",
     "audit": "node scripts/webdesign.mjs audit",
     "verify": "node scripts/webdesign.mjs verify",
     "awards": "node scripts/webdesign.mjs awards",
