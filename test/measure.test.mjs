@@ -21,6 +21,17 @@ test('a slow page is an error, and the budget is named in it', () => {
   assert.match(levels(found)[0], new RegExp('38 fps.*' + BUDGETS.fps));
 });
 
+// The one duration-triggered finding, judged on fixed numbers. The fixture
+// corpus cannot assert it: a real browser on a busy or cold machine takes a
+// long task on any page (701 ms on the plain overlap fixture, on a CI runner).
+test('a main-thread task past its budget is a warning, and one at the budget is not', () => {
+  const warns = (found) => found.filter((f) => f.level === 'warn').map((f) => f.text);
+  const over = judge({ ...clean, cost: { ...clean.cost, longTasks: 1, longestTaskMs: BUDGETS.longestTaskMs + 1 } });
+  assert.deepEqual(warns(over).filter((t) => /main-thread task/.test(t)), ['longest main-thread task ' + (BUDGETS.longestTaskMs + 1) + ' ms']);
+  const at = judge({ ...clean, cost: { ...clean.cost, longTasks: 1, longestTaskMs: BUDGETS.longestTaskMs } });
+  assert.equal(warns(at).filter((t) => /main-thread task/.test(t)).length, 0);
+});
+
 test('a library loaded and never called is the most expensive kind of dead code', () => {
   const found = judge({ ...clean, cost: { ...clean.cost, idleLibraries: ['GSAP', 'three.js'] } });
   assert.match(levels(found)[0], /loaded and never used: GSAP, three\.js/);

@@ -59,25 +59,30 @@ const findings = (r) => [
   ...judge(r.measured).filter((f) => f.level !== 'ok').map((f) => f.level + ': ' + f.text),
 ].sort();
 
-// Asserts the COMPLETE finding set, in sorted order: nothing named is missing
-// and nothing else is there.
-const raises = (r, ...expected) => {
-  const got = findings(r);
-  assert.equal(got.length, expected.length, 'fixture raised ' + JSON.stringify(got, null, 1));
-  expected.forEach((re, i) => assert.match(got[i], re, 'fixture raised ' + JSON.stringify(got, null, 1)));
-};
-
 // Findings whose trigger is a duration rather than a count. These fire or do
-// not fire depending on what else the machine is doing, so a fixture that
-// deliberately does something expensive cannot assert a complete finding set:
-// on an idle laptop the long task lands under the threshold and on a busy one
-// it does not, and neither outcome says anything about the code under test.
+// not fire depending on what else the machine is doing: on an idle laptop the
+// long task lands under the threshold and on a busy or cold one it does not,
+// and neither outcome says anything about the code under test.
+//
+// Keeping them in the strict set was meant to guard against a check that
+// measures the machine. For this one check that guard cannot pass, because
+// measuring the machine is what a long-task threshold does: it failed a
+// different control page on nearly every full run (13, 16, 37, 38, 52, 54, 66),
+// and 701 ms on the plain overlap page on a Windows CI runner. The check itself
+// is asserted on fixed numbers in measure.test.mjs instead.
 const TIMING_DERIVED = /^warn: longest main-thread task \d+ ms$/;
 
-// For those fixtures: every named finding must be present, and nothing may
-// appear beyond them EXCEPT a timing-derived warning. The control page in the
-// same test still uses the strict `raises`, which is what actually guards
-// against a check that measures the machine rather than the page.
+// Asserts the COMPLETE finding set, in sorted order: nothing named is missing
+// and nothing else is there - except a timing-derived warning.
+const raises = (r, ...expected) => {
+  const got = findings(r);
+  const solid = got.filter((f) => !TIMING_DERIVED.test(f));
+  assert.equal(solid.length, expected.length, 'fixture raised ' + JSON.stringify(got, null, 1));
+  expected.forEach((re, i) => assert.match(solid[i], re, 'fixture raised ' + JSON.stringify(got, null, 1)));
+};
+
+// The same as `raises` now; kept so the tests that were written against the
+// expensive fixtures still read as what they are.
 const raisesAllowingTiming = (r, ...expected) => {
   const got = findings(r);
   const solid = got.filter((f) => !TIMING_DERIVED.test(f));
