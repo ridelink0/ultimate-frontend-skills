@@ -70,6 +70,10 @@ its own slice of the corpus:
 | An app (mobile, desktop, PWA, Expo) | `references/apps.md` | the first screen is a task, not a hero; the navigation model is decided before the palette; empty, loading and error states are designed before the full one; platform conventions outrank the house style; `animate-expo` and the React Native packs own motion when installed. 35 shipped apps: `awards --pick app --n 3` |
 | A game's site and its start screen | `references/games.md` | the start screen is in-world UI, not a marketing template: controls documented exactly, real persisted numbers, names for weapons, waves and deaths. The eyebrow-headline-tagline-two-buttons stack is the tell. `awards --pick game --n 3` |
 
+A fourth, **a video** (a reel, a launch clip, a recap cut from someone's
+references), is a page rendered frame by frame: read `references/video.md`
+and `references/video-tells.md`, then `video scene` and `video render`.
+
 Copy on all three: `references/copy-tells.md`. Generated pictures on all
 three: `references/image-tells.md` first, then `references/image-gen.md` for
 the pipeline.
@@ -316,6 +320,8 @@ Read one only when you need it. Each is self-contained.
 | `references/copy-tells.md` | Copy that reads as generated in 2026 - vocabulary, sentence shapes, microcopy - and what human copy does |
 | `references/image-tells.md` | What gives a generated picture away, the prompt template, the post-processing order, when to photograph |
 | `references/checklist.md` | The pre-ship pass, and what the audit cannot see |
+| `references/video.md` | Making a video from references: `video scene`, a frame-exact `ufsFrame(t)`, `video render --draft`, then the final |
+| `references/video-tells.md` | What gives a video away as machine-made - in the frame and across the edit - and the check before a final render |
 
 The audit enforces mechanically most of what is in `tells.md`, so you do not
 have to carry it in your head - build, then run it.

@@ -648,8 +648,38 @@ async function cmdParity() {
   process.exitCode = result.errors ? 1 : 0;
 }
 async function cmdVideo() {
-  const { studyVideo } = await import('./video.mjs');
-  if (!positional[0]) die('video needs a local video file');
+  const V = await import('./video.mjs');
+  const { studyVideo } = V;
+  const list = (v) => String(v || '').split(',').map((s) => s.trim()).filter(Boolean);
+  if (positional[0] === 'scene') {
+    if (!positional[1]) die('video scene <dir> [--refs a.jpg,b.mp4] [--seconds 12] [--size 1080x1920] [--fps 30] [--title "..."]');
+    let r;
+    try {
+      r = V.makeScene(positional[1], { refs: list(flag('refs')), seconds: Number(flag('seconds', 12)), size: String(flag('size', '1920x1080')), fps: Number(flag('fps', 30)), title: String(flag('title', 'Untitled')) });
+    } catch (e) { die(e.message); }
+    console.log('scene: ' + r.scene);
+    if (r.studied.length) console.log('Open the study frames first, in order: ' + r.studied.map((s) => s.frames[0].replace(/01\.jpg$/, '*.jpg')).join(', '));
+    console.log('Rewrite the copy and the cut for the brief (references/video.md), then: video render ' + r.scene + ' --draft');
+    return;
+  }
+  if (positional[0] === 'render') {
+    if (!positional[1]) die('video render <scene.html> [--draft] [--out FILE] [--seconds N] [--fps N] [--size WxH] [--audio FILE]');
+    let size = [];
+    try { if (flag('size')) size = V.parseSize(String(flag('size'))); } catch (e) { die(e.message); }
+    let r, last = 0;
+    try {
+      r = await V.renderVideo(positional[1], {
+        out: flag('out'), seconds: flag('seconds') ? Number(flag('seconds')) : undefined, fps: flag('fps') ? Number(flag('fps')) : undefined,
+        width: size[0], height: size[1], draft: !!flag('draft'), audio: flag('audio') || null,
+        onFrame: (i, n) => { const p = Math.floor(i / n * 10); if (p > last) { last = p; process.stderr.write(p * 10 + '% '); } },
+      });
+    } catch (e) { process.stderr.write('\n'); die(e.message); }
+    process.stderr.write('\n');
+    console.log(JSON.stringify(r, null, 2));
+    console.log('Now watch it: video ' + r.file + ' --frames 12, and open every frame before calling it done.');
+    return;
+  }
+  if (!positional[0]) die('video needs a local video file, or: video scene <dir> / video render <scene.html>');
   const frames = studyVideo(positional[0], { out: flag('out'), frames: Number(flag('frames', 8)) });
   console.log(JSON.stringify(frames, null, 2));
   console.log('Open these frames in timestamp order; do not infer motion from one still.');
@@ -878,6 +908,10 @@ switch (cmd) {
   verify <dir|url> [--widths 1440,390] [--wait MS] [--design REF] [--json]
                                   one verdict: audit + render/quality + security (+ design parity), by severity
   video <file> [--frames 8] [--out DIR]   inspect timestamped local video frames
+  video scene <dir> --refs a.jpg,b.mp4 [--seconds 12] [--size 1080x1920]
+                                          scaffold a frame-exact video scene from references
+  video render <scene.html> [--draft] [--audio FILE] [--out FILE]
+                                          render the scene to MP4, one seeked frame at a time
 `);
     process.exit(cmd ? 1 : 0);
 }

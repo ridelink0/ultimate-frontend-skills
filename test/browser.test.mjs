@@ -88,6 +88,24 @@ test('contrast against an image background is measured from the actual pixels', 
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
+test('text clipped inside a scrolling panel is not an overlap; text painted over text still is', { skip: !findBrowser(), timeout: 90000 }, async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'visual-clipped-overlap-'));
+  try {
+    const rows = Array.from({ length: 12 }, (_, i) => '<p style="margin:0 0 6px">Scrolled list row number ' + (i + 1) + '</p>').join('');
+    const html = '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
+      '<body style="margin:0;font:16px Georgia,serif;background:#111;color:#eee">' +
+      '<div style="height:90px;overflow:auto;padding:8px">' + rows + '</div>' +
+      '<p style="margin:0;padding:8px">Panel underneath the scrolling list</p>' +
+      '<div style="position:relative;height:40px;margin-top:40px"><p style="position:absolute;top:0;left:8px;margin:0">First line that collides here</p>' +
+      '<p style="position:absolute;top:4px;left:12px;margin:0">Second line painted on top</p></div></body></html>';
+    writeFileSync(join(dir, 'index.html'), html);
+    const result = await debugSite(dir, { widths: [800], wait: 60, motion: 'normal', scrolls: [0] });
+    const overlaps = result.results[0].overlaps;
+    assert.equal(overlaps.filter((o) => /Scrolled list row|Panel underneath/.test(o.a + o.b)).length, 0, 'clipped rows must not count: ' + JSON.stringify(overlaps));
+    assert.ok(overlaps.some((o) => /First line|Second line/.test(o.a + o.b)), 'the real collision must still be reported: ' + JSON.stringify(overlaps));
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
 // verify's whole point is reconciling audit + render/quality + security into
 // one verdict. A page with a source-only defect (audit), a render defect
 // (contrast) and nothing wrong with security should end up with an error in

@@ -9,10 +9,11 @@
    Zero dependencies. Drives the browser over CDP using Node 18+'s built-in
    fetch and Node 22's built-in WebSocket. */
 
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import { mkdtempSync, existsSync, readFileSync, writeFileSync, rmSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
+import { createServer } from 'node:net';
 import { inflateSync } from 'node:zlib';
 import { MEASURE_INIT, measure, judge, formatQuality } from './measure.mjs';
 
@@ -55,22 +56,72 @@ export function readPortFile(path) {
   return Number.isInteger(port) && port > 0 && port < 65536 ? port : null;
 }
 
+/* Edge 153 (measured 2026-09-23) serves DevTools on the port it is given but
+   no longer writes DevToolsActivePort, so a launch that asked for port 0 and
+   waited for that file never found the browser. Choose a free port here, ask
+   for it by number, and accept whichever answers first: the file, or the
+   port itself. */
+function freePort() {
+  return new Promise((res, rej) => {
+    const s = createServer();
+    s.once('error', rej);
+    s.listen(0, '127.0.0.1', () => { const { port } = s.address(); s.close(() => res(port)); });
+  });
+}
+async function answers(port) {
+  try { return (await fetch(`http://127.0.0.1:${port}/json/version`, { signal: AbortSignal.timeout(500) })).ok; }
+  catch { return false; }
+}
+
+function closeOverCdp(port) {
+  fetch(`http://127.0.0.1:${port}/json/version`, { signal: AbortSignal.timeout(1500) })
+    .then((r) => r.json())
+    .then((v) => {
+      const ws = new WebSocket(v.webSocketDebuggerUrl);
+      ws.addEventListener('open', () => { try { ws.send(JSON.stringify({ id: 1, method: 'Browser.close' })); } catch {} });
+      ws.addEventListener('error', () => {});
+    })
+    .catch(() => {});
+}
+
 export async function launch(bin) {
   const udd = mkdtempSync(join(tmpdir(), 'webdesign-cdp-'));
+  const asked = await freePort();
   const proc = spawn(bin, [
     '--headless=new', '--hide-scrollbars', '--mute-audio',
     '--no-first-run', '--no-default-browser-check', '--disable-extensions',
     '--disable-background-networking', '--disable-sync', '--disable-features=Translate',
-    `--user-data-dir=${udd}`, '--remote-debugging-port=0', 'about:blank',
+    `--user-data-dir=${udd}`, `--remote-debugging-port=${asked}`, 'about:blank',
   ], { stdio: ['ignore', 'ignore', 'ignore'], windowsHide: true });
   let launchError;
   proc.once('error', err => { launchError = err; });
 
   const portFile = join(udd, 'DevToolsActivePort');
   for (let i = 0; i < 150; i++) {
-    if (launchError || proc.exitCode !== null) break;
-    const port = readPortFile(portFile);
-    if (port) return { proc, udd, port };
+    // Edge 153 hands the session to a child and its launcher exits 0 at once;
+    // only a failed exit means there is no browser to wait for.
+    if (launchError || (proc.exitCode !== null && proc.exitCode !== 0)) break;
+    const port = readPortFile(portFile) || (i % 3 === 2 && await answers(asked) ? asked : null);
+    if (port) {
+      // The launcher may already be gone, so killing it would orphan the real
+      // browser (thirty stray headless processes, measured). Close it over
+      // the protocol as well; the kill still covers a browser that hung.
+      const kill = proc.kill.bind(proc);
+      proc.kill = (...args) => {
+        closeOverCdp(port);
+        // Callers exit straight after, before a socket could close anything,
+        // so on Windows end the handed-off browser now: every process whose
+        // command line carries this run's own temporary profile, and no other.
+        if (process.platform === 'win32' && proc.exitCode !== null) {
+          const q = udd.replace(/'/g, "''");
+          spawnSync('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command',
+            `Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -and $_.CommandLine.Contains('${q}') } | ForEach-Object { try { Stop-Process -Id $_.ProcessId -Force -ErrorAction Stop } catch {} }`],
+          { stdio: 'ignore', windowsHide: true, timeout: 15000 });
+        }
+        try { return kill(...args); } catch { return false; }
+      };
+      return { proc, udd, port };
+    }
     await sleep(100);
   }
   try { proc.kill(); } catch {}
@@ -284,8 +335,21 @@ export const PROBE = `(() => {
       if (pos === 'fixed' || pos === 'sticky') { pinned = true; break; }
     }
     if (pinned) continue;
-    const r = el.getBoundingClientRect();
-    if (r.width < 2 || r.height < 2) continue;
+    // Text scrolled out of a panel with overflow:auto/hidden is clipped, not
+    // painted over its neighbours: measure only the part its scroll or clip
+    // boxes let through. Without this every scrolling list on a dashboard read
+    // as "overlap 100%" with the panel under it (measured on HQ, 2026-09-23).
+    const r0 = el.getBoundingClientRect();
+    let L = r0.left, T = r0.top, R = r0.right, B = r0.bottom;
+    for (let a = el.parentElement; a && a !== document.body && a !== document.documentElement; a = a.parentElement) {
+      const acs = getComputedStyle(a);
+      if (acs.overflowX === 'visible' && acs.overflowY === 'visible') continue;
+      const ar = a.getBoundingClientRect();
+      if (acs.overflowX !== 'visible') { L = Math.max(L, ar.left); R = Math.min(R, ar.right); }
+      if (acs.overflowY !== 'visible') { T = Math.max(T, ar.top); B = Math.min(B, ar.bottom); }
+    }
+    if (R - L < 2 || B - T < 2) continue;
+    const r = { left: L, top: T, right: R, bottom: B, width: R - L, height: B - T };
     textEls.push({ el, r, cs: getComputedStyle(el) });
   }
   out.stats.textElements = textEls.length;

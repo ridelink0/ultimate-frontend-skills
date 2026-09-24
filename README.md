@@ -365,6 +365,10 @@ webdesign.mjs parity <dir|url> --design <canvas>.html
                                       compare a built page against its Claude Design artboards
 webdesign.mjs verify <dir|url> [--design REF]
                                       one verdict: audit + render/quality + security (+ design parity)
+webdesign.mjs video scene <dir> --refs a.jpg,b.mp4 [--seconds 12] [--size 1080x1920]
+                                      a frame-exact video scene built from your references
+webdesign.mjs video render <scene.html> [--draft] [--audio FILE]
+                                      render it to MP4, one seeked frame at a time
 ```
 
 **`references/stack.md`** - which library for which job, with specifiers
@@ -490,6 +494,26 @@ figure is a ceiling rather than what anyone sees - the worst frame is the
 useful half of that measurement. And the numbers are not the judgement: a page
 can pass every budget and still look wrong, which is why this prints the path
 to the screenshots and tells you to open them.
+
+## Video - references in, an MP4 out
+
+A video here is a page rendered one frame at a time. `video scene` copies your
+stills in as plates, links clips by file URL, pulls study frames from every
+clip and writes a working cut; `video render` seeks `window.ufsFrame(t)` to
+each frame in a headless browser and pipes the PNGs into ffmpeg (H.264, CRF 16,
+faststart). Nothing is recorded in real time, so a slow machine gives a slow
+render, never a dropped frame, and the same scene renders the same file twice.
+
+```bash
+node scripts/webdesign.mjs video scene reel --refs a.jpg,ride.mp4 --seconds 15 --size 1080x1920 --title "Sunday rideout"
+node scripts/webdesign.mjs video render reel/scene.html --draft      # half size, fast: look at it first
+node scripts/webdesign.mjs video render reel/scene.html --audio track.m4a
+```
+
+[The route](skills/ultimate-frontend-skills/references/video.md) and
+[what gives a video away as machine-made](skills/ultimate-frontend-skills/references/video-tells.md) -
+in the frame and across the edit - with the check to run on the draft before
+the final. Needs FFmpeg and Chrome, Edge or Chromium.
 
 ## Security check
 
