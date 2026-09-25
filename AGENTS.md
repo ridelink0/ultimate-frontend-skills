@@ -41,12 +41,33 @@ scripts/parity.mjs              built page vs its Claude Design artboards, same 
 scripts/design.mjs              which Claude Design route exists here - reports, never enrols
 scripts/cut.py                  photograph -> parallax planes via rembg
 scripts/install.mjs             registers with both CLIs
-commands/webdesign.md           the /ultimate-frontend-skills:webdesign slash command
-commands/debug-website.md       /ultimate-frontend-skills:debug-website
-commands/design-handoff.md      /ultimate-frontend-skills:design-handoff
-commands/awards.md              /ultimate-frontend-skills:awards
-commands/security-check.md      /ultimate-frontend-skills:security-check
-commands/atelier.md             the compatibility alias for the old name
+commands/*.md                   one slash command per capability, /ultimate-frontend-skills:<name>
+                                (the README "Slash commands" table lists them all):
+                                app-screen-design
+                                atelier
+                                audit-website
+                                awards
+                                blender-3d-model
+                                debug-website
+                                design-handoff
+                                design-parity-check
+                                frontend-skill-packs
+                                frontend-tools-bench
+                                game-start-screen
+                                generate-website-image
+                                image-deep-research
+                                inspect-website-styles
+                                measure-website-performance
+                                pbr-textures-hdri
+                                photo-parallax-layers
+                                preview-website
+                                render-check-website
+                                scaffold-website
+                                security-check
+                                verify-website
+                                video-from-references
+                                webdesign
+                                atelier is the compatibility alias for the old name
 hooks/                          UserPromptSubmit nudge
 ```
 
@@ -75,5 +96,12 @@ Constraints:
   a usable URL.
 - `blender.mjs` and `assets.mjs` reach outside the machine. Neither may invent a
   key, and `tools.mjs` reports the presence of a credential, never its value.
+- A command file needs `description` and `argument-hint` frontmatter and must
+  not use `$ARGUMENTS`, `$1`-style placeholders, `{{ }}`, a shell-run backtick
+  or a word starting with the at sign. Codex turns each command into a
+  `source-command-<name>` skill at install and silently skips any file that
+  breaks those rules or renders past 4,000 bytes; Claude Code appends the
+  typed text as ARGUMENTS on its own. `test/commands.test.mjs` holds both
+  sides to it, and to the README table.
 - Keep `SKILL.md` short. Depth belongs in `references/`, which is only read when
   needed. Frontmatter is loaded into every session; the body is not.

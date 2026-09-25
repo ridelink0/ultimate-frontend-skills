@@ -321,6 +321,57 @@ Or drive it directly:
 /webdesign audit ./my-site
 ```
 
+## Slash commands
+
+Every capability you would want to start directly has its own command. In
+Claude Code each one is `/ultimate-frontend-skills:<name>`; the bare
+`/<name>` works too, as long as no other installed plugin uses that name.
+Type the words you are after - `/image`, `/deep`, `/video`, `/blender` - and
+the menu finds the command whose name contains them.
+
+| Command | What it starts |
+|---|---|
+| `/ultimate-frontend-skills:image-deep-research` | Image deep research: reference images, real sites rendered into contact sheets, a moodboard, read as pictures (the `visual-research` skill) |
+| `/ultimate-frontend-skills:webdesign` | Build a website in the house style, or audit and upgrade one that exists |
+| `/ultimate-frontend-skills:scaffold-website` | Scaffold a new site from the section library, list sections, add one to a page |
+| `/ultimate-frontend-skills:awards` | Three award-winning references that disagree, rendered so you can look at them |
+| `/ultimate-frontend-skills:inspect-website-styles` | A live site's computed fonts, type scale, colours and what it fetched |
+| `/ultimate-frontend-skills:audit-website` | The source audit for the AI-generated tells, then the fixes |
+| `/ultimate-frontend-skills:render-check-website` | Screenshots in a real browser: overlap, overflow, contrast, broken images, console errors |
+| `/ultimate-frontend-skills:debug-website` | Screenshots, scrolling, interactions and 3D evidence in one HTML review |
+| `/ultimate-frontend-skills:measure-website-performance` | Frame rate, real parallax rates, scroll thrash, idle libraries, rendered type scale |
+| `/ultimate-frontend-skills:security-check` | Leaked secrets, unsafe forms, unpinned CDN scripts, headers, disclosures |
+| `/ultimate-frontend-skills:verify-website` | One verdict: audit, render and quality, security, optional design parity |
+| `/ultimate-frontend-skills:preview-website` | Serve a folder locally, or the dev loop that re-audits and re-renders on save |
+| `/ultimate-frontend-skills:design-handoff` | Create or implement a Claude Design project without losing it to the house style |
+| `/ultimate-frontend-skills:design-parity-check` | A built page against its design artboard: type sizes, palette, rhythm, geometry |
+| `/ultimate-frontend-skills:photo-parallax-layers` | One photograph cut into parallax planes, locally with rembg |
+| `/ultimate-frontend-skills:blender-3d-model` | Headless Blender: a GLB with named parts, baked maps, a turntable sequence |
+| `/ultimate-frontend-skills:pbr-textures-hdri` | CC0 PBR textures and HDRI lighting, verified, with the three.js wiring |
+| `/ultimate-frontend-skills:generate-website-image` | Image generation checked against what this machine can run, without the AI-image tells |
+| `/ultimate-frontend-skills:video-from-references` | References in, a frame-exact scene, a draft, then the MP4 |
+| `/ultimate-frontend-skills:game-start-screen` | A game's start screen, menu, HUD or site as in-world UI, checked at game widths |
+| `/ultimate-frontend-skills:app-screen-design` | An app screen, task first, with its empty, loading and error states |
+| `/ultimate-frontend-skills:frontend-tools-bench` | What is installed on this machine and what changes because of it |
+| `/ultimate-frontend-skills:frontend-skill-packs` | The skill packs UFS works with: list, install, add, vendor, remove |
+| `/ultimate-frontend-skills:atelier` | The compatibility alias for the old Atelier name |
+
+The new commands are for you to type; Claude does not start them on its own
+(`disable-model-invocation`), so they cost nothing in a session that does not
+use them. The two skills still trigger on their own when you just ask.
+
+**In Codex** the same files work. When Codex installs the plugin it turns each
+command into a skill named `ultimate-frontend-skills:source-command-<name>`:
+start one with `$ultimate-frontend-skills:source-command-image-deep-research`
+(and so on) or pick it from `/skills`.
+Codex skips any command file that uses argument placeholders such as
+`$ARGUMENTS` or `$1`, or that renders past 4,000 bytes, so none of these do;
+the text typed after the command arrives as the rest of the message. Codex
+builds these skills at install time, so update or reinstall the plugin to
+pick up new commands. Codex has no equivalent of `disable-model-invocation`
+for a migrated command, so there their descriptions join the skills list. Codex's older custom prompts (`/prompts:<name>`) are
+deprecated and cannot ship inside a plugin, so there are none here.
+
 ## What is in it
 
 **`skills/ultimate-frontend-skills/SKILL.md`** - the doctrine. Short, because the code carries the
