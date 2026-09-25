@@ -9,7 +9,12 @@ Site of the Day, Month and Year, FWA, three.js and Codrops demos, Godly,
 Land-book, siteInspire, One Page Love and the studio sites that set the
 standard - and render the picks so they can be looked at rather than read about.
 
-Arguments: `$ARGUMENTS`
+The request is the text the user typed with this command (Claude Code appends
+it below as ARGUMENTS; in Codex it is the rest of the message). Call it the query.
+
+`${CLAUDE_PLUGIN_ROOT}` is this plugin's folder. Codex runs this command as a
+skill and leaves that variable empty; there, use the folder that holds
+`.codex-plugin/`, three levels above this file.
 
 Run, in this order:
 
@@ -24,7 +29,7 @@ Run, in this order:
    Otherwise treat the arguments as a query:
 
    ```bash
-   node "${CLAUDE_PLUGIN_ROOT}/scripts/webdesign.mjs" awards "$ARGUMENTS" --verbose
+   node "${CLAUDE_PLUGIN_ROOT}/scripts/webdesign.mjs" awards "<query>" --verbose
    ```
 
    If nothing matches, run `awards --techniques` and search again with a
@@ -33,7 +38,7 @@ Run, in this order:
 2. Render the picks and look at them:
 
    ```bash
-   node "${CLAUDE_PLUGIN_ROOT}/scripts/webdesign.mjs" study --awards "$ARGUMENTS" --n 3
+   node "${CLAUDE_PLUGIN_ROOT}/scripts/webdesign.mjs" study --awards "<query or register>" --n 3
    ```
 
    Then **open the PNGs it writes.** A row in a table is not a reference. This

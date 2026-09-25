@@ -1,11 +1,17 @@
 ---
 description: Build a website in the studio house style, or audit one that already exists
+argument-hint: "<website brief, or a site folder to audit and upgrade>"
 ---
 
 Use the `ultimate-frontend-skills` skill for everything below. Follow its rule zero: build the
 files and keep design reasoning out of your reply.
 
-The user's brief is: $ARGUMENTS
+The user's brief is the text typed with this command (Claude Code appends it
+below as ARGUMENTS; in Codex it is the rest of the message).
+
+`${CLAUDE_PLUGIN_ROOT}` is this plugin's folder. Codex runs this command as a
+skill and leaves that variable empty; there, use the folder that holds
+`.codex-plugin/`, three levels above this file.
 
 If the brief names a directory that already contains HTML, treat this as an audit
 and upgrade: run

@@ -1,7 +1,8 @@
 ---
 description: Use Claude Design with Ultimate Frontend Skills to create or implement a design.
+argument-hint: "<design brief, Claude Design project or handoff bundle>"
 ---
-Read skills/ultimate-frontend-skills/references/claude-design.md and skills/ultimate-frontend-skills/SKILL.md in this plugin, then apply the user's brief below.
+Read skills/ultimate-frontend-skills/references/claude-design.md and skills/ultimate-frontend-skills/SKILL.md in this plugin, then apply the user's brief: the text typed with this command (Claude Code appends it below as ARGUMENTS; in Codex it is the rest of the message).
 
 Find out which route exists before assuming one: `node "${CLAUDE_PLUGIN_ROOT}/scripts/design.mjs" detect`. On a current Claude Code build the live routes are the built-in `design` canvas skill and the native `DesignSync` tool - neither is an MCP server, so do not go looking for a connected Design server or explain MCP setup unless `detect` says that is the only route this host has. Never register anything, consent or log in on the user's behalf, and never report a remote Design operation as successful without its actual result.
 
@@ -15,4 +16,6 @@ node "${CLAUDE_PLUGIN_ROOT}/scripts/webdesign.mjs" verify <built dir|url> --desi
 
 A design that was rebuilt in the house style shows up there as an ERROR naming the type sizes and colours that are absent from it. Hand a seeded canvas page (or a plain HTML rendering of the design), not a bare `.dc.html` - that is not a renderable page and parity refuses it.
 
-$ARGUMENTS
+`${CLAUDE_PLUGIN_ROOT}` is this plugin's folder. Codex runs this command as a
+skill and leaves that variable empty; there, use the folder that holds
+`.codex-plugin/`, three levels above this file.
