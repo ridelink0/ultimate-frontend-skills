@@ -29,6 +29,9 @@ skills/ultimate-frontend-skills/SKILL.md         the doctrine
 skills/ultimate-frontend-skills/assets/          core.css, motion.js, sections.html
 skills/ultimate-frontend-skills/references/      loaded on demand; pipeline.md is the entry
 skills/ultimate-frontend-skills/data/awards.json merged corpus; data/awards/*.json are its chunks
+skills/image-deep-research/      VENDORED from github.com/ridelink0/image-deep-research - never edit here
+image-deep-research.lock.json    upstream version, commit and sha256 of every vendored file
+skills/visual-research/SKILL.md  the old name, kept as a typed alias that loads image-deep-research
 scripts/webdesign.mjs           new / sections / add / audit / look / study / awards /
                                 blender / assets / tools / serve / parity / verify
 scripts/awards.mjs              the reference corpus: query, pick three that disagree, rebuild
@@ -41,6 +44,7 @@ scripts/parity.mjs              built page vs its Claude Design artboards, same 
 scripts/design.mjs              which Claude Design route exists here - reports, never enrols
 scripts/cut.py                  photograph -> parallax planes via rembg
 scripts/install.mjs             registers with both CLIs
+scripts/sync-image-research.mjs the only way skills/image-deep-research changes: --tag vX.Y.Z | --from <dir> | --check
 commands/*.md                   one slash command per capability, /ultimate-frontend-skills:<name>
                                 (the README "Slash commands" table lists them all):
                                 app-screen-design
@@ -55,7 +59,6 @@ commands/*.md                   one slash command per capability, /ultimate-fron
                                 frontend-tools-bench
                                 game-start-screen
                                 generate-website-image
-                                image-deep-research
                                 inspect-website-styles
                                 measure-website-performance
                                 pbr-textures-hdri
@@ -77,6 +80,12 @@ Constraints:
   but it carries metadata, `bin` entries and script aliases only - do not add a
   dependency block to it. `type: module` is set, which is why every runnable
   file here is `.mjs` or `.cjs` rather than `.js`.
+- `skills/image-deep-research/` is vendored from its own repository,
+  github.com/ridelink0/image-deep-research. Change it there, tag a release,
+  then run `node scripts/sync-image-research.mjs --tag vX.Y.Z`. A hand edit here
+  fails test/image-research.test.mjs against `image-deep-research.lock.json`.
+  Do not also install the standalone plugin on a machine with UFS: the skill
+  would be listed twice.
 - `core.css` and `motion.js` are copied verbatim into user projects. A change
   there lands in every site built afterwards, so treat them as public API.
 - `inspect.mjs` talks to Chrome/Edge/Chromium over the DevTools protocol using

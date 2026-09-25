@@ -70,15 +70,19 @@ const SUBCOMMANDS = new Set([...webdesign.matchAll(/case '([a-z-]+)':/g)].map((m
 const DELEGATED = { blender: 'blender.mjs', assets: 'assets.mjs' };
 const SKILLS = readdirSync(join(root, 'skills')).filter((d) => existsSync(join(root, 'skills', d, 'SKILL.md')));
 
-test('there is a command for every capability a user starts directly, image-deep-research among them', () => {
-  for (const n of ['image-deep-research', 'webdesign', 'scaffold-website', 'awards', 'audit-website', 'render-check-website',
+test('there is a command for every capability a user starts directly, and image deep research is the skill of that name', () => {
+  for (const n of ['webdesign', 'scaffold-website', 'awards', 'audit-website', 'render-check-website',
     'debug-website', 'verify-website', 'security-check', 'measure-website-performance', 'preview-website', 'inspect-website-styles',
     'design-handoff', 'design-parity-check', 'photo-parallax-layers', 'blender-3d-model', 'pbr-textures-hdri',
     'generate-website-image', 'video-from-references', 'game-start-screen', 'app-screen-design', 'frontend-tools-bench',
     'frontend-skill-packs']) assert.ok(names.includes(n), 'missing command ' + n);
-  const d = parse(read('image-deep-research')).meta.description.toLowerCase();
-  for (const word of ['image', 'deep research', 'references', 'moodboard']) assert.ok(d.includes(word), 'image-deep-research description lacks "' + word + '"');
-  assert.match(read('image-deep-research'), /skills\/visual-research\/SKILL\.md/);
+  // /ultimate-frontend-skills:image-deep-research is the bundled skill itself.
+  // A command of the same name would be shadowed by it in Claude Code (the
+  // skill wins, code.claude.com/docs/en/skills) and duplicated in Codex.
+  // test/image-research.test.mjs holds the skill's own description to the
+  // search words.
+  assert.ok(SKILLS.includes('image-deep-research'), 'the image-deep-research skill is not bundled');
+  assert.ok(!names.includes('image-deep-research'), 'a command named image-deep-research would shadow or duplicate the skill');
 });
 
 test('every command file parses, with a plain description and an argument hint', () => {
@@ -157,5 +161,5 @@ test('README lists every command, and AGENTS.md names every command file', () =>
     assert.match(agents, new RegExp('^\\s+' + name + '\\r?$', 'm'), 'AGENTS.md does not list ' + name);
   }
   const listed = [...readme.matchAll(/`\/ultimate-frontend-skills:([a-z0-9-]+)`/g)].map((m) => m[1]);
-  for (const n of listed) assert.ok(names.includes(n), 'README lists /ultimate-frontend-skills:' + n + ' but commands/' + n + '.md does not exist');
+  for (const n of listed) assert.ok(names.includes(n) || SKILLS.includes(n), 'README lists /ultimate-frontend-skills:' + n + ' but there is no command or skill of that name');
 });

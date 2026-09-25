@@ -225,7 +225,7 @@ connector as the row says.
 | Collaborator | Hand off when |
 |---|---|
 | `superpowers` (14 skills) | **brainstorming** before a build whose brief does not pin the subject. **writing-plans** for a multi-page site. **verification-before-completion** before any "done" claim - its Iron Law is the same contract as `webdesign verify`, so run verify and quote the verdict rather than narrating it. **subagent-driven-development** / **dispatching-parallel-agents** when pages are independent. **systematic-debugging** when a shader, a scroll pin or a parity failure resists the first fix |
-| `visual-research` (ships in this repo) | The question is what something looks like in the wild - moodboards, competitors, identifying a face or a palette. Stage 2's companion to `study` |
+| `image-deep-research` (ships in this repo, vendored from ridelink0/image-deep-research; `visual-research` is its old name) | The question is what something looks like in the wild - moodboards, licensed reference images, competitors, identifying a face or a palette. Stage 2's companion to `study` |
 | `computer-use` | Only when the target is outside a headless browser: a desktop app, a login-walled page, a GUI form, a real browser being watched. For a page built here, `look` / `debug` / `quality` / `parity` are headless, cheaper and repeatable. Run it on a separate virtual desktop |
 | `ecc` -> `chrome-devtools` MCP | `quality` has told you *that* something is slow and you need *why*: live DOM, network waterfall, CPU trace. Not a design tool |
 | `dataviz` (built-in skill) | Any chart, stat tile, sparkline, KPI row or dashboard block. Read it before choosing chart colours, not after |

@@ -279,8 +279,9 @@ git clone https://github.com/ridelink0/ultimate-frontend-skills
 node ultimate-frontend-skills/scripts/install.mjs
 ```
 
-Or through the open skills ecosystem, which installs the two skills into every
-agent it finds on the machine:
+Or through the open skills ecosystem, which installs the skills
+(ultimate-frontend-skills, image-deep-research, and the visual-research alias)
+into every agent it finds on the machine:
 
 ```bash
 npx skills add ridelink0/ultimate-frontend-skills
@@ -331,7 +332,7 @@ the menu finds the command whose name contains them.
 
 | Command | What it starts |
 |---|---|
-| `/ultimate-frontend-skills:image-deep-research` | Image deep research: reference images, real sites rendered into contact sheets, a moodboard, read as pictures (the `visual-research` skill) |
+| `/ultimate-frontend-skills:image-deep-research` | Image deep research: licensed reference images with every URL verified, real sites rendered into contact sheets with their palette and type measured, a moodboard, read as pictures. This one is the skill itself, bundled from [image-deep-research](https://github.com/ridelink0/image-deep-research); the old name `/ultimate-frontend-skills:visual-research` still works |
 | `/ultimate-frontend-skills:webdesign` | Build a website in the house style, or audit and upgrade one that exists |
 | `/ultimate-frontend-skills:scaffold-website` | Scaffold a new site from the section library, list sections, add one to a page |
 | `/ultimate-frontend-skills:awards` | Three award-winning references that disagree, rendered so you can look at them |
@@ -358,12 +359,14 @@ the menu finds the command whose name contains them.
 
 The new commands are for you to type; Claude does not start them on its own
 (`disable-model-invocation`), so they cost nothing in a session that does not
-use them. The two skills still trigger on their own when you just ask.
+use them. The skills (ultimate-frontend-skills and image-deep-research) still
+trigger on their own when you just ask.
 
 **In Codex** the same files work. When Codex installs the plugin it turns each
 command into a skill named `ultimate-frontend-skills:source-command-<name>`:
-start one with `$ultimate-frontend-skills:source-command-image-deep-research`
-(and so on) or pick it from `/skills`.
+start one with `$ultimate-frontend-skills:source-command-webdesign`
+(and so on) or pick it from `/skills`. Image deep research is a skill rather
+than a command, so there it is `$ultimate-frontend-skills:image-deep-research`.
 Codex skips any command file that uses argument placeholders such as
 `$ARGUMENTS` or `$1`, or that renders past 4,000 bytes, so none of these do;
 the text typed after the command arrives as the rest of the message. Codex
@@ -376,6 +379,18 @@ deprecated and cannot ship inside a plugin, so there are none here.
 
 **`skills/ultimate-frontend-skills/SKILL.md`** - the doctrine. Short, because the code carries the
 design rather than the prose describing it.
+
+**`skills/image-deep-research/`** - image deep research: open, licensed
+image collections searched with no keys and every URL verified, real sites
+rendered into contact sheets with their palette and type measured, and
+moodboards. It is developed and released on its own at
+[ridelink0/image-deep-research](https://github.com/ridelink0/image-deep-research)
+and bundled here from a tagged release by `scripts/sync-image-research.mjs`,
+which records the version, commit and a sha256 of every file in
+`image-deep-research.lock.json`; a test fails if the bundled copy drifts from
+it. With UFS installed you already have it: do not install the standalone
+plugin as well, or the skill is listed twice. The old name, `visual-research`,
+is kept as a typed alias.
 
 **`assets/core.css`** - the chassis, copied into the project verbatim. Tokens,
 reset, a fluid type scale computed to land exactly on its bounds, a 12-column

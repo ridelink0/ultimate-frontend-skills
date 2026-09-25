@@ -83,12 +83,20 @@ export const NOTES = {
   'skill-creator': { role: 'other', live: 'For building a skill or an eval, not a site. Nothing changes here.' },
   'claude-md-management': { role: 'other', live: 'Nothing changes for a website build.' },
   'usage-limits': { role: 'other', live: 'Budget only. It does not touch the design; it can tell you whether the build fits before a reset.' },
+  // The standalone release of the skill this plugin already bundles. With both
+  // installed the same skill is listed twice; the copies can also differ.
+  'image-deep-research': {
+    role: 'other',
+    live: 'The standalone release of the image-deep-research skill this plugin already ships (skills/image-deep-research).\n'
+      + 'Both installed lists the skill twice; uninstall one. Which version is bundled: image-deep-research.lock.json.',
+  },
 };
 
 /* Skills that live outside any plugin still change the build, so they get the
    same treatment. Keyed by skill directory name. */
 export const SKILL_NOTES = {
-  'visual-research': 'When the question is what something looks like in the wild. Pairs with `study` at stage 2.',
+  'image-deep-research': 'When the question is what something looks like in the wild. Pairs with `study` at stage 2. This plugin also ships it.',
+  'visual-research': 'The old name of image-deep-research, which this plugin now ships. A personal copy under this name may be out of date.',
   dataviz: 'Read it BEFORE the first line of chart code and before choosing chart colours - any chart, stat tile or KPI row.',
   // Packs from the open skills ecosystem (npx skills add). Each owns its domain
   // when present; references/skill-packs.md has the handoff table.
