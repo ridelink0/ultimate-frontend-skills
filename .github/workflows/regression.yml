@@ -24,9 +24,40 @@ jobs:
       - name: install ffmpeg (linux)
         if: runner.os == 'Linux'
         run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg && ffmpeg -version | head -1
+      # `choco install ffmpeg -y && ffmpeg -version` failed on every Windows run
+      # from 6.3.0 on, and it failed in the step BEFORE the browser, so the
+      # Windows half of the suite has not executed since. Two reasons, both of
+      # them choco's normal behaviour rather than an outage: it reports
+      # "installed 0/0 packages" and exits 0 when the package is already known
+      # to it, and it never puts its shim directory on the PATH of the session
+      # that called it. So: install only when ffmpeg is actually missing, then
+      # find the binary and hand its directory to the later steps explicitly.
       - name: install ffmpeg (windows)
         if: runner.os == 'Windows'
-        run: choco install ffmpeg -y --no-progress && ffmpeg -version
+        shell: pwsh
+        run: |
+          function Find-Ffmpeg {
+            $cmd = Get-Command ffmpeg -ErrorAction SilentlyContinue
+            if ($cmd) { return $cmd.Source }
+            $choco = if ($env:ChocolateyInstall) { $env:ChocolateyInstall } else { 'C:\ProgramData\chocolatey' }
+            foreach ($p in @("$choco\bin\ffmpeg.exe", "$choco\lib\ffmpeg\tools\ffmpeg\bin\ffmpeg.exe")) {
+              if (Test-Path $p) { return $p }
+            }
+            return $null
+          }
+          $bin = Find-Ffmpeg
+          if (-not $bin) {
+            choco install ffmpeg -y --no-progress
+            # What refreshenv does, without depending on the choco profile being
+            # loaded in this shell.
+            $machine = [Environment]::GetEnvironmentVariable('Path', 'Machine')
+            $user = [Environment]::GetEnvironmentVariable('Path', 'User')
+            $env:PATH = "$machine;$user"
+            $bin = Find-Ffmpeg
+          }
+          if (-not $bin) { Write-Error 'ffmpeg is not resolvable after install - the video suite would skip and the no-skip guard would fail the job'; exit 1 }
+          Split-Path $bin | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          & $bin -version | Select-Object -First 1
       - uses: browser-actions/setup-chrome@v1
         id: setup-chrome
         with:
