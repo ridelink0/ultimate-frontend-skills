@@ -48,6 +48,7 @@
     "hooks/",
     ".claude-plugin/",
     ".codex-plugin/",
+    "image-deep-research.lock.json",
     "AGENTS.md",
     "LICENSE",
     "README.md"

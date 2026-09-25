@@ -1,0 +1,17 @@
+{
+  "note": "Written by scripts/sync-image-research.mjs. Do not edit by hand, and do not edit skills/image-deep-research/ by hand: change it upstream, release, then sync.",
+  "upstream": "https://github.com/ridelink0/image-deep-research.git",
+  "version": "1.0.0",
+  "tag": "v1.0.0",
+  "commit": "369f5e3889a921e7a0d56da90d4f783fa6cdb2fc",
+  "dirty": false,
+  "tree": "52d563c2e074046a8018e042b9a6d941701d3c7b7498e67a4ac6eeb17356c4bf",
+  "files": {
+    "SKILL.md": "f46af9f1e8bac4dc7421db3a2487d0130c0dd8dae9f1586c5b6bcf17448f160f",
+    "scripts/args.mjs": "74899015eda8b3f461b230591e8431c242e415bb420858f2f188f9f68fd0ac2e",
+    "scripts/browser.mjs": "e98617bc3915954dab750108571759f6408bddc07cbe7a852d9e07cd6d3fd29a",
+    "scripts/images.mjs": "3faa38560c345c8aae263da569761fc211537015098e322f1319b12df9813f03",
+    "scripts/sheet.mjs": "46915bbbceea7e1ba63937883c32fab620a705e6e50d63d80bc4e025d9363d6b",
+    "scripts/study.mjs": "c6e709901a4ade8ea31441977f4d49468aaf7550b1ed97add32a45aca9b9d0b8"
+  }
+}
