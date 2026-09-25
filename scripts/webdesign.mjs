@@ -11,7 +11,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, statSy
 import { join, dirname, resolve, extname, basename, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { startServer } from './preview-server.mjs';
-import { parseArgs } from './args.mjs';
+import { parseArgs, defaultWidths } from './args.mjs';
 import { runAudit } from './audit.mjs';
 import { tmpdir } from 'node:os';
 import { spawnSync } from 'node:child_process';
@@ -323,7 +323,7 @@ function cmdServe() {
 async function cmdLook() {
   const target = positional[0] || '.';
   const out = String(flag('out', join(process.env.CLAUDE_SCRATCHPAD || tmpdir(), 'webdesign-shots')));
-  const widths = String(flag('widths', '1440,390')).split(',').map((s) => parseInt(s, 10)).filter(Boolean);
+  const widths = defaultWidths(flag).split(',').map((s) => parseInt(s, 10)).filter(Boolean);
   // Default probes the top AND one screen down: that is where parallax layers
   // drift into the headline, and where a top-only check said everything was fine.
   const scrolls = String(flag('scroll', '0,600')).split(',').map((s) => parseInt(s, 10)).filter((n) => !isNaN(n));
@@ -544,7 +544,7 @@ async function cmdDebug() {
   const { debugSite, readActions } = await import('./debug.mjs');
   const scroll = flag('scroll', 'auto');
   const result = await debugSite(positional[0] || '.', {
-    out: flag('out'), widths: String(flag('widths', '1440,390')).split(',').map(Number),
+    out: flag('out'), widths: defaultWidths(flag).split(',').map(Number),
     wait: Number(flag('wait', 1800)), motion: flag('motion', 'both'), actions: readActions(flag('actions')),
     scrolls: scroll === 'auto' ? 'auto' : String(scroll).split(',').map(Number),
     measured: Boolean(flag('measure')),
@@ -618,7 +618,7 @@ async function cmdVerify() {
   let result;
   try {
     result = await runVerify(/^https?:\/\//i.test(target) ? target : resolve(target), {
-      widths: String(flag('widths', '1440,390')).split(',').map(Number),
+      widths: defaultWidths(flag).split(',').map(Number),
       wait: Number(flag('wait', 1800)),
       design: flag('design'),
     });
@@ -867,7 +867,7 @@ switch (cmd) {
   sections                        list section ids and presets
   add <id> [--to <file>]          print a section, or insert it before </main>
   audit <dir|file>                source check: copy, semantics, the tells
-  look <dir|file|url> [--widths 1440,390] [--scroll 0,600] [--out DIR] [--no-shot]
+  look <dir|file|url> [--widths 1440,390 | --game (1366,1280,1920)] [--scroll 0,600] [--out DIR] [--no-shot]
                                   RENDER it: overlap, overflow, contrast, PNGs
   cut <photo> [--out DIR] [--name base] [--model isnet-general-use|u2net] [--alpha-matting]
                                   one photograph into parallax planes (rembg, local)

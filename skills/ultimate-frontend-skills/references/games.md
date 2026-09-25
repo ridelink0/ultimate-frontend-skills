@@ -255,6 +255,45 @@ The dividing line, in short: an **in-game start screen** exists to get you playi
 
 ---
 
+## In-game rendering: five mistakes Doodle Voyager made (2026-09-24)
+
+A three.js first-person game built from this corpus went through all five of
+these. Each one shipped, looked wrong, and had one cause worth knowing before
+you write the first pass.
+
+1. **A stylised post pass that replaces lighting makes everything flat and
+   white.** The game's "ballpoint on paper" pass drew ink edges and hatching
+   over a paper colour and threw the lit colour away, so no surface had a
+   light or a dark side. Keep real lighting in the materials and do the
+   stylisation there: patch a `MeshLambertMaterial` with `onBeforeCompile`
+   (after `#include <opaque_fragment>` is replaced) and draw the hatching in
+   object space from the light that actually arrived. The post pass then only
+   adds edges, background and screen effects. Doodle Shooter's look is a
+   texture on lit surfaces, not a replacement for lighting.
+2. **Bloom double-encodes gamma if the composite does its own.** With
+   `EffectComposer` + `ShaderPass(composite)` + `UnrealBloomPass`, bloom is
+   the last pass and copies its input to the screen with a
+   `MeshBasicMaterial`, which three.js sRGB-encodes. A composite that already
+   applied `pow(c, 1/2.2)` gets encoded twice and every dark value washes out
+   pale. Either keep the chain linear and end with `OutputPass`, or set
+   `renderer.outputColorSpace = THREE.LinearSRGBColorSpace` when you encode by
+   hand. The symptom is a scene that looks right with bloom off and milky with
+   it on.
+3. **Colour-difference edge detection outlines every hatch stroke.** Once
+   hatching is inside the material, a post-pass colour edge fires on each pen
+   line and the surface turns into a bright mesh. Keep depth, background and
+   material-ID edges; restrict colour edges to materials without hatching.
+4. **"Neon" means a dark city lit by its signs, not every surface glowing.**
+   Bright cyan edges and rims on everything read as a wireframe, not neon.
+   Dark surfaces, dim silhouette lines, low fill light (a hemisphere near 0.3
+   inside a cabin), and colour only on emitters: screens, lamps, signs,
+   engines, enemies. Let a bloom threshold catch only those. Small interiors
+   stay dim; large ones can carry more light.
+5. **Check a game at the sizes it is played at.** A keyboard-and-mouse game
+   has no controls at 390 px, so a phone-width render proves nothing. Use
+   `webdesign.mjs look --game` (1366, 1280, 1920); add phone widths only when
+   the game ships touch controls.
+
 ## URLs referenced
 
 - https://doodleshooter.vercel.app

@@ -19,13 +19,15 @@ h1{font-size:48px;margin:0 0 16px}p{max-width:60ch;margin:0 0 12px}</style>
 <script>
 // Inserted after load, above everything: a full screen of content moves down,
 // which is what makes this a shift rather than a repaint.
-addEventListener('load', () => {
+// Two frames first: a shift needs an earlier painted layout to shift from,
+// and on a loaded machine the first frame can land after a bare 60 ms timer.
+addEventListener('load', () => requestAnimationFrame(() => requestAnimationFrame(() => {
   setTimeout(() => {
     const banner = document.createElement('div');
     banner.id = 'banner';
     banner.style.cssText = 'height:300px;background:#33141d';
     document.getElementById('top').appendChild(banner);
   }, 60);
-});
+})));
 </script>
 </html>

@@ -19,6 +19,14 @@ jobs:
       # page - the part most likely to be wrong. windows-latest ships Edge
       # already; ubuntu-latest does not, so give it a Chromium and point
       # inspect.mjs's findBrowser() at it the same way a developer would.
+      # The video suite needs ffmpeg; without it the test skips and the
+      # no-skip guard below fails the job, which is what turned 6.2.0 red.
+      - name: install ffmpeg (linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg && ffmpeg -version | head -1
+      - name: install ffmpeg (windows)
+        if: runner.os == 'Windows'
+        run: choco install ffmpeg -y --no-progress && ffmpeg -version
       - uses: browser-actions/setup-chrome@v1
         id: setup-chrome
         with:
