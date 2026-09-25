@@ -96,3 +96,57 @@ test('a plane whose rate came back null is unmeasured, not a crash and not a fai
   const found = judge({ ...clean, depth: { planes } });
   assert.equal(found.filter((f) => f.level === 'error').length, 0);
 });
+
+/* The Windows and ubuntu CI job missed a real scroll thrash and the suite could
+   not reproduce it locally, because the missing half was a machine property.
+   The per-event layout finding used to need BUDGETS.thrashFrames long frames
+   alongside the ratio, and long-animation-frame only reports frames over 50 ms:
+   the read-then-write fixture produced 9 long frames on a laptop and exactly 1
+   on the CI runner, so the error was simply never raised there. These two cases
+   are the fast runner, on fixed numbers, on any machine. */
+const fastRunner = (reads) => ({
+  ...clean,
+  run: {
+    measured: true, scrollEvents: reads.events, layoutsPerScroll: 300,
+    metrics: { layoutCount: 1500, layoutMs: 120 },
+    // One long frame is all a fast machine reports, which is what used to
+    // silence this finding.
+    loaf: { supported: true, count: 1, longestMs: 55, blockingMs: 0, forcedMs: 37, culprit: null },
+    reads,
+  },
+});
+const thrashText = (found) => levels(found).filter((t) => /layouts per scroll event/.test(t));
+
+test('a scroll thrash is caught on a runner too fast to produce long frames', () => {
+  // Reads on every scroll event the gesture produced: the real fixture measures
+  // 5 of 5, and that ratio is the same on any machine.
+  const found = judge(fastRunner({ total: 1500, before: 0, events: 5, withReads: 5, readRatio: 1,
+    readers: [{ site: 'thrash-on-scroll.html:15', events: 5 }] }));
+  assert.deepEqual(thrashText(found), ['scrolling forces 300 layouts per scroll event (budget 4)']);
+  // The evidence that triggered it is named in the detail, machine-independent
+  // part first, and it points at the line that read.
+  const error = found.find((f) => /layouts per scroll event/.test(f.text));
+  assert.match(error.detail, /^geometry read on 5 of 5 scroll events at thrash-on-scroll\.html:15;/);
+});
+
+test('one expensive burst inside the gesture is still not per-scroll-event thrash', () => {
+  // The lazy IntersectionObserver fixture: the ratio IS over budget and the
+  // cost is one frame, so there is no per-event thrash to describe. Reading on
+  // 1 of 21 events is what says so.
+  const found = judge(fastRunner({ total: 800, before: 0, events: 21, withReads: 1, readRatio: 0.05,
+    readers: [{ site: 'lazy-measure-once.html:23', events: 1 }] }));
+  assert.deepEqual(thrashText(found), []);
+  // Nor can a burst reach the ratio by collapsing the denominator to two
+  // events, which is the trap a ratio alone would still fall into.
+  const collapsed = judge(fastRunner({ total: 800, before: 0, events: 2, withReads: 1, readRatio: 0.5,
+    readers: [{ site: 'lazy-measure-once.html:23', events: 1 }] }));
+  assert.deepEqual(thrashText(collapsed), []);
+});
+
+test('an over-budget layout ratio with no geometry read at all says nothing', () => {
+  // A page that relaid out for its own reasons and read nothing is not a
+  // read-then-write handler, and naming it would send someone to edit correct
+  // code.
+  const found = judge(fastRunner({ total: 0, before: 0, events: 40, withReads: 0, readRatio: 0, readers: [] }));
+  assert.deepEqual(thrashText(found), []);
+});

@@ -63,6 +63,76 @@ const SLOP_FONTS = [
 ];
 // "VibeCode purple" plus the Tailwind blues.
 const SLOP_HEX = /#(6366f1|4f46e5|818cf8|8b5cf6|7c3aed|a855f7|c084fc|2563eb|3b82f6|60a5fa|ec4899|f472b6)\b/gi;
+
+/* The same twelve colours, written the two other ways the generators now write
+   them. Tailwind v4 and the current shadcn/ui scaffold emit tokens as oklch()
+   and the generation before it emitted bare HSL triples (`--primary: 262 83%
+   58%`), so a hex scan sees a violet CTA in 2023 and nothing at all in 2026.
+   Matched by COLOUR rather than by a hue band: a band would fail a designer who
+   genuinely chose violet, and a check that fails honest work gets switched off.
+   Anything within this tolerance of a Tailwind default IS the Tailwind default
+   with the notation changed. */
+const SLOP_OKLCH = [
+  ['#6366f1', 58.5, 0.204, 277.1], ['#4f46e5', 51.1, 0.230, 277.0],
+  ['#818cf8', 68.0, 0.158, 276.9], ['#8b5cf6', 60.6, 0.219, 292.7],
+  ['#7c3aed', 54.1, 0.247, 293.0], ['#a855f7', 62.7, 0.233, 303.9],
+  ['#c084fc', 72.2, 0.177, 305.5], ['#2563eb', 54.6, 0.215, 262.9],
+  ['#3b82f6', 62.3, 0.188, 259.8], ['#60a5fa', 71.4, 0.143, 254.6],
+  ['#ec4899', 65.6, 0.212, 354.3], ['#f472b6', 72.5, 0.175, 349.8],
+];
+const toOklch = (r8, g8, b8) => {
+  const lin = (c) => { c /= 255; return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); };
+  const r = lin(r8), g = lin(g8), b = lin(b8);
+  const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
+  const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
+  const s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
+  const L = 0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s;
+  const A = 1.9779984951 * l - 2.4285922050 * m + 0.4505937099 * s;
+  const B = 0.0259040371 * l + 0.7827717662 * m - 0.8086757660 * s;
+  let h = Math.atan2(B, A) * 180 / Math.PI;
+  if (h < 0) h += 360;
+  return [L * 100, Math.hypot(A, B), h];
+};
+const hslToOklch = (H, S, L) => {
+  // CSS hsl(), by the spec's own algorithm, then through the sRGB conversion
+  // above - so one tolerance covers every notation.
+  const s = S / 100, l = L / 100;
+  const f = (n) => {
+    const k = (n + H / 30) % 12;
+    const a = s * Math.min(l, 1 - l);
+    return (l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1))) * 255;
+  };
+  return toOklch(f(0), f(8), f(4));
+};
+// Named because it is the number that decides a build. A hue is only compared
+// when the colour is saturated enough for hue to mean anything.
+const CLOSE = { l: 2.5, c: 0.03, h: 5 };
+const nearSlop = (L, C, h) => SLOP_OKLCH.find(([, sl, sc, sh]) => {
+  if (Math.abs(L - sl) > CLOSE.l || Math.abs(C - sc) > CLOSE.c) return false;
+  // Circular distance: hue 359 and hue 1 are two degrees apart, not 358.
+  return Math.abs(((h - sh + 540) % 360) - 180) <= CLOSE.h;
+});
+/* Every colour literal in the two notations a hex scan misses, including the
+   bare `--token: 262 83% 58%` shadcn form, which is legal nowhere except inside
+   an hsl() the framework wraps around it. */
+function slopColours(blob) {
+  const hits = new Set();
+  const add = (name, hex) => hits.add(name + ' (= ' + hex + ')');
+  for (const m of blob.matchAll(/oklch\(\s*([\d.]+)(%?)\s+([\d.]+)\s+([\d.]+)/gi)) {
+    const L = m[2] === '%' ? Number(m[1]) : Number(m[1]) * 100;
+    const near = nearSlop(L, Number(m[3]), Number(m[4]));
+    if (near) add(m[0].replace(/\s+/g, ' ') + ')', near[0]);
+  }
+  for (const m of blob.matchAll(/hsla?\(\s*([\d.]+)(?:deg)?\s*,?\s*([\d.]+)%\s*,?\s*([\d.]+)%/gi)) {
+    const near = nearSlop(...hslToOklch(Number(m[1]), Number(m[2]), Number(m[3])));
+    if (near) add(m[0].replace(/\s+/g, ' ') + ')', near[0]);
+  }
+  for (const m of blob.matchAll(/--[\w-]+\s*:\s*([\d.]+)\s+([\d.]+)%\s+([\d.]+)%\s*[;}]/g)) {
+    const near = nearSlop(...hslToOklch(Number(m[1]), Number(m[2]), Number(m[3])));
+    if (near) add(m[1] + ' ' + m[2] + '% ' + m[3] + '%', near[0]);
+  }
+  return [...hits];
+}
 const DIM_GREY = /#(888888|888|999999|999|9ca3af|a0aec0|aaaaaa|aaa|cccccc|ccc)\b/gi;
 const BUILDERS = /(gpteng\.co|lovable-tagger|lovable-uploads|\.lovable\.app|\.bolt\.host|@base44\/sdk|\.base44\.app|Built with v0|\.repl\.co|\.replit\.app)/i;
 
@@ -84,8 +154,8 @@ function slopChecks(hRaw, css, n, E, W) {
   if (fontHit.length)
     W(`${n}: ${fontHit.join(', ')} - currently the most-generated face(s) on the web. See references/typography.md.`);
 
-  // 2. the purple/blue accent
-  const purple = [...new Set((blob.match(SLOP_HEX) || []).map((s) => s.toLowerCase()))];
+  // 2. the purple/blue accent, in whichever of the three notations it arrived
+  const purple = [...new Set((blob.match(SLOP_HEX) || []).map((s) => s.toLowerCase())), ...slopColours(blob)];
   if (purple.length) E(`${n}: ${purple.join(', ')} - the single most recognisable generated-page colour`);
 
   // 3. gradient text

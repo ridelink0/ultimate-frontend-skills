@@ -90,13 +90,21 @@ What each finding means, and what to do about it:
   driven scroll, not a teleport. A scroll handler that reads a geometry
   property (`getBoundingClientRect`, `offsetTop`, `scrollHeight`) and then
   writes a style in the same pass forces a synchronous layout per element per
-  event. The detail line names the file and the invoker the browser itself
-  attributed it to, and the forced-layout milliseconds. Fix by reading
+  event. Two signals have to agree, and both are properties of the code rather
+  than of the machine: the layout count per event, and geometry reads on most
+  of the gesture's scroll events. The detail line leads with the second -
+  "geometry read on 5 of 5 scroll events at app.js:184" - then the layout and
+  forced-layout figures, then the file and invoker the browser attributed the
+  long frame to when it reported one. One expensive burst inside the gesture
+  (a lazy `IntersectionObserver` that measures once and disconnects) reads on
+  one event out of twenty and is deliberately not reported. Fix by reading
   everything first and writing afterwards, or by moving the write into a
   custom property the compositor can handle.
 - **"N long animation frames during the scroll"**. A warning, never an error on
-  its own: on a loaded machine any page can produce one. It only means
-  something next to the layout count above.
+  its own: on a loaded machine any page can produce one, and on a fast one a
+  genuinely thrashing page produces none, because long-animation-frame reports
+  only frames over 50 ms. It is supporting detail for the layout count above,
+  never a gate on it.
 - **"layout shift X (budget 0.1)"**. The detail line now names the elements
   that actually moved and how far, taken from the browser's own layout-shift
   sources. The element named is where the reserved space is missing.

@@ -21,6 +21,13 @@ Public scanners weight these above everything else. In descending order:
 2. **Indigo/violet CTAs.** `#6366f1`, `#4f46e5`, `#8b5cf6`, `#7c3aed`,
    `#a855f7`, and the Tailwind blues `#2563eb`, `#3b82f6`. Traceable to a single
    Tailwind UI decision in 2020 that its author has publicly apologised for.
+   **The hex list is no longer the whole tell.** Tailwind v4 and the current
+   shadcn/ui scaffold emit their tokens as `oklch()`, and the generation before
+   it emitted bare `hsl()` triples, so the identical colour now ships in two
+   syntaxes a hex scan cannot see. The tell is the *hue*, not the notation: in
+   OKLCh it is roughly **H 260-310 at C above 0.15**, which is `oklch(55% 0.24
+   277)` for `#6366f1` and its neighbours; in HSL it is `--primary: 262 83% 58%`
+   and the rest of that band. `webdesign.mjs audit` reads all three notations.
 3. **A reflexive cream ground.** This one matters here, because it is what this
    skill uses. Warm off-white plus a serif is now itself a recognised look - the
    "tasteful AI startup" wash. See the section below.

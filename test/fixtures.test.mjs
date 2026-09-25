@@ -181,17 +181,32 @@ test('a read-then-write scroll handler is caught, and the identical page without
   // so it is tolerated rather than asserted. The layout COUNT is the trigger.
   raisesAllowingTiming(bad, /^error: scrolling forces \d+(\.\d+)? layouts per scroll event \(budget 4\)$/);
   const error = judge(bad.measured).find((f) => f.level === 'error');
-  // Check 5: attribution is a detail line on this finding, not a finding of
-  // its own. It must name the file and the invoker LoAF actually reported.
-  assert.match(error.detail, /thrash-on-scroll\.html \[event-listener\]/);
-  assert.ok(bad.measured.run.loaf.forcedMs > 0, 'forced synchronous layout should be measured: ' + JSON.stringify(bad.measured.run.loaf));
+  // Check 5: attribution is a detail line on this finding, not a finding of its
+  // own, and it must name where the reading happened. The read site is asserted
+  // rather than the LoAF culprit because it is a property of the page's code:
+  // LoAF reports nothing at all on a runner fast enough to keep every frame
+  // under 50 ms, and this assertion used to depend on it.
+  assert.match(error.detail, /geometry read on \d+ of \d+ scroll events at thrash-on-scroll\.html:\d+/);
+  // The same page's LoAF attribution, whenever the machine reported a long
+  // frame to attribute. Kept, because on a slower box it is the richer answer.
+  if (bad.measured.run.loaf.count > 0) {
+    assert.match(error.detail, /thrash-on-scroll\.html \[event-listener\]/);
+    assert.ok(bad.measured.run.loaf.forcedMs > 0, 'forced synchronous layout should be measured: ' + JSON.stringify(bad.measured.run.loaf));
+  }
   assert.ok(bad.measured.run.layoutsPerScroll > BUDGETS.layoutsPerScroll * 5);
+  // Every scroll event it handled forced a read. 300 rows per event, and the
+  // ratio is 1 on a fast runner and on a slow one alike.
+  assert.equal(bad.measured.run.reads.readRatio, 1, JSON.stringify(bad.measured.run.reads));
+  assert.ok(bad.measured.run.reads.total >= 300 * bad.measured.run.reads.events,
+    'one read per row per handled event: ' + JSON.stringify(bad.measured.run.reads));
   // The control is the same 300 rows and the same gesture with a passive
   // listener that reads no geometry. If this ever speaks, the check is
   // measuring the machine rather than the page.
   const good = await measured('clean-scroll.html');
   raises(good);
-  assert.equal(good.measured.run.loaf.count, 0);
+  // Not a long-frame count, which a loaded runner produces on any page: the
+  // literal claim the fixture makes, which is that it reads no geometry at all.
+  assert.equal(good.measured.run.reads.total, 0, JSON.stringify(good.measured.run.reads));
   assert.ok(good.measured.run.layoutsPerScroll <= BUDGETS.layoutsPerScroll);
 });
 
@@ -438,14 +453,21 @@ test('a one-off lazy measurement is not reported as per-scroll-event thrash', { 
   // there is no per-event thrash to describe.
   assert.ok(run.layoutsPerScroll > BUDGETS.layoutsPerScroll,
     'the fixture must still exceed the ratio budget or it proves nothing: ' + JSON.stringify(run.layoutsPerScroll));
-  assert.ok(run.loaf.count < BUDGETS.thrashFrames,
-    'the fixture is a single burst by construction: ' + JSON.stringify(run.loaf));
+  // A single burst by construction: the observer fires once, disconnects and
+  // measures every word exactly once, so exactly one of the gesture's scroll
+  // events forced a read. Counted in reads rather than in long frames, because
+  // a fast runner reports no long frames on either page and the old
+  // long-frame gate then silenced the real defect as well as this one.
+  assert.equal(run.reads.withReads, 1, JSON.stringify(run.reads));
+  assert.ok(run.reads.events >= 4 && run.reads.readRatio < BUDGETS.readEventRatio,
+    'one read across a gesture of many events: ' + JSON.stringify(run.reads));
   assert.equal(judge(r.measured).filter((f) => /layouts per scroll event/.test(f.text)).length, 0);
   // The real thrash still recurs across the gesture, which is the signal that
   // separates them.
   const bad = await measured('thrash-on-scroll.html');
-  assert.ok(bad.measured.run.loaf.count >= BUDGETS.thrashFrames,
-    'a real scroll thrash produces a long frame per handled event: ' + JSON.stringify(bad.measured.run.loaf));
+  assert.ok(bad.measured.run.reads.withReads >= BUDGETS.readEvents
+    && bad.measured.run.reads.readRatio >= BUDGETS.readEventRatio,
+    'a real scroll thrash reads geometry on the events it handles: ' + JSON.stringify(bad.measured.run.reads));
   // Same fixture, same assertion as the thrash test above: a page built to be
   // expensive also takes a long task on a busy machine, and that finding is
   // triggered by a duration. The layout error is still asserted exactly.

@@ -734,7 +734,23 @@ web.dev/articles/lcp.
 
 INP replaced FID and became a stable Core Web Vital in 2024. Do not write FID
 anywhere. TTFB, FCP and TBT are diagnostic rather than core (TBT is the lab proxy
-for INP).
+for INP). The three metrics and all nine numbers above are unchanged as of
+September 2026 - if a page tells you the thresholds moved, it is selling
+something.
+
+What did change is who can measure them. Safari 26.2 (2025-12-12) shipped the
+Event Timing API and LCP performance entries, taking both to Baseline **newly
+available** - Chrome 76/77, Firefox 89/122, Safari 26.2. Until that release,
+field CWV data was effectively Chrome-only, which is why CrUX is a Chrome
+dataset and why "our Safari users" was always an argument nobody could settle.
+Two practical consequences: a `PerformanceObserver` for `largest-contentful-paint`
+or `event` now returns entries in every engine, so a RUM script no longer needs
+a Chrome guard; and Safari-only regressions are now visible to you rather than
+only to the user. CLS is the exception: the Layout Instability API that produces
+`layout-shift` entries is Chrome and Edge 84+ only, with no Firefox and no
+Safari implementation at all. So layout shift is measurable in one engine and
+must be prevented by design in the other two - explicit media dimensions,
+reserved space for anything that arrives late, no banner injected above content.
 
 INP counts clicks, taps and key presses only, not scrolling, hovering or zooming,
 and splits into input delay, processing duration and presentation delay. On a

@@ -242,22 +242,106 @@ const SCROLL_PREP = `(() => {
   const planes = [...document.querySelectorAll('[data-depth], [data-parallax], .plane, .layer')];
   const run = { samples: [], scrollEvents: 0, stop: false, planes, shiftFrom };
   window.__scrollRun = run;
-  run.onScroll = () => { run.scrollEvents++; };
-  addEventListener('scroll', run.onScroll, { passive: true });
+
+  /* Geometry reads, bucketed by the scroll event that was being handled when
+     each one happened. This is the signal that tells a handler reading on
+     every scroll event from one expensive burst that merely lands inside the
+     gesture, and unlike a long-frame count it is a property of the page's own
+     code: long-animation-frame only reports frames over 50 ms, so a real
+     read-then-write handler on a fast machine produces one long frame or none
+     and a frame-count gate passes the defect through silently. A read either
+     happened on this event or it did not, on any machine. */
+  const reads = { total: 0, before: 0, buckets: [], readers: {} };
+  run.reads = reads;
+  // Held while OUR OWN probe reads geometry. The rAF sampler below reads every
+  // plane's rect on every frame of the gesture, and counting that would charge
+  // the page for the cost of being measured.
+  let internal = 0;
+  // Where a read came from, captured for the FIRST read of each scroll event
+  // only: one stack per event is free, one per read (300 rows x 16 events) has
+  // its own cost inside the window being measured. Every frame of this prep
+  // script is anonymous - it arrives through Runtime.evaluate and has no source
+  // URL - so the first frame carrying a real URL is the page's own code, and
+  // the wrappers below skip themselves without having to be counted.
+  const site = () => {
+    const lines = String((new Error()).stack || '').split('\\n');
+    for (const line of lines) {
+      const at = line.trim();
+      const url = at.match(/((?:https?|file|blob):[^\\s)]+?):(\\d+):\\d+/);
+      if (!url) continue;
+      const fn = (at.match(/^at\\s+([^\\s(]+)\\s+\\(/) || [])[1];
+      const file = url[1].split('/').pop() || url[1];
+      return file.slice(0, 48) + ':' + url[2] + (fn && fn !== '<anonymous>' ? ' - ' + fn + '()' : '');
+    }
+    return null;
+  };
+  const bump = () => {
+    if (internal) return;
+    reads.total++;
+    if (!reads.buckets.length) { reads.before++; return; }
+    const i = reads.buckets.length - 1;
+    if (reads.buckets[i] === 0) {
+      const from = site();
+      if (from) reads.readers[from] = (reads.readers[from] || 0) + 1;
+    }
+    reads.buckets[i]++;
+  };
+  // Restored in SCROLL_READ before it reads anything itself. The page is put
+  // back as it was found, exactly as the scroll position is.
+  const undo = [];
+  const wrapMethod = (host, name) => {
+    const orig = host && host[name];
+    if (typeof orig !== 'function') return;
+    host[name] = function () { bump(); return orig.apply(this, arguments); };
+    undo.push(() => { host[name] = orig; });
+  };
+  const wrapGetter = (proto, name) => {
+    const d = proto && Object.getOwnPropertyDescriptor(proto, name);
+    if (!d || typeof d.get !== 'function') return;
+    const get = d.get;
+    Object.defineProperty(proto, name, {
+      configurable: true, enumerable: d.enumerable, set: d.set,
+      get() { bump(); return get.call(this); },
+    });
+    undo.push(() => Object.defineProperty(proto, name, d));
+  };
+  wrapMethod(Element.prototype, 'getBoundingClientRect');
+  wrapMethod(Element.prototype, 'getClientRects');
+  wrapMethod(window, 'getComputedStyle');
+  for (const name of ['clientTop', 'clientLeft', 'clientWidth', 'clientHeight', 'scrollTop', 'scrollLeft', 'scrollWidth', 'scrollHeight'])
+    wrapGetter(Element.prototype, name);
+  for (const name of ['offsetTop', 'offsetLeft', 'offsetWidth', 'offsetHeight', 'offsetParent'])
+    wrapGetter(HTMLElement.prototype, name);
+  run.unwrap = () => { while (undo.length) undo.pop()(); };
+
+  // capture: true so this opens the bucket BEFORE the page's own scroll
+  // listeners run. The page registered its at load and ours is added here, so
+  // only the capture phase puts ours first; without it every read made by the
+  // page's handler would be charged to the previous event.
+  run.onScroll = () => { run.scrollEvents++; reads.buckets.push(0); };
+  addEventListener('scroll', run.onScroll, { passive: true, capture: true });
   const tick = () => {
     if (run.stop) return;
     if (run.samples.length < 800) {
-      run.samples.push({ y: window.scrollY, tops: planes.map((el) => el.getBoundingClientRect().top) });
+      internal++;
+      try { run.samples.push({ y: window.scrollY, tops: planes.map((el) => el.getBoundingClientRect().top) }); }
+      finally { internal--; }
     }
     requestAnimationFrame(tick);
   };
   requestAnimationFrame(tick);
-  return JSON.stringify({
-    ok: true, planes: planes.length,
-    width: innerWidth, height: innerHeight, scrollY: window.scrollY,
-    maxScroll: Math.max(0, document.documentElement.scrollHeight - innerHeight),
-    loafSupported: Boolean(m.loafSupported),
-  });
+  // Inside the guard as well: scrollHeight below is the probe measuring how far
+  // the page can scroll, and a page that reads no geometry of its own must come
+  // back reading none.
+  internal++;
+  try {
+    return JSON.stringify({
+      ok: true, planes: planes.length,
+      width: innerWidth, height: innerHeight, scrollY: window.scrollY,
+      maxScroll: Math.max(0, document.documentElement.scrollHeight - innerHeight),
+      loafSupported: Boolean(m.loafSupported),
+    });
+  } finally { internal--; }
 })()`;
 
 /* Read back after the gesture, and put the page back where it was found -
@@ -267,7 +351,10 @@ const SCROLL_READ = (restore) => `(() => {
   const run = window.__scrollRun;
   if (!run) return JSON.stringify({ error: 'the scroll run was never armed' });
   run.stop = true;
-  removeEventListener('scroll', run.onScroll);
+  // Before this function reads a single rect or computed style of its own -
+  // otherwise the probe counts itself as the page thrashing.
+  if (run.unwrap) { try { run.unwrap(); } catch (err) {} }
+  removeEventListener('scroll', run.onScroll, { capture: true });
   const samples = run.samples;
   const ys = samples.map((s) => s.y);
   const travel = ys.length ? Math.max.apply(null, ys) - Math.min.apply(null, ys) : 0;
@@ -306,9 +393,19 @@ const SCROLL_READ = (restore) => `(() => {
     };
   });
   const sources = m ? m.shiftSources.slice(Math.max(0, run.shiftFrom - (m.shiftDropped || 0))) : [];
+  const r = run.reads || { total: 0, before: 0, buckets: [], readers: {} };
   const out = {
     samples: samples.length, travel: Math.round(travel), scrollEvents: run.scrollEvents,
     usable, planes, loaf: m ? m.loaf.slice() : [], shiftSources: sources,
+    reads: {
+      total: r.total, before: r.before,
+      // Scroll events the gesture produced, and how many of them forced at
+      // least one geometry read. The denominator is counted here rather than
+      // taken from scrollEvents so the two can never disagree.
+      events: r.buckets.length,
+      withReads: r.buckets.filter((n) => n > 0).length,
+      readers: Object.keys(r.readers).map((k) => ({ site: k, events: r.readers[k] })).sort((a, b) => b.events - a.events).slice(0, 4),
+    },
   };
   window.scrollTo({ top: ${restore}, behavior: 'instant' });
   delete window.__scrollRun;
@@ -707,10 +804,22 @@ export async function runScroll(session, options = {}) {
     culprit,
   };
   const events = read.scrollEvents || 0;
+  /* Geometry reads, bucketed by the scroll event they happened under - the
+     signal that separates a handler reading on EVERY event from one expensive
+     burst that merely lands inside the gesture. readRatio is the fraction of
+     the gesture's scroll events that forced at least one read, and like the
+     layout ratio it is a property of the page's own code: the same handler
+     reads on the same events on a fast runner and a slow one. */
+  const r = read.reads || null;
+  const reads = r ? {
+    total: r.total, before: r.before, events: r.events, withReads: r.withReads,
+    readRatio: r.events > 0 ? Number((r.withReads / r.events).toFixed(2)) : null,
+    readers: r.readers || [],
+  } : null;
   return {
     measured: true, how, requested: want, travel: read.travel, samples: read.samples,
     scrollEvents: events, usable: read.usable, planes: read.planes,
-    metrics, loaf,
+    metrics, loaf, reads,
     // Layouts per scroll event, not per second: the ratio is a property of the
     // page's own code and reproduces on any machine, where a duration does not.
     layoutsPerScroll: Number.isFinite(metrics.layoutCount) && events > 0
@@ -844,14 +953,29 @@ export const BUDGETS = {
   // of them plus real blocking time before even that is said.
   loafFrames: 5,
   loafBlockingMs: 200,
-  // Long frames the gesture has to RECUR over before the layout count is
-  // divided by scroll events and called per-event. A single expensive burst -
-  // one IntersectionObserver measuring and disconnecting - suppresses the very
-  // scroll events it is divided by, so its whole one-frame cost came out
-  // looking like per-event thrash. A real read-then-write scroll handler
-  // measured 9 to 10 long frames for one gesture; the one-off measured
-  // exactly 1.
-  thrashFrames: 3,
+  /* What the layout ratio needs alongside it before it is called per-event.
+     A single expensive burst - one IntersectionObserver measuring 800 words
+     and disconnecting - suppresses the very scroll events it is divided by, so
+     its whole one-frame cost came out looking like per-event thrash and had to
+     be told apart from the real thing.
+     This used to be a long-frame count, and that was wrong in the one
+     direction a checker must never be wrong in: long-animation-frame only
+     reports frames over 50 ms, so the same read-then-write handler produced 9
+     long frames on a laptop and exactly 1 on a fast CI runner, and requiring 3
+     let the real defect through in silence there. A geometry read either
+     happened while a scroll event was being handled or it did not, on every
+     machine - so the recurrence is counted in reads per scroll event instead.
+     Measured on the three fixtures: the read-then-write handler read on 5 of 5
+     scroll events (ratio 1.00), the one-off burst on 1 of 21 (0.05), and the
+     control that reads no geometry on 0 of 64 (0.00). */
+  // Scroll events that must have forced at least one read. "One burst" is
+  // exactly one by construction, so two is the smallest number that means
+  // recurrence - and unlike a ratio it cannot be reached by a gesture that
+  // produced only two scroll events.
+  readEvents: 2,
+  // And the share of the gesture's events that read. Half sits far outside
+  // both measured clusters in either direction.
+  readEventRatio: 0.5,
 };
 
 export function judge(measured, context = {}) {
@@ -928,20 +1052,29 @@ export function judge(measured, context = {}) {
     // a finding to every measured page would break every one of them.
     const named = loaf.culprit ? ' - ' + (loaf.culprit.label || loaf.culprit.key) + ', ' + loaf.culprit.forced + ' ms forced' : '';
     const frames = loaf.count + ' long frame' + (loaf.count === 1 ? '' : 's');
-    if (Number.isFinite(run.layoutsPerScroll) && run.layoutsPerScroll > BUDGETS.layoutsPerScroll && loaf.count >= BUDGETS.thrashFrames) {
-      // Two signals, never one: a LoAF count alone is machine load, a layout
-      // count alone can be a page that legitimately relaid out once.
-      //
-      // And the long frames have to RECUR. The denominator here is scroll
-      // events, and heavy work SUPPRESSES scroll events, so one expensive
-      // burst - a lazy measurement that runs once and disconnects - divides
-      // its whole cost by a denominator it collapsed itself and comes out
-      // naming a per-event thrash that does not exist. A handler that really
-      // thrashes on scroll produces a long frame for the events it handles,
-      // not one; a single long frame is not evidence of anything per-event and
-      // is left unsaid rather than described wrongly.
+    /* Did the reading RECUR across the gesture. The denominator of the layout
+       ratio is scroll events and heavy work SUPPRESSES scroll events, so one
+       expensive burst divides its whole one-frame cost by a denominator it
+       collapsed itself and comes out naming a per-event thrash that does not
+       exist. A handler that really thrashes reads geometry on every event it
+       handles; a burst reads on one. That distinction is a property of the
+       page's own code, which is why it replaced the long-frame count that used
+       to sit here - see BUDGETS.readEvents. */
+    const reads = run.reads || null;
+    const recurs = Boolean(reads) && reads.withReads >= BUDGETS.readEvents
+      && Number.isFinite(reads.readRatio) && reads.readRatio >= BUDGETS.readEventRatio;
+    // The machine-independent evidence first, because it is the trigger; every
+    // millisecond figure after it is supporting detail.
+    const where = reads && reads.readers.length ? ' at ' + reads.readers[0].site : '';
+    const recurrence = reads
+      ? 'geometry read on ' + reads.withReads + ' of ' + reads.events + ' scroll event' + (reads.events === 1 ? '' : 's') + where
+      : null;
+    if (Number.isFinite(run.layoutsPerScroll) && run.layoutsPerScroll > BUDGETS.layoutsPerScroll && recurs) {
+      // Two signals, never one: reads alone can be a page that measures one
+      // thing cheaply per event, a layout count alone can be a page that
+      // legitimately relaid out once.
       note('error', 'scrolling forces ' + run.layoutsPerScroll + ' layouts per scroll event (budget ' + BUDGETS.layoutsPerScroll + ')',
-        cost.join(', ') + ' over ' + frames + named);
+        [recurrence, cost.join(', ') || null].filter(Boolean).join('; ') + named);
     } else if (loaf.count >= BUDGETS.loafFrames && loaf.blockingMs > BUDGETS.loafBlockingMs) {
       note('warn', frames + ' during the scroll, ' + loaf.blockingMs + ' ms blocking',
         cost.length ? cost.join(', ') + named : null);

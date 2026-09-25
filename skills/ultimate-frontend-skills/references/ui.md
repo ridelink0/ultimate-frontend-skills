@@ -219,6 +219,40 @@ values under `[data-tone="dark"]`, and the passing accent-button pair as
    and the browser clips it, silently changing the colour. Hue 75 is also too
    close to `--accent-h: 62` to read as a different signal. A warning is an icon
    and a word on the ordinary ground.
+
+   And the clipping is worse than "a different colour", which is why the rule is
+   a ban rather than a caution. CSS Color 4 defines a gamut-mapping algorithm -
+   reduce chroma, hold lightness and hue - but as of September 2026 only Firefox
+   has implemented it and only behind a flag; Chrome and WebKit still clip the
+   RGB coordinates. Gamut mapping is a *proposal* for Interop 2027, not a
+   shipped guarantee. Two consequences for a token system written in OKLCh:
+   an out-of-sRGB value renders as a **different colour in different engines**,
+   and clipping moves the luminance, so **a ratio computed from the authored
+   value is not the ratio the user gets**. The table above is honest only
+   because every value in it is inside sRGB. There is no `@supports` test for
+   "is this in gamut" - convert the value and look - so the rule is simply that
+   no contrast figure may ride on a colour the browser had to rescue.
+
+   The deliberate version of the same thing is worth having, and it is the one
+   piece of modern colour this system does not use yet. `oklch()`, `oklab()`,
+   `color-mix()` and `color()` have all been Baseline **widely available since
+   2025-11-09** (Chrome 111, Firefox 113, Safari 15.4 - `color()` back to Safari
+   15). So a richer accent can be *asked for* rather than stumbled into:
+
+   ```css
+   .cta { background: oklch(58% 0.072 var(--accent-h)); }  /* in sRGB, measured */
+   @media (color-gamut: p3) {
+     /* The same hue at a chroma sRGB cannot reach. Derive the triplet from the
+        OKLCh value you actually want and paste the result - do not guess it. */
+     .cta { background: oklch(58% 0.14 var(--accent-h)); }
+   }
+   ```
+
+   Inside the media query the browser is not rescuing anything: the display can
+   show it. The fallback outside is the value the contrast table was computed
+   from, so the measured ratio still holds on every display that cannot.
+   Do this for one accent at most. A whole palette that changes on a P3 screen
+   is a palette nobody has checked.
 2. **1.4.1 Use of Color (Level A) governs all of it.** Status never travels by
    colour alone. The icon and the text carry it; the colour reinforces.
 3. **A status colour is not the accent.** The accent rule - one hue, at most
@@ -1051,12 +1085,12 @@ Behind `@supports`, as enhancement only:
 
 | Feature | Baseline | Chrome / Firefox / Safari | Verdict |
 |---|---|---|---|
-| Anchor positioning core (`anchor-name`, `position-try`) | limited as a group | 125 / 147 / 26 | Use behind `@supports (anchor-name: --a)`, logical keywords only. Physical `position-area` keywords are Chrome 144 / Firefox 148 |
+| Anchor positioning core (`anchor-name`, `position-anchor`, `position-try`) | limited as a group | 125 / 147 / 26 | Use behind `@supports (anchor-name: --a)`, logical keywords only. Physical `position-area` keywords are Chrome 144 / Firefox 148. `anchor-name` on its own does nothing: the positioned element needs `position-anchor` (or an explicit name inside `anchor()`) or it never binds |
 | Same-document view transitions | **newly** (2025-10-14) | 111 / 144 / 18 | Feature-check `document.startViewTransition` |
 | `::details-content` | **newly** (2025-09-16) | 131 / 143 / 18.4 | Styling hook only |
 | `field-sizing: content` | **newly** (2026-06-16) | 123 / 152 / 26.2 | Textarea autogrow, degrades to a fixed `rows` |
 | Invoker commands (`command` / `commandfor`) | **newly** (2025-12-12) | 135 / 144 / 26.2 | Keep the JS listener |
-| Scroll-driven CSS animation | **limited** | 115 / no / 26 | Progressive enhancement. Drive real scroll work with ScrollTrigger - `references/awards.md` |
+| Scroll-driven CSS animation | **limited** | 115 / no / 26 | Progressive enhancement. Firefox has it built but still behind `layout.css.scroll-driven-animations.enabled` in stable, which is what has blocked Baseline since 2025-09; it is an Interop 2026 focus area, so re-check rather than assume. Drive real scroll work with ScrollTrigger - `references/awards.md` |
 
 Not yet, whatever a blog post says:
 

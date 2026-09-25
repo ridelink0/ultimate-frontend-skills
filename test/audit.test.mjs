@@ -83,3 +83,34 @@ test('a page with none of it produces none of these warnings', () => {
   const ours = warns(r).filter((t) => /button text|no X, no Y|copula substitutes|leaked model refusal|marketing filler/.test(t));
   assert.deepEqual(ours, []);
 });
+
+/* The violet CTA is the second-highest-weighted tell and the check was a hex
+   scan, so it saw a generated page from 2023 and nothing at all from one built
+   today: Tailwind v4 and the current shadcn/ui scaffold write their tokens as
+   oklch(), and the generation before wrote bare HSL triples. Same colour, three
+   notations. Matched by colour, never by a hue band - a band would fail a
+   designer who genuinely chose violet. */
+const colourHits = (body) => errors(auditOf(body)).filter((t) => /generated-page colour/.test(t));
+
+test('the generated violet is caught in oklch and hsl, not only in hex', () => {
+  // #6366f1 itself, written the four ways a scaffold writes it.
+  assert.equal(colourHits('<style>.b{background:#6366f1}</style>').length, 1);
+  assert.match(colourHits('<style>.b{background:oklch(58.5% 0.204 277.1)}</style>')[0], /oklch\(58\.5% 0\.204 277\.1\) \(= #6366f1\)/);
+  // Lightness given 0-1 rather than as a percentage, which is the form the
+  // shadcn scaffold actually emits.
+  assert.equal(colourHits('<style>.b{background:oklch(0.586 0.2 277)}</style>').length, 1);
+  assert.match(colourHits('<style>.b{background:hsl(239, 84%, 67%)}</style>')[0], /\(= #6366f1\)/);
+  // The bare triple, legal only inside the hsl() the framework wraps round it.
+  assert.match(colourHits('<style>:root{--primary: 262 83% 58%;}</style>')[0], /\(= #7c3aed\)/);
+});
+
+test('a colour that is merely violet, and the house accent, are not the tell', () => {
+  // Deliberately close enough to prove the check is a colour match and not a
+  // "purple is banned" rule: same family, nobody's default.
+  assert.deepEqual(colourHits('<style>.b{background:oklch(40% 0.19 300)}</style>'), []);
+  assert.deepEqual(colourHits('<style>.b{background:hsl(210, 60%, 40%)}</style>'), []);
+  // The chassis itself, which lives in hue 28-150 and must never fail its own
+  // audit.
+  assert.deepEqual(colourHits('<style>.b{background:oklch(58% 0.072 62)}</style>'), []);
+  assert.deepEqual(colourHits('<style>.b{background:oklch(48% 0.14 28)}</style>'), []);
+});
