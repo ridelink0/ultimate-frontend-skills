@@ -120,18 +120,7 @@ export async function removeProfile(udd, ms = 4000) {
 /* End the processes started with this run's own temporary profile on their
    command line, and no other browser the user has open. */
 function endProfileProcesses(udd) {
-  if (process.platform !== 'win32') {
-    // Only processes carrying this run's own throwaway profile on their
-    // command line: nothing else on the machine can match that path.
-    const ps = spawnSync('ps', ['-ww', '-ax', '-o', 'pid=,command='], { encoding: 'utf8', timeout: 5000 });
-    if (ps.error || ps.status !== 0 || typeof ps.stdout !== 'string') return;
-    for (const line of ps.stdout.split('\n')) {
-      if (!line.includes(udd)) continue;
-      const pid = Number(line.trim().split(/\s+/)[0]);
-      if (Number.isInteger(pid) && pid > 0 && pid !== process.pid) { try { process.kill(pid, 'SIGKILL'); } catch { /* gone */ } }
-    }
-    return;
-  }
+  if (process.platform !== 'win32') return;
   const q = udd.replace(/'/g, "''");
   spawnSync('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command',
     `Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -and $_.CommandLine.Contains('${q}') } | ForEach-Object { try { Stop-Process -Id $_.ProcessId -Force -ErrorAction Stop } catch {} }`],
@@ -167,19 +156,10 @@ export async function closeBrowser(browser) {
   }
   // The launcher exiting is not the browser being gone: a helper process can
   // outlive it and still own the profile. Five seconds of asking.
-  let holders = null;
   for (let i = 0; i < 25; i++) {
-    holders = profileHolders(udd);
+    const holders = profileHolders(udd);
     if (holders === null || holders === 0) break;
     await sleep(200);
-  }
-  // Still held after five seconds: on Linux the delete below would succeed
-  // and the survivor would write the profile back after this run exited
-  // (Ubuntu CI, 2026-09-26: 15 and 35 entries, written 0 s after the CLI
-  // ended, on 5480e0d and after it). End the survivors first.
-  if (holders) {
-    endProfileProcesses(udd);
-    for (let i = 0; i < 20 && profileHolders(udd); i++) await sleep(100);
   }
   if (!await removeProfile(udd, 3000)) {
     // A helper process (the crash handler, a utility process) can outlive the
