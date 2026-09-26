@@ -15,9 +15,11 @@ memory notes (project_doodle_voyager, feedback_game_tests_ufs_first,
 feedback_test_widths_match_input) and targeted greps of the build sessions'
 transcripts. DV-14 to DV-28 are Gev's own play review of the live build
 (memory note project_doodle_voyager_fixes_0925, dictated 2026-09-25 about
-20:10-20:30 CDT), quoted verbatim, with three of its claims checked against
-the game's own `js/game.js` and `js/render.js`. Nothing here is from memory
-alone.
+20:10-20:30 CDT), quoted verbatim. Two of its claims were read back from the
+game's own source (the motion-blur strength in `js/render.js` and the shake
+setting in `js/game.js`, both read-only); the rest are what Gev saw on screen,
+and the record says so rather than guessing at causes. Nothing here is from
+memory alone.
 
 The game's plan said, on day one: "Built here because UFS does not cover it:
 the game renderer, game state, input, synthesised audio, and a game test
@@ -671,8 +673,10 @@ scan.
 ### DV-27. A second music source fighting the soundtrack
 
 **What happened.** Gev: "I hear other music on the game that isnt even apart of
-music and is battling the other music." Two sources were audible at once, with
-separate switches, neither ducking the other.
+music and is battling the other music." Two things that are music to a player's
+ear were audible at the same time. Which two, and whether either ducked the
+other, is the game's to find: the game was paused when this was recorded and
+nothing in it was changed to check.
 
 **What UFS said or did.** Nothing at all: UFS ships no audio reference. There is
 no `references/audio.md`, and nothing in the other references says how a
