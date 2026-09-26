@@ -242,15 +242,22 @@ values under `[data-tone="dark"]`, and the passing accent-button pair as
    ```css
    .cta { background: oklch(58% 0.072 var(--accent-h)); }  /* in sRGB, measured */
    @media (color-gamut: p3) {
-     /* The same hue at a chroma sRGB cannot reach. Derive the triplet from the
-        OKLCh value you actually want and paste the result - do not guess it. */
+     /* The same hue at a chroma sRGB cannot reach. Checked for --accent-h: 62:
+        linear sRGB blue is -0.007 (outside sRGB), linear display-p3 is
+        0.394 / 0.136 / 0.011 (inside P3). Any other hue or chroma: convert it
+        and check both before shipping - do not guess it. */
      .cta { background: oklch(58% 0.14 var(--accent-h)); }
    }
    ```
 
-   Inside the media query the browser is not rescuing anything: the display can
-   show it. The fallback outside is the value the contrast table was computed
-   from, so the measured ratio still holds on every display that cannot.
+   `@media (color-gamut: p3)` is Baseline **widely available since 2025-08-14**
+   (Chrome 58, Firefox 110, Safari 10), so the query itself needs no `@supports`.
+   `color(display-p3 r g b)` is the same request written in the display's own
+   coordinates; OKLCh is kept here because the rest of the palette is authored
+   in it and the hue stays readable. Inside the media query the browser is not
+   rescuing anything: the display can show it. The fallback outside is the
+   value the contrast table was computed from, so the measured ratio still
+   holds on every display that cannot.
    Do this for one accent at most. A whole palette that changes on a P3 screen
    is a palette nobody has checked.
 2. **1.4.1 Use of Color (Level A) governs all of it.** Status never travels by
@@ -1060,7 +1067,10 @@ covering the thing they describe. A tooltip used as documentation, which fails
 Support verified against the webstatus.dev API and MDN browser-compat-data on
 14 September 2026. Current stable that day: Chrome 154, Firefox 155, Safari 27
 (released the same day, so treat any Safari-27 feature as having no installed
-base).
+base). The `sibling-index()` row and the grid-lanes, `corner-shape`, `if()` and
+scroll-state rows further down were added on 25 September 2026 against the
+webstatus.dev features API and browser-compat-data 8.1.3 (built 2026-09-24),
+with `CSS.supports()` checked in headless Edge 154 (Chromium).
 
 | Use this | Instead of | Baseline | Chrome / Firefox / Safari |
 |---|---|---|---|
@@ -1080,6 +1090,14 @@ base).
 | Native scroll-snap (`.cards--rail`) | A carousel library | - | shipped everywhere current |
 | `::file-selector-button` | Hiding the file input behind a fake button | - | 89 / 82 / 14.1 |
 | `content-visibility` | Hand-rolled list virtualisation on a long static page | **newly** (2025-09-15) | 108 / 130 / 26 |
+| `sibling-index()` / `sibling-count()` | Hand-numbered `.r-2`, `.r-3` stagger classes, `:nth-child` ladders, a JS loop writing `style="--i:n"` | **newly** (2026-08-18) | 138 / 154 / 26.2 |
+
+The last row is what `.stagger` in `core.css` does: `.stagger > .r { --i:
+min(sibling-index() - 1, 6) }` inside `@supports (order: sibling-index())`.
+It is 1-based and counts every element sibling, so it belongs on the list, not
+on a section whose heading would be number one. Keep the `.r-N` classes on the
+items as the fallback: it only went Baseline on 2026-08-18, when Firefox 154
+shipped it.
 
 Behind `@supports`, as enhancement only:
 
@@ -1105,6 +1123,35 @@ Not yet, whatever a blog post says:
 | `hidden="until-found"` | limited: 102 / 148 / no | Enhancement only |
 | `<input type=checkbox switch>` | limited: Safari 17.4 only | Build the APG switch |
 | `prefers-reduced-transparency` | limited: 119 / no / no | |
+| Native masonry: `display: grid-lanes` | limited: no / no / 26.4 | Safari only (26.4, 2026-03-24). Chrome has not shipped it: chromestatus names a `css-grid-lanes-layout` flag and gives no ship milestone; browser-compat-data lists no Firefox version. The spec is a CSS Grid 3 Editor's Draft (2 September 2026), so the syntax can still move. Enhancement only, below |
+| `corner-shape` (`squircle`, `superellipse()`) | limited: 139 / no / no | Chrome and Edge only; Firefox and Safari have it in preview builds. Does nothing without a non-zero `border-radius`, so it degrades to the plain rounded corner by itself. Never fake the squircle with an SVG `clip-path`, which also clips the focus ring and the shadow |
+| CSS `if()` | limited: 137 / no / no | Chrome and Edge only; Firefox bug 1981485 and WebKit bug 296995 are open. A browser without it throws the whole declaration away, so a plain declaration must come first. Nothing the system does needs it: `@media` and `@supports` blocks already express the same branches |
+| Container scroll-state queries (`@container scroll-state()`) | limited: 133 / no / no | Chrome and Edge only (`scrolled` is 144). Keep the `.is-stuck` toggle in `motion.js`; the full reasoning and the CSS for later is in `motion.md` |
+
+**Masonry today.** Write the gallery as an ordinary grid and let Safari
+upgrade it; every other browser keeps the aligned rows, which is a finished
+layout rather than a broken one. No masonry library, and no JS that measures
+heights and absolutely positions cards.
+
+```css
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: var(--s-5);
+}
+@supports (display: grid-lanes) {
+  .gallery { display: grid-lanes; }   /* columns and gap carry over */
+}
+```
+
+The spec itself warns that grid lanes can place items visually out of order,
+so tab order (2.4.3 Focus Order) and reading order can diverge from what the
+eye sees. Put nothing focusable in a lanes gallery whose order matters, or give
+the cards a source order that still reads when they shift a column.
+
+**Squircles today.** `border-radius` first, then `corner-shape: squircle` as a
+second line. Chrome and Edge draw the squircle, everything else keeps the
+rounded corner, and nothing needs a feature query.
 
 **Three things are still yours, and no element gives them to you:** the scroll
 lock behind a modal (WHATWG HTML #7732 is still open), a visible focus indicator
@@ -1132,6 +1179,10 @@ Everything flagged above, in one place, so none of it leaks into a page as fact.
   Non-standard, no support figures.
 - **Field availability of any Safari 27 feature.** Safari 27 is marked current
   with a release date of 2026-09-14.
+- **The Chrome flag for grid lanes.** The flag name comes from the chromestatus
+  entry (5149560434589696) and WebKit's January 2026 post says a variant
+  landed behind a flag in Chrome 140; neither was run. Headless Edge 154
+  reports `CSS.supports('display', 'grid-lanes')` as false without flags.
 - **Whether any scaffolder template sets `--nav-h`.** `core.css:168` defaults it
   to `4.5rem`; nothing in `core.css` or `sections.html` assigns it.
 

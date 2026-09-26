@@ -13,7 +13,13 @@ you need something they do not cover.
 3. **Always set a fill mode** (`both`). Without it the element renders in its
    author styles until the range starts, so a fade-in flashes visible first.
 4. **`animation-delay` does nothing on a scroll timeline.** Stagger by moving
-   `animation-range` with a per-item custom property.
+   `animation-range` with a per-item custom property. Do not number that
+   property by hand or in a JS loop: `sibling-index()` has been Baseline since
+   2026-08-18 (Chrome 138, Firefox 154, Safari 26.2), so a list of reveals
+   takes `class="stagger"` and `core.css` derives `--i` from the item's place,
+   capped at 6 steps. It is 1-based and counts every element sibling, so it
+   goes on the list, never on a section whose heading would take slot 1. Leave
+   `.r-2` ... `.r-5` on the items as the fallback for older browsers.
 5. **Never hide content unconditionally.** Default state = visible; motion goes
    inside `@supports` and `@media (prefers-reduced-motion: no-preference)`.
 6. **`Vector3.project()` returns mirrored garbage behind the camera.** Reject in
@@ -96,6 +102,31 @@ h2.wipe {
 ```
 
 `@property` is what makes a percentage or a `clip-path` interpolable per value.
+
+### Nav state: keep the JS, `scroll-state()` is Chromium-only
+
+`motion.js` toggles `.nav.is-stuck` from its one rAF scroll loop. The CSS that
+would replace it is a scroll-state container query, and as of 25 September 2026
+it is **Baseline limited: Chrome and Edge 133 only** (webstatus.dev
+`container-scroll-state-queries`; MDN browser-compat-data 8.1.3 lists no Firefox
+or Safari version, and the `scrolled` state is Chrome 144). Measured in
+headless Edge 154 (Chromium): this shrinks a fixed nav once the root scroller
+leaves the top.
+
+```css
+html { container-type: scroll-state; }          /* the scroller is the container */
+@container scroll-state(scrollable: top) {       /* the nav must be a descendant  */
+  .nav { padding-block: calc(var(--s-4) * 0.62); }
+}
+```
+
+Two reasons it is not a drop-in even in Chrome: it fires on the first pixel of
+scroll, where `motion.js` waits for `min(70vh, 560px)`, and a browser without it
+never gets the stuck state at all. So it is not emitted. When Firefox and
+Safari ship it, gate it with `@supports (container-type: scroll-state)` and
+drop the nav job from `motion.js`. For a `position: sticky` header the query is
+`scroll-state(stuck: top)` with `container-type` on the sticky element itself,
+and the query can only restyle that element's children.
 
 ## Layered parallax - the effect the reference sites are built on
 
