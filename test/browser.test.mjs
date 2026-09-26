@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { join, sep } from 'node:path';
 import { deflateSync } from 'node:zlib';
 import { once } from 'node:events';
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { debugSite } from '../scripts/debug.mjs';
 import { Session, findBrowser, inspect, decodePNG, sampleImageContrast, readPortFile } from '../scripts/inspect.mjs';
@@ -407,7 +407,11 @@ test('a finished run of the render check leaves no temporary browser profile beh
     const added = [...tempProfiles()].filter((n) => !before.has(n));
     const why = added.map((n) => {
       const path = join(tmpdir(), n);
-      try { return n + ' (last written ' + Math.round((Date.now() - statSync(path).mtimeMs) / 100) / 10 + 's ago, ' + readdirSync(path).length + ' entries)'; }
+      // Who still holds it, where the question can be asked cheaply: the
+      // process line names the culprit that the folder alone cannot.
+      const ps = process.platform === 'win32' ? '' : (spawnSync('ps', ['-ww', '-ax', '-o', 'pid=,ppid=,command='], { encoding: 'utf8' }).stdout || '')
+        .split('\n').filter((l) => l.includes(n)).map((l) => l.trim().slice(0, 160)).join(' | ');
+      try { return n + ' (last written ' + Math.round((Date.now() - statSync(path).mtimeMs) / 100) / 10 + 's ago, ' + readdirSync(path).length + ' entries' + (ps ? '; held by: ' + ps : '; no process holds it') + ')'; }
       catch { return n + ' (it went away while we looked)'; }
     }).join('; ');
     assert.deepEqual(added, [], 'the run left ' + added.length + ' profile(s) in ' + tmpdir() + ': ' + why);
