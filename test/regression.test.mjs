@@ -138,6 +138,16 @@ test('package.json, both plugin manifests and the marketplace entry agree on the
   assert.match(distinct[0], /^\d+\.\d+\.\d+$/);
 });
 
+/* The README's first line said "Ultimate Frontend Skills 6.1.0" for four
+   releases after 6.1.0. A version in the public copy is either the current
+   one or it goes. */
+test('the README names no version of the plugin but the current one', () => {
+  const here = dirname(fileURLToPath(import.meta.url));
+  const version = JSON.parse(readFileSync(join(here, '..', 'package.json'), 'utf8')).version;
+  const readme = readFileSync(join(here, '..', 'README.md'), 'utf8');
+  for (const m of readme.matchAll(/Ultimate Frontend Skills v?(\d+\.\d+\.\d+)/g)) assert.equal(m[1], version, 'README: "' + m[0] + '"');
+});
+
 /* The two plugin manifests had drifted in description and keywords. Every
    field both carry has to be the same text. $schema is Claude Code's schema
    and describes none of the Codex-only fields (skills, interface), so it stays

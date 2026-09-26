@@ -1,4 +1,4 @@
-Ultimate Frontend Skills 6.1.0 is the plugin previously named Ultimate Website Skills (4.x) and cinematic-web-design (3.x), which in turn absorbed Atelier. [Migration and aliases](docs/merge.md) · [The pipeline](skills/ultimate-frontend-skills/references/pipeline.md) · [Claude Design routes](skills/ultimate-frontend-skills/references/claude-design.md)
+Ultimate Frontend Skills is the plugin previously named Ultimate Website Skills (4.x) and cinematic-web-design (3.x), which in turn absorbed Atelier. [Migration and aliases](docs/merge.md) · [The pipeline](skills/ultimate-frontend-skills/references/pipeline.md) · [Claude Design routes](skills/ultimate-frontend-skills/references/claude-design.md)
 
 # Ultimate Frontend Skills
 

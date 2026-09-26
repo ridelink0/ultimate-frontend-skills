@@ -2,6 +2,18 @@
 
 Releases before 6.5.0 are recorded in their tag commits (`git log v6.4.2`) and on the GitHub releases page.
 
+## Unreleased
+
+### Gev's play review of Doodle Voyager (2026-09-25)
+- `docs/field-tests/doodle-voyager.md` DV-14 to DV-30: fifteen lessons from the owner playing the live game, in his own words, plus the profile leak and the lesson behind all of them (nobody played it before the owner did). Each ships as a numbered rule in `references/games.md` ("Playing it"), with a sixteen-question play pass at the end of that file and a games block in `references/checklist.md`.
+- The hand-drawn look: light whitens the texture, with hatching toward the edges, and never adds brightness (`references/three.md` section 12). The render check warns when more than 15% of a WebGL canvas is clipped to pure white.
+- Screen effects a player feels in their body get their own control with a real zero (`references/motion.md`). The audit warns when a script drives camera shake or motion blur and never reads `prefers-reduced-motion` with `matchMedia()`.
+- The audit warns when a project mixes sound through an `AudioContext` and a `<video>` or `<audio>` element that is not muted plays outside that mix.
+
+### Browser launcher and temp folders
+- A machine whose WebGL is dead (a VM, CI, a remote desktop) is relaunched on SwiftShader, and the report says when WebGL ran in software; a machine with a working GPU is not touched. Recorded as HQ-12, with the practice for checkers and pages in `references/visual-debug.md`, "A machine with no GPU".
+- `closeBrowser()` waits for the browser to be gone and deletes its `webdesign-cdp-*` profile with retries, and anything it cannot catch in time is removed at exit; each process's first launch sweeps stale profiles. `runVerify()` takes `out`, and no test leaves a `webdesign-review-*` folder in the temp directory. Every launch passes `--disable-component-update`, so Edge's updater no longer leaves `msedge_url_fetcher_*` folders in the temp directory.
+
 ## 6.5.0 - 2026-09-25
 
 ### Slash commands
