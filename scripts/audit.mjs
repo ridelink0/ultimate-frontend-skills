@@ -6,10 +6,105 @@
 
 import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { join, extname, relative, basename } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const EMOJI = /[\u{1F000}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{FE0F}\u{1F1E6}-\u{1F1FF}]/u;
-// Copy that shipped from the scaffold and was never replaced. Deliberately
-// specific: the bare word "placeholder" is a legitimate thing to write in prose.
+
+/* Scaffold copy, read out of the section library itself. Every piece of it is
+   marked [[like this]] in sections.html and the scaffolder strips the marks, so
+   the list can never fall behind the library. It used to be the 19 phrases
+   below and nothing else: a page that rewrote exactly those passed the audit
+   with its <title>, meta description, og:description, alt text and a dozen
+   more instructions still on it (judge round 1, 2026-09-26). */
+const LIBRARY = fileURLToPath(new URL('../skills/ultimate-frontend-skills/assets/sections.html', import.meta.url));
+const ENTITIES = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ', copy: '©', rsquo: "'", lsquo: "'", ldquo: '"', rdquo: '"', mdash: '—', ndash: '–', hellip: '…' };
+const decode = (s) => s.replace(/&(#x[\da-f]+|#\d+|[a-z]+);/gi, (m, e) => {
+  if (e[0] !== '#') return ENTITIES[e.toLowerCase()] ?? m;
+  const cp = e[1] === 'x' || e[1] === 'X' ? parseInt(e.slice(2), 16) : Number(e.slice(1));
+  return Number.isFinite(cp) && cp <= 0x10ffff ? String.fromCodePoint(cp) : m;
+});
+// Case, whitespace, curly apostrophes and a closing full stop are not what
+// makes a sentence someone else's.
+const normCopy = (s) => decode(s).replace(/[‘’]/g, "'").replace(/\s+/g, ' ').trim().toLowerCase().replace(/[\s.,;:!?]+$/, '');
+const LETTER = /[\p{L}\p{N}]/u;
+const containsWords = (seg, key) => {
+  for (let i = seg.indexOf(key); i !== -1; i = seg.indexOf(key, i + 1))
+    if (!LETTER.test(seg[i - 1] ?? '') && !LETTER.test(seg[i + key.length] ?? '')) return true;
+  return false;
+};
+
+let libraryCache;
+/* [{ text, key, short, raws }]: text as the library writes it (tags removed),
+   key normalised for matching, raws the marked source as it appears in the
+   file. A piece of three words or fewer ("First service", "Real ones.") only
+   counts when it is the whole of a text node, attribute or sentence: inside
+   longer prose, "what happens next" is just English. */
+export function libraryCopy() {
+  if (libraryCache) return libraryCache;
+  const src = readFileSync(LIBRARY, 'utf8').replace(/<!--[\s\S]*?-->/g, '');
+  const byKey = new Map();
+  for (const m of src.matchAll(/\[\[([\s\S]*?)\]\]/g)) {
+    const text = m[1].replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+    const key = normCopy(text);
+    if (!key) continue;
+    const unit = byKey.get(key) || { text, key, short: key.split(' ').length <= 3, raws: [] };
+    if (!unit.raws.includes(m[1])) unit.raws.push(m[1]);
+    byKey.set(key, unit);
+  }
+  return (libraryCache = [...byKey.values()]);
+}
+
+// Tags that sit inside a line of text rather than starting a new one.
+const INLINE = /^(a|abbr|b|bdi|bdo|cite|code|data|dfn|em|i|kbd|mark|q|s|samp|small|span|strong|sub|sup|time|u|var|wbr)$/i;
+/* The copy a page shows or announces: <title>, the meta and Open Graph text,
+   alt / aria-label / title / placeholder attributes, and the body text, each
+   with where it was found. Comments, scripts and styles are not copy. */
+function copySegments(html) {
+  const h = html.replace(/<!--[\s\S]*?-->/g, ' ').replace(/<(script|style|template)\b[\s\S]*?<\/\1\s*>/gi, ' ');
+  const whole = [];  // [normalised text, where]: matched whole or by containment
+  const title = h.match(/<title\b[^>]*>([\s\S]*?)<\/title\s*>/i);
+  if (title) whole.push([normCopy(title[1]), '<title>']);
+  for (const m of h.matchAll(/<([a-z][\w-]*)\b((?:[^>"']|"[^"]*"|'[^']*')*)>/gi)) {
+    const attrs = m[2];
+    const get = (a) => {
+      const v = attrs.match(new RegExp(`(?:^|\\s)${a}\\s*=\\s*(?:"([^"]*)"|'([^']*)')`, 'i'));
+      return v ? (v[1] ?? v[2]) : '';
+    };
+    if (m[1].toLowerCase() === 'meta') {
+      const name = get('name') || get('property');
+      const content = get('content');
+      if (content && /^(description|og:|twitter:)/i.test(name)) whole.push([normCopy(content), name.toLowerCase() === 'description' ? 'meta description' : name]);
+      continue;
+    }
+    for (const a of ['alt', 'aria-label', 'title', 'placeholder']) {
+      const v = get(a);
+      if (v) whole.push([normCopy(v), a]);
+    }
+  }
+  const body = h.replace(/<title\b[\s\S]*?<\/title\s*>/i, ' ');
+  const nodes = body.split(/<[^>]*>/).map(normCopy).filter(Boolean).map((t) => [t, 'text']);
+  // A line is what sits between two block tags. A line break in the source is
+  // only whitespace: prose wrapped at 80 columns is still one paragraph.
+  const lines = body.replace(/<\/?([a-z][\w-]*)\b[^>]*>/gi, (t, name) => (INLINE.test(name) ? ' ' : '\u0001'))
+    .split('\u0001').map(normCopy).filter(Boolean);
+  const sentences = lines.flatMap((l) => l.split(/(?<=[.!?])\s+/)).map(normCopy).filter(Boolean).map((t) => [t, 'text']);
+  return { contained: [...whole, ...lines.map((t) => [t, 'text'])], equal: [...whole, ...nodes, ...sentences] };
+}
+
+function scaffoldCopyIn(html) {
+  const { contained, equal } = copySegments(html);
+  const found = [];
+  for (const u of libraryCopy()) {
+    const hit = u.short ? equal.find(([t]) => t === u.key) : contained.find(([t]) => containsWords(t, u.key));
+    if (hit) found.push({ text: u.text, key: u.key, where: hit[1] });
+  }
+  return found;
+}
+
+// Filler no library of ours wrote, and the two names the scaffolder fills in
+// (a hand copy keeps them). Deliberately specific: the bare word "placeholder"
+// is a legitimate thing to write in prose. The library phrases stay on the
+// list as a net for a piece that was only half rewritten.
 const PLACEHOLDERS = [
   'lorem ipsum', 'site name', 'brand name', 'your text here', 'placeholder text',
   'first half of the claim', 'one sentence under the headline', 'two short paragraphs',
@@ -400,9 +495,15 @@ export function runAudit(target) {
     }
 
     // copy that was never written
+    // Every piece is named, with where it sits: a page that fails on its meta
+    // description should not have to guess which of forty sentences that was.
     const low = h.toLowerCase();
-    const left = PLACEHOLDERS.filter((p) => low.includes(p));
-    if (left.length) E(`${n}: scaffold copy still present: "${left[0]}"${left.length > 1 ? ` (+${left.length - 1} more)` : ''}`);
+    const pieces = scaffoldCopyIn(h);
+    const named = [
+      ...pieces.map((p) => `"${p.text}" (${p.where})`),
+      ...PLACEHOLDERS.filter((p) => low.includes(p) && !pieces.some((q) => q.key.includes(p))).map((p) => `"${p}"`),
+    ];
+    if (named.length) E(`${n}: ${named.length} piece${named.length > 1 ? 's' : ''} of scaffold copy still present: ${named.join(', ')}`);
 
     for (const [re, what] of FAKE_DATA) if (re.test(h)) E(`${n}: ${what}`);
 

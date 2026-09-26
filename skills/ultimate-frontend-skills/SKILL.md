@@ -159,7 +159,8 @@ in as-is and take blocks out of `assets/sections.html` by hand. Wrap everything
 after the nav and before the footer in `<main id="main">` yourself, with the
 skip link, nav and footer outside it - the scaffolder does that, the
 section file cannot, and without it the skip link points at nothing and the page
-has no main landmark. Everything works
+has no main landmark. Copy marked `[[like this]]` is scaffold copy: replace the whole piece,
+brackets included (the scaffolder strips them; the audit names any piece left). Everything works
 as plain files; the script only saves typing. In React/Astro, import `core.css`
 globally and translate the section markup to components - keep the class names.
 

@@ -9,6 +9,12 @@ Releases before 6.5.0 are recorded in their tag commits (`git log v6.4.2`) and o
 - The 404's skip link stays `#main`. The rewrite that points the 404's other links back at the index had turned it into `./#main`, which sent a keyboard user to the home page. The shipped `examples/fable-showcase` pages had both defects and are corrected.
 - `test/scaffold-landmarks.test.mjs` checks the order in every preset and with a reordered `--sections`. In a real browser it presses Tab, Enter, Tab on the index and the 404, and reads the landmarks from the accessibility tree.
 
+### Scaffold copy
+- The audit takes its list of scaffold copy from the section library: every instruction, stand-in and demo specific in `assets/sections.html` is marked `[[like this]]`, and the scaffolder strips the marks. It used to know 19 phrases, so a page that rewrote exactly those passed with its `<title>`, meta description, `og:description`, `alt` text and a dozen more instructions still on it. The 19 phrases stay as a net for a piece that was only half rewritten.
+- Each piece left is named, with where it sits (`<title>`, meta description, `og:description`, `alt`, text). A piece of three words or fewer counts only as a whole text node, attribute or sentence, so "what happens next" inside real prose is not a hit.
+- The 404 carries the index's meta description and `og:description`; left unwritten, it now fails on them instead of warning about their length. The shipped `examples/fable-showcase/404.html` had both and is corrected.
+- `test/scaffold-copy.test.mjs` scaffolds every section and, for each marked piece, rewrites every other one and requires the audit to name it. It also reruns the judge's trial (only the old 19 phrases rewritten) and requires exit 1 naming the title, meta description and alt text.
+
 ## 6.5.1 - 2026-09-26
 
 6.5.0 was tagged on a commit whose Windows CI job failed. 6.5.1 is the same feature set on a commit that is green on Windows and Ubuntu, plus the fixes below.

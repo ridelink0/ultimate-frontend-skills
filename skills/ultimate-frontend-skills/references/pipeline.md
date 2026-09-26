@@ -239,7 +239,8 @@ whether you kept it.
 
 No Node, or a framework project? Copy `assets/core.css` and `assets/motion.js`
 in as-is and take blocks out of `assets/sections.html` by hand. Keep the class
-names.
+names. Copy marked `[[like this]]` is scaffold copy: replace the whole piece,
+brackets included.
 
 **Gate:** the page opens, every section is in the right order, nothing is
 styled yet beyond the chassis.

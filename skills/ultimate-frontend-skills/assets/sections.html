@@ -2,6 +2,15 @@
      Copy a block, then replace every word of the placeholder copy with the real
      subject. Placeholder copy left in a shipped page is a bug.
 
+     Scaffold copy is marked [[like this]]: every instruction to the writer,
+     every stand-in (First service, Wordmark, Name, role), and the demo's own
+     specifics (the bridge, the watch) that no real page says by accident. The
+     scaffolder strips the brackets; copying by hand, replace the whole marked
+     piece, brackets included. The audit reads its list of scaffold copy from
+     these marks, so a piece added here unmarked is a piece it cannot catch.
+     Unmarked: interface copy that is right on any site (the skip link, form
+     labels and errors, the 404) and one- or two-word eyebrows and labels.
+
      The italic accent phrase appears once, in hero-split, on purpose. It is the
      house voice and also the most imitated headline device on the web, so it is
      rationed to ONE per page and the audit fails the build at two. -->
@@ -9,12 +18,12 @@
 <!-- @section head | <head> contents: meta, fonts, stylesheets -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SITE NAME - one clause that says what this is</title>
-<meta name="description" content="One sentence, 140-160 characters, written for a person.">
+<title>SITE NAME - [[one clause that says what this is]]</title>
+<meta name="description" content="[[One sentence, 140-160 characters, written for a person.]]">
 <meta name="theme-color" content="#f2efe7">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2316140f'/><text x='16' y='23' font-family='Georgia,serif' font-size='20' fill='%23f2efe7' text-anchor='middle'>A</text></svg>">
 <meta property="og:title" content="SITE NAME">
-<meta property="og:description" content="Same sentence as the description.">
+<meta property="og:description" content="[[Same sentence as the description.]]">
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -74,10 +83,10 @@
   <div class="hero__inner wrap on-media">
     <p class="eyebrow">September 2026</p>
     <h1 class="t-hero" style="margin-top:var(--s-5)">
-      First half of the claim<span class="display__b">and the turn</span>
+      [[First half of the claim]]<span class="display__b">[[and the turn]]</span>
     </h1>
     <p class="lead center" style="margin-top:var(--s-6);max-width:34rem">
-      One sentence under the headline. It should add a fact, not repeat the headline.
+      [[One sentence under the headline.]] [[It should add a fact, not repeat the headline.]]
     </p>
   </div>
 </header>
@@ -88,16 +97,16 @@
 <header class="hero section" id="top" style="min-height:92svh">
   <div class="wrap grid" style="align-items:center;row-gap:var(--s-8)">
     <div style="grid-column:content-start / span 5" class="stack">
-      <p class="eyebrow">Reference 1908</p>
-      <h1 class="t-hero">Descent is gravity. <em class="it">Ascent</em> is arithmetic.</h1>
+      <p class="eyebrow">[[Reference 1908]]</p>
+      <h1 class="t-hero">[[Descent is gravity. <em class="it">Ascent</em> is arithmetic.]]</h1>
       <p class="prose prose--tight">
-        Two or three sentences of plain, unexcited fact about the object. No adjectives that
-        a spec sheet would not use. This is where the confidence comes from.
+        [[Two or three sentences of plain, unexcited fact about the object.]] [[No adjectives that
+        a spec sheet would not use.]] [[This is where the confidence comes from.]]
       </p>
       <p><a class="btn" href="#detail">See the detail</a></p>
     </div>
     <figure style="grid-column:span 7 / content-end" class="r">
-      <img src="img/object.png" alt="Description of the object" width="1400" height="1400"
+      <img src="img/object.png" alt="[[Description of the object]]" width="1400" height="1400"
            data-tilt="10" fetchpriority="high">
     </figure>
   </div>
@@ -112,7 +121,7 @@
          style="width:100%;height:120%;object-fit:cover;margin-top:-10%"
          width="2400" height="1600" fetchpriority="high">
     <div class="layer layer--mid" data-px="120" style="display:grid;place-items:center">
-      <span class="wordmark">Wordmark</span>
+      <span class="wordmark">[[Wordmark]]</span>
     </div>
     <!-- foreground: a transparent PNG cut-out, or hand-drawn SVG so no asset is needed -->
     <svg class="layer layer--fg" data-px="-24" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMax slice"
@@ -122,7 +131,7 @@
   </div>
   <div class="hero__scrim"></div>
   <div class="hero__inner wrap on-media">
-    <h1 class="t-hero" style="font-size:var(--step-5)">The line that reframes the place</h1>
+    <h1 class="t-hero" style="font-size:var(--step-5)">[[The line that reframes the place]]</h1>
   </div>
 </header>
 <!-- @end -->
@@ -147,13 +156,13 @@
       <p class="eyebrow">The method</p>
     </div>
     <div style="grid-column:span 7 / content-end" class="stack r r-2">
-      <h2>Drawn before it was made.</h2>
+      <h2>[[Drawn before it was made.]]</h2>
       <p class="prose">
-        Two short paragraphs. Say the thing that is actually true about how the work is done,
-        including the part a competitor would leave out. Specifics beat adjectives every time.
+        [[Two short paragraphs.]] [[Say the thing that is actually true about how the work is done,
+        including the part a competitor would leave out.]] [[Specifics beat adjectives every time.]]
       </p>
       <p class="prose">
-        Second paragraph, shorter than the first. End on a fact, not a promise.
+        [[Second paragraph, shorter than the first.]] [[End on a fact, not a promise.]]
       </p>
     </div>
   </div>
@@ -166,11 +175,11 @@
   <div class="wrap grid" style="align-items:center;row-gap:var(--s-7)">
     <div style="grid-column:content-start / span 4" class="stack r">
       <p class="eyebrow">Construction</p>
-      <h2>Every line has a reason.</h2>
-      <p class="prose">Describe the geometry, the tolerance, the material. Numbers here read as proof.</p>
+      <h2>[[Every line has a reason.]]</h2>
+      <p class="prose">[[Describe the geometry, the tolerance, the material.]] [[Numbers here read as proof.]]</p>
     </div>
     <figure style="grid-column:span 7 / content-end" class="r r-2">
-      <svg viewBox="0 0 640 420" role="img" aria-label="Technical drawing of the object"
+      <svg viewBox="0 0 640 420" role="img" aria-label="[[Technical drawing of the object]]"
            style="width:100%;color:var(--fg)">
         <g fill="none" stroke="currentColor" stroke-width="1" vector-effect="non-scaling-stroke">
           <!-- construction lines: dashed, half opacity -->
@@ -205,8 +214,8 @@
   <div class="wrap grid" style="align-items:center;row-gap:var(--s-8)">
     <div style="grid-column:content-start / span 4" class="stack r">
       <p class="eyebrow">Inside</p>
-      <h2>Nine parts. Nothing decorative.</h2>
-      <p class="prose">Each one is here because the thing does not work without it.</p>
+      <h2>[[Nine parts. Nothing decorative.]]</h2>
+      <p class="prose">[[Each one is here because the thing does not work without it.]]</p>
     </div>
 
     <div style="grid-column:span 7 / content-end" class="exploded">
@@ -238,9 +247,9 @@
 <section class="section section--tight">
   <div class="wrap">
     <ul class="stats stagger">
-      <li class="stat r"><p class="stat__n"><span data-count="1566">1566</span></p><p class="stat__label">Original bridge completed</p></li>
-      <li class="stat r r-2"><p class="stat__n"><span data-count="2005">2005</span></p><p class="stat__label">Inscribed by UNESCO</p></li>
-      <li class="stat r r-3"><p class="stat__n"><span data-count="21" data-count-suffix="m">21m</span></p><p class="stat__label">Height above the river</p></li>
+      <li class="stat r"><p class="stat__n"><span data-count="1566">1566</span></p><p class="stat__label">[[Original bridge completed]]</p></li>
+      <li class="stat r r-2"><p class="stat__n"><span data-count="2005">2005</span></p><p class="stat__label">[[Inscribed by UNESCO]]</p></li>
+      <li class="stat r r-3"><p class="stat__n"><span data-count="21" data-count-suffix="m">21m</span></p><p class="stat__label">[[Height above the river]]</p></li>
     </ul>
   </div>
 </section>
@@ -253,25 +262,25 @@
   <div class="hero__scrim"></div>
   <div class="wrap on-media" style="position:relative">
     <p class="eyebrow">Nearby</p>
-    <h2 style="margin-top:var(--s-3)">Four streets, one afternoon.</h2>
+    <h2 style="margin-top:var(--s-3)">[[Four streets, one afternoon.]]</h2>
     <ul class="cards cards--rail" style="margin-top:var(--s-7)">
       <li class="card card--glass">
-        <p class="eyebrow" style="color:rgb(255 255 255 / .72)">Bazaar street</p>
-        <h3 style="margin-top:var(--s-3)">Kujundziluk</h3>
+        <p class="eyebrow" style="color:rgb(255 255 255 / .72)">[[Bazaar street]]</p>
+        <h3 style="margin-top:var(--s-3)">[[Kujundziluk]]</h3>
         <p class="caption" style="margin-top:var(--s-2);color:rgb(255 255 255 / .82)">
-          Coppersmiths, souvenirs, and the old cobbled lane by the bridge.</p>
+          [[Coppersmiths, souvenirs, and the old cobbled lane by the bridge.]]</p>
       </li>
       <li class="card card--glass">
         <p class="eyebrow" style="color:rgb(255 255 255 / .72)">Viewpoint</p>
-        <h3 style="margin-top:var(--s-3)">Koski Mehmed Pasha</h3>
+        <h3 style="margin-top:var(--s-3)">[[Koski Mehmed Pasha]]</h3>
         <p class="caption" style="margin-top:var(--s-2);color:rgb(255 255 255 / .82)">
-          A minaret view back toward the water.</p>
+          [[A minaret view back toward the water.]]</p>
       </li>
       <li class="card card--glass">
-        <p class="eyebrow" style="color:rgb(255 255 255 / .72)">Ottoman house</p>
-        <h3 style="margin-top:var(--s-3)">Muslibegovic</h3>
+        <p class="eyebrow" style="color:rgb(255 255 255 / .72)">[[Ottoman house]]</p>
+        <h3 style="margin-top:var(--s-3)">[[Muslibegovic]]</h3>
         <p class="caption" style="margin-top:var(--s-2);color:rgb(255 255 255 / .82)">
-          Courtyard, shaded rooms, and a garden that still works.</p>
+          [[Courtyard, shaded rooms, and a garden that still works.]]</p>
       </li>
     </ul>
   </div>
@@ -285,16 +294,16 @@
     <p class="eyebrow r">What we do</p>
     <ul class="steps" style="margin-top:var(--s-6)">
       <li class="r">
-        <h3>First service</h3>
-        <p class="prose">One or two lines. Name the actual deliverable and the constraint it solves.</p>
+        <h3>[[First service]]</h3>
+        <p class="prose">[[One or two lines.]] [[Name the actual deliverable and the constraint it solves.]]</p>
       </li>
       <li class="r">
-        <h3>Second service</h3>
-        <p class="prose">Different enough from the first that a reader can tell them apart.</p>
+        <h3>[[Second service]]</h3>
+        <p class="prose">[[Different enough from the first that a reader can tell them apart.]]</p>
       </li>
       <li class="r">
-        <h3>Third service</h3>
-        <p class="prose">Stop at three or four. A longer list reads as a lack of focus.</p>
+        <h3>[[Third service]]</h3>
+        <p class="prose">[[Stop at three or four.]] [[A longer list reads as a lack of focus.]]</p>
       </li>
     </ul>
   </div>
@@ -307,10 +316,10 @@
   <div class="wrap grid">
     <div style="grid-column:content-start / span 4"><p class="eyebrow">How it goes</p></div>
     <ol class="steps" style="grid-column:span 7 / content-end">
-      <li><h3>Look</h3><p class="prose">What happens first, in one sentence.</p></li>
-      <li><h3>Plan</h3><p class="prose">What happens next.</p></li>
-      <li><h3>Build</h3><p class="prose">And then this.</p></li>
-      <li><h3>Leave</h3><p class="prose">How it ends, and what the reader is left holding.</p></li>
+      <li><h3>Look</h3><p class="prose">[[What happens first, in one sentence.]]</p></li>
+      <li><h3>Plan</h3><p class="prose">[[What happens next.]]</p></li>
+      <li><h3>Build</h3><p class="prose">[[And then this.]]</p></li>
+      <li><h3>Leave</h3><p class="prose">[[How it ends, and what the reader is left holding.]]</p></li>
     </ol>
   </div>
 </section>
@@ -321,9 +330,9 @@
 <section class="section section--tight">
   <figure class="wrap wrap--text center">
     <blockquote><p class="t-hero" style="font-size:var(--step-4)">
-      A sentence someone actually said, kept short enough to read in one breath.
+      [[A sentence someone actually said, kept short enough to read in one breath.]]
     </p></blockquote>
-    <figcaption style="margin-top:var(--s-5)">Name, role</figcaption>
+    <figcaption style="margin-top:var(--s-5)">[[Name, role]]</figcaption>
   </figure>
 </section>
 <!-- @end -->
@@ -335,10 +344,10 @@
     <div style="grid-column:content-start / span 4"><p class="eyebrow">Specification</p></div>
     <table class="spec" style="grid-column:span 7 / content-end">
       <tbody>
-        <tr><th scope="row">Material</th><td>Say the grade, not the adjective.</td></tr>
-        <tr><th scope="row">Dimensions</th><td>40.0 x 12.4 mm</td></tr>
-        <tr><th scope="row">Finish</th><td>Brushed, with polished chamfers</td></tr>
-        <tr><th scope="row">Warranty</th><td>Five years, transferable</td></tr>
+        <tr><th scope="row">Material</th><td>[[Say the grade, not the adjective.]]</td></tr>
+        <tr><th scope="row">Dimensions</th><td>[[40.0 x 12.4 mm]]</td></tr>
+        <tr><th scope="row">Finish</th><td>[[Brushed, with polished chamfers]]</td></tr>
+        <tr><th scope="row">Warranty</th><td>[[Five years, transferable]]</td></tr>
       </tbody>
     </table>
   </div>
@@ -351,11 +360,11 @@
   <div class="wrap"><p class="eyebrow">Selected work</p></div>
   <ul class="cards--rail" style="margin-top:var(--s-6);padding-inline:var(--gutter)">
     <li><figure><div class="frame"><img src="img/1.jpg" alt="" loading="lazy" width="1200" height="900"></div>
-      <figcaption>Project one, 2026</figcaption></figure></li>
+      <figcaption>[[Project one, 2026]]</figcaption></figure></li>
     <li><figure><div class="frame"><img src="img/2.jpg" alt="" loading="lazy" width="1200" height="900"></div>
-      <figcaption>Project two, 2026</figcaption></figure></li>
+      <figcaption>[[Project two, 2026]]</figcaption></figure></li>
     <li><figure><div class="frame"><img src="img/3.jpg" alt="" loading="lazy" width="1200" height="900"></div>
-      <figcaption>Project three, 2025</figcaption></figure></li>
+      <figcaption>[[Project three, 2025]]</figcaption></figure></li>
   </ul>
 </section>
 <!-- @end -->
@@ -367,12 +376,12 @@
     <div style="grid-column:content-start / span 4"><p class="eyebrow">Questions</p></div>
     <div class="faq" style="grid-column:span 7 / content-end">
       <details name="faq" open>
-        <summary>The question a real person asks first</summary>
-        <p class="prose">A direct answer. No hedging, no sales voice.</p>
+        <summary>[[The question a real person asks first]]</summary>
+        <p class="prose">[[A direct answer.]] [[No hedging, no sales voice.]]</p>
       </details>
       <details name="faq">
-        <summary>The one they ask when they are close to deciding</summary>
-        <p class="prose">Answer it honestly, including the caveat.</p>
+        <summary>[[The one they ask when they are close to deciding]]</summary>
+        <p class="prose">[[Answer it honestly, including the caveat.]]</p>
       </details>
     </div>
   </div>
@@ -386,7 +395,7 @@
     <div style="grid-column:content-start / span 4" class="stack">
       <p class="eyebrow">Get in touch</p>
       <h2>Tell us what you need.</h2>
-      <p class="prose">A phone number, an address, and hours. Real ones.</p>
+      <p class="prose">[[A phone number, an address, and hours.]] [[Real ones.]]</p>
     </div>
     <form style="grid-column:span 7 / content-end" class="stack" name="contact" method="POST"
           data-netlify="true" netlify-honeypot="company">
@@ -396,7 +405,7 @@
       <div class="field"><label for="f-mail">Email</label><input id="f-mail" name="email" type="email" required autocomplete="email" aria-describedby="f-mail-err"><p class="field__error" id="f-mail-err">That does not look like an email address. Check for a missing @ or a stray space.</p></div>
       <div class="field"><label for="f-msg">What is happening</label><textarea id="f-msg" name="message" rows="4" required aria-describedby="f-msg-err"></textarea><p class="field__error" id="f-msg-err">A sentence is enough. Say what you need and when.</p></div>
       <p><button class="btn" type="submit">Send it</button></p>
-      <p class="caption">Replies within two working days. <a href="/privacy">How your details are handled</a>.</p>
+      <p class="caption">[[Replies within two working days.]] <a href="/privacy">How your details are handled</a>.</p>
     </form>
   </div>
 </section>
@@ -406,8 +415,8 @@
 <!-- @section cta | closing band, one action only -->
 <section class="section" data-tone="dark">
   <div class="wrap wrap--text center stack">
-    <h2>One last sentence worth acting on.</h2>
-    <p><a class="btn" href="#contact" data-magnetic="0.2">The single action</a></p>
+    <h2>[[One last sentence worth acting on.]]</h2>
+    <p><a class="btn" href="#contact" data-magnetic="0.2">[[The single action]]</a></p>
   </div>
 </section>
 <!-- @end -->
@@ -456,12 +465,12 @@
           data-speed="0.10" data-scale="1.5" aria-hidden="true"></canvas>
   <div class="hero__scrim"></div>
   <div class="hero__inner wrap center on-media">
-    <p class="eyebrow r">Eyebrow, in small caps</p>
+    <p class="eyebrow r">[[Eyebrow, in small caps]]</p>
     <h1 class="r r-2" style="margin-top:var(--s-5)">
-      First half of the claim<span class="display__b">and the turn.</span>
+      [[First half of the claim]]<span class="display__b">[[and the turn.]]</span>
     </h1>
     <p class="lead center r r-3" style="margin-top:var(--s-6)">
-      One sentence that adds a fact rather than repeating the headline.
+      [[One sentence that adds a fact rather than repeating the headline.]]
     </p>
   </div>
 </header>
@@ -477,8 +486,8 @@
   </div>
   <div class="hero__scrim"></div>
   <div class="hero__inner wrap center on-media">
-    <p class="eyebrow r">Place, or date</p>
-    <h1 class="r r-2" style="margin-top:var(--s-5)">The line that reframes it.</h1>
+    <p class="eyebrow r">[[Place, or date]]</p>
+    <h1 class="r r-2" style="margin-top:var(--s-5)">[[The line that reframes it.]]</h1>
   </div>
 </header>
 <!-- @end -->
@@ -489,8 +498,8 @@
   <div class="wrap grid" style="align-items:center;row-gap:var(--s-9)">
     <div style="grid-column:content-start / span 4" class="stack r">
       <p class="eyebrow eyebrow--ruled">Inside</p>
-      <h2>Six parts, and four of them are invisible once it is finished.</h2>
-      <p class="prose">Scroll and they come apart. Say what each one is for.</p>
+      <h2>[[Six parts, and four of them are invisible once it is finished.]]</h2>
+      <p class="prose">[[Scroll and they come apart.]] [[Say what each one is for.]]</p>
     </div>
     <div style="grid-column:span 7 / content-end" class="exploded" data-spread="0.5" data-turn="1.1" data-axis="x">
       <ol class="exploded__list">
@@ -517,7 +526,7 @@
   <div class="hero__inner wrap center on-media">
     <p class="eyebrow r">September 2026</p>
     <h1 class="r r-2" style="margin-top:var(--s-5)">
-      First half of the claim<span class="display__b">and the turn.</span>
+      [[First half of the claim]]<span class="display__b">[[and the turn.]]</span>
     </h1>
     <ol class="index r r-3" style="margin-top:var(--s-8);margin-inline:auto">
       <li><span class="index__n">[1]</span><span class="index__dots"></span><a class="index__label link" href="#method">Introduction</a></li>
