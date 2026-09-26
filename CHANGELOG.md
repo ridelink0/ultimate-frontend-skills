@@ -2,7 +2,9 @@
 
 Releases before 6.5.0 are recorded in their tag commits (`git log v6.4.2`) and on the GitHub releases page.
 
-## Unreleased
+## 6.6.0 - 2026-09-26
+
+A page scaffolded by 6.5.1 and audited by 6.6.0 can now fail on scaffold copy the old audit did not know about: that is the point of the release, not a regression.
 
 ### Scaffolder landmarks
 - `webdesign.mjs new` puts the skip link and the primary nav before `<main id="main">` and the footer after it, wherever `--sections` lists them. Before, all three sat inside `<main>`: the skip link's target started before the skip link, so the next Tab went back to it, and a screen reader found no navigation or contentinfo landmark outside the content.
