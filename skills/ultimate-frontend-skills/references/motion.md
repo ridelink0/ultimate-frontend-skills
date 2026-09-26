@@ -428,7 +428,9 @@ also drop the render quality.
   `matchMedia('(prefers-reduced-motion: reduce)')` at start, default every
   comfort effect to 0 when it matches, and listen for `change` - the user can
   switch it mid-session. CSS cannot reach a canvas loop, so this is code, not a
-  media query in a stylesheet.
+  media query in a stylesheet - and not a `prefers-reduced-motion` rule inside
+  CSS text the script injects either. `webdesign.mjs audit` warns when a script
+  drives shake or motion blur and nothing calls `matchMedia` for it.
 - **A reprojection blur shakes the image unless it is clamped.** Blurring along
   the per-pixel screen-space motion vector means a camera that micro-jitters
   (a hand-held look, a seat that swings with the hull, mouse noise) smears every

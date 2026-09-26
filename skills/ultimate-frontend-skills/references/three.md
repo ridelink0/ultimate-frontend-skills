@@ -1204,7 +1204,7 @@ A project suite that reads WebGL pixels needs the drawing buffer preserved
 before the page runs; `CANVAS_INIT` in `scripts/inspect.mjs` is exported for
 exactly that (install it with `Page.addScriptToEvaluateOnNewDocument`).
 
-## 12. The hand-drawn look: the light whitens the texture (2026-09-26)
+## 12. The hand-drawn look: the light whitens the texture (2026-09-25)
 
 The one note the owner of a doodle-style game repeated until it landed, in his
 own words: "when i mean doodle shoot textures I meant that lighiting makes the

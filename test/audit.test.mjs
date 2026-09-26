@@ -135,3 +135,42 @@ test('a hand gamma-encode ahead of UnrealBloomPass is a warning until the output
   assert.equal(run(render + "\nimport { OutputPass } from 'three/addons/postprocessing/OutputPass.js';").length, 0);
   assert.equal(run(render.replaceAll('UnrealBloomPass', 'AfterimagePass')).length, 0, 'no bloom, no second encode');
 });
+
+// Both fixtures below are the shape of the game's own files at 66a08be, read
+// back on 2026-09-25: js/game.js keeps `shake: true` and sets `this.shake`,
+// js/render.js draws a camera motion blur, and the reduced-motion rules are a
+// stylesheet block and CSS text that js/media.js injects for a video card.
+function runJs(files, html = '<p>Game</p>') {
+  const dir = mkdtempSync(join(tmpdir(), 'ufs-audit-game-'));
+  try {
+    writeFileSync(join(dir, 'index.html'), page(html));
+    for (const [name, js] of Object.entries(files)) writeFileSync(join(dir, name), js);
+    return warns(runAudit(dir));
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+}
+
+test('camera shake or motion blur with no matchMedia read of reduced motion is a warning (Doodle Voyager)', () => {
+  const game = 'const defaults = { fov: 72, shake: true };\nthis.shake = Math.max(this.shake || 0, 0.14);';
+  const render = '// Camera motion blur. Every pixel is reprojected along its motion.\nthis.motion.uniforms.strength.value = q.blur;';
+  const media = "const css = '@media (prefers-reduced-motion:reduce){.mp-card{animation:none}}';";
+  const hit = (w) => w.filter((t) => /never reads prefers-reduced-motion with matchMedia/.test(t));
+  assert.equal(hit(runJs({ 'game.js': game, 'render.js': render, 'media.js': media })).length, 1, 'CSS text inside a script does not reach the loop');
+  assert.equal(hit(runJs({ 'render.js': render })).length, 1, 'motion blur alone is enough');
+  assert.equal(hit(runJs({ 'game.js': game, 'prefs.js': "const reduce = matchMedia('(prefers-reduced-motion: reduce)');" })).length, 0);
+  assert.equal(hit(runJs({ 'app.js': "el.addEventListener('click', () => el.classList.add('open'));" })).length, 0, 'no screen effect, nothing to say');
+  assert.equal(hit(runJs({ 'cam.js': 'this.cameraShake = 0.2;' })).length, 1, 'a camelCase name is still a shake');
+  assert.equal(hit(runJs({ 'net.js': 'const handshake = await peer.connect();' })).length, 0, 'a network handshake is not a screen effect');
+});
+
+test('a sounding media element outside the AudioContext mix is a warning; a muted or routed one is not (Doodle Voyager)', () => {
+  const audio = 'const AC = window.AudioContext || window.webkitAudioContext;\nG.duck = gain(1);\nG.music.connect(G.duck);';
+  const screen = "const v = this.video = document.createElement('video');\nv.volume = this._volume;";
+  const thumb = "const t = document.createElement('video');\nt.muted = true;";
+  const hit = (w) => w.filter((t) => /plays outside it/.test(t));
+  assert.equal(hit(runJs({ 'audio.js': audio, 'media.js': thumb + '\n' + screen })).length, 1, 'one muted thumbnail does not excuse the sounding screen');
+  assert.equal(hit(runJs({ 'audio.js': audio, 'media.js': thumb })).length, 0, 'every element muted');
+  assert.equal(hit(runJs({ 'audio.js': audio + '\nctx.createMediaElementSource(v).connect(G.music);', 'media.js': screen })).length, 0, 'routed into the mix');
+  assert.equal(hit(runJs({ 'media.js': screen })).length, 0, 'no AudioContext, no mix to bypass');
+  assert.equal(hit(runJs({ 'audio.js': audio }, '<video src="intro.mp4" autoplay></video>')).length, 1, 'an HTML element with sound counts too');
+  assert.equal(hit(runJs({ 'audio.js': audio }, '<video src="loop.mp4" autoplay muted loop></video>')).length, 0);
+});

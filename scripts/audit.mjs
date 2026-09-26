@@ -479,6 +479,31 @@ export function runAudit(target) {
     const byHand = /pow\s*\([^;\n]*?(?:1(?:\.0*)?\s*\/\s*2\.2\b|\b0\.454)/.test(allJs);
     if (/\bUnrealBloomPass\b/.test(allJs) && byHand && !/\bLinearSRGBColorSpace\b|\bOutputPass\b/.test(allJs))
       W('a shader gamma-encodes by hand (pow 1/2.2) ahead of UnrealBloomPass, and nothing sets renderer.outputColorSpace = THREE.LinearSRGBColorSpace or ends on OutputPass: the bloom encodes it again and the darks wash out');
+
+    // Camera shake and motion blur live in a canvas loop, where the
+    // stylesheet's reduced-motion block (checked above) cannot reach them. A
+    // prefers-reduced-motion string inside a CSS text the script injects does
+    // not count either: only a matchMedia() read changes what the loop draws
+    // (Doodle Voyager, 2026-09-25: shake and blur at full strength, while the
+    // reduced-motion rules stopped two CSS animations and a video card;
+    // references/motion.md, "Screen effects a player feels in their body").
+    // shake, cameraShake, SCREEN_SHAKE - but not a network handshake.
+    const effect = /\b(?:shake|[a-z]\w*Shake|\w*SHAKE)\w*\s*[:=]/.test(allJs) || /motion[\s_-]?blur/i.test(allJs);
+    if (effect && !/matchMedia\s*\(\s*['"`][^'"`]*prefers-reduced-motion/.test(allJs))
+      W('script drives a shake or a motion blur and never reads prefers-reduced-motion with matchMedia(): a stylesheet cannot reach what a script animates, so someone who asked for less motion gets all of it. Default each effect to 0 when it matches, and in a game give each one its own control');
+
+    // A <video> or <audio> element plays straight to the speakers unless it
+    // is fed into the WebAudio graph, so a project that mixes and ducks its
+    // music there still has a second, unmixed source whenever such an element
+    // has sound (Doodle Voyager, 2026-09-25: a music bus with a duck in
+    // audio.js, and a ship-screen <video> at volume 0.8 outside it, next to
+    // Gev's "other music ... battling the other music"; references/games.md,
+    // item 24). Elements the script mutes do not count.
+    const media = (allJs.match(/createElement\(\s*['"](?:video|audio)['"]\s*\)|\bnew Audio\s*\(/g) || []).length;
+    const muted = (allJs.match(/\.muted\s*=\s*true\b/g) || []).length;
+    const htmlSound = htmls.reduce((n, f) => n + (readFileSync(f, 'utf8').match(/<(?:video|audio)\b[^>]*>/gi) || []).filter((t) => !/\bmuted\b/i.test(t)).length, 0);
+    if (/\bAudioContext\b/.test(allJs) && !/createMediaElementSource\s*\(/.test(allJs) && (media > muted || htmlSound))
+      W('the project mixes sound through an AudioContext, and a <video> or <audio> element that is not muted plays outside it: nothing can duck it under the music or turn it down with the rest. Route it in with createMediaElementSource() onto the music or effects bus, or mute it');
   }
 
   lines.push(`\n  ${errors} error(s), ${warns} warning(s)\n`);

@@ -1,4 +1,4 @@
-# Field test: Doodle Voyager (2026-09-22 to 2026-09-26)
+# Field test: Doodle Voyager (2026-09-22 to 2026-09-25)
 
 Doodle Voyager is a first-person space shooter in the style of Doodle Shooter,
 built to test UFS while being a real game: three.js through an import map, no
@@ -15,11 +15,12 @@ memory notes (project_doodle_voyager, feedback_game_tests_ufs_first,
 feedback_test_widths_match_input) and targeted greps of the build sessions'
 transcripts. DV-14 to DV-28 are Gev's own play review of the live build
 (memory note project_doodle_voyager_fixes_0925, dictated 2026-09-25 about
-20:10-20:30 CDT), quoted verbatim. Two of its claims were read back from the
-game's own source (the motion-blur strength in `js/render.js` and the shake
-setting in `js/game.js`, both read-only); the rest are what Gev saw on screen,
-and the record says so rather than guessing at causes. Nothing here is from
-memory alone.
+20:10-20:30 CDT), quoted verbatim. Four of its claims were read back from the
+game's own source at 66a08be, read-only: the motion-blur strength in
+`js/render.js`, the shake setting in `js/game.js`, the missing `matchMedia`
+read of reduced motion, and the ship-screen `<video>` outside the music mix in
+`js/media.js`. The rest are what Gev saw on screen, and the record says so
+rather than guessing at causes. Nothing here is from memory alone.
 
 The game's plan said, on day one: "Built here because UFS does not cover it:
 the game renderer, game state, input, synthesised audio, and a game test
@@ -493,12 +494,22 @@ a floor, so a still or jittering camera blurs nothing.
 **The UFS fix.** This change: `references/motion.md`, section "Screen effects a
 player feels in their body"; `references/games.md`, section "Playing it: what
 Gev's review caught that every check passed", item 15; and a line in
-`references/checklist.md`, section "If it is a game".
+`references/checklist.md`, section "If it is a game". And one part of it is
+checkable from the source: `scripts/audit.mjs` now warns when a script drives
+camera shake or motion blur and no script reads `prefers-reduced-motion`
+through `matchMedia()`. The game's reduced-motion rules were a block in
+`style.css` that stops the title and message animations, and CSS text that
+`js/media.js` injects for a video card. The old audit counted the stylesheet
+block and was satisfied; no canvas loop reads either. Run on the game's own
+source at 66a08be (read-only), the new rule warns; the audit before it said
+nothing.
 
-**Regression check.** `test/field-tests.test.mjs`, "every lesson from Gev's play review is a numbered item in the shipped games reference"
-holds the shipped rule. Not testable automatically beyond that: a strength that
-comes from a quality preset and one that comes from its own slider are the same
-code shape, and a rule that guessed between them would fire on correct code.
+**Regression check.** `test/audit.test.mjs`, "camera shake or motion blur with no matchMedia read of reduced motion is a warning (Doodle Voyager)"
+holds the part a source scan can decide, and `test/field-tests.test.mjs`, "every lesson from Gev's play review is a numbered item in the shipped games reference"
+holds the shipped rule. Whether each effect has its own slider stays a played
+check: a strength that comes from a quality preset and one that comes from its
+own slider are the same code shape, and a rule that guessed between them would
+fire on correct code.
 
 ### DV-19. Windows too small to see out of
 
@@ -674,9 +685,13 @@ scan.
 
 **What happened.** Gev: "I hear other music on the game that isnt even apart of
 music and is battling the other music." Two things that are music to a player's
-ear were audible at the same time. Which two, and whether either ducked the
-other, is the game's to find: the game was paused when this was recorded and
-nothing in it was changed to check.
+ear were audible at the same time. The game's source, read back without running
+it, has one candidate: `js/audio.js` builds the music bus with a duck gain, and
+`js/media.js` plays the ship screens' tapes through a `<video>` element at
+volume 0.8 that is never fed into that graph (no `createMediaElementSource`),
+so nothing can duck it under the soundtrack. Whether that is what Gev heard is
+UNVERIFIED: the game was paused when this was recorded and nothing in it was
+run or changed to check.
 
 **What UFS said or did.** Nothing at all: UFS ships no audio reference. There is
 no `references/audio.md`, and nothing in the other references says how a
@@ -690,11 +705,16 @@ is short enough to write down and check by listening.
 **The UFS fix.** This change: `references/games.md`, section "Playing it: what
 Gev's review caught that every check passed", item 24; the fourteenth question
 of the play pass; and a line in `references/checklist.md`, section "If it is a
-game".
+game". The structural half is checkable: `scripts/audit.mjs` now warns when a
+project mixes through an `AudioContext` and also has a `<video>` or `<audio>`
+element that is not muted and not routed in with `createMediaElementSource()`.
+On the game's source at 66a08be (read-only) it warns; the audit before it did
+not.
 
-**Regression check.** `test/field-tests.test.mjs`, "every lesson from Gev's play review is a numbered item in the shipped games reference"
-holds the shipped rule. Not testable automatically: what is audible at once is a
-runtime fact about a graph UFS cannot see, and the honest check is to listen.
+**Regression check.** `test/audit.test.mjs`, "a sounding media element outside the AudioContext mix is a warning; a muted or routed one is not (Doodle Voyager)"
+holds the source-level half, and `test/field-tests.test.mjs`, "every lesson from Gev's play review is a numbered item in the shipped games reference"
+holds the shipped rule. What is actually audible at once is still a runtime
+fact, and the honest check for it is to listen.
 
 ### DV-28. Two names for the same verb: cruise and autopilot
 
@@ -757,8 +777,26 @@ their own browser.
 and `test/browser.test.mjs`, "closeBrowser ends the browser, deletes its profile, and reports that it is gone"
 and `test/browser.test.mjs`, "the launch sweep clears stale profiles only: fresh ones, other folders and the cap are respected"
 and `test/browser.test.mjs`, "removeProfile deletes a profile folder and treats an absent one as done"
-and `test/browser.test.mjs`, "a profile that outlasted every wait is deleted as the run ends".
-The first of those drives the real `look` CLI in a child process and counts
+and `test/browser.test.mjs`, "a profile that outlasted every wait is deleted as the run ends"
+and `test/browser.test.mjs`, "no test asks for a review folder in the temp directory it never deletes"
+and `test/browser.test.mjs`, "every launch turns off the component updater that leaves msedge_* folders in the temp directory".
+That last one is the leak one folder further out still: a fresh profile starts
+Edge's component updater, which writes empty `msedge_url_fetcher_*` and
+`msedge_chrome_Unpacker_*` folders into `%TEMP%` itself, where no profile
+delete reaches them. A full suite run on 2026-09-25 left 21 of them, and 1,526
+were on the machine. Four launches left 3 and 2 without
+`--disable-component-update` and none with it (measured twice each way), so
+every launch now carries it.
+The last of those is the same leak one folder along: `debugSite()` with no
+`out` makes a `webdesign-review-*` folder for its screenshots, right for a user
+who is told to open them and wrong for a test that never deletes it, and
+`runVerify()` goes through it too. Four test calls did that on every suite run;
+on 2026-09-25 there were 74 such folders in Gev's `%TEMP%`, every one of them a
+test fixture (20 verify-merge, 17 visual-photo-contrast, 17
+visual-clipped-overlap, 20 from the verify-url server). `runVerify()` now
+passes `out` through, every test names a folder inside the fixture directory
+it already removes, and the check reads each call to its closing bracket so a
+call split over lines is still caught. The first of those drives the real `look` CLI in a child process and counts
 %TEMP% once it has exited, because that is the promise: a finished run leaves
 nothing. A browser can recreate its own profile folder after the delete that
 reported success (an empty one, on the Ubuntu runner), so closeBrowser waits
@@ -808,8 +846,10 @@ from other people".
   be a placeholder.
 - DV-2, DV-4, DV-5, DV-9 to DV-11 stay reference-only; each says why above.
 - DV-15 to DV-28 are shipped as rules and as the play pass, and each says
-  above why no UFS check can decide it. Only DV-14 (a lit surface clipped to
-  pure white) turned out to be measurable; the rest need someone playing.
+  above what a UFS check can and cannot decide. DV-14 (a lit surface clipped
+  to pure white) is measured from the pixels; DV-18 (screen effects that never
+  read reduced motion) and DV-27 (a sounding media element outside the music
+  mix) are caught from the source; the rest need someone playing.
 - The game fixes themselves are the game's work, not UFS's, and the game was
   paused when this review was recorded. Nothing in D:/doodle-voyager was
   changed by it.

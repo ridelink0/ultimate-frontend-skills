@@ -81,7 +81,8 @@ call a game done: the play pass".
       flash - has its own control that reaches a real zero, independent of the
       quality preset.
 - [ ] Exactly one piece of music is audible at a time, and everything audible
-      shares one bus.
+      shares one bus - including any `<video>` or `<audio>` element, which
+      bypasses the mix unless it is routed in with `createMediaElementSource`.
 - [ ] Die in every hazard. Each death leaves you somewhere playable.
 - [ ] Every feature the owner asked for has been seen in a played session, not
       only read in the code.

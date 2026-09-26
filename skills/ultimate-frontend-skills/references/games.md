@@ -344,7 +344,7 @@ at the time and the check that now holds each one, are in
     production deploy read `.vercel/project.json` and confirm the project
     name is the one you mean.
 
-## Playing it: what Gev's review caught that every check passed (2026-09-26)
+## Playing it: what Gev's review caught that every check passed (2026-09-25)
 
 The owner played the same game for twenty minutes and came back with
 seventeen things wrong with it. The offline suite was 213 green, the render
@@ -402,9 +402,11 @@ time and the check that now holds each one, are in
     comfort, and the two must not share a slider. Motion blur, camera shake,
     field-of-view kick, chromatic aberration, vignette pulse and flashing all
     get a named 0-100% control that reaches a real zero, and all of them
-    start reduced when `prefers-reduced-motion` is set. See
-    `references/motion.md`, section "Screen effects a player feels in their
-    body".
+    start reduced when `prefers-reduced-motion` is set - read with
+    `matchMedia()` in the script, because a stylesheet's media query never
+    reaches a canvas loop (`webdesign.mjs audit` warns when shake or motion
+    blur ships with no such read). See `references/motion.md`, section
+    "Screen effects a player feels in their body".
 16. **A window is a view, not a porthole.** The ship's windows were too small
     to see out of, which removed the reason to be at the window at all. The
     owner: make the window "take the whole side of the room". Size an opening
@@ -455,7 +457,13 @@ time and the check that now holds each one, are in
     goes through one named bus with one mixer; anything that can sound at the
     same time as the music either shares its bus or ducks it; and the list of
     sources that can be audible at once is short enough to write down and
-    check.
+    check. The usual way a second source gets past the mixer: a `<video>` or
+    `<audio>` element (a tape on an in-world screen, a trailer, an ad) plays
+    straight to the speakers unless it is fed into the graph with
+    `ctx.createMediaElementSource(el).connect(bus)`, so the duck on the music
+    bus never touches it. Route it in, or mute it. `webdesign.mjs audit` warns
+    when a project mixes through an `AudioContext` and has such an element
+    unmuted and unrouted.
 25. **Two names for the same verb is one too many.** "Remove the cruise it
     dosent make sense, autopiolot does, just make it so the player themselves
     can move at cruise speed." Cruise and autopilot were two modes for one
