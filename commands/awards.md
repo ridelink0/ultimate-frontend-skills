@@ -1,7 +1,7 @@
 ---
 description: Pick award-winning reference sites to build against, and render them
 argument-hint: "[query] or --pick object|place|service|argument|app|game|studio"
-allowed-tools: Bash, Read, Glob
+allowed-tools: Bash(node:*), Read, Glob
 ---
 
 Query the reference corpus that ships with Ultimate Frontend Skills - Awwwards
