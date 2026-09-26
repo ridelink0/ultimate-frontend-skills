@@ -389,13 +389,20 @@ test('a finished run of the render check leaves no temporary browser profile beh
   // profile folder AFTER the delete that reported success (Ubuntu CI,
   // 2026-09-26), and what closeBrowser cannot catch in time it takes away at
   // exit. Asserting inside this process would measure the wrong promise.
+  //
+  // The CLI gets a temp directory of its own. CI runs the test files in
+  // parallel, and counting the shared one blamed this run for the live
+  // profiles of browsers other files had open: the holder it named was a
+  // running Chrome whose parent was still alive (CI, 2026-09-26, on 5480e0d
+  // and every commit after it, on both runners).
   const dir = mkdtempSync(join(tmpdir(), 'ufs-profile-leak-'));
+  const privateTmp = join(dir, 'tmp');
+  mkdirSync(privateTmp);
   writeFileSync(join(dir, 'index.html'), '<!doctype html><html lang="en"><meta charset="utf-8"><title>Leak</title>' +
     '<body style="font:16px system-ui;padding:16px"><h1>Leak check</h1><p>One paragraph, one heading.</p></body></html>');
-  const before = tempProfiles();
   try {
     const cli = spawn(process.execPath, [join(ROOT_DIR, 'scripts', 'webdesign.mjs'), 'look', dir, '--widths', '900', '--out', join(dir, 'shots')],
-      { stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true });
+      { stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true, env: { ...process.env, TMPDIR: privateTmp, TEMP: privateTmp, TMP: privateTmp } });
     let out = '';
     cli.stdout.on('data', (d) => { out += d; });
     cli.stderr.on('data', (d) => { out += d; });
@@ -404,18 +411,21 @@ test('a finished run of the render check leaves no temporary browser profile beh
     const [code] = await once(cli, 'close');
     assert.equal(code, 0, 'look failed: ' + out.slice(-400));
     assert.match(out, /\d+ error\(s\), \d+ warning\(s\)/, 'look printed a report: ' + out.slice(-300));
-    const added = [...tempProfiles()].filter((n) => !before.has(n));
+    // A child given this environment really does make its temp folders in the
+    // private directory, or an empty result below would prove nothing.
+    const seen = spawnSync(process.execPath, ['-e', 'process.stdout.write(require("os").tmpdir())'],
+      { encoding: 'utf8', env: { ...process.env, TMPDIR: privateTmp, TEMP: privateTmp, TMP: privateTmp } }).stdout;
+    assert.equal(seen, privateTmp, 'the child would not use the private temp directory');
+    const added = [...tempProfiles(privateTmp)];
     const why = added.map((n) => {
-      const path = join(tmpdir(), n);
-      // Who still holds it, where the question can be asked cheaply: the
-      // process line names the culprit that the folder alone cannot.
+      const path = join(privateTmp, n);
+      // Who still holds it, where the question can be asked cheaply.
       const ps = process.platform === 'win32' ? '' : (spawnSync('ps', ['-ww', '-ax', '-o', 'pid=,ppid=,command='], { encoding: 'utf8' }).stdout || '')
-        .split('\n').filter((l) => l.includes(n)).map((l) => l.trim().slice(0, 160)).join(' | ')
-        + (process.platform === 'win32' ? '' : ' || this test runs as pid ' + process.pid + ', the CLI ran as pid ' + cli.pid);
-      try { return n + ' (last written ' + Math.round((Date.now() - statSync(path).mtimeMs) / 100) / 10 + 's ago, ' + readdirSync(path).length + ' entries' + (ps ? '; held by: ' + ps : '; no process holds it') + ')'; }
+        .split('\n').filter((l) => l.includes(n)).map((l) => l.trim().slice(0, 160)).join(' | ');
+      try { return n + ' (last written ' + Math.round((Date.now() - statSync(path).mtimeMs) / 100) / 10 + 's ago, ' + readdirSync(path).length + ' entries' + (ps ? '; held by: ' + ps : '') + ')'; }
       catch { return n + ' (it went away while we looked)'; }
     }).join('; ');
-    assert.deepEqual(added, [], 'the run left ' + added.length + ' profile(s) in ' + tmpdir() + ': ' + why);
+    assert.deepEqual(added, [], 'the run left ' + added.length + ' profile(s) in its temp directory: ' + why);
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 

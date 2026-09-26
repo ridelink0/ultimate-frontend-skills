@@ -803,7 +803,13 @@ reported success (an empty one, on the Ubuntu runner), so closeBrowser waits
 for anything holding the profile to be gone, deletes, looks again three times,
 and takes away at exit what it could not catch in time. Run in-process against
 the pre-fix cleanup, the same check failed with "inspect left 1 profile(s) in
-C:\\Users\\OWNER\\AppData\\Local\\Temp: webdesign-cdp-fRp5B8".
+C:\\Users\\OWNER\\AppData\\Local\\Temp: webdesign-cdp-fRp5B8". The check then
+failed on CI on both runners, for a reason of its own: CI runs the test files
+in parallel, and the shared temp directory held the live profiles of browsers
+other files had open (the holder it named was a running Chrome whose parent
+was still alive). The CLI now gets a temp directory of its own, so only its
+own profiles are counted; with `closeBrowser` made to skip the delete, the
+check still fails ("the run left 1 profile(s) in its temp directory").
 
 ### DV-30. Nobody played it before the owner did
 
