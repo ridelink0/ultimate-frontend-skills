@@ -753,13 +753,19 @@ the critical path) and `PROFILE_PREFIX`. Every caller now awaits it: `inspect`,
 `scripts/video.mjs` (which deleted nothing before) and the two tests that launch
 their own browser.
 
-**Regression check.** `test/browser.test.mjs`, "a finished inspect leaves no temporary browser profile behind"
+**Regression check.** `test/browser.test.mjs`, "a finished run of the render check leaves no temporary browser profile behind"
 and `test/browser.test.mjs`, "closeBrowser ends the browser, deletes its profile, and reports that it is gone"
 and `test/browser.test.mjs`, "the launch sweep clears stale profiles only: fresh ones, other folders and the cap are respected"
 and `test/browser.test.mjs`, "removeProfile deletes a profile folder and treats an absent one as done"
 and `test/browser.test.mjs`, "a profile that outlasted every wait is deleted as the run ends".
-Run against the pre-fix cleanup the first of these fails with "inspect left 1
-profile(s) in C:\\Users\\OWNER\\AppData\\Local\\Temp: webdesign-cdp-fRp5B8".
+The first of those drives the real `look` CLI in a child process and counts
+%TEMP% once it has exited, because that is the promise: a finished run leaves
+nothing. A browser can recreate its own profile folder after the delete that
+reported success (an empty one, on the Ubuntu runner), so closeBrowser waits
+for anything holding the profile to be gone, deletes, looks again three times,
+and takes away at exit what it could not catch in time. Run in-process against
+the pre-fix cleanup, the same check failed with "inspect left 1 profile(s) in
+C:\\Users\\OWNER\\AppData\\Local\\Temp: webdesign-cdp-fRp5B8".
 
 ### DV-30. Nobody played it before the owner did
 

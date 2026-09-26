@@ -167,19 +167,19 @@ export async function closeBrowser(browser) {
     endProfileProcesses(udd);
     await removeProfile(udd, 8000);
   }
-  // Then settle. Deleting a tree a live browser still has open SUCCEEDS on
-  // Linux, and the browser on its way out recreates its own folders, so the
-  // profile is back a moment after a delete that reported success (Ubuntu CI,
-  // 2026-09-26: one profile left behind with the delete having returned true).
+  // Then settle, without stopping at the first absence. A browser on its way
+  // out recreates its own profile folder AFTER a delete that reported success
+  // (Ubuntu CI, 2026-09-26: an empty webdesign-cdp-* folder, written the
+  // moment the inspect ended), so the folder being gone once proves nothing.
   for (let i = 0; i < 3; i++) {
-    await sleep(300);
-    if (!existsSync(udd)) break;
-    await removeProfile(udd, 2000);
+    await sleep(150);
+    if (existsSync(udd)) await removeProfile(udd, 2000);
   }
-  if (!existsSync(udd)) return true;
+  // And whatever happens, take it away at exit: a recreation later than this
+  // is still not the user's to clear. flushProfiles ignores what is gone.
   leftBehind.add(udd);
   flushAtExit();
-  return false;
+  return !existsSync(udd);
 }
 
 /* Windows sometimes holds a fresh profile for longer than any budget worth

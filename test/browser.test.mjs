@@ -5,12 +5,15 @@ import { tmpdir } from 'node:os';
 import { join, sep } from 'node:path';
 import { deflateSync } from 'node:zlib';
 import { once } from 'node:events';
+import { spawn } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import { debugSite } from '../scripts/debug.mjs';
 import { Session, findBrowser, inspect, decodePNG, sampleImageContrast, readPortFile } from '../scripts/inspect.mjs';
 import { launch, closeBrowser, removeProfile, sweepProfiles, flushProfiles, PROFILE_PREFIX } from '../scripts/inspect.mjs';
 import { writeReview } from '../scripts/review.mjs';
 import { runVerify, formatVerify } from '../scripts/verify.mjs';
 import { startServer } from '../scripts/preview-server.mjs';
+const ROOT_DIR = join(fileURLToPath(new URL('.', import.meta.url)), '..');
 import { inspectStyles, formatInspect } from '../scripts/inspect.mjs';
 
 test('CDP synchronous send failure removes pending requests', async () => {
@@ -380,34 +383,35 @@ test('inspect reads computed type, loaded fonts, the type scale and resources fr
    webdesign-cdp-* folders in one sweep and 572 more the next evening. */
 const tempProfiles = (dir = tmpdir()) => new Set(readdirSync(dir).filter((n) => n.startsWith(PROFILE_PREFIX)));
 
-test('a finished inspect leaves no temporary browser profile behind', { skip: !findBrowser(), timeout: 120000 }, async () => {
+test('a finished run of the render check leaves no temporary browser profile behind', { skip: !findBrowser(), timeout: 180000 }, async () => {
+  // The contract is about a finished run, so this drives the real CLI in a
+  // child process and waits for it to exit: a browser can recreate its own
+  // profile folder AFTER the delete that reported success (Ubuntu CI,
+  // 2026-09-26), and what closeBrowser cannot catch in time it takes away at
+  // exit. Asserting inside this process would measure the wrong promise.
   const dir = mkdtempSync(join(tmpdir(), 'ufs-profile-leak-'));
   writeFileSync(join(dir, 'index.html'), '<!doctype html><html lang="en"><meta charset="utf-8"><title>Leak</title>' +
     '<body style="font:16px system-ui;padding:16px"><h1>Leak check</h1><p>One paragraph, one heading.</p></body></html>');
-  const server = startServer(dir, 0);
-  await once(server, 'listening');
   const before = tempProfiles();
   try {
-    const started = Date.now();
-    await inspect('http://127.0.0.1:' + server.address().port + '/', { widths: [900], wait: 150, scrolls: [0] });
+    const cli = spawn(process.execPath, [join(ROOT_DIR, 'scripts', 'webdesign.mjs'), 'look', dir, '--widths', '900', '--out', join(dir, 'shots')],
+      { stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true });
+    let out = '';
+    cli.stdout.on('data', (d) => { out += d; });
+    cli.stderr.on('data', (d) => { out += d; });
+    // 'close', not 'exit': exit fires before the pipes have drained, so the
+    // tail of the report is not there yet.
+    const [code] = await once(cli, 'close');
+    assert.equal(code, 0, 'look failed: ' + out.slice(-400));
+    assert.match(out, /\d+ error\(s\), \d+ warning\(s\)/, 'look printed a report: ' + out.slice(-300));
     const added = [...tempProfiles()].filter((n) => !before.has(n));
-    // Say enough on failure to tell a profile this inspect left behind from
-    // one an earlier browser recreated as it died.
     const why = added.map((n) => {
       const path = join(tmpdir(), n);
-      let detail = 'unreadable';
-      try {
-        const age = Math.round((Date.now() - statSync(path).mtimeMs) / 100) / 10;
-        detail = 'last written ' + age + 's ago, ' + readdirSync(path).length + ' entries: ' + readdirSync(path).slice(0, 6).join(' ');
-      } catch { /* it went away while we looked */ }
-      return n + ' (' + detail + ')';
+      try { return n + ' (last written ' + Math.round((Date.now() - statSync(path).mtimeMs) / 100) / 10 + 's ago, ' + readdirSync(path).length + ' entries)'; }
+      catch { return n + ' (it went away while we looked)'; }
     }).join('; ');
-    assert.deepEqual(added, [], 'inspect left ' + added.length + ' profile(s) in ' + tmpdir()
-      + ' after ' + Math.round((Date.now() - started) / 100) / 10 + 's: ' + why);
-  } finally {
-    await new Promise((resolve) => server.close(resolve));
-    rmSync(dir, { recursive: true, force: true });
-  }
+    assert.deepEqual(added, [], 'the run left ' + added.length + ' profile(s) in ' + tmpdir() + ': ' + why);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
 test('closeBrowser ends the browser, deletes its profile, and reports that it is gone', { skip: !findBrowser(), timeout: 120000 }, async () => {
