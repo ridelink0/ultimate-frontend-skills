@@ -50,6 +50,25 @@ inside a closed overlay - a map or a menu nobody opened - is a note, not a
 "zero visible size" error. Pass `--game` for the laptop and desktop widths a
 keyboard-and-mouse game is played at.
 
+## A machine with no GPU
+
+A VM, a CI runner or a remote desktop often has no usable GPU, and there a
+browser's WebGL context can be lost the moment it is made. Every WebGL page
+then reads back as one flat colour, which is the browser's failure, not the
+page's. `look`, `debug` and `verify` test WebGL on the browser they launch; if
+it is dead they relaunch on the software renderer (SwiftShader) and print
+`note  WebGL ran on the software renderer`. If no WebGL works at all, a canvas
+is a note naming the browser ("not checked: this browser has no working
+WebGL"), never a flat-fill warning against the page. A page that loses its own
+context is told exactly that. A machine with a working GPU is not touched.
+
+The page should do the same for its visitors. Probe before loading the 3D
+code: `document.createElement('canvas').getContext('webgl2')`, and if it is
+null show the screen without the 3D and say nothing in the console; if it
+works, release the probe with `WEBGL_lose_context` so it does not hold a
+context the renderer needs. HQ's key screen does exactly this, and it is why
+the key screen stays clean on a machine with no GPU.
+
 ## Required AI review
 
 1. Run the source audit and project tests. Run debug on the actual built website.

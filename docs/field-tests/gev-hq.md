@@ -264,6 +264,47 @@ reports console warnings), but a dedicated fixture would need two three.js
 builds vendored into the test tree; the other three are material and
 shader-author choices.
 
+### HQ-12. HQ probed for WebGL before drawing; UFS's own render check did not
+
+**What happened.** HQ's key screen loads a three.js gold key, and its
+`key3d.js` asks for a WebGL2 context on a throwaway canvas first: if there is
+none it returns and the key screen stands on its own with nothing in the
+console, and if there is one it releases the probe with `WEBGL_lose_context`
+before building the renderer (read back from D:/gev-hq/key3d.js, read-only).
+UFS's render check had no such probe. On the windows-latest CI runner, which
+has no GPU, the browser's WebGL context was lost as soon as it was made, and
+a correctly drawn two-colour game canvas read back as a flat fill. The 6.5.0
+Windows job failed on every push from fcb96b3 to df4b7c5 (runs 36208761961,
+36209230456, 36209682631, 36209979300) while Ubuntu passed.
+
+**What UFS said or did.** The render check reported the page as having
+"rendered a flat fill", a false finding against the page for what was the
+browser's failure, and it would have said the same to anyone checking a page
+on a VM, a CI runner or a remote desktop. Three fixes to the test fixture
+(f9bc58c, e2bd1e3, df4b7c5) changed nothing, because the fixture was never
+the problem. `references/three.md` told a page to probe `getContext('webgl2')`
+before committing to 3D, and the checker did not do it for itself.
+
+**What it should have said or done.** Test WebGL on the browser it launched,
+the way HQ's page does, and tell three cases apart: the page drew one colour,
+the page lost its own context, and this browser has no working WebGL at all.
+Only the first is a finding against the page. When the GPU path is dead, try
+the software renderer before giving up.
+
+**The UFS fix.** e3c39ca and 213c8d2: `launchRendering()` in
+`scripts/inspect.mjs` tests WebGL on the fresh browser without writing to the
+page's console, and relaunches with `SOFTWARE_WEBGL` (SwiftShader) only when
+it is dead; the report says when WebGL ran in software, a page that loses its
+own context is told so, and with no WebGL anywhere a canvas is a note naming
+the browser. The Windows job has been green since (run 36216733416 on
+5480e0d, both runners). The practice, for the checker and for pages, is in
+`references/visual-debug.md`, section "A machine with no GPU".
+
+**Regression check.** `test/field-tests.test.mjs`, "the game world reads as two colours in a browser with the GPU switched off"
+and `test/field-tests.test.mjs`, "a browser whose WebGL is dead is relaunched on the software renderer, and says so"
+and `test/field-tests.test.mjs`, "a page that loses its own WebGL context is told so, not told it drew a flat fill"
+and `test/field-tests.test.mjs`, "with no WebGL anywhere, a lost canvas is a note naming the browser, never a warning against the page".
+
 ## What held up
 
 Gev's review opened with what worked: "The black-and-yellow palette is

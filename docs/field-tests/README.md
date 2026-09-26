@@ -13,8 +13,8 @@ project leaves the next project to repeat it.
 
 | Record | Project | Dates | Lessons |
 |---|---|---|---|
-| [doodle-voyager.md](doodle-voyager.md) | Doodle Voyager, a first-person doodle space shooter (D:/doodle-voyager, doodle-voyager.vercel.app) | 2026-09-22 to 2026-09-26 | 30 |
-| [gev-hq.md](gev-hq.md) | HQ, a key-gated shared dashboard with a shader and PBR Lab (D:/gev-hq, gev-hq.vercel.app) | 2026-09-23 to 2026-09-24 | 11 |
+| [doodle-voyager.md](doodle-voyager.md) | Doodle Voyager, a first-person doodle space shooter (D:/doodle-voyager, doodle-voyager.vercel.app) | 2026-09-22 to 2026-09-25 | 30 |
+| [gev-hq.md](gev-hq.md) | HQ, a key-gated shared dashboard with a shader and PBR Lab (D:/gev-hq, gev-hq.vercel.app) | 2026-09-23 to 2026-09-24 | 12 |
 
 ## The method
 
