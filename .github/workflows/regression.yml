@@ -1,115 +1,28 @@
-name: Plugin regression checks
-on: [push, pull_request]
+name: WebGL readback diagnosis (throwaway branch)
+on: [push]
 permissions:
   contents: read
 jobs:
-  test:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
+  diag:
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      # Both browser.test.mjs and measure.test.mjs guard their real assertions
-      # with { skip: !findBrowser() }, so a bare runner with no Chrome/Edge/
-      # Chromium silently skips the half of the suite that actually drives a
-      # page - the part most likely to be wrong. windows-latest ships Edge
-      # already; ubuntu-latest does not, so give it a Chromium and point
-      # inspect.mjs's findBrowser() at it the same way a developer would.
-      # The video suite needs ffmpeg; without it the test skips and the
-      # no-skip guard below fails the job, which is what turned 6.2.0 red.
-      - name: install ffmpeg (linux)
-        if: runner.os == 'Linux'
-        run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg && ffmpeg -version | head -1
-      # `choco install ffmpeg -y && ffmpeg -version` failed on every Windows run
-      # from 6.3.0 on, in the step BEFORE the browser, so the Windows half of
-      # the suite - the job the scroll-thrash check was written for - has not
-      # executed since. The cause is in the log rather than in the command: the
-      # Chocolatey community feed answers with 503, choco then prints
-      # "installed 0/0 packages" and exits 0, and the next word on the line is
-      # an ffmpeg that was never fetched. Both halves are fixed below: the
-      # binary comes from a GitHub release asset instead, and the step proves
-      # it can run the binary before it reports success.
-      # ffprobe travels in the same directory and scripts/video.mjs needs it,
-      # which is why the DIRECTORY goes on the PATH and not just the one file.
-      - name: install ffmpeg (windows)
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          function Find-Ffmpeg {
-            $cmd = Get-Command ffmpeg -ErrorAction SilentlyContinue
-            if ($cmd) { return $cmd.Source }
-            $choco = if ($env:ChocolateyInstall) { $env:ChocolateyInstall } else { 'C:\ProgramData\chocolatey' }
-            foreach ($p in @("$choco\bin\ffmpeg.exe", "$choco\lib\ffmpeg\tools\ffmpeg\bin\ffmpeg.exe")) {
-              if (Test-Path $p) { return $p }
-            }
-            return $null
-          }
-          $bin = Find-Ffmpeg
-          # Not Chocolatey. community.chocolatey.org answers Actions runners with
-          # 503 often enough to be a coin toss ("Failed to fetch results from V2
-          # feed ... 503 Service Unavailable", then "Chocolatey installed 0/0
-          # packages" and exit 0), and a CI step that depends on a third-party
-          # package feed being up is a step that fails for reasons the repo
-          # cannot fix. The static build is a GitHub release asset, served from
-          # the same host the checkout already came from, and it is retried.
-          if (-not $bin) {
-            $zip = "$env:RUNNER_TEMP\ffmpeg.zip"
-            $dest = "$env:RUNNER_TEMP\ffmpeg"
-            $url = 'https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip'
-            foreach ($attempt in 1..3) {
-              try { Invoke-WebRequest -Uri $url -OutFile $zip -UseBasicParsing; break }
-              catch { if ($attempt -eq 3) { throw } ; Start-Sleep -Seconds (5 * $attempt) }
-            }
-            Expand-Archive -Path $zip -DestinationPath $dest -Force
-            $bin = (Get-ChildItem -Path $dest -Filter ffmpeg.exe -Recurse | Select-Object -First 1).FullName
-          }
-          if (-not $bin) { Write-Error 'ffmpeg is not resolvable after install - the video suite would skip and the no-skip guard would fail the job'; exit 1 }
-          Split-Path $bin | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          & $bin -version | Select-Object -First 1
       - uses: browser-actions/setup-chrome@v1
         id: setup-chrome
         with:
           chrome-version: stable
-      # Ubuntu 24.04 ships an AppArmor profile that denies unprivileged user
-      # namespaces, which is what Chrome's own sandbox is built on: without
-      # this the browser exits before it writes DevToolsActivePort and every
-      # browser test dies with "browser did not expose a debugging port".
-      # Relaxing it beats passing --no-sandbox, which would mean CI runs the
-      # browser in a configuration no developer ever does.
-      - name: allow the Chrome sandbox on ubuntu
-        if: runner.os == 'Linux'
-        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
-      - name: fail fast if no browser is resolvable
+      - name: repro across GPU flag sets
+        shell: bash
+        env:
+          BIN: ${{ steps.setup-chrome.outputs.chrome-path }}
+          UFS_INSPECT: scripts/inspect.mjs
+          SETS: '[[],["--disable-gpu"],["--enable-unsafe-swiftshader"],["--use-angle=swiftshader","--enable-unsafe-swiftshader"],["--use-angle=d3d11-warp"],["--use-angle=d3d11"],["--use-gl=angle","--use-angle=swiftshader-webgl"]]'
+        run: node ci-diag/repro.mjs
+      - name: the failing field test alone
         shell: bash
         env:
           ATELIER_BROWSER: ${{ steps.setup-chrome.outputs.chrome-path }}
-        run: |
-          node -e "
-            import('./scripts/inspect.mjs').then(({ findBrowser }) => {
-              const bin = findBrowser();
-              if (!bin) { console.error('no Chrome/Edge/Chromium found - the browser half of the suite would silently skip'); process.exit(1); }
-              console.log('browser for the test run:', bin);
-            });
-          "
-      - name: node --test (browser tests must not skip)
-        shell: bash
-        env:
-          ATELIER_BROWSER: ${{ steps.setup-chrome.outputs.chrome-path }}
-        run: |
-          set -o pipefail
-          node --test --test-reporter=tap --test-reporter-destination=stdout test/*.test.mjs | tee test-output.tap
-          # A skipped test is reported as a pass and node still exits 0, which
-          # is the whole reason this job could not previously prove anything
-          # about the browser half. A cancelled one is the same hole: it is
-          # counted separately from a failure. Name what was skipped rather
-          # than asserting which tests they were.
-          if grep -qE '^# (skipped|cancelled) [1-9]' test-output.tap; then
-            echo "tests did not actually run:" >&2
-            grep -E '# (SKIP|CANCELLED)' test-output.tap >&2 || true
-            echo "the browser half of this suite must run here - see findBrowser() in scripts/inspect.mjs" >&2
-            exit 1
-          fi
+        run: node --test --test-name-pattern="a game title screen" test/field-tests.test.mjs || true
