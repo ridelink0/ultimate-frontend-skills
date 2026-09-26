@@ -205,7 +205,10 @@ section's components, grain, reveals. **Never edit it inside a project** - put
 project choices in `site.css`, which loads after. `assets/motion.js` is
 dependency-free, one rAF loop, respects `prefers-reduced-motion`, degrades to
 a fully visible page: `.r`, `data-px`, `data-tilt`, `data-count`,
-`data-magnetic`, `data-split`, nav shrink, scroll progress.
+`data-magnetic`, `data-split`, nav shrink, scroll progress. A list of `.r`
+items staggers itself with `class="stagger"` on the list (`sibling-index()`,
+`references/motion.md`), never a JS loop writing `--i`; the `.r-2` ...
+`.r-5` classes stay on the items as the older-browser fallback.
 
 Presets (token overrides only): `fable` the launch-page look - pair it with
 `hero-fable` for the WebGL sky, staggered serif title and dot-leader contents;

@@ -604,6 +604,16 @@ figcaption { margin-top: var(--s-3); font-family: var(--font-ui); font-size: var
   html.js-reveal .r.is-in { opacity: 1; transform: none; }
 }
 .r-2 { --i: 1; } .r-3 { --i: 2; } .r-4 { --i: 3; } .r-5 { --i: 4; }
+/* A list of reveals numbers itself: put .stagger on the list, not on a section
+   that also holds the heading. sibling-index() is Baseline newly available
+   since 2026-08-18 (Chrome 138, Firefox 154, Safari 26.2). It is 1-based and
+   counts every element sibling, hence the -1. Capped at 6 steps, 540 ms on the
+   IntersectionObserver path; past that the rest arrive together. A browser
+   without it drops this rule: .r-2 ... .r-5 on the items are the fallback and
+   give the same numbers, and with neither the items reveal together.       */
+@supports (order: sibling-index()) {
+  .stagger > .r { --i: min(sibling-index() - 1, 6); }
+}
 @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
 
 .progress { position: fixed; inset-block-start: 0; inset-inline-start: 0; height: 2px;
