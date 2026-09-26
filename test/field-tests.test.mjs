@@ -133,11 +133,19 @@ const GAME = `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>
 <script>
   const gl = document.getElementById('gl').getContext('webgl');
   const c = document.getElementById('gl');
-  c.width = innerWidth; c.height = innerHeight;
-  gl.viewport(0, 0, c.width, c.height);
-  gl.enable(gl.SCISSOR_TEST);
-  gl.clearColor(0.05, 0.07, 0.12, 1); gl.clear(gl.COLOR_BUFFER_BIT);
-  gl.scissor(0, 0, c.width >> 1, c.height >> 1); gl.clearColor(0.9, 0.3, 0.2, 1); gl.clear(gl.COLOR_BUFFER_BIT);
+  // A game draws every frame at the current window size. Drawing once at
+  // parse time read a blank buffer on the windows-latest runner (spread 0),
+  // where the window size can still change after the first script runs.
+  function frame() {
+    if (c.width !== innerWidth || c.height !== innerHeight) { c.width = innerWidth; c.height = innerHeight; }
+    gl.viewport(0, 0, c.width, c.height);
+    gl.disable(gl.SCISSOR_TEST);
+    gl.clearColor(0.05, 0.07, 0.12, 1); gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.enable(gl.SCISSOR_TEST);
+    gl.scissor(0, 0, c.width >> 1, c.height >> 1); gl.clearColor(0.9, 0.3, 0.2, 1); gl.clear(gl.COLOR_BUFFER_BIT);
+    requestAnimationFrame(frame);
+  }
+  frame();
 </script></body></html>`;
 
 test('a game title screen: text in fixed layers is measured, a closed map canvas is a note, a real clash is still an overlap', { skip, timeout: 90000 }, async () => {
