@@ -127,6 +127,21 @@ function endProfileProcesses(udd) {
   { stdio: 'ignore', windowsHide: true, timeout: 15000 });
 }
 
+/* Nothing may delete a profile a browser still has open. On Windows that
+   delete fails, which is at least a signal; on Linux it SUCCEEDS - unlinking a
+   tree that is still open is legal - and then the browser, on its way out,
+   recreates its own folders, so the profile is back after a delete that
+   reported success (Ubuntu CI, 2026-09-26). So wait for every process carrying
+   this run's profile on its command line to be gone first. Returns the number
+   of them, or null when the question could not be asked (Windows, where the
+   WMI query is far too slow to poll: endProfileProcesses covers it there). */
+function profileHolders(udd) {
+  if (process.platform === 'win32') return null;
+  const ps = spawnSync('ps', ['-ww', '-ax', '-o', 'pid=,command='], { encoding: 'utf8', timeout: 5000 });
+  if (ps.error || ps.status !== 0 || typeof ps.stdout !== 'string') return null;
+  return ps.stdout.split('\n').filter((line) => line.includes(udd)).length;
+}
+
 /* Close a browser from launch() and delete its profile. Resolves true when
    the folder is gone. Every caller of launch() ends here instead of killing
    the process and hoping. */
@@ -138,6 +153,13 @@ export async function closeBrowser(browser) {
   // fired and awaiting it would hang; the kill above ended the real browser.
   if (proc && proc.exitCode === null && proc.signalCode === null) {
     await Promise.race([once(proc, 'exit').catch(() => {}), sleep(4000)]);
+  }
+  // The launcher exiting is not the browser being gone: a helper process can
+  // outlive it and still own the profile. Five seconds of asking.
+  for (let i = 0; i < 25; i++) {
+    const holders = profileHolders(udd);
+    if (holders === null || holders === 0) break;
+    await sleep(200);
   }
   if (!await removeProfile(udd, 3000)) {
     // A helper process (the crash handler, a utility process) can outlive the

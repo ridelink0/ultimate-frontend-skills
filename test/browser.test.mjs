@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, writeFileSync, readFileSync, rmSync, readdirSync, existsSync, mkdirSync, utimesSync } from 'node:fs';
+import { mkdtempSync, writeFileSync, readFileSync, rmSync, readdirSync, existsSync, mkdirSync, utimesSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, sep } from 'node:path';
 import { deflateSync } from 'node:zlib';
@@ -388,9 +388,22 @@ test('a finished inspect leaves no temporary browser profile behind', { skip: !f
   await once(server, 'listening');
   const before = tempProfiles();
   try {
+    const started = Date.now();
     await inspect('http://127.0.0.1:' + server.address().port + '/', { widths: [900], wait: 150, scrolls: [0] });
     const added = [...tempProfiles()].filter((n) => !before.has(n));
-    assert.deepEqual(added, [], 'inspect left ' + added.length + ' profile(s) in ' + tmpdir() + ': ' + added.join(', '));
+    // Say enough on failure to tell a profile this inspect left behind from
+    // one an earlier browser recreated as it died.
+    const why = added.map((n) => {
+      const path = join(tmpdir(), n);
+      let detail = 'unreadable';
+      try {
+        const age = Math.round((Date.now() - statSync(path).mtimeMs) / 100) / 10;
+        detail = 'last written ' + age + 's ago, ' + readdirSync(path).length + ' entries: ' + readdirSync(path).slice(0, 6).join(' ');
+      } catch { /* it went away while we looked */ }
+      return n + ' (' + detail + ')';
+    }).join('; ');
+    assert.deepEqual(added, [], 'inspect left ' + added.length + ' profile(s) in ' + tmpdir()
+      + ' after ' + Math.round((Date.now() - started) / 100) / 10 + 's: ' + why);
   } finally {
     await new Promise((resolve) => server.close(resolve));
     rmSync(dir, { recursive: true, force: true });
