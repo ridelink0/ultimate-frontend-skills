@@ -335,6 +335,20 @@ The command reads source. After the deploy, the three curl checks in
 whether `/.git/HEAD` is a 404. Do not call a site secure because the command
 printed nothing.
 
+The same command compares the Content-Security-Policy with every URL the code
+loads that it can resolve, and fails on one the policy refuses: a policy that
+blocks your own client library kills the feature in production while an
+offline suite stays green (Doodle Voyager's multiplayer, 2026-09-25). It
+cannot resolve a URL built at run time, so still load the staged build once
+under its real headers and assert zero `securitypolicyviolation` events. It
+also reads `.vercelignore`, and names any notes or log file that would be
+served (HQ's build brief nearly shipped at `/docs/LAB-BRIEF.md`).
+
+Before a production deploy from a build folder, check the host link survived
+the build: a stage script that empties `dist/` deletes `dist/.vercel/`, and the
+next deploy quietly creates a new project named `dist` (it happened twice).
+Read `.vercel/project.json` and confirm the project name.
+
 Then `references/checklist.md`, then stop.
 
 ---

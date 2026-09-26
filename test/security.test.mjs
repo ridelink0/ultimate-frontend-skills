@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, writeFileSync, mkdirSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { securityAudit, formatSecurity, headersConfig } from '../scripts/security.mjs';
+import { securityAudit, formatSecurity, headersConfig, cspPolicies, parseCsp, cspAllows, loadedUrls, vercelIgnore } from '../scripts/security.mjs';
 
 function site(files) {
   const dir = mkdtempSync(join(tmpdir(), 'security-'));
@@ -159,5 +159,112 @@ test('a secret under a quoted JSON key is a finding, not a note', () => {
   try {
     const r = securityAudit(dir);
     assert.ok(texts(r, 'medium').some((x) => /secret-shaped value/.test(x)), JSON.stringify(r.findings));
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+/* Field test: Doodle Voyager, 2026-09-25 (docs/field-tests/doodle-voyager.md,
+   lesson DV-8). The shapes below are the game's own: the staged _headers
+   policy from tools/stage.mjs before commit c76f025, and net.js's
+   PROJECT constant, esm.sh import and Realtime channel. */
+const DV_BEFORE_CSP = "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net 'sha256-AAAA'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://cdn.jsdelivr.net blob:; frame-ancestors 'none'";
+const DV_AFTER_CSP = "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net 'sha256-AAAA'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://cdn.jsdelivr.net https://cafodiocsvzgeninsjzi.supabase.co wss://cafodiocsvzgeninsjzi.supabase.co blob:; frame-ancestors 'none'";
+const DV_NET_BEFORE = [
+  "export const PROJECT = 'https://cafodiocsvzgeninsjzi.supabase.co';",
+  'export async function realtimeTransport(room) {',
+  "  const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');",
+  '  const client = createClient(PROJECT, KEY, { realtime: { params: { eventsPerSecond: 20 } } });',
+  '  return client.channel(room);',
+  '}',
+].join('\n');
+const DV_NET_AFTER = DV_NET_BEFORE.replace("await import('https://esm.sh/@supabase/supabase-js@2')", 'await import(SUPABASE_JS)')
+  .replace("export const PROJECT", "export const SUPABASE_JS = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/+esm';\nexport const PROJECT");
+const headersFile = (csp) => '/*\n  Content-Security-Policy: ' + csp + '\n  X-Content-Type-Options: nosniff\n';
+
+test('a CSP that refuses the code\'s own client library and Realtime host is high; the fixed policy is clean (Doodle Voyager)', () => {
+  const before = site({ 'index.html': '<h1>x</h1>', 'js/net.js': DV_NET_BEFORE, '_headers': headersFile(DV_BEFORE_CSP) });
+  const after = site({ 'index.html': '<h1>x</h1>', 'js/net.js': DV_NET_AFTER, '_headers': headersFile(DV_AFTER_CSP) });
+  try {
+    const hits = securityAudit(before).findings.filter((f) => /Content-Security-Policy .* refuses/.test(f.text));
+    const said = hits.map((f) => f.text).join('\n');
+    assert.ok(hits.every((f) => f.level === 'high'), said);
+    assert.ok(hits.some((f) => /script-src refuses https:\/\/esm\.sh/.test(f.text) && f.line === 3), said);
+    assert.ok(hits.some((f) => /connect-src refuses https:\/\/cafodiocsvzgeninsjzi\.supabase\.co/.test(f.text)), said);
+    assert.ok(hits.some((f) => /connect-src refuses wss:\/\/cafodiocsvzgeninsjzi\.supabase\.co/.test(f.text)), said);
+    assert.equal(hits.length, 3, said);
+    const clean = securityAudit(after).findings.filter((f) => /refuses/.test(f.text));
+    assert.deepEqual(clean, []);
+  } finally { rmSync(before, { recursive: true, force: true }); rmSync(after, { recursive: true, force: true }); }
+});
+
+test('CSP matching follows the spec where it matters: paths, wildcards, schemes, default-src and strict-dynamic', () => {
+  const p = (v) => parseCsp(v);
+  // A path-scoped source allows only what sits under that path.
+  assert.equal(cspAllows(p("script-src https://cdn.jsdelivr.net/npm/three@0.170.0/"), 'script', 'https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js').allowed, true);
+  assert.equal(cspAllows(p("script-src https://cdn.jsdelivr.net/npm/three@0.170.0/"), 'script', 'https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js').allowed, false);
+  // *.host covers subdomains, and an https source does not cover wss.
+  assert.equal(cspAllows(p('connect-src https://*.supabase.co'), 'connect', 'https://abc.supabase.co/rest/v1/x').allowed, true);
+  assert.equal(cspAllows(p('connect-src https://*.supabase.co'), 'connect', 'wss://abc.supabase.co/realtime').allowed, false);
+  assert.equal(cspAllows(p('connect-src wss:'), 'connect', 'wss://abc.supabase.co/realtime').allowed, true);
+  // default-src governs when the specific directive is absent; no policy for
+  // the kind means no restriction; strict-dynamic is not judged.
+  assert.equal(cspAllows(p("default-src 'self'"), 'connect', 'https://api.example.com/').allowed, false);
+  assert.equal(cspAllows(p("style-src 'self'"), 'connect', 'https://api.example.com/').allowed, true);
+  assert.equal(cspAllows(p("script-src 'nonce-x' 'strict-dynamic'"), 'script', 'https://esm.sh/x').allowed, true);
+  // Only URLs that resolve exactly are judged: an unknown variable is not.
+  assert.deepEqual(loadedUrls('const u = await import(someUrl); fetch(`${base}/x`);'), []);
+  assert.deepEqual(loadedUrls("const HOST = 'api.example.com'; fetch(`https://${HOST}/v1`);").map((u) => u.url), ['https://api.example.com/v1']);
+  // vercel.json and netlify.toml are both read.
+  const dir = site({ 'vercel.json': JSON.stringify({ headers: [{ source: '/(.*)', headers: [{ key: 'Content-Security-Policy', value: "script-src 'self'" }] }] }), 'netlify.toml': '[[headers]]\n  for = "/*"\n  [headers.values]\n    Content-Security-Policy = "connect-src \'self\'"\n' });
+  try { assert.deepEqual(cspPolicies(dir).sort(), ["connect-src 'self'", "script-src 'self'"]); } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test('notes in the site folder are found, and what .vercelignore keeps out is not (HQ)', () => {
+  // HQ, 2026-09-24: .vercelignore listed bridge/ and tests/ but not docs/, so
+  // the build brief would have been served at /docs/LAB-BRIEF.md.
+  const dir = site({
+    'index.html': '<h1>x</h1>',
+    'docs/LAB-BRIEF.md': '# brief',
+    'tests/run.mjs': "const key = 'x';",
+    'bridge/room-key.txt': 'k',
+    'debug.log': 'x',
+    '.vercelignore': 'bridge/\ntests/\n*.log\n.vercel\n',
+  });
+  try {
+    const r = securityAudit(dir);
+    const notes = r.findings.filter((f) => /notes or log file/.test(f.text)).map((f) => f.file.replace(/\\/g, '/'));
+    assert.deepEqual(notes, ['docs/LAB-BRIEF.md']);
+    assert.ok(!r.findings.some((f) => /^(tests|bridge)[\\/]/.test(f.file || '')), JSON.stringify(r.findings));
+    const ignored = vercelIgnore(dir);
+    assert.equal(ignored('tests/run.mjs'), true);
+    assert.equal(ignored('docs/LAB-BRIEF.md'), false);
+    assert.equal(ignored('bridge'), false, 'a folder rule does not match a file of the same name');
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test('a deploy link to a project named like a build folder is reported, and the real one is named (Doodle Voyager)', () => {
+  // stage.mjs emptied dist/, .vercel included, and the next deploy created a
+  // project called "dist" instead of updating doodle-voyager - twice.
+  const stray = site({ 'index.html': '<h1>x</h1>', '.vercel/project.json': JSON.stringify({ projectId: 'prj_x', orgId: 'team_x', projectName: 'dist' }) });
+  const real = site({ 'index.html': '<h1>x</h1>', '.vercel/project.json': JSON.stringify({ projectId: 'prj_y', orgId: 'team_x', projectName: 'doodle-voyager' }) });
+  try {
+    const bad = securityAudit(stray);
+    assert.ok(bad.findings.some((f) => f.level === 'medium' && /Vercel project named "dist"/.test(f.text)), JSON.stringify(bad.findings));
+    const good = securityAudit(real);
+    assert.ok(!good.findings.some((f) => /Vercel project named/.test(f.text)));
+    assert.match(formatSecurity(good, 'x').text, /deploys to Vercel project doodle-voyager/);
+  } finally { rmSync(stray, { recursive: true, force: true }); rmSync(real, { recursive: true, force: true }); }
+});
+
+test('a commented-out load is not judged, and an absolute URL on the site\'s own canonical origin counts as self', () => {
+  assert.deepEqual(loadedUrls("// was: await import('https://esm.sh/x')\n/* fetch('https://api.example.com/') */\n * fetch('https://b.example.com/')"), []);
+  const dir = site({
+    'index.html': '<link rel="canonical" href="https://www.example.org/"><h1>x</h1><script src="app.js"></script>',
+    'app.js': "fetch('https://www.example.org/api/items');\nfetch('https://elsewhere.example.net/');",
+    '_headers': "/*\n  Content-Security-Policy: default-src 'self'; connect-src 'self'\n",
+  });
+  try {
+    const hits = securityAudit(dir).findings.filter((f) => /refuses/.test(f.text)).map((f) => f.text);
+    assert.equal(hits.length, 1, hits.join('\n'));
+    assert.match(hits[0], /elsewhere\.example\.net/);
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
