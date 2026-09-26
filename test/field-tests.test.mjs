@@ -178,13 +178,14 @@ test('a native date field squeezed below its own width is reported; one at its w
   const site = await serve('<!doctype html><html lang="en"><meta charset="utf-8"><title>x</title><body style="font:16px system-ui;padding:16px">' +
     '<form style="display:flex;gap:8px"><input aria-label="Task" style="flex:1"><input id="due" type="date" aria-label="Due" style="width:70px">' +
     '<input id="ok" type="date" aria-label="Start"><select id="tag" aria-label="Tag" style="width:44px"><option>Everything else</option></select>' +
-    '<select id="fits" aria-label="Who"><option>Gev</option><option>A much longer option nobody picked</option></select></form></body></html>');
+    '<select id="fits" aria-label="Who"><option>Gev</option><option>A much longer option nobody picked</option></select>' +
+    '<select id="sr" aria-label="Native twin" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)"><option>Visually hidden behind a custom dropdown</option></select></form></body></html>');
   try {
     const [r] = await inspect(site.url, { widths: [1280], wait: 200, scrolls: [0] });
     const cut = r.clipped.map((c) => c.el).join(' | ');
     assert.match(cut, /input#due/, cut);
     assert.match(cut, /select#tag/, cut);
-    assert.doesNotMatch(cut, /input#ok|select#fits/, cut);
+    assert.doesNotMatch(cut, /input#ok|select#fits|select#sr/, cut);
     assert.match(formatReport([r]).text, /warn {2}control cut short, 7\dpx of the \d+px it needs: input#due/);
   } finally { await site.close(); }
 });

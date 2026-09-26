@@ -500,8 +500,11 @@ export const PROBE = `(() => {
   out.clipped = [];
   for (const el of document.querySelectorAll('input[type=date], input[type=time], input[type=datetime-local], input[type=month], input[type=week], select, button, [role=button]')) {
     if (!vis(el) || !el.parentElement) continue;
-    const now = el.getBoundingClientRect().width;
-    if (now < 1) continue;
+    const box = el.getBoundingClientRect();
+    const now = box.width;
+    // A visually hidden native control (the 1px "sr-only" select behind a
+    // custom dropdown) is not shown at all, so it cannot be shown cut short.
+    if (now <= 2 || box.height <= 2) continue;
     if (el.tagName !== 'INPUT' && el.tagName !== 'SELECT') {
       if (getComputedStyle(el).overflowX !== 'visible' && el.scrollWidth > el.clientWidth + 1)
         out.clipped.push({ el: label(el), shown: Math.round(el.clientWidth), needs: el.scrollWidth });
