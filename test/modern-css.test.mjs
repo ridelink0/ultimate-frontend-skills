@@ -65,7 +65,11 @@ test('a .stagger list takes its reveal offsets from its own order in a real brow
   writeFileSync(join(dir, 'index.html'), `<!doctype html><html lang="en"><head><meta charset="utf-8"><link rel="stylesheet" href="core.css"></head><body>
     <section id="s"><h2 class="r">Heading</h2><ul class="stagger" id="list">${items.replace('<li class="r">2<', '<li class="r r-2">2<').replace('<li class="r">3<', '<li class="r r-3">3<')}</ul><p class="r" id="after">After</p></section>
     <ul id="plain"><li class="r">a</li><li class="r r-3">b</li></ul></body></html>`);
-  const { proc, udd, port } = await launch(findBrowser());
+  // A launch that throws never reaches the finally below, so the fixture
+  // folder is removed here, or it stays in the temp directory for good.
+  let browser;
+  try { browser = await launch(findBrowser()); } catch (e) { rmSync(dir, { recursive: true, force: true }); throw e; }
+  const { proc, udd, port } = browser;
   let s;
   try {
     s = await Session.open(port);

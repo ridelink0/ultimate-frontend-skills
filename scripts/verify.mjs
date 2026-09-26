@@ -73,6 +73,7 @@ export async function runVerify(target, opts = {}) {
   // (see inspect.mjs formatReport), so this is audit+debug+quality's browser
   // half in a single navigation per width instead of three.
   const debugResult = await debugSite(target, {
+    out: opts.out,
     widths: opts.widths || [1440, 390],
     wait: opts.wait ?? 1800,
     motion: 'both',

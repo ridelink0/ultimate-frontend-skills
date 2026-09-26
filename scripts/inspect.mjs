@@ -229,15 +229,26 @@ export async function sweepProfiles({ dir = tmpdir(), maxAgeMs = 3600000, limit 
 
 let sweptThisProcess = false;
 
+/* --disable-component-update: a fresh profile starts Edge's component
+   updater, which leaves an empty msedge_url_fetcher_* or
+   msedge_chrome_Unpacker_* folder in %TEMP% outside the profile, where no
+   profile delete reaches it. Measured 2026-09-26 on Gev's machine, four
+   launches each: 3 and 2 such folders without the flag, 0 and 0 with it, and
+   1,526 of them already sitting in %TEMP%. A render check needs no
+   component. */
+export const LAUNCH_FLAGS = [
+  '--headless=new', '--hide-scrollbars', '--mute-audio',
+  '--no-first-run', '--no-default-browser-check', '--disable-extensions',
+  '--disable-background-networking', '--disable-component-update', '--disable-sync', '--disable-features=Translate',
+];
+
 export async function launch(bin, args = []) {
   // Off the critical path: the sweep is housekeeping, never a reason to wait.
   if (!sweptThisProcess) { sweptThisProcess = true; sweepProfiles().catch(() => {}); }
   const udd = mkdtempSync(join(tmpdir(), PROFILE_PREFIX));
   const asked = await freePort();
   const proc = spawn(bin, [
-    '--headless=new', '--hide-scrollbars', '--mute-audio',
-    '--no-first-run', '--no-default-browser-check', '--disable-extensions',
-    '--disable-background-networking', '--disable-sync', '--disable-features=Translate',
+    ...LAUNCH_FLAGS,
     `--user-data-dir=${udd}`, `--remote-debugging-port=${asked}`, ...args, 'about:blank',
   ], { stdio: ['ignore', 'ignore', 'ignore'], windowsHide: true });
   let launchError;

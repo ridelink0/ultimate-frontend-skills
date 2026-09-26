@@ -9,7 +9,7 @@ import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { debugSite } from '../scripts/debug.mjs';
 import { Session, findBrowser, inspect, decodePNG, sampleImageContrast, readPortFile } from '../scripts/inspect.mjs';
-import { launch, closeBrowser, removeProfile, sweepProfiles, flushProfiles, PROFILE_PREFIX } from '../scripts/inspect.mjs';
+import { launch, closeBrowser, removeProfile, sweepProfiles, flushProfiles, PROFILE_PREFIX, LAUNCH_FLAGS } from '../scripts/inspect.mjs';
 import { writeReview } from '../scripts/review.mjs';
 import { runVerify, formatVerify } from '../scripts/verify.mjs';
 import { startServer } from '../scripts/preview-server.mjs';
@@ -81,7 +81,7 @@ test('contrast against an image background is measured from the actual pixels', 
       '<div style="background:linear-gradient(#141414,#141414);padding:32px"><h2 style="color:#f5f5f5;font-size:16px;margin:0">Perfectly legible</h2></div>' +
       '</html>';
     writeFileSync(join(dir, 'index.html'), html);
-    const result = await debugSite(dir, { widths: [800], wait: 60, motion: 'normal', scrolls: [0] });
+    const result = await debugSite(dir, { out: join(dir, 'review'), widths: [800], wait: 60, motion: 'normal', scrolls: [0] });
     const found = result.results[0].contrast;
     const bad = found.find(c => c.el.includes('Barely there'));
     const good = found.find(c => c.el.includes('Perfectly legible'));
@@ -103,7 +103,7 @@ test('text clipped inside a scrolling panel is not an overlap; text painted over
       '<div style="position:relative;height:40px;margin-top:40px"><p style="position:absolute;top:0;left:8px;margin:0">First line that collides here</p>' +
       '<p style="position:absolute;top:4px;left:12px;margin:0">Second line painted on top</p></div></body></html>';
     writeFileSync(join(dir, 'index.html'), html);
-    const result = await debugSite(dir, { widths: [800], wait: 60, motion: 'normal', scrolls: [0] });
+    const result = await debugSite(dir, { out: join(dir, 'review'), widths: [800], wait: 60, motion: 'normal', scrolls: [0] });
     const overlaps = result.results[0].overlaps;
     assert.equal(overlaps.filter((o) => /Scrolled list row|Panel underneath/.test(o.a + o.b)).length, 0, 'clipped rows must not count: ' + JSON.stringify(overlaps));
     assert.ok(overlaps.some((o) => /First line|Second line/.test(o.a + o.b)), 'the real collision must still be reported: ' + JSON.stringify(overlaps));
@@ -124,7 +124,7 @@ test('verify merges audit, render and security into one verdict with one exit co
       '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width">' +
       '<title>Verify fixture</title><meta name="description" content="A fixture page long enough to pass the meta-description length check comfortably.">' +
       '<h1>Verify fixture</h1><div style="background:#141414;padding:24px"><p style="color:#222222">low contrast</p></div></html>');
-    const result = await runVerify(dir, { widths: [800], wait: 60 });
+    const result = await runVerify(dir, { out: join(dir, 'review'), widths: [800], wait: 60 });
     assert.equal(result.exitCode, 1);
     assert.ok(result.sections.audit.errors >= 1, 'audit should flag the missing <main>/<section>/<article>');
     assert.ok(result.sections.render.warns >= 1, 'render should flag the low-contrast text on the dark box');
@@ -141,7 +141,7 @@ test('verify skips the source-only sections for a URL target instead of guessing
     await once(server, 'listening');
     try {
       const url = 'http://127.0.0.1:' + server.address().port + '/';
-      const result = await runVerify(url, { widths: [800], wait: 60 });
+      const result = await runVerify(url, { out: join(dir, 'review'), widths: [800], wait: 60 });
       assert.ok(result.sections.audit.skipped);
       assert.ok(result.sections.security.skipped);
       assert.ok(!result.sections.render.skipped);
@@ -481,4 +481,38 @@ test('a profile that outlasted every wait is deleted as the run ends', () => {
     assert.deepEqual(flushProfiles(left), []);
     assert.deepEqual(flushProfiles([]), []);
   } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+/* The same lesson one folder along: debugSite() with no `out` mkdtemps a
+   webdesign-review-* folder in the temp dir for its screenshots, which is
+   right for a user (they are told to read the PNGs) and wrong for a test that
+   never deletes it. runVerify() goes through debugSite() too, so it takes the
+   same `out`. Four such folders per suite run (two debugSite tests, two verify
+   tests): 74 of them were on Gev's machine on 2026-09-25, every one a test
+   fixture. Every test names its own output folder inside the fixture
+   directory it already removes. The call is read to its closing `);` so a
+   call split over several lines is still checked. */
+test('no test asks for a review folder in the temp directory it never deletes', () => {
+  let calls = 0;
+  for (const file of readdirSync(join(ROOT_DIR, 'test')).filter((n) => n.endsWith('.test.mjs'))) {
+    const text = readFileSync(join(ROOT_DIR, 'test', file), 'utf8');
+    for (const m of text.matchAll(/await (debugSite|runVerify)\(([^;]*?)\);/g)) {
+      calls++;
+      const line = text.slice(0, m.index).split('\n').length;
+      assert.match(m[2], /\bout:/, file + ':' + line + ': ' + m[1] + ' with no out: leaves a folder in ' + tmpdir() + ' that nothing removes');
+    }
+  }
+  assert.ok(calls >= 8, 'the scan found only ' + calls + ' calls; the pattern no longer matches how the tests call these');
+});
+
+/* One folder further out: Edge's component updater writes msedge_url_fetcher_*
+   and msedge_chrome_Unpacker_* folders straight into the temp directory, not
+   into the profile, so no profile delete reaches them. Four launches left 3
+   and 2 of them without --disable-component-update and none with it
+   (2026-09-26); 1,526 were on the machine. Counting them inside a test would
+   also count every other browser on a shared machine, so this holds the flag
+   and the measurement stays in the comment above LAUNCH_FLAGS. */
+test('every launch turns off the component updater that leaves msedge_* folders in the temp directory', () => {
+  assert.ok(LAUNCH_FLAGS.includes('--disable-component-update'), JSON.stringify(LAUNCH_FLAGS));
+  assert.ok(LAUNCH_FLAGS.includes('--headless=new'), 'LAUNCH_FLAGS is the list launch() spawns with');
 });
