@@ -183,16 +183,30 @@ function cmdNew() {
     if (needs.exploded) engines.push('<script type="module" src="exploded.js"></script>');
   }
 
+  // Landmarks. The skip link and the primary nav go before <main>, the footer
+  // after it, wherever --sections listed them. Wrapping them inside <main>
+  // made a skip link that skipped nothing (its target started before it, so
+  // the next Tab came straight back to it) and left a screen reader no
+  // navigation or contentinfo landmark outside the content. The nav block's
+  // own "copying this by hand" comment travels with it.
+  const navHit = body.match(/(?:<!--(?:(?!-->)[\s\S])*?-->\s*)?<a class="sr-skip"[\s\S]*?<\/nav>/);
+  const header = navHit ? navHit[0] : '';
+  if (navHit) body = body.replace(navHit[0], '');
+  const footHit = body.match(/<footer\b[\s\S]*?<\/footer>/);
+  const footer = footHit ? footHit[0] : '';
+  if (footHit) body = body.replace(footHit[0], '');
+  body = body.trim();
+
   const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
 ${head}
 </head>
 <body${preset.tone}>
-<main id="main">
+${header ? header + '\n' : ''}<main id="main">
 ${body}
 </main>
-${sections.get('foot').body}${engines.length ? '\n' + engines.join('\n') : ''}
+${footer ? footer + '\n' : ''}${sections.get('foot').body}${engines.length ? '\n' + engines.join('\n') : ''}
 </body>
 </html>
 `;
@@ -209,8 +223,7 @@ ${sections.get('foot').body}${engines.length ? '\n' + engines.join('\n') : ''}
   // The nav as the index finally has it - anchors rewritten, labels derived,
   // dead links removed - not the section file's raw block, which kept Work /
   // Method / Detail on every 404 the scaffolder ever wrote.
-  const navMatch = body.match(/<a class="sr-skip"[\s\S]*?<\/nav>/);
-  const navBlock = navMatch ? navMatch[0] : '';
+  const navBlock = header.replace(/^<!--[\s\S]*?-->\s*/, '');
   const notFound = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -225,7 +238,10 @@ ${sections.get('footer').body.replace(/Brand Name/g, name)}
 ${sections.get('foot').body}
 </body>
 </html>
-`.replace(/href="#/g, 'href="./#');
+`.replace(/href="#(?!main")/g, 'href="./#');
+  // Every in-page link above points back at the index, except the skip link:
+  // it jumps to this page's own <main>, and as ./#main it took a keyboard
+  // user from the 404 to the home page.
   writeFileSync(join(dir, '404.html'), notFound, 'utf8');
   writeFileSync(join(dir, 'site.css'),
 `/* ${name} - project layer. core.css is the chassis; every choice specific to

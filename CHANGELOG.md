@@ -2,6 +2,13 @@
 
 Releases before 6.5.0 are recorded in their tag commits (`git log v6.4.2`) and on the GitHub releases page.
 
+## Unreleased
+
+### Scaffolder landmarks
+- `webdesign.mjs new` puts the skip link and the primary nav before `<main id="main">` and the footer after it, wherever `--sections` lists them. Before, all three sat inside `<main>`: the skip link's target started before the skip link, so the next Tab went back to it, and a screen reader found no navigation or contentinfo landmark outside the content.
+- The 404's skip link stays `#main`. The rewrite that points the 404's other links back at the index had turned it into `./#main`, which sent a keyboard user to the home page. The shipped `examples/fable-showcase` pages had both defects and are corrected.
+- `test/scaffold-landmarks.test.mjs` checks the order in every preset and with a reordered `--sections`. In a real browser it presses Tab, Enter, Tab on the index and the 404, and reads the landmarks from the accessibility tree.
+
 ## 6.5.1 - 2026-09-26
 
 6.5.0 was tagged on a commit whose Windows CI job failed. 6.5.1 is the same feature set on a commit that is green on Windows and Ubuntu, plus the fixes below.
