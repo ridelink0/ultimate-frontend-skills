@@ -34,11 +34,18 @@ const copyFindings = (r) => r.findings.filter((f) => /scaffold copy/.test(f.text
 function scaffoldAll() {
   const dir = mkdtempSync(join(tmpdir(), 'ufs-scaffold-copy-'));
   const pages = [];
-  for (const hero of heroes) {
-    const out = join(dir, hero);
-    const made = spawnSync(process.execPath, [cli, 'new', out, '--name', 'Lantern', '--sections', ['nav', hero, ...middle, 'footer'].join(',')], { encoding: 'utf8' });
-    assert.equal(made.status, 0, made.stderr);
-    for (const f of ['index.html', '404.html']) pages.push({ where: hero + '/' + f, html: readFileSync(join(out, f), 'utf8') });
+  // The caller removes dir in its finally, but only once this returns: a
+  // scaffold that fails here has to take the folder with it.
+  try {
+    for (const hero of heroes) {
+      const out = join(dir, hero);
+      const made = spawnSync(process.execPath, [cli, 'new', out, '--name', 'Lantern', '--sections', ['nav', hero, ...middle, 'footer'].join(',')], { encoding: 'utf8' });
+      assert.equal(made.status, 0, made.stderr);
+      for (const f of ['index.html', '404.html']) pages.push({ where: hero + '/' + f, html: readFileSync(join(out, f), 'utf8') });
+    }
+  } catch (e) {
+    rmSync(dir, { recursive: true, force: true });
+    throw e;
   }
   return { dir, pages };
 }
