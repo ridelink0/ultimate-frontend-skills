@@ -114,3 +114,24 @@ test('a colour that is merely violet, and the house accent, are not the tell', (
   assert.deepEqual(colourHits('<style>.b{background:oklch(58% 0.072 62)}</style>'), []);
   assert.deepEqual(colourHits('<style>.b{background:oklch(48% 0.14 28)}</style>'), []);
 });
+
+test('a hand gamma-encode ahead of UnrealBloomPass is a warning until the output colour space or OutputPass settles it (Doodle Voyager)', () => {
+  // The shape of js/render.js at d3aa89b, before fc25a40 set LinearSRGBColorSpace.
+  const render = [
+    "import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';",
+    'const POST_FS = `vec3 toS(vec3 c) { return pow(max(c, 0.0), vec3(1.0 / 2.2)); }`;',
+    'this.bloomPass = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.85, 0.45, 0.85);',
+  ].join('\n');
+  const run = (js) => {
+    const dir = mkdtempSync(join(tmpdir(), 'ufs-audit-gamma-'));
+    try {
+      writeFileSync(join(dir, 'index.html'), page('<p>Game</p>'));
+      writeFileSync(join(dir, 'render.js'), js);
+      return warns(runAudit(dir)).filter((t) => /gamma-encodes by hand/.test(t));
+    } finally { rmSync(dir, { recursive: true, force: true }); }
+  };
+  assert.equal(run(render).length, 1);
+  assert.equal(run(render + '\nthis.gl.outputColorSpace = THREE.LinearSRGBColorSpace;').length, 0);
+  assert.equal(run(render + "\nimport { OutputPass } from 'three/addons/postprocessing/OutputPass.js';").length, 0);
+  assert.equal(run(render.replaceAll('UnrealBloomPass', 'AfterimagePass')).length, 0, 'no bloom, no second encode');
+});

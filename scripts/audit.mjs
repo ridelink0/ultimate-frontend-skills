@@ -469,6 +469,18 @@ export function runAudit(target) {
       W('no responsive breakpoints found');
   }
 
+  /* --- three.js post chain ---------------------------------------------- */
+  // Bloom copies its input to the screen through a material three.js
+  // sRGB-encodes, so a composite pass that already did pow(c, 1/2.2) is
+  // encoded twice and every dark value turns milky (Doodle Voyager,
+  // 2026-09-24; references/games.md, in-game rendering item 2).
+  if (jss.length) {
+    const allJs = jss.map((f) => readFileSync(f, 'utf8')).join('\n');
+    const byHand = /pow\s*\([^;\n]*?(?:1(?:\.0*)?\s*\/\s*2\.2\b|\b0\.454)/.test(allJs);
+    if (/\bUnrealBloomPass\b/.test(allJs) && byHand && !/\bLinearSRGBColorSpace\b|\bOutputPass\b/.test(allJs))
+      W('a shader gamma-encodes by hand (pow 1/2.2) ahead of UnrealBloomPass, and nothing sets renderer.outputColorSpace = THREE.LinearSRGBColorSpace or ends on OutputPass: the bloom encodes it again and the darks wash out');
+  }
+
   lines.push(`\n  ${errors} error(s), ${warns} warning(s)\n`);
   return { text: lines.join('\n'), errors, warns, findings };
 }
