@@ -13,15 +13,22 @@ project leaves the next project to repeat it.
 
 | Record | Project | Dates | Lessons |
 |---|---|---|---|
-| [doodle-voyager.md](doodle-voyager.md) | Doodle Voyager, a first-person doodle space shooter (D:/doodle-voyager, doodle-voyager.vercel.app) | 2026-09-22 to 2026-09-25 | 13 |
+| [doodle-voyager.md](doodle-voyager.md) | Doodle Voyager, a first-person doodle space shooter (D:/doodle-voyager, doodle-voyager.vercel.app) | 2026-09-22 to 2026-09-26 | 30 |
 | [gev-hq.md](gev-hq.md) | HQ, a key-gated shared dashboard with a shader and PBR Lab (D:/gev-hq, gev-hq.vercel.app) | 2026-09-23 to 2026-09-24 | 11 |
 
 ## The method
 
 1. **Build the project with UFS, and keep the evidence.** The project's own
    git log, TODO list, test logs and docs are the record of what happened.
-   Keep the owner's reviews word for word: Gev's nine-point critique of HQ is
-   the most useful thing in that record.
+   Keep the owner's reviews word for word: Gev's nine-point critique of HQ and
+   his seventeen-item review of Doodle Voyager after playing it (DV-14 to
+   DV-28) are the most useful things in these records, and neither was
+   findable by any check. His instruction on the second one, 2026-09-25: "Put
+   everything that im saying that you did wrong to be recorderd and see how
+   you can improve UFS off that and teach other claudes from other people."
+   A lesson that stops at the record teaches nobody, so every one of them also
+   ships as a numbered rule in a reference, and a test fails if the two drift
+   apart.
 2. **Mine it when the project pauses, not from memory.** Read the project's
    git log and docs; grep (never read whole) the session transcripts for
    `UFS`, `ultimate-frontend`, `games.md`, `webdesign` and the owner's review

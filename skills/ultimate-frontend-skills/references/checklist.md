@@ -68,6 +68,26 @@ list is what the audit cannot see.
 - [ ] Anchors clear the fixed header (`--nav-h` is being published by
       `motion.js`, or you set `scroll-margin-top` yourself).
 
+## If it is a game
+
+The floor above still applies to every screen. These are the ones a game fails
+that a page cannot, and each one came from an owner playing a build whose whole
+suite was green. The full pass is `references/games.md`, section "Before you
+call a game done: the play pass".
+
+- [ ] Stylised surfaces: the light whitens the texture and the shading and
+      hatching survive. Nothing is clipped to pure white.
+- [ ] Every effect the player feels in their body - motion blur, camera shake,
+      flash - has its own control that reaches a real zero, independent of the
+      quality preset.
+- [ ] Exactly one piece of music is audible at a time, and everything audible
+      shares one bus.
+- [ ] Die in every hazard. Each death leaves you somewhere playable.
+- [ ] Every feature the owner asked for has been seen in a played session, not
+      only read in the code.
+- [ ] Someone has played it with the controls in their hands and run the play
+      pass, before the owner did.
+
 ## Then look at it
 
 `node scripts/webdesign.mjs look <dir>` renders the page at 1440 and 390 in a real

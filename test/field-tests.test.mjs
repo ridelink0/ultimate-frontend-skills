@@ -274,3 +274,75 @@ test('a key screen can be typed through, and the key never reaches the report (H
     assert.match(shut.filter((r) => r.step)[1].actionErrors.join(' '), /not visible/);
   } finally { delete process.env.UFS_FIELD_TEST_KEY; await site.close(); }
 });
+
+/* Gev, after playing the 2026-09-25 build (memory note
+   project_doodle_voyager_fixes_0925.md, item 1, verbatim): "when i mean doodle
+   shoot textures I meant that lighiting makes the texture white (not the
+   ligting the texture) and as you can see with the black hole you did it
+   correctly, it shows shading at the end which is what I want for everything".
+   A hand-drawn look whitens the TEXTURE where the light lands and hatches
+   toward the edges. A surface that reaches 255 on every channel has no texture
+   left to shade, and bloom then spreads that flat white further - which is
+   what his black-hole screenshot showed. Paper white sits below pure white,
+   so the shading survives. */
+const LIT = `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Lit</title>
+<style>body{margin:0;background:#101014}canvas{display:block;width:600px;height:400px}</style></head><body>
+<canvas id="blown"></canvas><canvas id="paper"></canvas>
+<script>
+  function fill(id, lit, shade) {
+    const c = document.getElementById(id);
+    c.width = 600; c.height = 400;
+    const gl = c.getContext('webgl');
+    gl.viewport(0, 0, c.width, c.height);
+    gl.enable(gl.SCISSOR_TEST);
+    gl.scissor(0, 0, c.width, c.height);
+    gl.clearColor(lit, lit, lit, 1); gl.clear(gl.COLOR_BUFFER_BIT);
+    // A quarter of the frame in shadow, so neither canvas is a flat fill.
+    gl.scissor(0, 0, c.width >> 1, c.height >> 1);
+    gl.clearColor(shade, shade, shade, 1); gl.clear(gl.COLOR_BUFFER_BIT);
+  }
+  fill('blown', 1, 0.08);       // the light made the surface white: 255,255,255
+  fill('paper', 0.957, 0.6);    // paper white (244) with its shaded side
+</script></body></html>`;
+
+test('a WebGL canvas clipped to pure white is a warning; paper white with shading is not (Doodle Voyager)', { skip, timeout: 90000 }, async () => {
+  const site = await serve(LIT);
+  try {
+    const [r] = await inspect(site.url, { widths: [1280], wait: 300, scrolls: [0] });
+    const blown = r.visual.canvases.find((c) => c.id === '#blown');
+    const paper = r.visual.canvases.find((c) => c.id === '#paper');
+    assert.ok(blown.clipped >= 0.5, 'the blown canvas reads as clipped: ' + JSON.stringify(blown));
+    assert.equal(paper.clipped, 0, 'paper white is not clipped: ' + JSON.stringify(paper));
+    // Neither is a flat fill, so the flat-fill warning is not what fires here.
+    assert.equal(blown.uniform, false);
+    assert.equal(paper.uniform, false);
+    const text = formatReport([r]).text;
+    assert.match(text, /warn {2}webgl canvas #blown is \d+% clipped to pure white/, text);
+    assert.doesNotMatch(text, /#paper is \d+% clipped/, text);
+  } finally { await site.close(); }
+});
+
+/* "Put everything that im saying that you did wrong to be recorderd and see
+   how you can improve UFS off that and teach other claudes from other people"
+   (Gev, 2026-09-25, item 16b). A lesson that stops at the record teaches
+   nobody: every lesson from that review has to arrive in the shipped
+   reference as its own numbered item. */
+test("every lesson from Gev's play review is a numbered item in the shipped games reference", () => {
+  const SECTION = "Playing it: what Gev's review caught that every check passed";
+  const fromReview = lessons('doodle-voyager.md')
+    .filter((l) => l.parts['The UFS fix'].replace(/\s+/g, ' ').includes('section "' + SECTION + '"'));
+  assert.ok(fromReview.length >= 15, 'only ' + fromReview.length + ' lessons name the play-review section');
+  const games = readFileSync(join(ROOT, 'skills', 'ultimate-frontend-skills', 'references', 'games.md'), 'utf8');
+  const start = games.split('\n').findIndex((line) => /^#{2,4} /.test(line) && line.includes(SECTION));
+  assert.ok(start >= 0, 'games.md has no "' + SECTION + '" heading');
+  const rest = games.split('\n').slice(start + 1);
+  const end = rest.findIndex((line) => /^## /.test(line));
+  const body = (end === -1 ? rest : rest.slice(0, end)).join('\n');
+  const items = [...body.matchAll(/^\d+\. \*\*/gm)];
+  assert.ok(items.length >= fromReview.length,
+    'the record holds ' + fromReview.length + ' lessons from the review but games.md ships ' + items.length + ' items');
+  // And the play pass that would have found them is a checklist, not prose.
+  const pass = games.slice(games.indexOf('## Before you call a game done'));
+  assert.ok(pass.length > 400, 'games.md has no "Before you call a game done" section');
+  assert.ok([...pass.matchAll(/^- \[ \] /gm)].length >= 15, 'the play pass needs one question per lesson');
+});

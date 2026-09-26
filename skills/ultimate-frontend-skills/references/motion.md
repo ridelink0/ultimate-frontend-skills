@@ -409,6 +409,46 @@ no lazy on the LCP hero, `loading="lazy"` + `decoding="async"` below it. Use
 `100svh`, not `100vh`, so the mobile address bar does not resize the hero
 mid-scroll.
 
+## Screen effects a player feels in their body
+
+A quality preset is about frame rate. Motion blur, camera shake, field-of-view
+kick, chromatic aberration, a pulsing vignette and flashing are about comfort.
+They must not share a control, and the comfort ones must each reach a real zero.
+
+This came from a game whose motion blur had no setting of its own - its strength
+was a field of the quality preset (0 on low, 0.75 on medium, 1.0 on full) - and
+whose camera shake was a boolean. The owner's report was "no intensity control,
+and it shakes the screen", and there was nothing he could turn down that did not
+also drop the render quality.
+
+- **One named control per effect, 0-100%, and 0 means off.** Not a boolean, not
+  a side effect of another slider. Label it with what it does to the picture
+  ("Motion blur", "Camera shake"), not with a quality word.
+- **Start reduced when the system asks.** Read
+  `matchMedia('(prefers-reduced-motion: reduce)')` at start, default every
+  comfort effect to 0 when it matches, and listen for `change` - the user can
+  switch it mid-session. CSS cannot reach a canvas loop, so this is code, not a
+  media query in a stylesheet.
+- **A reprojection blur shakes the image unless it is clamped.** Blurring along
+  the per-pixel screen-space motion vector means a camera that micro-jitters
+  (a hand-held look, a seat that swings with the hull, mouse noise) smears every
+  pixel a little every frame, which reads as shaking rather than speed. Clamp
+  the vector length in pixels, ignore anything below a floor, and let a still
+  camera blur nothing at all.
+- **Shake is bounded and decays.** Cap the amplitude in degrees, decay it to
+  zero, and never apply it to a camera the player is aiming with unless the
+  player asked for it. Nothing shakes on a paused or still frame.
+- **Flashing has a hard ceiling.** Nothing flashes more than three times a
+  second (WCAG 2.3.1), and anything that could is behind its own control
+  (WCAG 2.3.3 covers motion from interactions).
+- **The check is a played session with the sliders at both ends.** At 0 the
+  effect is absent, not faint; at 100 the picture is still readable. Anything in
+  between is tuning.
+
+The game record this came from is `docs/field-tests/doodle-voyager.md` in the
+plugin repository, and the play-pass checklist that would have caught it is in
+`references/games.md`, section "Before you call a game done: the play pass".
+
 ## Reduced motion
 
 Reduce, do not remove. Kill parallax, scrubbed transforms, large entrances,

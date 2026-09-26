@@ -69,6 +69,7 @@ its own slice of the corpus:
 | A website, landing page, microsite | this file, `references/pipeline.md` | nothing - the route as written |
 | An app (mobile, desktop, PWA, Expo) | `references/apps.md` | the first screen is a task, not a hero; the navigation model is decided before the palette; empty, loading and error states are designed before the full one; platform conventions outrank the house style; a dashboard puts the display face on the wordmark only, sans on every control, one panel in the lead and no empty panels (apps.md, Dashboards); `animate-expo` and the React Native packs own motion when installed. 35 shipped apps: `awards --pick app --n 3` |
 | A game's site and its start screen | `references/games.md` | the start screen is in-world UI, not a marketing template: controls documented exactly, real persisted numbers, names for weapons, waves and deaths. The eyebrow-headline-tagline-two-buttons stack is the tell. `awards --pick game --n 3` |
+| The game itself | `references/games.md` (in-game rendering, shipping a networked game, and what playing it caught), then `references/three.md` for the renderer | a suite, a render check and an audit all green is the floor, not the verdict: a game is judged by playing it. Before you call it done, run the play pass at the end of `references/games.md` with the controls in your hands. A stylised look whitens the texture where the light lands (`references/three.md`, section 12); every effect the player feels in their body has its own control (`references/motion.md`, Screen effects) |
 
 A fourth, **a video** (a reel, a launch clip, a recap cut from someone's
 references), is a page rendered frame by frame: read `references/video.md`
@@ -318,7 +319,7 @@ Read one only when you need it. Each is self-contained.
 | `references/imagery.md` | Sourcing and licensing, grading, duotone, scrims, gradient skies, grain, technical drawing |
 | `references/sections.md` | The grid, spacing, dot leaders, glass, forms, archetypes the library lacks |
 | `references/tells.md` | What gives a generated page away, and what to do instead |
-| `references/games.md` | Game sites and start screens: two exhibits measured, thirteen more, the checkable tells |
+| `references/games.md` | Game sites and start screens: two exhibits measured, thirteen more, the checkable tells; then in-game rendering, shipping a networked game, what playing it caught, and the play pass |
 | `references/apps.md` | Apps: shipped references with first screen, type, palette, navigation, motion, empty states, copy; the app tells |
 | `references/copy-tells.md` | Copy that reads as generated in 2026 - vocabulary, sentence shapes, microcopy - and what human copy does |
 | `references/image-tells.md` | What gives a generated picture away, the prompt template, the post-processing order, when to photograph |

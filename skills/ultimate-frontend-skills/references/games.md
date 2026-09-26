@@ -344,6 +344,161 @@ at the time and the check that now holds each one, are in
     production deploy read `.vercel/project.json` and confirm the project
     name is the one you mean.
 
+## Playing it: what Gev's review caught that every check passed (2026-09-26)
+
+The owner played the same game for twenty minutes and came back with
+seventeen things wrong with it. The offline suite was 213 green, the render
+check was clean, the audit was clean, and not one of these was visible to any
+of them. They are not bugs in the sense a test catches; they are the game
+failing to be a game. Each is written here as a rule, because every one of
+them was avoidable at the design pass. The records, with what UFS said at the
+time and the check that now holds each one, are in
+`docs/field-tests/doodle-voyager.md` in the plugin repository.
+
+11. **A hand-drawn look whitens the TEXTURE where the light lands. It is not
+    a light effect.** The owner, verbatim: "when i mean doodle shoot textures
+    I meant that lighiting makes the texture white (not the ligting the
+    texture) and as you can see with the black hole you did it correctly, it
+    shows shading at the end which is what I want for everything." So: light
+    drives the albedo toward paper white and drives hatch coverage down; the
+    shaded side keeps the hatching, dense toward the terminator and the
+    silhouette. What it is not: emissive, additive, a rim light, or bloom on
+    a lit face - those make the surface brighter than the paper, and a
+    surface at 255 on every channel has no texture left to shade. Keep the
+    lit side below pure white (a paper white near 244 leaves room), quantise
+    to three to five tone bands so it reads as strokes rather than a ramp,
+    and check it by sampling pixels, not by eye. The recipe is in
+    `references/three.md`, section "12. The hand-drawn look: the light
+    whitens the texture". `webdesign.mjs look` now warns when a WebGL canvas
+    is more than 15% clipped to pure white.
+12. **An enemy has to read as an enemy at the distance you first meet it.**
+    The enemies were built from the same hull kit as the friendly ships, so
+    at range they read as traffic. Silhouette first (a shape no friendly
+    actor has), then scale, then colour - the owner asked for "big, red, all
+    of that" - and each one holds at the distance the player first sees it,
+    not in a model viewer. Check it the way the player meets it: a frame
+    grabbed at engagement range, downscaled to a thumbnail. If you cannot
+    tell friend from enemy in the thumbnail, neither can the player.
+13. **Nothing that hunts you may pass through the cover you are hiding
+    behind.** The interior enemies clipped through the walls of the rooms
+    they were in. An actor that ignores the geometry ends the only tactic the
+    room offers, and it reads as a broken game rather than a hard one. Every
+    actor that moves in a bounded space is swept against that space's
+    collision geometry, and the test is a level-shaped one: place the actor
+    outside a wall, aim it at the player, step the simulation, and assert it
+    never crosses.
+14. **One traversal tool with one destination is not traversal.** The jetpack
+    flew to the ship and nowhere else, so boarding a small ship was the only
+    thing it could do, and doing it was the hardest thing in the game. The
+    owner: "its hard to get inside the small ships when the jetpack is going
+    to the ship, no where else making this game WAY too hard." A movement
+    verb takes a direction from the player, or it is a cutscene. Give it free
+    aim first and a snap-to-target as an assist, never the reverse.
+15. **Every sensory effect gets its own control, and a zero.** Motion blur
+    had no intensity of its own - its strength came from the quality preset
+    (0, 0.75, 1.0) - and screen shake was a boolean. The owner reported the
+    blur "shakes the screen" and had nothing to turn down. A quality preset
+    is about frame rate; an effect the player can feel in their body is about
+    comfort, and the two must not share a slider. Motion blur, camera shake,
+    field-of-view kick, chromatic aberration, vignette pulse and flashing all
+    get a named 0-100% control that reaches a real zero, and all of them
+    start reduced when `prefers-reduced-motion` is set. See
+    `references/motion.md`, section "Screen effects a player feels in their
+    body".
+16. **A window is a view, not a porthole.** The ship's windows were too small
+    to see out of, which removed the reason to be at the window at all. The
+    owner: make the window "take the whole side of the room". Size an opening
+    by what it is for: if the point is to watch the world, the opening is the
+    wall.
+17. **A hazard must always have an exit.** Flying close to the black hole
+    killed the player in a loop: die, respawn inside the kill radius, die
+    again. Any hazard that can kill on contact needs a respawn placed outside
+    it, a grace period on respawn, or both; and the test is the nasty one -
+    die inside the hazard and assert the next state is playable.
+18. **Content the owner asked for has to appear in play, not only in the
+    code.** The planet advertisements were built and the owner never saw one:
+    "There are no ads like I asked". A feature that exists in a module and
+    never renders in a session is not shipped. For anything placed in a
+    world, the check is a played session: reach the place it lives and
+    photograph it. Absence is the default and has to be disproved.
+19. **If it looks like an object, the player will try to pick it up.** "I
+    cant pick up boxes for fun." Props that read as loose objects need the
+    interaction the shape promises, or they should not read as loose. This is
+    the affordance rule from the web, in three dimensions: a thing shaped
+    like a button is a button.
+20. **Multiplayer means you can go where the other player is, and tell them
+    apart from the scenery.** Peers appeared but their ships could not be
+    boarded and the people did not read as people. The owner wanted to visit
+    other ships, and the players themselves to read as Doodle Shooter enemies
+    "but BLUE" - one hue, reserved, never used for anything else. Two rules:
+    every place the local player can be is a place a remote player can be
+    visited in, and a remote player's colour is a team colour that nothing
+    else in the palette may borrow.
+21. **Speed is an axis the player controls, not a constant you tuned.** The
+    ships were too slow and there was no acceleration control. The owner's
+    scale for the fastest ship: from seeing the Milky Way at a distance to
+    inside its edge in seconds. Give a vehicle an acceleration input, a top
+    speed that differs per hull, and a sense of scale that survives it -
+    then tune. A single speed number is a placeholder.
+22. **A plotted course is one way to travel, never the only one.** "you
+    should also be able to free roam, not just having to plot a course all
+    the time." Autopilot is a convenience laid over free movement. If the
+    only way to get anywhere is to pick a destination from a list, the world
+    is a menu.
+23. **One death screen for every cause teaches nothing.** "When you die it
+    should actually show multiple screens for multiple scnearos." A death
+    screen is the game's only chance to say what killed you and what to do
+    differently. One per cause, naming the cause.
+24. **One sound bus, or two pieces of music fight.** A second music source
+    played over the soundtrack: "I hear other music on the game that isnt
+    even apart of music and is battling the other music". Everything audible
+    goes through one named bus with one mixer; anything that can sound at the
+    same time as the music either shares its bus or ducks it; and the list of
+    sources that can be audible at once is short enough to write down and
+    check.
+25. **Two names for the same verb is one too many.** "Remove the cruise it
+    dosent make sense, autopiolot does, just make it so the player themselves
+    can move at cruise speed." Cruise and autopilot were two modes for one
+    idea. When two controls describe the same action, cut one and fold its
+    behaviour into the other; the survivor is the one the player already
+    understands.
+
+## Before you call a game done: the play pass
+
+Every finding above was found by playing, and none of them by a check. The
+suite, the render check and the audit are the floor. This is the pass that
+comes after them, and it is done by someone holding the controls, answering
+each question out loud before the owner has to.
+
+- [ ] Look at the stylised surfaces. Does the light whiten the texture, with
+      the shading and hatching still visible where it falls away? A surface
+      brighter than its own paper is a light effect, not a texture.
+- [ ] From the distance you first meet them, can you tell an enemy from a
+      friendly actor? Check it on a thumbnail, not a full frame.
+- [ ] Can anything that hunts you pass through the cover you are using?
+- [ ] Does every movement verb take a direction from the player, rather than
+      only a destination?
+- [ ] Does every effect you can feel - blur, shake, kick, flash - have its
+      own control with a real zero, independent of the quality preset?
+- [ ] Is every opening the size of the job it does? If the point is to look
+      out, can you see out?
+- [ ] Die inside every hazard. Is the next state playable, every time?
+- [ ] Play until you have seen, with your own eyes, every feature the owner
+      asked for. Name the ones you did not reach.
+- [ ] Try to pick up, open, sit on and break the things that look like they
+      can be. Does the shape's promise hold?
+- [ ] With a second player: can you reach them, visit where they live, and
+      tell them from the scenery at a glance?
+- [ ] Can the player change speed, and does the world still read at the top
+      of the range?
+- [ ] Can you go somewhere nobody plotted a course to?
+- [ ] Die of three different causes. Do you get three different screens, each
+      naming its cause?
+- [ ] Listen with the music on. Is exactly one piece of music playing?
+- [ ] Read every control's name. Do any two name the same action?
+- [ ] Write down what the owner asked for that you cannot demonstrate, and
+      say so before they find it.
+
 ## URLs referenced
 
 - https://doodleshooter.vercel.app

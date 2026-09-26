@@ -1203,3 +1203,79 @@ reproduced here, UNVERIFIED). Listen for
 A project suite that reads WebGL pixels needs the drawing buffer preserved
 before the page runs; `CANVAS_INIT` in `scripts/inspect.mjs` is exported for
 exactly that (install it with `Page.addScriptToEvaluateOnNewDocument`).
+
+## 12. The hand-drawn look: the light whitens the texture (2026-09-26)
+
+The one note the owner of a doodle-style game repeated until it landed, in his
+own words: "when i mean doodle shoot textures I meant that lighiting makes the
+texture white (not the ligting the texture) and as you can see with the black
+hole you did it correctly, it shows shading at the end which is what I want for
+everything."
+
+Read it twice. Light does not brighten the surface. Light chooses which part of
+the drawn texture you see: paper where the light lands, hatching where it falls
+away. Getting this wrong is the single most common way a stylised renderer ends
+up looking like a bloom filter over grey plastic.
+
+**The rule.** The lit colour is a function of the texture and the amount of
+light, and it never exceeds the paper. `outgoingLight` is *chosen*, not
+accumulated:
+
+```glsl
+// after the lighting chunks have filled reflectedLight, before the fragment
+// is written. Chunk names move between releases - read the shader source of
+// the version you pin (three/src/renderers/shaders/ShaderLib) rather than
+// trusting a name from a blog post.
+vec3  light = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse;
+float lit   = clamp(dot(light, vec3(0.2126, 0.7152, 0.0722)), 0.0, 1.0);
+
+const float BANDS = 4.0;                       // three to five; more is a ramp
+float band = floor(lit * BANDS) / (BANDS - 1.0);
+
+vec3  paper = mix(PAPER_SHADE, PAPER_WHITE, band);   // 0xb9b2a4 -> 0xf4efe6
+float ink   = hatch(vObjectPosition, vObjectNormal, 1.0 - band);
+vec3  drawn = mix(paper, INK, ink);
+
+// The light picked a value. It does not add one.
+outgoingLight = drawn;
+```
+
+**PAPER_WHITE is below 1.0.** 244/255 = 0.957 is a good paper. Two things
+follow: the surface can never clip, so the shading and the hatching survive at
+every light level; and a bloom threshold set above the paper means lit paper
+never blooms, while an emitter (a sign, an engine, an accretion disc) still
+does. That is the whole difference between a drawn surface and a glowing one.
+
+**Quantise before you hatch, and hatch in object space.** Banding the light
+first makes the strokes land in flat regions, which is what a pen does; hatching
+a smooth gradient gives you noise. Object-space (or triplanar) hatch
+coordinates keep the strokes on the surface as the camera moves - screen-space
+hatching swims, and it is the second-clearest tell of a filter rather than a
+drawing.
+
+**More light means less ink, never more brightness.** That sentence is the
+test. If a surface gets brighter as a lamp gets closer, the light is being
+added. If it loses hatching and goes toward paper, the texture is being chosen.
+
+**Check it with pixels, not with your eye.** Read back the lit side and the
+shaded side (`CANVAS_INIT` in `scripts/inspect.mjs` preserves the drawing
+buffer for exactly this):
+
+- the lit side sits within a few levels of PAPER_WHITE and **below 250 on at
+  least one channel** - if it is 255,255,255 the texture is gone;
+- the shaded side has real contrast between paper and ink, so the hatching is
+  visible rather than crushed;
+- the histogram of a single surface shows a few clusters, not a smooth ramp.
+
+`webdesign.mjs look` warns when more than 15% of a WebGL canvas is clipped to
+opaque pure white, which is the machine-readable form of the first bullet. It
+is a warning, not an error: a white-out is a legitimate frame in a flash or a
+transition, and the report cannot tell the difference. On a lit surface it is
+the bug the owner spent three messages describing.
+
+**What this replaces.** A stylised post pass that draws ink over a paper colour
+and discards the lit colour (section "In-game rendering", item 1 of
+`references/games.md`) is the same mistake seen from the other side: there, no
+surface has a light side; here, every surface has only a light side. Keep the
+lighting in the material, let it choose the texture, and leave edges,
+background and screen effects to the post pass.
