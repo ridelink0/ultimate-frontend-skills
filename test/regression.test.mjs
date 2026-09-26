@@ -226,6 +226,7 @@ test('SKILL.md says what to do when the plugin root is empty, and the README say
     assert.match(section, /npx skills add/);
     assert.match(section, /never report an audit, a render check or a verify as run/);
     assert.match(section, /scripts\/install\.mjs/);
+    assert.match(section, /Codex\s+leaves it empty/, 'Codex leaves the plugin root empty; the section has to say where the root is there');
   }
   const readme = readFileSync(join(here, '..', 'README.md'), 'utf8');
   const install = readme.slice(readme.indexOf('## Install'), readme.indexOf('\n## ', readme.indexOf('## Install') + 1));

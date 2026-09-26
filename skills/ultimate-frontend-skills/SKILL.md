@@ -11,7 +11,9 @@ direction for projects without an existing design. A supplied or selected Claude
 ## Where the scripts are
 
 Every `node "${CLAUDE_PLUGIN_ROOT}/scripts/..."` command in this skill runs
-from the plugin root. Installed as a plugin, that is set. Installed as a bare
+from the plugin root. Installed as a Claude Code plugin, that is set. Codex
+leaves it empty; there, use the folder that holds `.codex-plugin/`, two levels
+above this file. Installed as a bare
 skill (`npx skills add`, or a copy under `~/.claude/skills` or
 `~/.agents/skills`), only this folder is on the machine - `references/`,
 `assets/` and `data/` - and `${CLAUDE_PLUGIN_ROOT}` is empty or still reads
