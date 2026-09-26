@@ -1,5 +1,3 @@
-Ultimate Frontend Skills is the plugin previously named Ultimate Website Skills (4.x) and cinematic-web-design (3.x), which in turn absorbed Atelier. [Migration and aliases](docs/merge.md) · [The pipeline](skills/ultimate-frontend-skills/references/pipeline.md) · [Claude Design routes](skills/ultimate-frontend-skills/references/claude-design.md)
-
 # Ultimate Frontend Skills
 
 ![Before: a hand-drawn scribble of a page. After: the Fable 5.1 launch page, sky, moon, serif title and dot-leader index.](docs/img/ultimate-frontend-skills.png)
@@ -23,7 +21,14 @@ real photography: an animated shader gradient, three parallax planes that blur
 and haze with distance, and three.js for anything taken apart. SVG is kept for
 what it is genuinely best at - line art, blueprints, icons - and nothing else.
 
-It works in **Claude Code** and **Codex**.
+It works in **Claude Code** and **Codex**:
+
+```bash
+claude plugin marketplace add ridelink0/ultimate-frontend-skills
+claude plugin install ultimate-frontend-skills@ultimate-frontend-skills
+```
+
+Codex, the one-command installer and `npx skills` are under [Install](#install).
 
 ## One route, nine stages
 
@@ -281,6 +286,8 @@ failed shader compile or a missing import fails the check instead of quietly
 rendering less than it should.
 
 ## Install
+
+Ultimate Frontend Skills is the plugin previously named Ultimate Website Skills (4.x) and cinematic-web-design (3.x), which in turn absorbed Atelier. [Migration and aliases](docs/merge.md) · [The pipeline](skills/ultimate-frontend-skills/references/pipeline.md) · [Claude Design routes](skills/ultimate-frontend-skills/references/claude-design.md)
 
 ```bash
 git clone https://github.com/ridelink0/ultimate-frontend-skills
