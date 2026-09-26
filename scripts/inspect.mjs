@@ -200,7 +200,7 @@ export class Session {
 /* Installed before any document runs. Two jobs: keep WebGL drawing buffers
    readable so the blank-canvas check is measuring the render and not the
    compositor, and remember which context type each canvas took. */
-const CANVAS_INIT = `(() => {
+export const CANVAS_INIT = `(() => {
   const proto = HTMLCanvasElement.prototype;
   const original = proto.getContext;
   if (!original || proto.__inspectPatched) return;
@@ -283,7 +283,10 @@ export const PROBE = `(() => {
   // genuinely cannot tell - a background image, or a positioned sibling layer
   // painting underneath (a hero photo, a gradient plate). Guessing there
   // produces a page full of false 1:1 failures, which is worse than silence.
-  const bgOf = (el) => {
+  // A pinned element (layer) is painted over whatever has scrolled under it,
+  // so its ground is only known if the layer itself paints one; past the
+  // layer the answer is unknown and the pixels are sampled instead.
+  const bgOf = (el, layer = null) => {
     let n = el;
     while (n && n !== document.documentElement) {
       const cs = getComputedStyle(n);
@@ -295,6 +298,7 @@ export const PROBE = `(() => {
       }
       const c = parseRGB(cs.backgroundColor);
       if (c && c.a > 0.85) return c;
+      if (n === layer) return null;
       n = n.parentElement;
     }
     const c = parseRGB(getComputedStyle(document.body).backgroundColor);
@@ -328,13 +332,16 @@ export const PROBE = `(() => {
     const own = [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim().length > 1);
     if (!own) continue;
     // A fixed or sticky header sits over whatever scrolls under it by design.
-    // That is not the overlap this check exists to find.
-    let pinned = false;
+    // That is not the overlap this check exists to find, so pinned text is
+    // only ever compared with text in the same pinned layer. It used to be
+    // dropped outright, which on a game - where every menu, HUD and title
+    // card lives in a fixed layer - left "0 text elements" and no overlap or
+    // contrast check at all (Doodle Voyager, measured 2026-09-25).
+    let layer = null;
     for (let a = el; a && a !== document.body; a = a.parentElement) {
       const pos = getComputedStyle(a).position;
-      if (pos === 'fixed' || pos === 'sticky') { pinned = true; break; }
+      if (pos === 'fixed' || pos === 'sticky') { layer = a; break; }
     }
-    if (pinned) continue;
     // Text scrolled out of a panel with overflow:auto/hidden is clipped, not
     // painted over its neighbours: measure only the part its scroll or clip
     // boxes let through. Without this every scrolling list on a dashboard read
@@ -350,9 +357,10 @@ export const PROBE = `(() => {
     }
     if (R - L < 2 || B - T < 2) continue;
     const r = { left: L, top: T, right: R, bottom: B, width: R - L, height: B - T };
-    textEls.push({ el, r, cs: getComputedStyle(el) });
+    textEls.push({ el, r, cs: getComputedStyle(el), layer });
   }
   out.stats.textElements = textEls.length;
+  out.stats.pinnedText = textEls.filter((t) => t.layer).length;
 
   const related = (a, b) => a.contains(b) || b.contains(a);
   const area = (r) => r.width * r.height;
@@ -364,6 +372,9 @@ export const PROBE = `(() => {
     for (let j = i + 1; j < textEls.length; j++) {
       const A = textEls[i], B = textEls[j];
       if (related(A.el, B.el)) continue;
+      // Different layers (a pinned header over scrolled content, a modal over
+      // the HUD) overlap by design; only text sharing a layer can collide.
+      if (A.layer !== B.layer) continue;
       const x = Math.max(0, Math.min(A.r.right, B.r.right) - Math.max(A.r.left, B.r.left));
       const y = Math.max(0, Math.min(A.r.bottom, B.r.bottom) - Math.max(A.r.top, B.r.top));
       const ov = x * y;
@@ -413,14 +424,14 @@ export const PROBE = `(() => {
   // that "cannot tell" case is exactly where the worst legibility failures
   // live. Hand those to Node as candidates: it already has the screenshot, so
   // it can sample the pixels actually behind the box instead of guessing.
-  for (const { el, cs, r } of textEls) {
+  for (const { el, cs, r, layer } of textEls) {
     const fg = parseRGB(cs.color);
     if (!fg || fg.a < 0.9) continue;
     const size = parseFloat(cs.fontSize);
     const bold = +cs.fontWeight >= 700;
     const large = size >= 24 || (size >= 18.66 && bold);
     const need = large ? 3 : 4.5;
-    const bg = bgOf(el);
+    const bg = bgOf(el, layer);
     if (bg) {
       const cr = ratio(fg, bg);
       if (cr < need)
@@ -480,6 +491,36 @@ export const PROBE = `(() => {
       out.tiny.push({ el: label(el), w: Math.round(r.width), h: Math.round(r.height) });
   }
   out.tiny = out.tiny.slice(0, 8);
+
+  // Controls cut short. A native date input squeezed below its own width
+  // shows "mm/dd/y" and looks broken (Gev on HQ, 2026-09-24), and nothing in
+  // scrollWidth says so: the field is in the shadow DOM. Measure a hidden twin
+  // at its natural width instead. A select is judged on the option it shows,
+  // not its longest one; a button only when it clips its own label.
+  out.clipped = [];
+  for (const el of document.querySelectorAll('input[type=date], input[type=time], input[type=datetime-local], input[type=month], input[type=week], select, button, [role=button]')) {
+    if (!vis(el) || !el.parentElement) continue;
+    const now = el.getBoundingClientRect().width;
+    if (now < 1) continue;
+    if (el.tagName !== 'INPUT' && el.tagName !== 'SELECT') {
+      if (getComputedStyle(el).overflowX !== 'visible' && el.scrollWidth > el.clientWidth + 1)
+        out.clipped.push({ el: label(el), shown: Math.round(el.clientWidth), needs: el.scrollWidth });
+      continue;
+    }
+    const twin = el.cloneNode(el.tagName !== 'SELECT');
+    if (el.tagName === 'SELECT') {
+      const shown = el.options[el.selectedIndex];
+      if (!shown) continue;
+      twin.appendChild(shown.cloneNode(true));
+    }
+    twin.removeAttribute('id');
+    twin.style.cssText += ';width:auto!important;min-width:0!important;max-width:none!important;flex:none!important;position:absolute!important;visibility:hidden!important;pointer-events:none!important';
+    el.parentElement.appendChild(twin);
+    const natural = twin.getBoundingClientRect().width;
+    twin.remove();
+    if (natural - now > 2) out.clipped.push({ el: label(el) + (el.type && el.tagName === 'INPUT' ? ' type=' + el.type : ''), shown: Math.round(now), needs: Math.round(natural) });
+  }
+  out.clipped = out.clipped.slice(0, 8);
 
   out.stats.scrollHeight = document.documentElement.scrollHeight;
   out.stats.viewport = vw + 'x' + vh;
@@ -786,7 +827,10 @@ export async function inspect(url, { widths = [1440, 390], out = null, full = fa
           }
         }
         delete report.imageCandidates;
-        results.push({ width: w, scroll: null, step: index + 1, action: step, file, ...report, visual: state.result?.value || {}, actionErrors, reducedMotion });
+        // A typed value is never written into review.json: a key screen's key
+        // is exactly what a type step exists to enter.
+        const shown = step && step.type === 'type' && typeof step.text === 'string' ? { ...step, text: '[' + step.text.length + ' characters]' } : step;
+        results.push({ width: w, scroll: null, step: index + 1, action: shown, file, ...report, visual: state.result?.value || {}, actionErrors, reducedMotion });
       }
     }
   } finally {
@@ -813,9 +857,13 @@ export function formatReport(results) {
     for (const f of r.focus || []) { warns++; lines.push(`  warn  no visible focus indicator on ${f.el}`); }
     for (const canvas of r.visual?.canvases || []) {
       const kind = canvas.context ? canvas.context.replace('experimental-', '') + ' canvas' : 'canvas';
-      if (canvas.width === 0 || canvas.height === 0) { errors++; lines.push(`  ERROR ${kind} has zero visible size`); }
-      else if (canvas.readable === false) lines.push(`  note  ${kind} pixels could not be read (offscreen or cross-origin); judge it from the screenshot`);
-      else if (canvas.uniform) { warns++; lines.push(`  warn  ${kind} rendered a flat fill; inspect its screenshot and loading state`); }
+      const which = canvas.id ? ' ' + canvas.id : '';
+      // A canvas inside a closed menu or map is not a broken canvas; it is a
+      // screen nobody has opened (Doodle Voyager's map, 2026-09-25).
+      if (canvas.rendered === false) lines.push(`  note  ${kind}${which} is not rendered (in a hidden or closed layer); not checked`);
+      else if (canvas.width === 0 || canvas.height === 0) { errors++; lines.push(`  ERROR ${kind}${which} has zero visible size`); }
+      else if (canvas.readable === false) lines.push(`  note  ${kind}${which} pixels could not be read (offscreen or cross-origin); judge it from the screenshot`);
+      else if (canvas.uniform) { warns++; lines.push(`  warn  ${kind}${which} rendered a flat fill; inspect its screenshot and loading state`); }
     }
     if (r.measured) {
       const found = judge(r.measured, { expectDepth: false });
@@ -848,6 +896,7 @@ export function formatReport(results) {
       lines.push(`  warn  contrast ${c.ratio}:1 (needs ${c.need}) at ${c.size}px: ${c.el}${via}`);
     }
     for (const t of r.tiny) { warns++; lines.push(`  warn  tap target ${t.w}x${t.h}px (needs 24): ${t.el}`); }
+    for (const c of r.clipped || []) { warns++; lines.push(`  warn  control cut short, ${c.shown}px of the ${c.needs}px it needs: ${c.el}`); }
   }
   return { text: lines.join('\n'), errors, warns };
 }
@@ -988,7 +1037,12 @@ function canvasProbe() {
       spread = Math.max(hi[0] - lo[0], hi[1] - lo[1], hi[2] - lo[2], hi[3] - lo[3]);
       uniform = spread <= 2;
     } catch (err) { uniform = null; }
+    // checkVisibility() is false inside display:none and [hidden] subtrees;
+    // the fallback reads the same thing from the absence of layout boxes.
+    const rendered = typeof canvas.checkVisibility === 'function' ? canvas.checkVisibility() : canvas.getClientRects().length > 0;
     return {
+      id: canvas.id ? '#' + canvas.id : (canvas.className && typeof canvas.className === 'string' ? '.' + canvas.className.trim().split(/\s+/)[0] : ''),
+      rendered,
       width: Math.round(rect.width), height: Math.round(rect.height),
       uniform, readable, spread,
       context: canvas.__inspectContext || null,
@@ -1186,14 +1240,35 @@ export async function sweepInteractive(session, { origin = null } = {}) {
 }
 
 async function performAction(session, step) {
-  if (!step || !['click', 'hover', 'focus', 'expect-visible', 'expect-text'].includes(step.type) || typeof step.selector !== 'string')
+  if (!step || !['click', 'hover', 'focus', 'type', 'expect-visible', 'expect-text'].includes(step.type) || typeof step.selector !== 'string')
     throw new Error('Each step needs a supported type and CSS selector.');
   if (step.type === 'expect-text' && typeof step.text !== 'string') throw new Error('expect-text needs a text string.');
-  const encoded = JSON.stringify(step);
+  // type: focus the field, insert the text, optionally press Enter. It exists
+  // for gated pages - HQ's key screen hid the whole board from every render
+  // check until the key went in (2026-09-24). textFromEnv keeps the secret
+  // out of the actions file; neither form is ever written to the report.
+  let typed = null;
+  if (step.type === 'type') {
+    if (typeof step.textFromEnv === 'string') {
+      typed = process.env[step.textFromEnv];
+      if (typeof typed !== 'string' || !typed) throw new Error('type: environment variable ' + step.textFromEnv + ' is not set');
+    } else if (typeof step.text === 'string') typed = step.text;
+    else throw new Error('type needs a text string or a textFromEnv variable name.');
+    if (step.key !== undefined && step.key !== 'Enter') throw new Error('type: the only key it presses is Enter.');
+  }
+  const encoded = JSON.stringify({ type: step.type === 'type' ? 'focus' : step.type, selector: step.selector, text: step.type === 'expect-text' ? step.text : undefined });
   const response = await session.send('Runtime.evaluate', { returnByValue: true, expression: '(() => { const step = ' + encoded + '; const el = document.querySelector(step.selector); if (!el) return {error:"Element not found: "+step.selector}; el.scrollIntoView({block:"center",behavior:"instant"}); const r=el.getBoundingClientRect(); const style=getComputedStyle(el); const visible=r.width>0 && r.height>0 && style.visibility!=="hidden" && style.display!=="none" && (!el.checkVisibility || el.checkVisibility({opacityProperty:true,visibilityProperty:true})); if(step.type==="expect-visible") return visible ? {} : {error:"Element is not visible: "+step.selector}; if(step.type==="expect-text") return visible && el.textContent.includes(step.text) ? {} : {error:"Expected text missing: "+step.selector}; if(step.type==="focus"){ el.focus(); return document.activeElement===el ? {} : {error:"Element could not receive focus"}; } const x=r.left+r.width/2,y=r.top+r.height/2; const hit=document.elementFromPoint(x,y); if(!visible || !(hit===el || el.contains(hit))) return {error:"Element is hidden or covered: "+step.selector}; return {x,y}; })()' });
   if (response.exceptionDetails) throw new Error(response.exceptionDetails.text || 'Interaction evaluation failed');
   const result = response.result?.value;
   if (!result || result.error) throw new Error(result?.error || 'Interaction returned no result');
+  if (step.type === 'type') {
+    await session.send('Input.insertText', { text: typed });
+    if (step.key === 'Enter') {
+      await session.send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13, nativeVirtualKeyCode: 13, text: '\r' });
+      await session.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13, nativeVirtualKeyCode: 13 });
+    }
+    return result;
+  }
   if (!['click', 'hover'].includes(step.type)) return result;
   await session.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: result.x, y: result.y });
   if (step.type === 'click') {

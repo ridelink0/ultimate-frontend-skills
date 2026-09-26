@@ -20,10 +20,34 @@ An actions file is a JSON array:
       {"type":"focus","selector":"a.contact"}
     ]
 
-Supported actions: click, hover, focus, expect-visible, expect-text. Selectors
+Supported actions: click, hover, focus, type, expect-visible, expect-text. Selectors
 must come from the actual page. Use test data and test environments for actions
 that submit or change data. Each action is replayed for every viewport and motion
 mode. A failed action is an error, even when a later screenshot looks fine.
+
+## Gated pages and game screens
+
+A render check of a key screen checks the key screen. HQ's board sat behind
+one, and until the key went in every screenshot and every overlap, contrast
+and layout finding was about the lock (2026-09-24). Type through it:
+
+    [
+      {"type":"type","selector":"#key","textFromEnv":"SITE_KEY","key":"Enter"},
+      {"type":"expect-visible","selector":"#board"}
+    ]
+
+`type` focuses the field, inserts the text and, with `"key":"Enter"`, presses
+Enter. `textFromEnv` names an environment variable so the secret never sits in
+the actions file, and the typed text is never written to review.json. Use a
+test room or test account, never the real one. Each step is followed by a
+full probe and a screenshot, so the board is measured, not just reached.
+
+A game keeps its whole interface in fixed layers over one canvas. `look` and
+`debug` measure text in a pinned layer against other text in the same layer
+(a fixed header over scrolled content is still not an overlap), and a canvas
+inside a closed overlay - a map or a menu nobody opened - is a note, not a
+"zero visible size" error. Pass `--game` for the laptop and desktop widths a
+keyboard-and-mouse game is played at.
 
 ## Required AI review
 
