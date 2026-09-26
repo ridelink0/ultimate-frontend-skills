@@ -154,7 +154,7 @@ test('a game title screen: text in fixed layers is measured, a closed map canvas
     assert.equal(map.rendered, false);
     const world = r.visual.canvases.find((c) => c.id === '#gl');
     assert.equal(world.rendered, true);
-    assert.equal(world.uniform, false, 'the world canvas drew two colours');
+    assert.equal(world.uniform, false, 'the world canvas drew two colours: ' + JSON.stringify(r.visual.canvases));
     // Two lines inside the same fixed card that collide are still a defect.
     assert.ok(r.overlaps.some((o) => /Launch into|Settings and/.test(o.a + o.b)), JSON.stringify(r.overlaps));
     assert.ok(!r.overlaps.some((o) => /Doodle Voyager|W and S|E leaves/.test(o.a + o.b)), JSON.stringify(r.overlaps));

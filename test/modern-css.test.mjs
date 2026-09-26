@@ -71,6 +71,11 @@ test('a .stagger list takes its reveal offsets from its own order in a real brow
     s = await Session.open(port);
     const ev = async (expression) => (await s.send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true })).result.value;
     await s.send('Page.enable');
+    // The reveal ranges sit under prefers-reduced-motion: no-preference. The
+    // windows-latest runner has animations switched off, so its Edge reports
+    // "reduce" and every range reads "normal" (6.5.0's first CI run). This
+    // test measures the stagger arithmetic, so it asks for motion explicitly.
+    await s.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'no-preference' }] });
     await s.send('Page.navigate', { url: pathToFileURL(join(dir, 'index.html')).href });
     await s.waitForEvent('Page.loadEventFired');
     const got = await ev(`JSON.stringify({
