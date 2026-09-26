@@ -9,6 +9,7 @@ __pycache__/
 *.pyc
 !docs/audit-2026-09-07/**/*.log
 
-# Screenshot comparisons made while building the examples; the 44 already
-# tracked in fable-showcase/compare need a person to git rm --cached them.
+# Screenshot comparisons made while building the examples. They stay on disk
+# for the person comparing and never ship (untracked 2026-09-26: 35 MB of
+# debug renders made the directory validator time out).
 examples/*/compare/
