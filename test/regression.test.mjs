@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, symlinkSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, symlinkSync, cpSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { once } from 'node:events';
@@ -160,6 +160,79 @@ test('the Claude and Codex plugin manifests agree on every shared field', () => 
   for (const k of ['name', 'version', 'description', 'author', 'homepage', 'repository', 'license', 'keywords'])
     assert.deepEqual(codex[k], claude[k], k + ' differs between the two manifests');
   assert.ok(claude.$schema, 'the Claude manifest declares its schema');
+});
+
+/* `npx skills add` left copies of this plugin's skills in ~/.claude/skills on
+   the machine that develops it: 21 files behind, and a visual-research that
+   was still the whole pre-rename skill. Claude Code loaded them beside the
+   plugin's own copies. The bench has to say so, and say which is which. */
+test('the bench reports a copy of this plugin\'s skills that is out of date or loaded twice', async () => {
+  const here = dirname(fileURLToPath(import.meta.url));
+  const skills = join(here, '..', 'skills');
+  const { detectBench, formatBench } = await import('../scripts/tools.mjs');
+  const temp = mkdtempSync(join(tmpdir(), 'ufs-bench-'));
+  try {
+    const home = join(temp, 'home'), cwd = join(temp, 'project'), plugin = join(temp, 'cache');
+    for (const d of [cwd, plugin, join(home, '.claude', 'plugins'), join(home, '.claude', 'skills'), join(home, '.agents', 'skills')]) mkdirSync(d, { recursive: true });
+    writeFileSync(join(home, '.claude', 'plugins', 'installed_plugins.json'), JSON.stringify({ version: 2, plugins: {
+      'ultimate-frontend-skills@ultimate-frontend-skills': [{ scope: 'user', installPath: plugin, version: '0.0.0' }] } }));
+    // A stale copy: every file the same but one.
+    cpSync(join(skills, 'ultimate-frontend-skills'), join(home, '.claude', 'skills', 'ultimate-frontend-skills'), { recursive: true });
+    writeFileSync(join(home, '.claude', 'skills', 'ultimate-frontend-skills', 'SKILL.md'), '---\nname: ultimate-frontend-skills\ndescription: old\n---\n');
+    // A current copy Claude Code reads, and a current one only other agents read.
+    cpSync(join(skills, 'visual-research'), join(home, '.claude', 'skills', 'visual-research'), { recursive: true });
+    cpSync(join(skills, 'image-deep-research'), join(home, '.agents', 'skills', 'image-deep-research'), { recursive: true });
+    // An extra file makes a copy stale too.
+    cpSync(join(skills, 'visual-research'), join(home, '.agents', 'skills', 'visual-research'), { recursive: true });
+    writeFileSync(join(home, '.agents', 'skills', 'visual-research', 'extra.md'), 'x');
+    // Someone else's skill is not ours to report.
+    mkdirSync(join(home, '.claude', 'skills', 'seo'));
+    writeFileSync(join(home, '.claude', 'skills', 'seo', 'SKILL.md'), '---\nname: seo\n---\n');
+
+    const pick = (bench) => Object.fromEntries(bench.selfCopies.map((c) => [c.where + ':' + c.name, { state: c.state, duplicate: c.duplicate }]));
+    const live = await detectBench({ home, cwd, probe: false });
+    assert.deepEqual(pick(live), {
+      'personal:ultimate-frontend-skills': { state: 'stale', duplicate: true },
+      'personal:visual-research': { state: 'current', duplicate: true },
+      'agents:image-deep-research': { state: 'current', duplicate: false },
+      'agents:visual-research': { state: 'stale', duplicate: false },
+    });
+    assert.equal(live.selfCopies.find((c) => c.where === 'personal' && c.name === 'ultimate-frontend-skills').differ, 1);
+    const text = formatBench(live);
+    assert.match(text, /copies of this plugin's skills outside it/);
+    assert.match(text, /ultimate-frontend-skills +stale \(1 file differ\) +personal/);
+    assert.match(text, /loads this beside the plugin's own copy/);
+    assert.match(text, /visual-research +stale \(1 file differ\) +agents/);
+
+    // With the plugin disabled, nothing is loaded twice, and a stale copy is still stale.
+    writeFileSync(join(home, '.claude', 'settings.json'), JSON.stringify({ enabledPlugins: { 'ultimate-frontend-skills@ultimate-frontend-skills': false } }));
+    const off = pick(await detectBench({ home, cwd, probe: false }));
+    assert.deepEqual(off['personal:ultimate-frontend-skills'], { state: 'stale', duplicate: false });
+    assert.deepEqual(off['personal:visual-research'], { state: 'current', duplicate: false });
+  } finally { rmSync(temp, { recursive: true, force: true }); }
+});
+
+/* `npx skills add` installs only the skill folder, so every
+   ${CLAUDE_PLUGIN_ROOT}/scripts command in SKILL.md pointed at nothing, and
+   the skill had no word on what to do then. */
+test('SKILL.md says what to do when the plugin root is empty, and the README says what the skills route leaves out', () => {
+  const here = dirname(fileURLToPath(import.meta.url));
+  const skill = readFileSync(join(here, '..', 'skills', 'ultimate-frontend-skills', 'SKILL.md'), 'utf8');
+  if (skill.includes('${CLAUDE_PLUGIN_ROOT}')) {
+    const at = skill.indexOf('## Where the scripts are');
+    assert.ok(at !== -1, 'SKILL.md uses the plugin root and has no "Where the scripts are" section');
+    assert.ok(at < skill.indexOf('${CLAUDE_PLUGIN_ROOT}/scripts'), 'the fallback comes before the first command that needs it');
+    const section = skill.slice(at, skill.indexOf('\n## ', at + 1));
+    assert.match(section, /npx skills add/);
+    assert.match(section, /never report an audit, a render check or a verify as run/);
+    assert.match(section, /scripts\/install\.mjs/);
+  }
+  const readme = readFileSync(join(here, '..', 'README.md'), 'utf8');
+  const install = readme.slice(readme.indexOf('## Install'), readme.indexOf('\n## ', readme.indexOf('## Install') + 1));
+  assert.match(install, /install\.mjs\n```\n\nThat registers the plugin with both CLIs/, 'the "registers" line follows the installer');
+  const route = install.slice(install.indexOf('npx skills add'));
+  assert.match(route, /does not\s+install the plugin's scripts/);
+  assert.match(route, /webdesign\.mjs tools/);
 });
 
 /* The browser half of this suite guards itself with { skip: !findBrowser() },

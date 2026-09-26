@@ -294,18 +294,6 @@ git clone https://github.com/ridelink0/ultimate-frontend-skills
 node ultimate-frontend-skills/scripts/install.mjs
 ```
 
-Or through the open skills ecosystem, which installs the skills
-(ultimate-frontend-skills, image-deep-research, and the visual-research alias)
-into every agent it finds on the machine:
-
-```bash
-npx skills add ridelink0/ultimate-frontend-skills
-```
-
-The same works for the sibling plugins: `ridelink0/claude-code-usage-limits`
-and `ridelink0/claude-computer-use`. skills.sh has no submission step - it
-lists what the CLI installs.
-
 That registers the plugin with both CLIs. Or do it by hand:
 
 ```bash
@@ -323,6 +311,27 @@ source = "https://github.com/ridelink0/ultimate-frontend-skills.git"
 [plugins."ultimate-frontend-skills@ultimate-frontend-skills"]
 enabled = true
 ```
+
+Skills only, through the open skills ecosystem, into every agent it finds on
+the machine:
+
+```bash
+npx skills add ridelink0/ultimate-frontend-skills
+```
+
+That installs the skill folders (ultimate-frontend-skills, image-deep-research
+and the visual-research alias): the references, the CSS chassis and the motion
+runtime, and image deep research, which carries its own scripts. It does not
+install the plugin's scripts
+- the scaffolder, the audit, the render check and verify. The skill then looks
+for a clone to run them from, and without one it says they are not installed
+rather than reporting a check it did not run. On a machine that has the plugin,
+skip this route: Claude Code would load both copies of each skill, and
+`webdesign.mjs tools` lists any copy that is loaded twice or out of date.
+
+The same works for the sibling plugins: `ridelink0/claude-code-usage-limits`
+and `ridelink0/claude-computer-use`. skills.sh has no submission step - it
+lists what the CLI installs.
 
 ## Use
 

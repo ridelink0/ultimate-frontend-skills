@@ -8,6 +8,26 @@ description: Use whenever a website, landing page, marketing site, portfolio, mi
 The studio's house style, and the code that produces it. This is a pinned art
 direction for projects without an existing design. A supplied or selected Claude Design project takes precedence.
 
+## Where the scripts are
+
+Every `node "${CLAUDE_PLUGIN_ROOT}/scripts/..."` command in this skill runs
+from the plugin root. Installed as a plugin, that is set. Installed as a bare
+skill (`npx skills add`, or a copy under `~/.claude/skills` or
+`~/.agents/skills`), only this folder is on the machine - `references/`,
+`assets/` and `data/` - and `${CLAUDE_PLUGIN_ROOT}` is empty or still reads
+literally. Then:
+
+1. Look for a clone of github.com/ridelink0/ultimate-frontend-skills: a folder
+   holding `scripts/webdesign.mjs` beside a `.claude-plugin/plugin.json` whose
+   name is `ultimate-frontend-skills`. Use that folder as the root in every
+   command below.
+2. If there is none, the scaffolder, the audit, the render check and verify are
+   not on this machine. Say so once, build from the references and the chassis
+   in `assets/`, and never report an audit, a render check or a verify as run.
+   The full install is
+   `git clone https://github.com/ridelink0/ultimate-frontend-skills` and then
+   `node ultimate-frontend-skills/scripts/install.mjs`.
+
 ## Rule zero
 
 **Nothing about the design goes in your reply.** No palette, no type scale, no

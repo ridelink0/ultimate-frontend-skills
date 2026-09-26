@@ -20,7 +20,7 @@
    MCP server names - and never a value from an env, header or token field.
    Node builtins only. Node 18+. */
 
-import { existsSync, readFileSync, readdirSync, lstatSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, lstatSync, statSync } from 'node:fs';
 import { join, resolve, dirname, delimiter } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { homedir } from 'node:os';
@@ -187,6 +187,71 @@ export function skillsIn(root, { exists = existsSync } = {}) {
     try { link = lstatSync(dir).isSymbolicLink(); } catch { /* unreadable is not fatal */ }
     out.push({ name, dir, link });
   }
+  return out;
+}
+
+/* Every file under a skill folder, with CRLF read as LF so a Windows checkout
+   and a POSIX one compare equal. Relative paths use forward slashes. */
+function skillTree(dir) {
+  const files = new Map();
+  const walk = (at, rel) => {
+    let names = [];
+    try { names = readdirSync(at); } catch { return; }
+    for (const name of names) {
+      if (name === '__pycache__' || name === '.DS_Store') continue;
+      const full = join(at, name);
+      const key = rel ? rel + '/' + name : name;
+      let stat = null;
+      try { stat = statSync(full); } catch { continue; }
+      if (stat.isDirectory()) walk(full, key);
+      else if (stat.isFile()) {
+        try { files.set(key, readFileSync(full, 'utf8').split('\r\n').join('\n')); } catch { /* unreadable: left out */ }
+      }
+    }
+  };
+  walk(dir, '');
+  return files;
+}
+
+/* A skill this plugin ships, installed a second time outside it - `npx skills
+   add` puts one under ~/.agents/skills and symlinks it into ~/.claude/skills.
+   Two things go wrong, and both happened on the machine this was written on:
+   the copy falls behind the plugin (21 files behind, and a visual-research
+   that was still the whole pre-rename skill), and Claude Code loads it beside
+   the plugin's own copy, so the model can pick the stale one. `current` means
+   every file is the same as this plugin's copy. `duplicate` is set only for
+   the folders Claude Code itself reads, and only while this plugin is live
+   there. */
+export function selfCopies({ personal = [], project = [], agents = [] } = {}, { root = resolve(HERE, '..'), pluginLive = false } = {}) {
+  const shipped = new Map(skillsIn(join(root, 'skills')).map((skill) => [skill.name, skill.dir]));
+  const trees = new Map();
+  const ours = (name) => {
+    if (!trees.has(name)) trees.set(name, skillTree(shipped.get(name)));
+    return trees.get(name);
+  };
+  const out = [];
+  const check = (list, where, claudeReads) => {
+    for (const skill of list) {
+      if (!shipped.has(skill.name)) continue;
+      const mine = ours(skill.name);
+      const theirs = skillTree(skill.dir);
+      const differ = [];
+      for (const [file, text] of mine) if (theirs.get(file) !== text) differ.push(file);
+      for (const file of theirs.keys()) if (!mine.has(file)) differ.push(file);
+      out.push({
+        name: skill.name,
+        dir: skill.dir,
+        where,
+        link: skill.link,
+        state: differ.length ? 'stale' : 'current',
+        differ: differ.length,
+        duplicate: Boolean(claudeReads && pluginLive),
+      });
+    }
+  };
+  check(personal, 'personal', true);
+  check(project, 'project', true);
+  check(agents, 'agents', false);
   return out;
 }
 
@@ -481,6 +546,7 @@ export async function detectBench({ home = homedir(), cwd = process.cwd(), probe
     sources: { installed: installed.file, schema: installed.schema, settings: enabled.files },
     probed: probe,
   };
+  bench.selfCopies = selfCopies(bench.skills, { root, pluginLive: plugins.some((plugin) => plugin.self && plugin.live) });
   return bench;
 }
 
@@ -535,6 +601,25 @@ export function formatBench(bench) {
   for (const skill of agentsOnly) skillRow(skill);
   if (bench.self.localSkills.length) line('    (this repo ships: ' + bench.self.localSkills.join(', ') + ')');
   line('');
+
+  // Only printed when there is something to say: a copy of this plugin's own
+  // skills outside the plugin, which is either out of date or loaded twice.
+  const copies = bench.selfCopies || [];
+  if (copies.length) {
+    line('  copies of this plugin\'s skills outside it');
+    for (const copy of copies) {
+      const state = copy.state === 'stale' ? 'stale (' + copy.differ + ' file' + (copy.differ === 1 ? '' : 's') + ' differ)' : 'current';
+      line('    ' + pad(copy.name, 27) + pad(state, 30) + copy.where + (copy.link ? ' (symlink)' : ''));
+      line('      ' + copy.dir);
+      if (copy.duplicate) {
+        line('      Claude Code loads this beside the plugin\'s own copy, so the model can pick either. Remove it; the plugin');
+        line('      already ships it.');
+      } else if (copy.state === 'stale') {
+        line('      Out of date against this plugin. Refresh it (npx skills add ridelink0/ultimate-frontend-skills) or remove it.');
+      }
+    }
+    line('');
+  }
 
   line('  codex');
   if (!bench.codex.config) line('    absent          no ~/.codex/config.toml. Nothing changes; this plugin ships to both hosts regardless.');
