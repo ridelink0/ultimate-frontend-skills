@@ -410,7 +410,8 @@ test('a finished run of the render check leaves no temporary browser profile beh
       // Who still holds it, where the question can be asked cheaply: the
       // process line names the culprit that the folder alone cannot.
       const ps = process.platform === 'win32' ? '' : (spawnSync('ps', ['-ww', '-ax', '-o', 'pid=,ppid=,command='], { encoding: 'utf8' }).stdout || '')
-        .split('\n').filter((l) => l.includes(n)).map((l) => l.trim().slice(0, 160)).join(' | ');
+        .split('\n').filter((l) => l.includes(n)).map((l) => l.trim().slice(0, 160)).join(' | ')
+        + (process.platform === 'win32' ? '' : ' || this test runs as pid ' + process.pid + ', the CLI ran as pid ' + cli.pid);
       try { return n + ' (last written ' + Math.round((Date.now() - statSync(path).mtimeMs) / 100) / 10 + 's ago, ' + readdirSync(path).length + ' entries' + (ps ? '; held by: ' + ps : '; no process holds it') + ')'; }
       catch { return n + ' (it went away while we looked)'; }
     }).join('; ');
