@@ -165,6 +165,13 @@ layer paints, or sample the pixels when the layer paints nothing.
 overlap compares only same-layer pairs, `bgOf` stops at the layer, and
 `stats.pinnedText` counts it.
 
+Run on the live game after the fix (`look https://doodle-voyager.vercel.app/
+--game`, 2026-09-25): 61 text elements at every width, the map canvas a note,
+no overlaps, and one finding the old probe could never have made: the LAUNCH
+button's text computes to cyan rgb(77, 238, 255) on its yellow rgb(255, 194,
+60), 1.15:1. That is the game's to fix; whether a blend mode or shadow
+rescues it on screen was not checked here.
+
 **Regression check.** `test/field-tests.test.mjs`, "a game title screen: text in fixed layers is measured, a closed map canvas is a note, a real clash is still an overlap"
 and `test/field-tests.test.mjs`, "a pinned header over scrolled content is still not an overlap, and its text is sampled against what is behind it"
 

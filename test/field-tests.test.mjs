@@ -199,11 +199,13 @@ test('a key screen can be typed through, and the key never reaches the report (H
   const site = await serve('<!doctype html><html lang="en"><meta charset="utf-8"><title>x</title><body style="font:16px system-ui;padding:16px">' +
     '<form id="gate"><label for="k">Room key</label> <input id="k" autocomplete="off"></form>' +
     '<main id="board" hidden><h1>To do</h1><p>Ship the field tests</p></main>' +
-    '<script>document.getElementById("gate").addEventListener("submit", (e) => { e.preventDefault(); if (document.getElementById("k").value === "open-sesame-42") { document.getElementById("gate").hidden = true; document.getElementById("board").hidden = false; } });</script></body></html>');
+    '<script>document.getElementById("gate").addEventListener("submit", (e) => { e.preventDefault(); if (document.getElementById("k").value === "open-sesame-42") { setTimeout(() => { document.getElementById("gate").hidden = true; document.getElementById("board").hidden = false; }, 700); } });</script></body></html>');
   process.env.UFS_FIELD_TEST_KEY = 'open-sesame-42';
   try {
+    // The board opens 700 ms after Enter, as a real backend check would; a
+    // step's "wait" is what lets the probe see it.
     const results = await inspect(site.url, { widths: [1280], wait: 150, scrolls: [0], actions: [
-      { type: 'type', selector: '#k', textFromEnv: 'UFS_FIELD_TEST_KEY', key: 'Enter' },
+      { type: 'type', selector: '#k', textFromEnv: 'UFS_FIELD_TEST_KEY', key: 'Enter', wait: 1200 },
       { type: 'expect-visible', selector: '#board' },
     ] });
     const steps = results.filter((r) => r.step);

@@ -802,7 +802,11 @@ export async function inspect(url, { widths = [1440, 390], out = null, full = fa
         const step = actions[index];
         const actionErrors = [];
         try { await performAction(session, step); } catch (err) { actionErrors.push(err.message); }
-        await sleep(200);
+        // "wait": ms lets a step that goes to the network settle before the
+        // probe - HQ's key screen asks the backend and then animates the key
+        // turning, which 200 ms never covered (measured on the live site).
+        const settle = Number.isFinite(step?.wait) ? Math.min(Math.max(step.wait, 0), 30000) : 0;
+        await sleep(Math.max(200, settle));
         const probe = await session.send('Runtime.evaluate', { expression: PROBE, returnByValue: true });
         if (probe.exceptionDetails || typeof probe.result?.value !== 'string') throw new Error('Interaction inspection returned no report.');
         const report = JSON.parse(probe.result.value);

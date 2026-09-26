@@ -94,8 +94,12 @@ to the report, and measure the page behind the gate.
 
 **The UFS fix.** This change: a `type` action in scripts/inspect.mjs
 (`text` or `textFromEnv`, optional `"key": "Enter"`); the typed text is
-replaced by its length in review.json. `references/visual-debug.md`, section
-"Gated pages and game screens".
+replaced by its length in review.json; any step can carry `"wait"` so a gate
+that asks a server has settled before the probe. `references/visual-debug.md`,
+section "Gated pages and game screens". Run on the live site into the test
+room (2026-09-25): 4 text elements on the lock, 77 on the board behind it,
+`#main` visible, and the key nowhere in the results. Without the wait the
+same run found the board still shut 200 ms after Enter.
 
 **Regression check.** `test/field-tests.test.mjs`, "a key screen can be typed through, and the key never reaches the report (HQ)"
 

@@ -32,12 +32,13 @@ one, and until the key went in every screenshot and every overlap, contrast
 and layout finding was about the lock (2026-09-24). Type through it:
 
     [
-      {"type":"type","selector":"#key","textFromEnv":"SITE_KEY","key":"Enter"},
+      {"type":"type","selector":"#key","textFromEnv":"SITE_KEY","key":"Enter","wait":5000},
       {"type":"expect-visible","selector":"#board"}
     ]
 
 `type` focuses the field, inserts the text and, with `"key":"Enter"`, presses
-Enter. `textFromEnv` names an environment variable so the secret never sits in
+Enter. Any step can carry `"wait"` in milliseconds (up to 30000) before the
+probe runs; a gate that asks a server needs it. `textFromEnv` names an environment variable so the secret never sits in
 the actions file, and the typed text is never written to review.json. Use a
 test room or test account, never the real one. Each step is followed by a
 full probe and a screenshot, so the board is measured, not just reached.
