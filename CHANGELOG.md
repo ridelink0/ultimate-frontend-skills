@@ -2,7 +2,13 @@
 
 Releases before 6.5.0 are recorded in their tag commits (`git log v6.4.2`) and on the GitHub releases page.
 
-## Unreleased
+## 6.5.1 - 2026-09-26
+
+6.5.0 was tagged on a commit whose Windows CI job failed. 6.5.1 is the same feature set on a commit that is green on Windows and Ubuntu, plus the fixes below.
+
+### Install hygiene
+- `webdesign.mjs tools` lists every copy of this plugin's skills outside the plugin, says whether it is current or stale (compared file by file), and says when Claude Code loads it beside the plugin's own copy.
+- A bare skill install (`npx skills add`) ships no scripts. SKILL.md now says what to do then: run them from a clone, or say they are not installed and never report a check as run. The README says what the skills route leaves out, and the "registers the plugin" line follows the installer it belongs to.
 
 ### Gev's play review of Doodle Voyager (2026-09-25)
 - `docs/field-tests/doodle-voyager.md` DV-14 to DV-30: fifteen lessons from the owner playing the live game, in his own words, plus the profile leak and the lesson behind all of them (nobody played it before the owner did). Each ships as a numbered rule in `references/games.md` ("Playing it"), with a sixteen-question play pass at the end of that file and a games block in `references/checklist.md`.
