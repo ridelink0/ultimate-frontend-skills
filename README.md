@@ -165,6 +165,14 @@ the original keeps one blurred branch in a corner. That is being fixed in
 `sky.js` itself, with `data-branches`, `data-moon` and `data-cloud` so the
 next page can tune it without editing the engine.
 
+Real projects feed back the same way. [docs/field-tests](docs/field-tests/README.md)
+holds a dated record for each project built with the plugin - so far Doodle
+Voyager (a three.js space shooter with live multiplayer) and HQ (a key-gated
+dashboard with a shader and PBR lab) - with every lesson in five parts: what
+happened, what the plugin said, what it should have said, the fix, and the
+test that now holds it. `test/field-tests.test.mjs` fails the suite if a
+record names a test that does not exist.
+
 ## The packs it works alongside, and how to get them
 
 Detection was only half of it. `packs` lists the packs this plugin defers to,
