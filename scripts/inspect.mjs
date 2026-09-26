@@ -1050,8 +1050,10 @@ export function formatReport(results) {
       // TEXTURE goes white where the light lands, with hatching toward the
       // edges - not a light effect that blows the surface out. Only WebGL
       // canvases: a 2D canvas drawing a white card or chart is not this bug.
+      // A flat pure-white fill is already reported above as a flat fill; one
+      // message per canvas.
       if (canvas.rendered !== false && canvas.readable !== false && !canvas.lost
-        && /webgl/.test(canvas.context || '') && canvas.clipped >= 0.15)
+        && canvas.uniform === false && /webgl/.test(canvas.context || '') && canvas.clipped >= 0.15)
         { warns++; lines.push(`  warn  ${kind}${which} is ${Math.round(canvas.clipped * 100)}% clipped to pure white; a lit surface at 255 on every channel has lost its texture - shade the texture, do not add light`); }
     }
     if (r.measured) {
