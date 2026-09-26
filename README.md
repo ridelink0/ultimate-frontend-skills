@@ -346,6 +346,16 @@ Or drive it directly:
 /webdesign audit ./my-site
 ```
 
+## Privacy
+
+Nothing is collected and nothing reaches the author. The prompt hook reads
+prompts on your machine only. Network requests happen only when a command
+needs them: Poly Haven and ambientCG for textures and HDRIs, pollinations.ai
+for `assets gen --model pollinations` (it gets the prompt you give it), the
+reference sites and sites you name (rendered in a throwaway headless browser
+profile), and Openverse, Wikimedia Commons, the Art Institute of Chicago and
+the Met for image research. Details in [PRIVACY.md](PRIVACY.md).
+
 ## Slash commands
 
 Every capability you would want to start directly has its own command. In
