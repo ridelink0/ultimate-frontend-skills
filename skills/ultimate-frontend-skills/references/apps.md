@@ -551,3 +551,45 @@ Sourced from 2026 design-criticism coverage of "AI slop" interfaces (Medium/Sami
 first task instead of a three-slide onboarding carousel, one accent that came
 from the brand instead of an indigo gradient, a tab bar that sits where the
 platform puts it, and empty states written for the actual thing that is empty.
+
+## Dashboards: nine things Gev's review of HQ caught (2026-09-24)
+
+HQ (a shared, key-gated dashboard for two people) was built with this plugin
+and passed every render check. Gev's review of the first version found nine
+problems no check had looked for, worst first. They apply to any dashboard,
+admin screen or tool home, and they override the website house style there.
+The full record is `docs/field-tests/gev-hq.md` in the plugin repository.
+
+1. **A display face belongs to the wordmark, not to panel titles.** A chunky
+   display face at panel-title size reads as coloured blobs. Keep it for the
+   logo; panel titles take a clean bold sans.
+2. **Serif is for display text, never for controls.** The editorial serif
+   works on a big clock or a big number; on buttons, tags, links and labels it
+   "looks like a Word doc". Controls take a crisp sans.
+3. **Not every panel is equally important.** The same border on every panel
+   flattens the hierarchy. Name the one panel the page exists for (on HQ,
+   the tasks), give only it the border or the accent, and separate the rest
+   with spacing and background shades.
+4. **Size follows use.** The whiteboard held a doodle and took most of the
+   screen while the to-do list was squeezed into a column. The thing checked
+   every day gets the width; occasional tools are small, collapsible, and
+   enlarge on demand.
+5. **An input is one line.** Five rows (field, three selects, a button, two
+   rows of filter chips) before the first task is too many. One line where
+   Enter adds; tag, person and date as small inline icons that show their
+   value once set. A native date field squeezed below its width shows a
+   cut-off "mm/dd/y" and looks broken: `look` now reports any date, time or
+   select control narrower than what it shows ("control cut short").
+6. **One logo.** A mark beside a wordmark that says the same thing is a
+   double logo.
+7. **Hide a panel until it has data.** "Nothing logged yet", "Connect
+   Google" and an empty weather prompt make the whole board look dead. A panel
+   that needs a connection appears when it is connected; one Connect button in
+   the header replaces three empty panels.
+8. **Cut to what is checked every day.** Nine panels is a junk drawer. The
+   rest go behind one drawer or menu, named for what is in it.
+9. **Labels say what they are.** A button reading "Gev" could be a user, a
+   setting or a filter; "Using HQ as Gev" cannot be misread.
+
+What held up, and should be kept: one palette that belongs to the owner, a
+big clock and date as the one display moment, and a three-column structure.

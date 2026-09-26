@@ -67,7 +67,7 @@ its own slice of the corpus:
 | Surface | Read | What changes |
 |---|---|---|
 | A website, landing page, microsite | this file, `references/pipeline.md` | nothing - the route as written |
-| An app (mobile, desktop, PWA, Expo) | `references/apps.md` | the first screen is a task, not a hero; the navigation model is decided before the palette; empty, loading and error states are designed before the full one; platform conventions outrank the house style; `animate-expo` and the React Native packs own motion when installed. 35 shipped apps: `awards --pick app --n 3` |
+| An app (mobile, desktop, PWA, Expo) | `references/apps.md` | the first screen is a task, not a hero; the navigation model is decided before the palette; empty, loading and error states are designed before the full one; platform conventions outrank the house style; a dashboard puts the display face on the wordmark only, sans on every control, one panel in the lead and no empty panels (apps.md, Dashboards); `animate-expo` and the React Native packs own motion when installed. 35 shipped apps: `awards --pick app --n 3` |
 | A game's site and its start screen | `references/games.md` | the start screen is in-world UI, not a marketing template: controls documented exactly, real persisted numbers, names for weapons, waves and deaths. The eyebrow-headline-tagline-two-buttons stack is the tell. `awards --pick game --n 3` |
 
 A fourth, **a video** (a reel, a launch clip, a recap cut from someone's

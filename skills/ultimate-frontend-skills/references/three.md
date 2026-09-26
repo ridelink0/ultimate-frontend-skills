@@ -1168,3 +1168,38 @@ draw calls - there is no CLI. They come from `renderer.info` read in the page
 and `EXT_disjoint_timer_query_webgl2` around `renderer.render()`, driven through
 `scripts/inspect.mjs`, whose `findBrowser()`, `launch()` and `Session` are
 importable and zero-dependency.
+
+## 11. Field notes from HQ's Lab (2026-09-24)
+
+HQ, a dashboard built with this plugin, grew a live shader editor and a PBR
+material viewer. Four things from its build brief, checked against the
+vendored three r186 files it ships, belong here. The full record is
+`docs/field-tests/gev-hq.md` in the plugin repository.
+
+- **One three.js per page.** HQ already served three r186 from `vendor/` for
+  its key screen; the brief's first plan would have added 0.170 from jsDelivr
+  for the Lab. Two builds in one page session download twice, widen the
+  policy for nothing, and three logs `Multiple instances of Three.js being
+  imported.` (the string is in `three.core.js`). Every module imports the same
+  URL, and new addons are vendored from the same release with their `from
+  'three'` line rewritten to the local file.
+- **Sheen does nothing until it has a colour.** `sheenColor` defaults to
+  black (`sheenColor=new Color(0)` in r186), so a sheen slider alone changes
+  nothing. Set `sheenColor` (white is a fair start) with `sheenRoughness`.
+  `thickness` defaults to 0 as section 3 says, and transmission needs it.
+- **A viewer renders on demand.** A material viewer with no animation renders
+  on slider input, the controls' `change` event, resize and texture load, and
+  otherwise costs nothing. The reduced-motion rule is then already met; a
+  shader preview that does animate starts paused under
+  `prefers-reduced-motion: reduce`, because CSS cannot stop a canvas loop.
+- **Code other people wrote can hang the GPU.** A shared shader with an
+  endless loop trips the Windows driver timeout; Chrome loses the context and,
+  after repeated losses, blocks WebGL for the site (the brief's account; not
+reproduced here, UNVERIFIED). Listen for
+  `webglcontextlost` and call `preventDefault()`, stop the loop, remember the
+  hash of the code that did it and never auto-run it again, and rebuild on
+  `webglcontextrestored`. Do not prove this by hanging a real GPU.
+
+A project suite that reads WebGL pixels needs the drawing buffer preserved
+before the page runs; `CANVAS_INIT` in `scripts/inspect.mjs` is exported for
+exactly that (install it with `Page.addScriptToEvaluateOnNewDocument`).

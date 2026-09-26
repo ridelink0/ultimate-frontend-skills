@@ -294,6 +294,56 @@ you write the first pass.
    `webdesign.mjs look --game` (1366, 1280, 1920); add phone widths only when
    the game ships touch controls.
 
+## Shipping a networked game: five more mistakes Doodle Voyager made (2026-09-25)
+
+Multiplayer and a second look went in a day later. Each of these shipped or
+nearly shipped with every check green. The full records, with what UFS said
+at the time and the check that now holds each one, are in
+`docs/field-tests/doodle-voyager.md` in the plugin repository.
+
+6. **A policy that refuses your own transport is invisible to an offline
+   suite.** `net.js` did `import('https://esm.sh/@supabase/supabase-js@2')`
+   and `createClient(PROJECT)`; the staged Content-Security-Policy allowed
+   only `self` and jsDelivr in `script-src`, and had no Supabase origin in
+   `connect-src`. The suite drove multiplayer through a fake bus, so live
+   multiplayer was dead in production and every check passed. Four rules:
+   build the policy's origins from the constants the code imports from, never
+   by hand; pin a CDN module to an exact version on a host the policy already
+   allows; test the STAGED build served with its real headers, dynamic-import
+   every lazily loaded module there and assert zero
+   `securitypolicyviolation` events; and keep one live end-to-end check
+   (two headless players in the real room) outside the offline suite.
+   `webdesign.mjs security <dir>` now reports a policy that refuses a URL the
+   code loads, as an error.
+7. **In a ship-relative world, every actor goes through the one placement
+   function.** The renderer draws the world relative to the ship and squashes
+   distance; network ghosts were placed at their absolute coordinates, so a
+   real peer sat nowhere near where it was. The check asserted
+   `mesh.x === ghost.x` and so enshrined the bug. Every new kind of actor
+   (ghosts, name labels, peer bolts) is placed by the same function that
+   places enemies, and its test asserts the mesh against that function, not
+   against raw coordinates.
+8. **A headless game test advances simulated time, not the wall clock.**
+   Checks that waited a number of milliseconds and let the frame loop run
+   flaked on a loaded machine: the throttle check got 33 units instead of 66,
+   the breach check 0.3 s of simulation instead of 0.5. Anything whose
+   assertion depends on how much game time passed calls `update(dt)` a fixed
+   number of times; a wall-clock wait is only for what genuinely needs frames
+   (rendering, pixel readback), and nothing asserts on how much simulation
+   happened during one.
+9. **A renderer that keeps a material ID in alpha cannot fade anything with
+   alpha.** Labels and sprites must write their ID and fade by dimming plus a
+   screen-door dither (discard against interleaved-gradient noise), or they
+   become false ID edges. A second look is a set of shared uniforms, switched
+   with no recompile, and the HUD's CSS palette and blend mode (screen on
+   dark, multiply on paper) switch with it.
+10. **A stage script that empties the output folder deletes the deploy
+    link.** `stage.mjs` wiped all of `dist/`, `.vercel/` included, so the next
+    `vercel deploy` found no link and created a new project called `dist`.
+    It happened twice. Clear everything except `.vercel/`, and before any
+    production deploy read `.vercel/project.json` and confirm the project
+    name is the one you mean.
+
 ## URLs referenced
 
 - https://doodleshooter.vercel.app
