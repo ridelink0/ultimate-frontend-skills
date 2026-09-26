@@ -139,11 +139,22 @@ export async function closeBrowser(browser) {
   if (proc && proc.exitCode === null && proc.signalCode === null) {
     await Promise.race([once(proc, 'exit').catch(() => {}), sleep(4000)]);
   }
-  if (await removeProfile(udd, 3000)) return true;
-  // A helper process (the crash handler, a utility process) can outlive the
-  // browser and hold the folder open for seconds more.
-  endProfileProcesses(udd);
-  if (await removeProfile(udd, 8000)) return true;
+  if (!await removeProfile(udd, 3000)) {
+    // A helper process (the crash handler, a utility process) can outlive the
+    // browser and hold the folder open for seconds more.
+    endProfileProcesses(udd);
+    await removeProfile(udd, 8000);
+  }
+  // Then settle. Deleting a tree a live browser still has open SUCCEEDS on
+  // Linux, and the browser on its way out recreates its own folders, so the
+  // profile is back a moment after a delete that reported success (Ubuntu CI,
+  // 2026-09-26: one profile left behind with the delete having returned true).
+  for (let i = 0; i < 3; i++) {
+    await sleep(300);
+    if (!existsSync(udd)) break;
+    await removeProfile(udd, 2000);
+  }
+  if (!existsSync(udd)) return true;
   leftBehind.add(udd);
   flushAtExit();
   return false;
@@ -270,6 +281,12 @@ export async function webglStatus(port) {
   try {
     session = await Session.open(port);
     const r = await session.send('Runtime.evaluate', { expression: WEBGL_SELF_TEST, awaitPromise: true, returnByValue: true });
+    // The self-test's own console noise is cached by the browser and replayed
+    // to the session inspect opens next, where it read as the page's own
+    // errors. Drop it here as well as filtering about:blank on the way out.
+    for (const method of ['Runtime.discardConsoleEntries', 'Log.clear']) {
+      try { await session.send(method); } catch { /* the domain may be off */ }
+    }
     return r.result?.value || { ok: false, reason: 'the WebGL self-test returned nothing' };
   } catch (err) {
     return { ok: false, reason: 'the WebGL self-test failed: ' + err.message };
@@ -1180,6 +1197,12 @@ function collectEvents(session, options = {}) {
       // better of the two - it carries the status and the full URL - so the
       // echo is dropped rather than the entry.
       if (en.source === 'network' && /^Failed to load resource/.test(en.text || '')) continue;
+      // Nothing logged against about:blank is the inspected page's doing: the
+      // page under test is always a real URL. The WebGL self-test at launch
+      // runs there, and on a GPU-less runner the driver's "GPU stall due to
+      // ReadPixels" and Chrome's software-WebGL deprecation notice were being
+      // replayed into the page's console log (Ubuntu CI, 2026-09-26).
+      if (en.url === 'about:blank') continue;
       text = `${en.text}${en.url ? ' <- ' + en.url.split('/').pop() : ''}`;
     }
     if (!text) continue;
