@@ -29,11 +29,11 @@
    good implementation is the worst outcome available here: it would send an
    agent off to damage a page that was right. */
 
-import { existsSync, readFileSync, rmSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, statSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { once } from 'node:events';
-import { Session, launch, findBrowser, PROBE } from './inspect.mjs';
+import { Session, launch, findBrowser, closeBrowser, PROBE } from './inspect.mjs';
 import { TYPE, COLOUR_JS } from './measure.mjs';
 import { startServer } from './preview-server.mjs';
 
@@ -574,10 +574,9 @@ export async function runParity(target, reference, { width = 1440, height = 900,
     };
   } finally {
     if (session) session.close();
-    if (browser) {
-      try { browser.proc.kill(); } catch { /* already gone */ }
-      setTimeout(() => { try { rmSync(browser.udd, { recursive: true, force: true }); } catch { /* Windows holds the profile briefly */ } }, 400);
-    }
+    // closeBrowser waits for the process to be gone before deleting the
+    // profile; Windows holds its files until then (see inspect.mjs).
+    await closeBrowser(browser);
     for (const server of servers) await new Promise((done) => server.close(done));
   }
 }

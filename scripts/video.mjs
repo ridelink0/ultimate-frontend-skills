@@ -202,7 +202,7 @@ export async function renderVideo(scene, { out, fps, seconds, width, height, dra
   if (!(seconds > 0 && seconds <= 600)) throw new Error('Seconds must be above 0 and at most 600.');
   if (audio && !existsSync(resolve(audio))) throw new Error('Audio file does not exist: ' + audio);
   tool('ffmpeg');
-  const { findBrowser, launch, Session } = await import('./inspect.mjs');
+  const { findBrowser, launch, Session, closeBrowser } = await import('./inspect.mjs');
   const bin = findBrowser();
   if (!bin) throw new Error('No Chrome, Edge or Chromium found; set ATELIER_BROWSER to one.');
   const target = resolve(out || join(dirname(file), draft ? 'draft.mp4' : 'video.mp4'));
@@ -261,6 +261,8 @@ export async function renderVideo(scene, { out, fps, seconds, width, height, dra
   } finally {
     try { if (ff && ff.exitCode === null) ff.stdin.end(); } catch {}
     try { session?.close(); } catch {}
-    try { browser.proc.kill(); } catch {}
+    // Not just a kill: the throwaway profile has to go too, and only after the
+    // browser process is gone (see inspect.mjs closeBrowser).
+    await closeBrowser(browser);
   }
 }

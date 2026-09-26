@@ -1,12 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, writeFileSync, readFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, writeFileSync, readFileSync, rmSync, readdirSync, existsSync, mkdirSync, utimesSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, sep } from 'node:path';
 import { deflateSync } from 'node:zlib';
 import { once } from 'node:events';
 import { debugSite } from '../scripts/debug.mjs';
 import { Session, findBrowser, inspect, decodePNG, sampleImageContrast, readPortFile } from '../scripts/inspect.mjs';
+import { launch, closeBrowser, removeProfile, sweepProfiles, flushProfiles, PROFILE_PREFIX } from '../scripts/inspect.mjs';
 import { writeReview } from '../scripts/review.mjs';
 import { runVerify, formatVerify } from '../scripts/verify.mjs';
 import { startServer } from '../scripts/preview-server.mjs';
@@ -369,4 +370,98 @@ test('inspect reads computed type, loaded fonts, the type scale and resources fr
   } finally {
     await new Promise((resolve) => server.close(resolve));
   }
+});
+
+/* Temporary browser profiles. Every launch makes one under %TEMP% and until
+   2026-09-26 almost none of them were ever deleted on Windows: the cleanup
+   was `setTimeout(() => rmSync(udd), 400)` after a kill, which threw EBUSY
+   into an empty catch while the browser still had the files open, and never
+   ran at all in a CLI that exited first. Gev's %TEMP% gave up 1,647 stray
+   webdesign-cdp-* folders in one sweep and 572 more the next evening. */
+const tempProfiles = (dir = tmpdir()) => new Set(readdirSync(dir).filter((n) => n.startsWith(PROFILE_PREFIX)));
+
+test('a finished inspect leaves no temporary browser profile behind', { skip: !findBrowser(), timeout: 120000 }, async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'ufs-profile-leak-'));
+  writeFileSync(join(dir, 'index.html'), '<!doctype html><html lang="en"><meta charset="utf-8"><title>Leak</title>' +
+    '<body style="font:16px system-ui;padding:16px"><h1>Leak check</h1><p>One paragraph, one heading.</p></body></html>');
+  const server = startServer(dir, 0);
+  await once(server, 'listening');
+  const before = tempProfiles();
+  try {
+    await inspect('http://127.0.0.1:' + server.address().port + '/', { widths: [900], wait: 150, scrolls: [0] });
+    const added = [...tempProfiles()].filter((n) => !before.has(n));
+    assert.deepEqual(added, [], 'inspect left ' + added.length + ' profile(s) in ' + tmpdir() + ': ' + added.join(', '));
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('closeBrowser ends the browser, deletes its profile, and reports that it is gone', { skip: !findBrowser(), timeout: 120000 }, async () => {
+  const b = await launch(findBrowser());
+  assert.equal(existsSync(b.udd), true, 'the profile is made at launch');
+  assert.equal(await closeBrowser(b), true, 'the profile was still there after closeBrowser: ' + b.udd);
+  assert.equal(existsSync(b.udd), false, b.udd);
+  // Closing twice is not an error: every caller runs it from a finally block.
+  assert.equal(await closeBrowser(b), true);
+  assert.equal(await closeBrowser(null), true);
+});
+
+test('removeProfile deletes a profile folder and treats an absent one as done', async () => {
+  const dir = mkdtempSync(join(tmpdir(), PROFILE_PREFIX));
+  writeFileSync(join(dir, 'Local State'), '{}');
+  mkdirSync(join(dir, 'Default'));
+  writeFileSync(join(dir, 'Default', 'Preferences'), '{}');
+  assert.equal(await removeProfile(dir, 2000), true);
+  assert.equal(existsSync(dir), false);
+  assert.equal(await removeProfile(dir, 2000), true, 'an absent folder is not a failure');
+  assert.equal(await removeProfile(null), true, 'nothing to remove is not a failure');
+});
+
+test('the launch sweep clears stale profiles only: fresh ones, other folders and the cap are respected', async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'ufs-sweep-'));
+  try {
+    const make = (name, ageMs) => {
+      const path = join(dir, name);
+      mkdirSync(path);
+      writeFileSync(join(path, 'Local State'), '{}');
+      const when = new Date(Date.now() - ageMs);
+      utimesSync(path, when, when);
+      return path;
+    };
+    const stale = [make(PROFILE_PREFIX + 'aaaaaa', 7200000), make(PROFILE_PREFIX + 'bbbbbb', 7200000)];
+    const fresh = make(PROFILE_PREFIX + 'cccccc', 0);
+    const other = make('webdesign-review-dddddd', 7200000);
+    const removed = await sweepProfiles({ dir });
+    assert.deepEqual(removed.sort(), [...stale].sort());
+    assert.equal(existsSync(fresh), true, 'a profile a running check could still own must survive');
+    assert.equal(existsSync(other), true, 'only temporary profiles are swept, never other temp folders');
+    // The cap is what keeps a backlog of hundreds from stalling a launch.
+    const many = Array.from({ length: 5 }, (_, i) => make(PROFILE_PREFIX + 'e' + i + 'aaaa', 7200000));
+    assert.equal((await sweepProfiles({ dir, limit: 2 })).length, 2);
+    assert.equal(many.filter((path) => existsSync(path)).length, 3);
+    // A folder that cannot be read is not a crash: there is nothing to sweep.
+    assert.deepEqual(await sweepProfiles({ dir: join(dir, 'does-not-exist') }), []);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+/* One profile in a full suite survived every wait (a virus scanner reading a
+   brand-new folder is the usual cause on Windows) and deleted in 88 ms once
+   the run was over. closeBrowser remembers that folder and deletes it as the
+   process exits; this is that last pass, called directly. */
+test('a profile that outlasted every wait is deleted as the run ends', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'ufs-flush-'));
+  try {
+    const left = [PROFILE_PREFIX + 'aaaaaa', PROFILE_PREFIX + 'bbbbbb'].map((name) => {
+      const path = join(dir, name);
+      mkdirSync(path);
+      writeFileSync(join(path, 'Local State'), '{}');
+      return path;
+    });
+    assert.deepEqual(flushProfiles(left), [], 'nothing should be left');
+    assert.equal(left.filter((path) => existsSync(path)).length, 0);
+    // A folder already gone is not a failure, and the list is never the excuse.
+    assert.deepEqual(flushProfiles(left), []);
+    assert.deepEqual(flushProfiles([]), []);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
 });

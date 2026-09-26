@@ -10,7 +10,9 @@
    fetch and Node 22's built-in WebSocket. */
 
 import { spawn, spawnSync } from 'node:child_process';
-import { mkdtempSync, existsSync, readFileSync, writeFileSync, rmSync, mkdirSync } from 'node:fs';
+import { mkdtempSync, existsSync, readFileSync, writeFileSync, rmSync, mkdirSync, readdirSync, statSync } from 'node:fs';
+import { rm } from 'node:fs/promises';
+import { once } from 'node:events';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { createServer } from 'node:net';
@@ -84,14 +86,126 @@ function closeOverCdp(port) {
     .catch(() => {});
 }
 
-export async function launch(bin) {
-  const udd = mkdtempSync(join(tmpdir(), 'webdesign-cdp-'));
+/* ------------------------------------------------- temporary profiles ---- */
+
+/* Every launch gets a throwaway user-data-dir, and every one of them used to
+   be deleted by `setTimeout(() => rmSync(udd), 400)` after `proc.kill()`.
+   That fails, silently, nearly always on Windows: Chrome and Edge keep the
+   profile's files open until the browser process is really gone, and 400 ms
+   after a kill it usually is not (Edge hands the session to a child, so the
+   spawned launcher has already exited 0 and the kill has more to do). rmSync
+   threw EBUSY/EPERM, the catch swallowed it, and the folder stayed. Worse,
+   a CLI that exits right after never runs the timer at all.
+
+   Measured on Gev's machine, 2026-09-26: 1,647 stray webdesign-cdp-* folders
+   were swept out of %TEMP% the night before, and 572 had already come back.
+
+   So cleanup is: ask the browser to close, WAIT for the process to be gone,
+   then delete with retries, and let the caller await all of it. */
+export const PROFILE_PREFIX = 'webdesign-cdp-';
+
+/* Delete a profile folder, waiting out whatever still holds it open.
+   Resolves true when the folder is gone, false when the budget ran out. */
+export async function removeProfile(udd, ms = 4000) {
+  if (!udd) return true;
+  const until = Date.now() + ms;
+  for (;;) {
+    try { await rm(udd, { recursive: true, force: true }); } catch { /* still locked */ }
+    if (!existsSync(udd)) return true;
+    if (Date.now() >= until) return false;
+    await sleep(150);
+  }
+}
+
+/* End the processes started with this run's own temporary profile on their
+   command line, and no other browser the user has open. */
+function endProfileProcesses(udd) {
+  if (process.platform !== 'win32') return;
+  const q = udd.replace(/'/g, "''");
+  spawnSync('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command',
+    `Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -and $_.CommandLine.Contains('${q}') } | ForEach-Object { try { Stop-Process -Id $_.ProcessId -Force -ErrorAction Stop } catch {} }`],
+  { stdio: 'ignore', windowsHide: true, timeout: 15000 });
+}
+
+/* Close a browser from launch() and delete its profile. Resolves true when
+   the folder is gone. Every caller of launch() ends here instead of killing
+   the process and hoping. */
+export async function closeBrowser(browser) {
+  if (!browser) return true;
+  const { proc, udd } = browser;
+  try { proc.kill(); } catch { /* already gone */ }
+  // A handed-off launcher has exitCode set already, so its 'exit' event has
+  // fired and awaiting it would hang; the kill above ended the real browser.
+  if (proc && proc.exitCode === null && proc.signalCode === null) {
+    await Promise.race([once(proc, 'exit').catch(() => {}), sleep(4000)]);
+  }
+  if (await removeProfile(udd, 3000)) return true;
+  // A helper process (the crash handler, a utility process) can outlive the
+  // browser and hold the folder open for seconds more.
+  endProfileProcesses(udd);
+  if (await removeProfile(udd, 8000)) return true;
+  leftBehind.add(udd);
+  flushAtExit();
+  return false;
+}
+
+/* Windows sometimes holds a fresh profile for longer than any budget worth
+   waiting out - a virus scanner reading a brand-new folder is the usual
+   reason. Measured on 2026-09-26: one profile out of a full suite's browser
+   launches survived the eight seconds above, and deleted in 88 ms once the run
+   was over. So remember it and delete it as the process exits, by which time
+   whatever held it is gone. The launch sweep is the backstop after that. */
+const leftBehind = new Set();
+
+export function flushProfiles(paths = [...leftBehind]) {
+  const left = [];
+  for (const path of paths) {
+    try { rmSync(path, { recursive: true, force: true }); } catch { /* locked still */ }
+    if (existsSync(path)) left.push(path); else leftBehind.delete(path);
+  }
+  return left;
+}
+
+let exitHooked = false;
+function flushAtExit() {
+  if (exitHooked) return;
+  exitHooked = true;
+  // An exit handler cannot await, so this one is the synchronous rmSync.
+  process.once('exit', () => { flushProfiles(); });
+}
+
+/* A crash, a Ctrl-C or a killed test run can still leave a profile behind,
+   and nothing else on the machine will ever clear it. Each launch clears a
+   few of the oldest strays: old enough (an hour by default) that no run of
+   ours could still be using one, capped so a backlog of hundreds never
+   stalls a launch, and every failure ignored. */
+export async function sweepProfiles({ dir = tmpdir(), maxAgeMs = 3600000, limit = 24, now = Date.now() } = {}) {
+  const removed = [];
+  let names;
+  try { names = readdirSync(dir); } catch { return removed; }
+  for (const name of names) {
+    if (removed.length >= limit) break;
+    if (!name.startsWith(PROFILE_PREFIX)) continue;
+    const path = join(dir, name);
+    try { if (now - statSync(path).mtimeMs < maxAgeMs) continue; } catch { continue; }
+    try { await rm(path, { recursive: true, force: true }); } catch { continue; }
+    if (!existsSync(path)) removed.push(path);
+  }
+  return removed;
+}
+
+let sweptThisProcess = false;
+
+export async function launch(bin, args = []) {
+  // Off the critical path: the sweep is housekeeping, never a reason to wait.
+  if (!sweptThisProcess) { sweptThisProcess = true; sweepProfiles().catch(() => {}); }
+  const udd = mkdtempSync(join(tmpdir(), PROFILE_PREFIX));
   const asked = await freePort();
   const proc = spawn(bin, [
     '--headless=new', '--hide-scrollbars', '--mute-audio',
     '--no-first-run', '--no-default-browser-check', '--disable-extensions',
     '--disable-background-networking', '--disable-sync', '--disable-features=Translate',
-    `--user-data-dir=${udd}`, `--remote-debugging-port=${asked}`, 'about:blank',
+    `--user-data-dir=${udd}`, `--remote-debugging-port=${asked}`, ...args, 'about:blank',
   ], { stdio: ['ignore', 'ignore', 'ignore'], windowsHide: true });
   let launchError;
   proc.once('error', err => { launchError = err; });
@@ -112,12 +226,7 @@ export async function launch(bin) {
         // Callers exit straight after, before a socket could close anything,
         // so on Windows end the handed-off browser now: every process whose
         // command line carries this run's own temporary profile, and no other.
-        if (process.platform === 'win32' && proc.exitCode !== null) {
-          const q = udd.replace(/'/g, "''");
-          spawnSync('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command',
-            `Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -and $_.CommandLine.Contains('${q}') } | ForEach-Object { try { Stop-Process -Id $_.ProcessId -Force -ErrorAction Stop } catch {} }`],
-          { stdio: 'ignore', windowsHide: true, timeout: 15000 });
-        }
+        if (proc.exitCode !== null) endProfileProcesses(udd);
         try { return kill(...args); } catch { return false; }
       };
       return { proc, udd, port };
@@ -125,8 +234,65 @@ export async function launch(bin) {
     await sleep(100);
   }
   try { proc.kill(); } catch {}
-  try { rmSync(udd, { recursive: true, force: true }); } catch {}
+  await removeProfile(udd);
   throw new Error(launchError ? 'Browser launch failed: ' + launchError.message : 'browser did not expose a debugging port');
+}
+
+/* A machine with no usable GPU (a VM, CI, a remote desktop) hands WebGL a
+   context that is lost the moment it is made: on the windows-latest runner
+   with Chrome stable (measured 2026-09-26) getContext('webgl') returned an
+   object, a webglcontextlost event fired, getError() said CONTEXT_LOST_WEBGL
+   and every pixel read back 0,0,0,0 - so every WebGL page looked like a flat
+   fill. Chrome no longer falls back to SwiftShader on its own; asked for it
+   by flag, the same runner drew both colours of the test scene. So: test
+   WebGL on the fresh browser, and only when it is dead relaunch on the
+   software renderer. A machine with a working GPU is never touched. */
+export const SOFTWARE_WEBGL = ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'];
+
+const WEBGL_SELF_TEST = `(async () => {
+  const c = document.createElement('canvas'); c.width = c.height = 4;
+  const gl = c.getContext('webgl');
+  if (!gl) return { ok: false, reason: 'no WebGL context' };
+  gl.clearColor(1, 0, 0, 1); gl.clear(gl.COLOR_BUFFER_BIT);
+  await new Promise((r) => setTimeout(r, 150));
+  if (gl.isContextLost()) return { ok: false, reason: 'the WebGL context was lost' };
+  const px = new Uint8Array(4);
+  gl.clearColor(1, 0, 0, 1); gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px);
+  const dbg = gl.getExtension('WEBGL_debug_renderer_info');
+  const renderer = String(dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER));
+  if (px[0] < 250 || px[1] > 5 || px[3] < 250) return { ok: false, reason: 'WebGL drew ' + [...px].join(',') + ' instead of red', renderer };
+  return { ok: true, renderer };
+})()`;
+
+export async function webglStatus(port) {
+  let session;
+  try {
+    session = await Session.open(port);
+    const r = await session.send('Runtime.evaluate', { expression: WEBGL_SELF_TEST, awaitPromise: true, returnByValue: true });
+    return r.result?.value || { ok: false, reason: 'the WebGL self-test returned nothing' };
+  } catch (err) {
+    return { ok: false, reason: 'the WebGL self-test failed: ' + err.message };
+  } finally { if (session) session.close(); }
+}
+
+/* launch() plus a WebGL a canvas check can trust. `args` are extra flags for
+   every attempt; `firstAttempt` only for the first one, which is how a test
+   on a machine with a GPU makes that first browser as GPU-less as the CI
+   runner is. The result carries `webgl`: { ok, software, renderer, reason }. */
+export async function launchRendering(bin, args = [], { firstAttempt = [] } = {}) {
+  const first = await launch(bin, [...args, ...firstAttempt]);
+  const status = await webglStatus(first.port);
+  if (status.ok) return { ...first, webgl: { ok: true, software: false, renderer: status.renderer } };
+  await closeBrowser(first);
+  const soft = await launch(bin, [...args, ...SOFTWARE_WEBGL]);
+  const retry = await webglStatus(soft.port);
+  if (retry.ok) return { ...soft, webgl: { ok: true, software: true, renderer: retry.renderer, reason: status.reason } };
+  // No renderer at all. Run the page on the browser as it was asked for, so
+  // nothing else in the report changes, and say that WebGL could not be judged.
+  await closeBrowser(soft);
+  const plain = await launch(bin, args);
+  return { ...plain, webgl: { ok: false, software: false, reason: status.reason + '; the software renderer failed too: ' + retry.reason } };
 }
 
 /* ----------------------------------------------------------------- CDP ---- */
@@ -665,7 +831,7 @@ export function sampleImageContrast(png, candidates) {
 
 /* ------------------------------------------------------------- the API ---- */
 
-export async function inspect(url, { widths = [1440, 390], out = null, full = false, wait = 1800, scrolls = [0], reducedMotion = false, actions = [], measured = false, interact = false, baseline = null } = {}) {
+export async function inspect(url, { widths = [1440, 390], out = null, full = false, wait = 1800, scrolls = [0], reducedMotion = false, actions = [], measured = false, interact = false, baseline = null, browserArgs = [] } = {}) {
   if (typeof WebSocket === 'undefined') throw new Error('Browser inspection requires Node 22 or newer.');
   if (!Array.isArray(widths) || !widths.length || widths.some(w => !Number.isInteger(w) || w < 240 || w > 3840)) throw new Error('Widths must be integers between 240 and 3840.');
   if (!Number.isFinite(wait) || wait < 0 || wait > 30000) throw new Error('Wait must be between 0 and 30000 ms.');
@@ -683,7 +849,7 @@ export async function inspect(url, { widths = [1440, 390], out = null, full = fa
     throw err;
   }
 
-  const { proc, udd, port } = await launch(bin);
+  const { proc, udd, port, webgl } = await launchRendering(bin, browserArgs);
   // Same-origin test for the hung-request check. A URL that will not parse is
   // not a reason to fail the run; it just means the check cannot narrow.
   let origin = null;
@@ -738,6 +904,7 @@ export async function inspect(url, { widths = [1440, 390], out = null, full = fa
         report.reducedMotion = reducedMotion;
         const state = await session.send('Runtime.evaluate', { returnByValue: true, expression: '(' + canvasProbe.toString() + ')()' });
         report.visual = state.result?.value || {};
+        report.webgl = webgl;
         report.actionErrors = [];
 
         // report.network used to be assigned here from a loadingFailed filter
@@ -837,13 +1004,12 @@ export async function inspect(url, { widths = [1440, 390], out = null, full = fa
         // A typed value is never written into review.json: a key screen's key
         // is exactly what a type step exists to enter.
         const shown = step && step.type === 'type' && typeof step.text === 'string' ? { ...step, text: '[' + step.text.length + ' characters]' } : step;
-        results.push({ width: w, scroll: null, step: index + 1, action: shown, file, ...report, visual: state.result?.value || {}, actionErrors, reducedMotion });
+        results.push({ width: w, scroll: null, step: index + 1, action: shown, file, ...report, visual: state.result?.value || {}, actionErrors, reducedMotion, webgl });
       }
     }
   } finally {
     if (session) session.close();
-    try { proc.kill(); } catch {}
-    setTimeout(() => { try { rmSync(udd, { recursive: true, force: true }); } catch {} }, 400);
+    await closeBrowser({ proc, udd });
   }
   return results;
 }
@@ -862,6 +1028,8 @@ export function formatReport(results) {
     for (const c of r.interact || []) { errors++; lines.push(`  ERROR clicking ${c.el} threw: ${c.error}`); }
     for (const s of r.shifted || []) { warns++; lines.push(`  warn  ${s.el} moved out from under the pointer when ${s.clicked} was clicked`); }
     for (const f of r.focus || []) { warns++; lines.push(`  warn  no visible focus indicator on ${f.el}`); }
+    if (r.webgl?.software && (r.visual?.canvases || []).some((c) => c.context && /webgl/.test(c.context)))
+      lines.push(`  note  WebGL ran on the software renderer (${r.webgl.reason} on the GPU path): expect it slower than a real GPU`);
     for (const canvas of r.visual?.canvases || []) {
       const kind = canvas.context ? canvas.context.replace('experimental-', '') + ' canvas' : 'canvas';
       const which = canvas.id ? ' ' + canvas.id : '';
@@ -870,7 +1038,21 @@ export function formatReport(results) {
       if (canvas.rendered === false) lines.push(`  note  ${kind}${which} is not rendered (in a hidden or closed layer); not checked`);
       else if (canvas.width === 0 || canvas.height === 0) { errors++; lines.push(`  ERROR ${kind}${which} has zero visible size`); }
       else if (canvas.readable === false) lines.push(`  note  ${kind}${which} pixels could not be read (offscreen or cross-origin); judge it from the screenshot`);
+      // The inspecting browser had no WebGL at all (no GPU, and the software
+      // renderer failed too): the page is not at fault and cannot be judged.
+      else if (canvas.lost && r.webgl && r.webgl.ok === false) lines.push(`  note  ${kind}${which} not checked: this browser has no working WebGL (${r.webgl.reason})`);
+      // WebGL worked here and the page's own context was still lost: too many
+      // contexts, a GPU reset, or loseContext() - a real defect, not a flat fill.
+      else if (canvas.lost) { warns++; lines.push(`  warn  ${kind}${which} lost its WebGL context; nothing it drew survived (too many contexts, a GPU reset, or loseContext())`); }
       else if (canvas.uniform) { warns++; lines.push(`  warn  ${kind}${which} rendered a flat fill; inspect its screenshot and loading state`); }
+      // A lit surface that reaches 255 on every channel has no texture left.
+      // Gev, playing Doodle Voyager (2026-09-25): a hand-drawn look means the
+      // TEXTURE goes white where the light lands, with hatching toward the
+      // edges - not a light effect that blows the surface out. Only WebGL
+      // canvases: a 2D canvas drawing a white card or chart is not this bug.
+      if (canvas.rendered !== false && canvas.readable !== false && !canvas.lost
+        && /webgl/.test(canvas.context || '') && canvas.clipped >= 0.15)
+        { warns++; lines.push(`  warn  ${kind}${which} is ${Math.round(canvas.clipped * 100)}% clipped to pure white; a lit surface at 255 on every channel has lost its texture - shade the texture, do not add light`); }
     }
     if (r.measured) {
       const found = judge(r.measured, { expectDepth: false });
@@ -1024,7 +1206,7 @@ function collectEvents(session, options = {}) {
 function canvasProbe() {
   const canvases = [...document.querySelectorAll('canvas')].map(canvas => {
     const rect = canvas.getBoundingClientRect();
-    let uniform = null, readable = false, spread = null;
+    let uniform = null, readable = false, spread = null, clipped = null;
     try {
       const n = 16;
       const copy = document.createElement('canvas'); copy.width = copy.height = n;
@@ -1043,15 +1225,31 @@ function canvasProbe() {
       }
       spread = Math.max(hi[0] - lo[0], hi[1] - lo[1], hi[2] - lo[2], hi[3] - lo[3]);
       uniform = spread <= 2;
+      // The share of the frame clipped to opaque pure white. A stylised look
+      // whose lit side reaches 255 on every channel is a light effect, not a
+      // texture: the paper white of a hand-drawn look sits below that, so the
+      // hatching and the shading survive (Doodle Voyager, 2026-09-25).
+      let clip = 0;
+      for (let i = 0; i < pixels.length; i += 4)
+        if (pixels[i] >= 250 && pixels[i + 1] >= 250 && pixels[i + 2] >= 250 && pixels[i + 3] >= 250) clip++;
+      clipped = Math.round((clip / (n * n)) * 100) / 100;
     } catch (err) { uniform = null; }
     // checkVisibility() is false inside display:none and [hidden] subtrees;
     // the fallback reads the same thing from the absence of layout boxes.
     const rendered = typeof canvas.checkVisibility === 'function' ? canvas.checkVisibility() : canvas.getClientRects().length > 0;
+    // A lost WebGL context reads back as transparent black, which is a flat
+    // fill to the sampler above but says nothing about what the page drew.
+    // Asking for the same type hands back the existing context, never a new one.
+    let lost = false;
+    const type = canvas.__inspectContext;
+    if (type && /webgl/.test(type)) {
+      try { const gl = canvas.getContext(type); lost = Boolean(gl && gl.isContextLost()); } catch (err) { lost = false; }
+    }
     return {
       id: canvas.id ? '#' + canvas.id : (canvas.className && typeof canvas.className === 'string' ? '.' + canvas.className.trim().split(/\s+/)[0] : ''),
       rendered,
       width: Math.round(rect.width), height: Math.round(rect.height),
-      uniform, readable, spread,
+      uniform, readable, spread, clipped, lost,
       context: canvas.__inspectContext || null,
     };
   });
@@ -1384,8 +1582,7 @@ export async function inspectStyles(url, { selector = 'h1,h2,h3,p,a,button', wid
     return { url, width, selector, ...page, resources, totalBytes: total };
   } finally {
     if (session) session.close();
-    try { proc.kill(); } catch {}
-    setTimeout(() => { try { rmSync(udd, { recursive: true, force: true }); } catch {} }, 400);
+    await closeBrowser({ proc, udd });
   }
 }
 

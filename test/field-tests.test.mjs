@@ -14,7 +14,7 @@ import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { once } from 'node:events';
-import { findBrowser, inspect, formatReport, CANVAS_INIT } from '../scripts/inspect.mjs';
+import { findBrowser, inspect, formatReport, CANVAS_INIT, launchRendering, SOFTWARE_WEBGL, closeBrowser, removeProfile, sweepProfiles, PROFILE_PREFIX } from '../scripts/inspect.mjs';
 import { startServer } from '../scripts/preview-server.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -188,6 +188,58 @@ test('a native date field squeezed below its own width is reported; one at its w
     assert.doesNotMatch(cut, /input#ok|select#fits|select#sr/, cut);
     assert.match(formatReport([r]).text, /warn {2}control cut short, 7\dpx of the \d+px it needs: input#due/);
   } finally { await site.close(); }
+});
+
+// windows-latest has no GPU, and there Chrome's WebGL context was lost the
+// moment it was made (measured 2026-09-26): every WebGL page read as a flat fill.
+test('the game world reads as two colours in a browser with the GPU switched off', { skip, timeout: 90000 }, async () => {
+  const site = await serve(GAME);
+  try {
+    const [r] = await inspect(site.url, { widths: [1366], wait: 300, scrolls: [0], browserArgs: ['--disable-gpu'] });
+    const world = r.visual.canvases.find((c) => c.id === '#gl');
+    assert.equal(r.webgl.ok, true, JSON.stringify(r.webgl));
+    assert.equal(world.lost, false, JSON.stringify(world));
+    assert.equal(world.uniform, false, JSON.stringify(r.visual.canvases));
+    assert.doesNotMatch(formatReport([r]).text, /flat fill/);
+  } finally { await site.close(); }
+});
+
+test('a browser whose WebGL is dead is relaunched on the software renderer, and says so', { skip, timeout: 90000 }, async () => {
+  // --disable-software-rasterizer on top of --disable-gpu leaves no WebGL at
+  // all, the state the runner was in; the fallback launch does not carry them.
+  const b = await launchRendering(findBrowser(), [], { firstAttempt: ['--disable-gpu', '--disable-software-rasterizer'] });
+  try {
+    assert.equal(b.webgl.ok, true, JSON.stringify(b.webgl));
+    assert.equal(b.webgl.software, true, JSON.stringify(b.webgl));
+    assert.match(b.webgl.reason, /no WebGL context|lost|instead of red/, JSON.stringify(b.webgl));
+    assert.match(b.webgl.renderer, /SwiftShader/i, JSON.stringify(b.webgl));
+    assert.deepEqual(SOFTWARE_WEBGL, ['--use-angle=swiftshader', '--enable-unsafe-swiftshader']);
+  } finally { await closeBrowser(b); }
+});
+
+test('a page that loses its own WebGL context is told so, not told it drew a flat fill', { skip, timeout: 90000 }, async () => {
+  const site = await serve('<!doctype html><html lang="en"><meta charset="utf-8"><title>x</title><body style="margin:0">' +
+    '<canvas id="w" style="width:600px;height:400px;display:block"></canvas><script>' +
+    'const gl = document.getElementById("w").getContext("webgl"); gl.clearColor(1,0,0,1); gl.clear(gl.COLOR_BUFFER_BIT);' +
+    'gl.getExtension("WEBGL_lose_context").loseContext();</script></body></html>');
+  try {
+    const [r] = await inspect(site.url, { widths: [1280], wait: 300, scrolls: [0] });
+    const w = r.visual.canvases.find((c) => c.id === '#w');
+    assert.equal(w.lost, true, JSON.stringify(w));
+    const text = formatReport([r]).text;
+    assert.match(text, /warn {2}webgl canvas #w lost its WebGL context/, text);
+    assert.doesNotMatch(text, /flat fill/, text);
+  } finally { await site.close(); }
+});
+
+test('with no WebGL anywhere, a lost canvas is a note naming the browser, never a warning against the page', () => {
+  const base = { width: 1366, scroll: 0, overlaps: [], overflow: [], contrast: [], collapsed: [], broken: [], tiny: [], offscreen: [], stats: {} };
+  const canvas = { id: '#gl', rendered: true, width: 1366, height: 1000, uniform: true, readable: true, spread: 0, lost: true, context: 'webgl' };
+  const none = formatReport([{ ...base, visual: { canvases: [canvas] }, webgl: { ok: false, software: false, reason: 'no WebGL context; the software renderer failed too: no WebGL context' } }]).text;
+  assert.match(none, /note {2}webgl canvas #gl not checked: this browser has no working WebGL \(no WebGL context/, none);
+  assert.doesNotMatch(none, /flat fill|warn {2}webgl canvas/, none);
+  const soft = formatReport([{ ...base, visual: { canvases: [{ ...canvas, lost: false, uniform: false, spread: 200 }] }, webgl: { ok: true, software: true, renderer: 'SwiftShader', reason: 'the WebGL context was lost' } }]).text;
+  assert.match(soft, /note {2}WebGL ran on the software renderer \(the WebGL context was lost on the GPU path\)/, soft);
 });
 
 test('CANVAS_INIT is exported, so a project suite can read WebGL pixels the way inspect does (HQ)', () => {

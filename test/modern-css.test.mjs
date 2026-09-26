@@ -4,7 +4,7 @@ import { mkdtempSync, writeFileSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { launch, Session, findBrowser } from '../scripts/inspect.mjs';
+import { launch, Session, findBrowser, closeBrowser } from '../scripts/inspect.mjs';
 
 const skill = join(import.meta.dirname, '..', 'skills', 'ultimate-frontend-skills');
 const coreCss = readFileSync(join(skill, 'assets', 'core.css'), 'utf8');
@@ -101,10 +101,8 @@ test('a .stagger list takes its reveal offsets from its own order in a real brow
     }
   } finally {
     s?.close();
-    proc.kill();
-    for (let i = 0; i < 20; i++) {
-      try { rmSync(udd, { recursive: true, force: true }); break; } catch { await new Promise(res => setTimeout(res, 250)); }
-    }
+    // Never assert in a finally: it would mask the failure that got us here.
+    await closeBrowser({ proc, udd });
     rmSync(dir, { recursive: true, force: true });
   }
 });
