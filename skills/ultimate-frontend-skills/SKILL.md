@@ -352,6 +352,7 @@ Read one only when you need it. Each is self-contained.
 | `references/video.md` | Making a video from references: `video scene`, a frame-exact `ufsFrame(t)`, `video render --draft`, then the final |
 | `references/video-tells.md` | What gives a video away as machine-made - in the frame and across the edit - and the check before a final render |
 | `references/motion-graphics.md` | A company motion piece (explainer, launch film, brand reel): stages, copy length, type on screen, `video lint`, and when to use Remotion, HyperFrames or Manim instead |
+| `references/editing.md` | Editing footage someone shot: the order a cut is decided in, J and L cuts, loudness and caption targets, and `edit probe/scenes/transcribe/captions/cut/deliver` |
 
 The audit enforces mechanically most of what is in `tells.md`, so you do not
 have to carry it in your head - build, then run it.

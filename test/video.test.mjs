@@ -104,3 +104,53 @@ test('timed words are split into captions that keep every reading rule', () => {
   assert.match(toSrt(cues), /^1\n00:00:00,000 --> 00:00:0\d,\d{3}\n/);
   assert.match(toSrt([{ start: 1.9996, end: 3, lines: ['x'] }]), /00:00:02,000 --> 00:00:03,000/);
 });
+
+/* references/editing.md: the edit tools either run or say plainly that they
+   could not. */
+import * as edit from '../scripts/edit.mjs';
+
+test('edit deliver sets a quiet track to -14 LUFS with its true peak under -1 dBTP', { skip: !hasFfmpeg && 'no ffmpeg' }, () => {
+  const dir = mkdtempSync(join(tmpdir(), 'ufs-deliver-'));
+  try {
+    const src = join(dir, 'tone.wav');
+    ff('-f', 'lavfi', '-i', 'sine=frequency=440:duration=6', '-af', 'volume=-9dB', '-ar', '48000', src);
+    const before = edit.loudness(src);
+    assert.ok(before.lufs < -25, 'the fixture should start quiet: ' + before.lufs);
+    const r = edit.deliver(src, { for: 'youtube' });
+    assert.ok(Math.abs(r.after.lufs + 14) <= 1, 'landed at ' + r.after.lufs);
+    assert.ok(r.after.truePeak <= -1, 'true peak ' + r.after.truePeak);
+    assert.deepEqual(r.notes, []);
+    assert.throws(() => edit.deliver(src, { for: 'radio' }), /unknown target "radio"/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test('edit scenes finds a hard cut, and a missing tool is named instead of faked', { skip: !hasFfmpeg && 'no ffmpeg' }, () => {
+  const dir = mkdtempSync(join(tmpdir(), 'ufs-scenes-'));
+  try {
+    const clip = join(dir, 'cut.mp4');
+    ff('-f', 'lavfi', '-i', 'color=c=0x2a1f14:s=320x180:d=2:r=25', '-f', 'lavfi', '-i', 'color=c=0xe8dcc8:s=320x180:d=2:r=25',
+      '-filter_complex', '[0:v][1:v]concat=n=2:v=1[v]', '-map', '[v]', '-pix_fmt', 'yuv420p', clip);
+    const s = edit.scenes(clip);
+    assert.ok(s.cuts.some((t) => Math.abs(t - 2) < 0.2), JSON.stringify(s));
+    if (!edit.has('auto-editor')) {
+      assert.throws(() => edit.cutSilence(clip), (e) => e.code === 'missing' && /auto-editor is not installed, so the silence cut did not run/.test(e.message));
+    }
+    assert.throws(() => edit.transcribe(clip, { bin: 'no-such-whisper-bin' }), (e) => e.code === 'missing' && /not installed/.test(e.message));
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test('whisper.cpp JSON becomes timed words, and edit captions writes an SRT that keeps the rules', () => {
+  const json = { transcription: [{ tokens: [
+    { text: '[_BEG_]', offsets: { from: 0, to: 0 } }, { text: ' The', offsets: { from: 0, to: 300 } }, { text: ' kiln', offsets: { from: 300, to: 700 } },
+    { text: ' is', offsets: { from: 700, to: 900 } }, { text: ' l', offsets: { from: 900, to: 1100 } }, { text: 'it.', offsets: { from: 1100, to: 1400 } },
+  ] }] };
+  assert.deepEqual(edit.wordsFrom(json).map((w) => w.word), ['The', 'kiln', 'is', 'lit.']);
+  const dir = mkdtempSync(join(tmpdir(), 'ufs-caps-'));
+  try {
+    writeFile(join(dir, 'words.json'), JSON.stringify(json));
+    const r = edit.captions(join(dir, 'words.json'));
+    assert.equal(r.cues, 1);
+    assert.deepEqual(r.findings, []);
+    assert.match(readFileSync(r.file, 'utf8'), /^1\n00:00:00,000 --> 00:00:01,400\nThe kiln is lit\.\n/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});

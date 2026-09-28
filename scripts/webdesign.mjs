@@ -731,6 +731,32 @@ async function cmdVideo() {
   const frames = studyVideo(positional[0], { out: flag('out'), frames: Number(flag('frames', 8)) });
   console.log(JSON.stringify(frames, null, 2));
   console.log('Open these frames in timestamp order; do not infer motion from one still.');
+  // video-watch reads footage with scene detection, contact sheets and a token
+  // budget; when it is installed it is the better way to look at a video.
+  const watch = (await import('./edit.mjs')).findVideoWatch();
+  if (watch) console.log('video-watch is installed and reads footage better: node "' + watch + '" "' + positional[0] + '" --mode scene --sheet 3x3 --label');
+}
+
+/* Editing real footage: references/editing.md is the craft, scripts/edit.mjs
+   the tools. A step whose program is not installed says so and exits 2. */
+async function cmdEdit() {
+  const E = await import('./edit.mjs');
+  const [sub, file] = positional;
+  const usage = 'edit probe|scenes|transcribe|captions|cut|deliver <file>  (see scripts/edit.mjs for the flags)';
+  if (!sub || !file) die(usage);
+  if (!existsSync(file)) die('no such file: ' + file);
+  let r;
+  try {
+    if (sub === 'probe') r = E.probe(file);
+    else if (sub === 'scenes') r = E.scenes(file, { threshold: Number(flag('threshold', 10)) });
+    else if (sub === 'transcribe') r = E.transcribe(file, { bin: String(flag('bin', 'whisper-cli')), model: flag('model') ? String(flag('model')) : undefined });
+    else if (sub === 'captions') r = E.captions(file, { out: flag('out') ? String(flag('out')) : undefined });
+    else if (sub === 'cut') { if (!flag('silence')) die('edit cut needs --silence (the one cut it makes)'); r = E.cutSilence(file, { out: flag('out') ? String(flag('out')) : undefined, margin: String(flag('margin', '0.2s')) }); }
+    else if (sub === 'deliver') r = E.deliver(file, { for: String(flag('for', 'youtube')), out: flag('out') ? String(flag('out')) : undefined });
+    else die(usage);
+  } catch (e) { console.error('ultimate-frontend-skills: ' + e.message); process.exit(e.code === 'missing' ? 2 : 1); }
+  console.log(JSON.stringify(r, null, 2));
+  if (r && Array.isArray(r.findings) && r.findings.some((f) => f.level === 'error')) process.exit(1);
 }
 
 /* The reference corpus. Looking at three sites that solved the same problem
@@ -901,6 +927,7 @@ switch (cmd) {
   case 'verify': await cmdVerify(); break;
   case 'parity': await cmdParity(); break;
   case 'video': await cmdVideo(); break;
+  case 'edit': await cmdEdit(); break;
   case 'awards': case 'refs': await cmdAwards(); break;
   case 'packs': await cmdPacks(); break;
   case 'credits': await delegate('credits.mjs', argv.slice(1)); break;
@@ -960,6 +987,9 @@ switch (cmd) {
                                           scaffold a frame-exact video scene from references
   video render <scene.html> [--draft] [--audio FILE] [--out FILE]
                                           render the scene to MP4, one seeked frame at a time
+  video lint <dir>                        copy density and captions, before a render
+  edit probe|scenes|transcribe|captions|cut|deliver <file>
+                                          edit real footage (references/editing.md)
 `);
     process.exit(cmd ? 1 : 0);
 }
