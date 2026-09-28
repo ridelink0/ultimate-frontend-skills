@@ -42,19 +42,32 @@ export function gameWidths(text) {
   return /\btouchstart\b/.test(text) ? GAME_WIDTHS + ',390' : GAME_WIDTHS;
 }
 
-// The widths for a local target: its page and the local scripts it names.
-// Vendored libraries are skipped (three's OrbitControls listens for arrows).
+// The widths for a local target: its page, the local scripts it names and the
+// relative modules those import (a game's keys usually sit a few imports below
+// main.js). Vendored libraries are skipped (three's OrbitControls listens for arrows).
+const IMPORTS = /(?:\bfrom|\bimport\s*\(?)\s*["'](\.{0,2}\/[^"'#?]+)/g;
 export function targetWidths(target) {
   if (/^https?:\/\//i.test(target)) return PAGE_WIDTHS;
   try {
     const given = resolve(target);
     const file = existsSync(given) && statSync(given).isDirectory() ? join(given, 'index.html') : given;
     if (!existsSync(file)) return PAGE_WIDTHS;
+    const root = dirname(file);
     let text = readFileSync(file, 'utf8');
-    for (const [, src] of text.matchAll(/<script\b[^>]*\bsrc=["']([^"'#?]+)/gi)) {
-      if (/^(?:[a-z]+:)?\/\//i.test(src) || /three|vendor|node_modules|\.min\./i.test(src)) continue;
-      const path = join(dirname(file), src);
-      if (existsSync(path) && statSync(path).size < 2e6) text += '\n' + readFileSync(path, 'utf8');
+    const seen = new Set([file]), queue = [];
+    const add = (from, spec) => {
+      if (/^(?:[a-z]+:)?\/\//i.test(spec) || /three|vendor|node_modules|\.min\./i.test(spec)) return;
+      const path = spec.startsWith('/') ? join(root, spec) : resolve(from, spec);
+      if (!seen.has(path)) { seen.add(path); queue.push(path); }
+    };
+    for (const [, src] of text.matchAll(/<script\b[^>]*\bsrc=["']([^"'#?]+)/gi)) add(root, src);
+    for (const [, spec] of text.matchAll(IMPORTS)) add(root, spec);
+    for (let read = 0; queue.length && read < 64; read++) {
+      const path = queue.shift();
+      if (!existsSync(path) || !statSync(path).isFile() || statSync(path).size >= 2e6) continue;
+      const js = readFileSync(path, 'utf8');
+      text += '\n' + js;
+      for (const [, spec] of js.matchAll(IMPORTS)) add(dirname(path), spec);
     }
     return gameWidths(text) || PAGE_WIDTHS;
   } catch { return PAGE_WIDTHS; }
