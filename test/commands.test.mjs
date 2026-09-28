@@ -229,3 +229,18 @@ test('the README does not promise that a bare word finds the command', () => {
   assert.doesNotMatch(readme, /the menu finds the command/);
   assert.match(readme, /Typing `\/ultimate-frontend-skills:` lists every one of them/);
 });
+
+/* SKILL.md loads on every trigger, so every byte in it is paid for on every
+   build (PLAN item 12: it was 24 KB). It stays under 14 KB, every reference it
+   names exists, and every reference that exists is named. */
+test('SKILL.md stays under 14 KB, and names every reference, each of which exists', () => {
+  const dir = join(root, 'skills', 'ultimate-frontend-skills');
+  const skill = readFileSync(join(dir, 'SKILL.md'), 'utf8');
+  assert.ok(Buffer.byteLength(skill) < 14 * 1024, 'SKILL.md is ' + Buffer.byteLength(skill) + ' bytes');
+  const named = new Set([...skill.matchAll(/references\/([\w/-]+\.md)/g)].map((m) => m[1]));
+  for (const f of named) assert.ok(existsSync(join(dir, 'references', f)), 'SKILL.md names references/' + f + ', which does not exist');
+  const shipped = readdirSync(join(dir, 'references')).filter((f) => f.endsWith('.md'));
+  for (const f of shipped) assert.ok(named.has(f), 'references/' + f + ' is not named in SKILL.md');
+  const description = skill.match(/^description: (.*)$/m)[1];
+  for (const word of ['motion graphics', 'editing']) assert.ok(description.includes(word), 'the description does not trigger on ' + word);
+});

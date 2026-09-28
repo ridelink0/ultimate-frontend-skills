@@ -1,129 +1,94 @@
 ---
 name: ultimate-frontend-skills
-description: Use whenever a website, landing page, marketing site, portfolio, microsite, homepage, any public-facing web page, an app screen (mobile, desktop, PWA, Expo), or a game's site, start screen, menu or HUD is being built, redesigned, restyled, or made to "look better" - including plain HTML/CSS pages, Next/React/Astro sites, React Native screens, canvas and three.js games, and single-file pages. Supplies the house style (editorial serif typography, warm-neutral and near-black grounds, cinematic imagery, layered scroll parallax, exploded technical views) plus a copy-in CSS chassis, a motion runtime, a section library, a scaffolder, and an audit.
+description: Use whenever a website, landing page, marketing site, portfolio, microsite, homepage, any public-facing web page, an app screen (mobile, desktop, PWA, Expo), or a game's site, start screen, menu or HUD is being built, redesigned, restyled, or made to "look better" - including plain HTML/CSS pages, Next/React/Astro sites, React Native screens, canvas and three.js games, and single-file pages. Also for motion graphics and company videos (an explainer, a launch film, a brand reel) and for editing footage (cuts, captions, loudness, delivery). Supplies the house style (editorial serif typography, warm-neutral and near-black grounds, cinematic imagery, layered scroll parallax, exploded technical views) plus a copy-in CSS chassis, a motion runtime, a section library, a scaffolder, an audit, a video renderer and editing tools.
 ---
 
 # Ultimate Frontend Skills
 
-The studio's house style, and the code that produces it. This is a pinned art
-direction for projects without an existing design. A supplied or selected Claude Design project takes precedence.
+The studio's house style, and the code that produces it: a pinned art
+direction for projects without an existing design. A supplied or selected
+Claude Design project takes precedence.
 
 ## Where the scripts are
 
-Every `node "${CLAUDE_PLUGIN_ROOT}/scripts/..."` command in this skill runs
-from the plugin root. Installed as a Claude Code plugin, that is set. Codex
+Every `node "${CLAUDE_PLUGIN_ROOT}/scripts/..."` command here runs from the
+plugin root. Installed as a Claude Code plugin, that is set. Codex
 leaves it empty; there, use the folder that holds `.codex-plugin/`, two levels
-above this file. Installed as a bare
-skill (`npx skills add`, or a copy under `~/.claude/skills` or
-`~/.agents/skills`), only this folder is on the machine - `references/`,
-`assets/` and `data/` - and `${CLAUDE_PLUGIN_ROOT}` is empty or still reads
-literally. Then:
+above this file. Installed as a bare skill (`npx skills add`, or a copy under
+`~/.claude/skills` or `~/.agents/skills`), only this folder is on the machine
+and `${CLAUDE_PLUGIN_ROOT}` is empty or literal. Then:
 
-1. Look for a clone of github.com/ridelink0/ultimate-frontend-skills: a folder
-   holding `scripts/webdesign.mjs` beside a `.claude-plugin/plugin.json` whose
-   name is `ultimate-frontend-skills`. Use that folder as the root in every
-   command below.
+1. Look for a clone of github.com/ridelink0/ultimate-frontend-skills (a folder
+   holding `scripts/webdesign.mjs` beside a `.claude-plugin/plugin.json` named
+   `ultimate-frontend-skills`) and use it as the root.
 2. If there is none, the scaffolder, the audit, the render check and verify are
-   not on this machine. Say so once, build from the references and the chassis
-   in `assets/`, and never report an audit, a render check or a verify as run.
-   The full install is
-   `git clone https://github.com/ridelink0/ultimate-frontend-skills` and then
-   `node ultimate-frontend-skills/scripts/install.mjs`.
+   not on this machine. Say so once, build from the references and `assets/`,
+   and never report an audit, a render check or a verify as run. The full
+   install is `git clone https://github.com/ridelink0/ultimate-frontend-skills`
+   then `node ultimate-frontend-skills/scripts/install.mjs`.
 
 ## Rule zero
 
-**Nothing about the design goes in your reply.** No palette, no type scale, no
-tokens, no section list, no "I chose a warm bone ground because...", no design
-vocabulary at all. Build the files. Then say what you made in one or two plain
-sentences and give the paths. If they want the reasoning, they will ask for it.
+**Nothing about the design goes in your reply.** No palette, type scale,
+tokens, section list or design vocabulary. Build the files, then say what you
+made in one or two plain sentences and give the paths.
 
-Never use emoji - not in the page, the copy, the commit, or the reply. Icons are
-inline SVG.
+Never use emoji, anywhere. Icons are inline SVG.
 
-For Claude Design work, first read `references/claude-design.md` - it carries
-the routes and what was and was not exercised - then run
-`node "${CLAUDE_PLUGIN_ROOT}/scripts/design.mjs" detect` rather than assuming a
-route. `detect` only reports: never register, consent or log in on the user's
-behalf, and never report a remote Design operation as successful without its
-actual result.
+Claude Design work: read `references/claude-design.md`, then run
+`node "${CLAUDE_PLUGIN_ROOT}/scripts/design.mjs" detect`; never register,
+consent or log in for the user, and never report a remote Design operation as
+done without its result. Keep a supplied design's direction intact; otherwise
+use the house style without an approval pass. For debugging or final
+verification read `references/visual-debug.md`, run the render check and open
+its PNGs.
 
-Keep a supplied design's direction intact; otherwise proceed with the local house style
-without a separate approval pass.
+## The route
 
-For website debugging or final verification, read references/visual-debug.md. Run the rendered debug command and actually open its PNGs before declaring the visual check complete.
-
-## The route, before anything else
-
-`references/pipeline.md` is the whole build in nine stages, with a gate at each
-one. Read it at the start of a build and then follow it; it decides the thing
-that is expensive to get wrong, which is **how the subject gets made** -
-photographed, authored procedurally in three.js, modelled in Blender, rendered
-to a sequence, or not made at all because the page is type.
-
-Two commands belong at the top of every build, before the first line of markup:
+`references/pipeline.md` is the build in nine stages with a gate at each. Read
+it at the start and follow it; stage 3 decides **how the subject gets made**
+(photographed, three.js, Blender, a sequence, or type only). First, on every
+build:
 
 ```bash
 node "${CLAUDE_PLUGIN_ROOT}/scripts/webdesign.mjs" tools
 node "${CLAUDE_PLUGIN_ROOT}/scripts/webdesign.mjs" awards --pick object --n 3
 ```
 
-The first says what is on this machine - and `packs` says which of the packs
-this plugin defers to are absent, and `packs --install` gets them (see
-`references/skill-packs.md`). The second picks three award-winning
-references that disagree with each other, so the decisions get made against
-something real rather than from memory. `study --awards "<technique>"` renders
-them; open the PNGs.
+`tools` says what is on this machine and which deferred packs are absent
+(`references/skill-packs.md`); `awards --pick` gives three award-winning
+references that disagree, and `study --awards "<technique>"` renders them.
+**If `frontend-design` is installed, it owns the aesthetic direction** and this
+plugin supplies the chassis, motion, 3D and verification; never tell the user
+to install something mid-build (`references/plugins.md`).
 
-**If `frontend-design` is installed, it owns the aesthetic direction** at the
-start of new UI and this plugin supplies the chassis, the motion, the 3D and the
-verification. If it is not installed, the house style below stands in. Either
-way the seam is silent - never tell the user to go and install something
-mid-build. `references/plugins.md` has the handshake and the rest of the bench.
+## Surfaces
 
-## Three surfaces: a website, an app, a game
+| Surface | Read |
+|---|---|
+| A website | this file, then `references/pipeline.md` |
+| An app (mobile, desktop, PWA, Expo) | `references/apps.md`: the first screen is a task; navigation before palette; empty, loading and error states first; platform conventions outrank the house style |
+| A game's site or start screen | `references/games.md`: in-world UI, exact controls, real numbers; the eyebrow-headline-two-buttons stack is the tell |
+| The game itself | `references/games.md`, then `references/three.md`: green checks are the floor; run the play pass with the controls in your hands |
+| A video from references | `references/video.md`, `video-tells.md`; `motion-graphics.md` for an explainer or launch film; then `video scene`, `video lint`, `video render` |
+| Footage someone shot | `references/editing.md`, then `edit probe/scenes/transcribe/captions/cut/deliver` |
 
-The pipeline was written for websites. Two more surfaces now share the same
-route, the same chassis and the same audit, each with its own reference and
-its own slice of the corpus:
-
-| Surface | Read | What changes |
-|---|---|---|
-| A website, landing page, microsite | this file, `references/pipeline.md` | nothing - the route as written |
-| An app (mobile, desktop, PWA, Expo) | `references/apps.md` | the first screen is a task, not a hero; the navigation model is decided before the palette; empty, loading and error states are designed before the full one; platform conventions outrank the house style; a dashboard puts the display face on the wordmark only, sans on every control, one panel in the lead and no empty panels (apps.md, Dashboards); `animate-expo` and the React Native packs own motion when installed. 35 shipped apps: `awards --pick app --n 3` |
-| A game's site and its start screen | `references/games.md` | the start screen is in-world UI, not a marketing template: controls documented exactly, real persisted numbers, names for weapons, waves and deaths. The eyebrow-headline-tagline-two-buttons stack is the tell. `awards --pick game --n 3` |
-| The game itself | `references/games.md` (in-game rendering, shipping a networked game, and what playing it caught), then `references/three.md` for the renderer | a suite, a render check and an audit all green is the floor, not the verdict: a game is judged by playing it. Before you call it done, run the play pass at the end of `references/games.md` with the controls in your hands. A stylised look whitens the texture where the light lands (`references/three.md`, section 12); every effect the player feels in their body has its own control (`references/motion.md`, Screen effects) |
-
-A fourth, **a video** (a reel, a launch clip, a recap cut from someone's
-references), is a page rendered frame by frame: read `references/video.md`
-and `references/video-tells.md` (and `references/motion-graphics.md` for an
-explainer or a launch film), then `video scene`, `video lint` and `video render`.
-
-Copy on all three: `references/copy-tells.md`. Generated pictures on all
-three: `references/image-tells.md` first, then `references/image-gen.md` for
-the pipeline.
-
-What separates a made thing from a generated one - seven points measured on
-the two game exhibits, and the app equivalent - is the short form that opens
-the Synthesis in `references/games.md` and closes `references/apps.md`.
+Copy on all of them: `references/copy-tells.md`. Generated pictures:
+`references/image-tells.md`, then `image-gen.md`. Identity, icons, colour roles
+and contrast: `references/graphic-design.md`.
 
 ## Fix three things before you type
 
-Hold these in your head, not on the screen: **the subject** (the actual thing,
-named concretely), **the register** (is this an object, a place, a service, or
-an argument), **the hero** (what the first screen shows). If the brief truly does
-not say what the subject is, ask one question. Otherwise decide and go.
+Hold, not print: **the subject** (named concretely), **the register** (an
+object, a place, a service, or an argument), **the hero** (what the first
+screen shows). If the brief does not say what the subject is, ask one
+question; otherwise decide and go.
 
 ## Build
 
-If a Claude Design handoff exists, implement it in the current project and use the checks
-below; do not scaffold over it. The scaffold is for a new site without a supplied design.
-
-Preserving a supplied design is measurable:
-`node "${CLAUDE_PLUGIN_ROOT}/scripts/webdesign.mjs" verify <dir> --design <seeded canvas>.html`
-compares the page against the artboards (type sizes, palette, rhythm, geometry)
-and raises an ERROR when type scale and palette are both absent from the
-design - what overwriting one looks like. Hand it a seeded canvas page or a
-plain HTML rendering; a bare `.dc.html` is refused.
+A Claude Design handoff is implemented in place, not scaffolded over;
+`verify <dir> --design <seeded canvas>.html` measures whether it was kept. A
+new site:
 
 ```bash
 node "${CLAUDE_PLUGIN_ROOT}/scripts/webdesign.mjs" new <dir> \
@@ -131,121 +96,71 @@ node "${CLAUDE_PLUGIN_ROOT}/scripts/webdesign.mjs" new <dir> \
   --sections nav,hero-photo,manifesto,services,stats,faq,contact,footer
 ```
 
-That writes `index.html`, `core.css`, `motion.js`, `site.css`, `netlify.toml`.
-Then, in order:
+It prints every file it wrote and the audit command to run. Then, in order:
 
-1. **Rewrite every word.** Placeholder copy left in a page is a bug, and the
-   audit fails on it. Write the real thing: concrete nouns, no adjectives a spec
-   sheet would not use, no "elevate/seamless/unlock/transform".
-2. **Set the hero image**, then set `--accent-h` in `site.css` to the hue of the
-   subject's own material in that image (see `references/imagery.md`).
-3. **Add the signature** - one element this page is remembered by, drawn from the
-   subject's own world. One. Everything else stays quiet.
-4. **Audit the source**:
-   `node "${CLAUDE_PLUGIN_ROOT}/scripts/webdesign.mjs" audit <dir>` - must exit 0.
-5. **Then render it and look**:
-   `node "${CLAUDE_PLUGIN_ROOT}/scripts/webdesign.mjs" look <dir>`
-   This is not optional. It opens the page in a real headless browser at 1440
-   and 390, reports text overlapping text, content past the viewport, contrast
-   against the actual painted background, collapsed elements and broken images -
-   none of which the source can tell you - and writes a PNG at each width.
-   **Read the PNGs.** A layer covering half the composition passes every static
-   check ever written. The only way to know a page looks right is to look at it.
+1. **Rewrite every word.** Scaffold copy left on a page fails the audit. Write
+   concrete nouns; no "elevate/seamless/unlock/transform".
+2. **Set the hero image**, then `--accent-h` in `site.css` to the hue of the
+   subject's own material in it (`references/imagery.md`).
+3. **Add the signature**: one element from the subject's own world. One.
+4. **Audit**: `webdesign.mjs audit <dir>` must exit 0.
+5. **Render it and look**: `webdesign.mjs look <dir>` (1440 and 390, a real
+   browser: overlaps, overflow, contrast on the painted ground, broken images).
+   **Read the PNGs.** The only way to know a page looks right is to look.
 
-Other commands: `sections` lists the library, `add <id> --to <file>` inserts one,
-`serve <dir>` previews at localhost.
-
-**No Node, or a framework project?** Copy `assets/core.css` and `assets/motion.js`
-in as-is and take blocks out of `assets/sections.html` by hand. Wrap everything
-after the nav and before the footer in `<main id="main">` yourself, with the
-skip link, nav and footer outside it - the scaffolder does that, the
-section file cannot, and without it the skip link points at nothing and the page
-has no main landmark. Copy marked `[[like this]]` is scaffold copy: replace the whole piece,
-brackets included (the scaffolder strips them; the audit names any piece left). Everything works
-as plain files; the script only saves typing. In React/Astro, import `core.css`
-globally and translate the section markup to components - keep the class names.
+`sections` lists the library, `add <id> --to <file>` inserts one, `serve <dir>`
+previews. **No Node, or a framework?** Copy `assets/core.css` and
+`assets/motion.js` as they are, take blocks from `assets/sections.html`, and wrap
+everything between the nav and the footer in `<main id="main">` yourself (skip
+link, nav and footer outside it). Copy marked `[[like this]]` is scaffold copy:
+replace the whole piece, brackets included. In React or Astro, import
+`core.css` globally and keep the class names.
 
 ## The rules that do the work
 
-1. **One serif family, two optical sizes.** `opsz 72 wght 320` for display and
-   `opsz 16 wght 400` for body of the *same* family beats any pairing. Default is
-   Newsreader; `references/typography.md` names the faces that now read as
-   machine-made. Read it before choosing anything else.
-2. **Display line-height under 1.0, tracking at or under -0.024em.** These two
-   numbers separate editorial from blog more than the typeface does.
-3. **`max-width: 16ch` on the hero headline.** Forcing it onto three lines is what
-   creates the negative space. A one-line hero cannot look expensive.
-4. **Never `#fff`, never `#000`, never a zero-chroma grey.** Every neutral sits in
-   hue 60-95. One accent, visible on at most three elements in the whole page.
-5. **Leave real air, and vary it.** A template pads every section to 40px; this
-   one starts at 80 and runs to 160. But the tell is not the amount, it is the
-   sameness - a page where every section has identical padding reads as
-   generated. Give a dense table less and the section after a full-bleed image
-   more. `--section-y` is the floor and `.section--tight` exists for this.
-6. **Grain is always on.** `<div class="grain">` before `</body>`. If you can see
-   it, it is too strong.
-7. **Depth comes from layers, not effects.** One parallax relationship in the
-   hero and, where the subject is a made thing, one exploded view. Photographic
-   depth is `depth.js` planes cut from one photograph; a made thing taken apart
-   is `exploded.js`, which is three.js. Never hand-rolled SVG silhouettes.
-8. **Motion earns its place.** Reveal on enter (`.r`), the one parallax, nav
-   shrink, and the page's single orchestrated moment. Nothing else unless the
-   subject asks for it - scattered effects read as generated.
-9. **One italic accent phrase per page.** `Descent is gravity. *Ascent* is
-   arithmetic.` is the house voice and also the most imitated headline device
-   on the web right now. One is a voice. Four is a costume, and the audit fails
-   the build at two.
-10. **Never invent a specific.** No made-up customer count, uptime figure,
-   review score, licence number, years-in-business, testimonial or client logo.
-   If the real number is not available, cut the element or mark it plainly as a
-   placeholder. This is the fastest tell there is, and it is dishonest as well.
-11. **Copy is design material.** Write the words before you fine-tune the
-   spacing. If the copy would fit five hundred other products verbatim, it is
-   not copy yet.
-12. **Quality floor, unannounced.** One `<h1>`, visible keyboard focus, `alt` on
-   every image, `width`/`height` on every image, content visible with JS off,
-   reduced motion respected, readable at 360px.
-13. **A component has more states than the one you are looking at.** Hover,
-   focus-visible, active, disabled, loading, error, empty. Design the empty and
-   the loading state before the full one. `references/ui.md` has the catalogue
-   and `references/craft.md` has the rules; between them they are what stops a
-   beautiful page falling over the first time something goes wrong.
-14. **Use the library.** A hand-rolled gradient, scroll engine or exploded
-   view is the low-effort version of all three, and it looks it. `gradient.js`,
-   `depth.js` and `exploded.js` ship here; GSAP, three.js and anime.js v4 are
-   one script tag away. `references/stack.md` says which, for what.
-15. **Spend boldness once.** Chanel's rule: before shipping, remove one thing.
+1. **One serif family, two optical sizes** (`opsz 72 wght 320` display,
+   `opsz 16 wght 400` body; default Newsreader). `references/typography.md`
+   names the faces that now read as machine-made.
+2. **Display line-height under 1.0, tracking at or under -0.024em.**
+3. **`max-width: 16ch` on the hero headline**: three lines make the space.
+4. **Never `#fff`, `#000` or a zero-chroma grey.** Neutrals in hue 60-95; one
+   accent on at most three elements.
+5. **Real air, varied.** 80 to 160 px, never the same on every section.
+6. **Grain always on**, too faint to see.
+7. **Depth from layers, not effects**: one parallax relationship, and for a
+   made thing one exploded view (`depth.js`, `exploded.js`); never hand-rolled
+   SVG silhouettes.
+8. **Motion earns its place.** Reveal by content (`.r--mask` a headline,
+   `.r--settle` an image, body copy still; `references/motion.md`), the one
+   parallax, nav shrink, one orchestrated moment. A loop gets a pause button.
+9. **One italic accent phrase per page**; the audit fails at two.
+10. **Never invent a specific**: no made-up counts, scores, testimonials or
+    logos. Cut the element or mark it plainly as a placeholder.
+11. **Copy is design material.** If it fits five hundred other products, it is
+    not copy yet.
+12. **Quality floor, unannounced**: one `<h1>`, visible focus, `alt` and
+    `width`/`height` on every image, content visible without JS, reduced motion
+    respected, readable at 360 px.
+13. **Every state**: hover, focus-visible, active, disabled, loading, error,
+    empty (`references/ui.md`, `references/craft.md`).
+14. **Use the library**: `gradient.js`, `depth.js`, `sky.js`, `exploded.js` ship
+    here; GSAP, three.js and anime.js are one script tag away
+    (`references/stack.md`, including the tools by need).
+15. **Spend boldness once.** Before shipping, remove one thing.
 
-**The preset is a choice, not a default.** Warm off-white plus a serif is now
-itself a recognised machine-made look. What separates this from that is
-everything around it - real optical sizes, the asymmetric grid, varied section
-rhythm, hairlines derived from the ink, an accent taken from the photograph. If
-the subject suits night or photography, use `ink` or `cinema` instead. Shipping
-`bone` because it is first in the list is how you build the thing you were
-avoiding. `references/tells.md` has the full catalogue and the current data.
+**The preset is a choice.** Warm off-white plus a serif is itself a recognised
+machine-made look; what separates this is optical sizes, the asymmetric grid,
+varied rhythm, ink-derived hairlines, an accent from the photograph. Use `ink`
+or `cinema` when the subject suits night or photography (`references/tells.md`).
 
 ## What is in the box
 
-`assets/core.css` is the chassis - tokens, reset, type scale, grid, every
-section's components, grain, reveals. **Never edit it inside a project** - put
-project choices in `site.css`, which loads after. `assets/motion.js` is
-dependency-free, one rAF loop, respects `prefers-reduced-motion`, degrades to
-a fully visible page: `.r`, `data-px`, `data-tilt`, `data-count`,
-`data-magnetic`, `data-split`, nav shrink, scroll progress. A list of `.r`
-items staggers itself with `class="stagger"` on the list (`sibling-index()`,
-`references/motion.md`), never a JS loop writing `--i`; the `.r-2` ...
-`.r-5` classes stay on the items as the older-browser fallback.
-
-Presets (token overrides only): `fable` the launch-page look - pair it with
-`hero-fable` for the WebGL sky, staggered serif title and dot-leader contents;
-`bone` warm paper, `ink` near-black throughout,
-`cinema` photography carries the page.
-
-Sections: `nav`, `hero-photo`, `hero-split`, `hero-layered`, `index`,
-`manifesto`, `blueprint`, `exploded`, `stats`, `cards-rail`, `services`, `steps`,
-`quote`, `spec`, `gallery`, `faq`, `contact`, `cta`, `footer`.
-
-Choose by register, not by taste:
+`assets/core.css` is the chassis (tokens, type, grid, components, grain,
+reveals, page transitions); **never edit it in a project**, put choices in
+`site.css`. `assets/motion.js`: `.r` reveals, `data-px`, `data-tilt`,
+`data-count` (counts up only beside a cited source), `data-magnetic`,
+`data-split`, nav shrink, `[data-pause]`. Presets: `fable` (with `hero-fable`),
+`bone`, `ink`, `cinema`. Choose sections by register:
 
 | Register | Hero | Middle | Close |
 |---|---|---|---|
@@ -254,136 +169,40 @@ Choose by register, not by taste:
 | A service | `hero-photo` | `services`, `steps`, `stats`, `faq` | `contact` |
 | An argument | `hero-photo` + `index` | `manifesto`, `quote` | `footer` |
 
-## The page is a photograph
-
-The reference sites are photographic; not one is a drawing. **Default to
-photography.** Flat SVG silhouettes read as low-effort next to a photograph,
-so hand-drawn SVG is for line art (the blueprint), small occluders, and
-nothing else. **One photographic moment per page**, full-bleed, the craft in
-the type on top; a second picture is framed as a figure, never bled. **Never
-composite a cut-out that `cut` refused** - it exits 3 and says why, and a
-subject with a razor edge under it is a collage. Then cut the photograph into
-planes:
-
-```bash
-node "${CLAUDE_PLUGIN_ROOT}/scripts/webdesign.mjs" cut img/house.jpg --out img
-# -> house-fg.png (subject, transparent), house-bg.jpg (hole dissolved), house-mask.png
-```
-
-`cut` runs rembg locally, no service, no key (`python -m pip install "rembg[cpu]"`
-once). The composition - sky as the back plane, cut-outs at different rates,
-one grade across them - and the sourcing, licences and grade recipes are in
-`references/imagery.md`.
-
-## The launch page, measured
-
-`references/fable.md` carries the launch page as numbers read from the
-browser with `inspect`, and the screenshot readings they corrected.
-
-## Layered heroes, and the exploded view
-
-A layered hero stacks photographic planes in one grid cell (`.layers`), a
-different `data-px` each. Five things decide whether it reads as depth: bands
-not full-height planes, each lifted clear of the one in front, aerial
-perspective, two faces per object, the sky's bright band left visible; DOM
-order decides occlusion. Rates and reasons: "Layered parallax" in
-`references/motion.md`.
-
-**A made thing being taken apart is real 3D.** `exploded.js` builds it from
-parts named in the markup, each with a physical material, or pulls a GLB's
-named parts apart, the numbered list as fallback. Describe the actual object;
-six anonymous slabs are the low-effort version. Part syntax, projection math
-and the turnable-object path: `references/motion.md`.
-
-## The engines that ship here
-
-Three runtimes beyond `motion.js`, all zero-dependency, all copied in by the
-scaffolder: `gradient.js` (animated WebGL mesh gradient,
-`<canvas class="gradient" data-gradient="...">`), `depth.js` (three-plane
-parallax against scroll and pointer, blur and haze from the same signed
-`data-depth`, single-photo 3D from a depth map), `sky.js` (the launch-page
-WebGL sky re-lit by three palette dots; `hero-fable` uses it) and
-`exploded.js` (any made thing taken apart, in three.js). Use them before
-anything heavier; `references/stack.md` describes each and names the library
-for every job beyond them.
-
-## Reach for tools before hand-rolling
-
-Hand-drawn SVG where a photograph exists, a bespoke scroll engine where GSAP
-exists, a guessed layout where a render exists - each is the low-effort
-version. The tool for each need is the "Tools, by need" table in
-`references/stack.md`: `look <url>` to see what a site does, `inspect <url>
---selector "h1,p,a"` for what it sets, `awards --pick <register>` then
-`study --awards "<technique>"`, `study --list editorial|object|cinema|product`,
-`assets textures|hdri|gen`, `blender glb` then `data-model`, `cut`, `tools`,
-GSAP for pinning and scrubbing, three.js or `<model-viewer>` for an object the
-visitor must turn, Lenis for whole-page inertia, the Figma MCP tools when
-attached, and `look` again to know whether it looks right.
+**Default to photography**: one full-bleed photographic moment, a second
+picture framed as a figure; `cut` makes planes from a photograph and exits 3
+when it refuses a cut-out (never composite that one). `references/imagery.md`
+has sourcing, licences and grades; `references/motion.md` the layered hero and
+the exploded view; `references/fable.md` the launch page measured.
 
 ## References
 
-Read one only when you need it. Each is self-contained.
+Read one only when you need it.
 
 | File | When |
 |---|---|
-| `references/pipeline.md` | **First.** Nine stages, the gates, the route decision at stage 3 |
-| `references/awards.md` | The corpus, the technique taxonomy, what jurors score, what reads as dated |
-| `references/skill-packs.md` | Third-party packs: which owns what when installed, the component-versus-page line |
-| `references/ui.md` | The component catalogue: control, states, accessible pattern, the mistake a junior ships |
-| `references/craft.md` | What a senior does unasked: states as a system, accessibility, responsive, performance, content, tokens |
-| `references/plugins.md` | The rest of the bench: the `frontend-design` handshake, detection, Claude Design, handoffs |
-| `references/three.md` | Real-time 3D on a scroll page: import map, materials, light, the one-rAF scrub, callouts, 60fps |
-| `references/blender.md` | When Blender is and is not the answer; headless bpy, named parts, GLB, baking, sequences |
-| `references/image-gen.md` | Generated imagery, CC0 PBR sets, HDRI lighting, the limits of a relit generated image |
-| `references/briefs/dive-watch.md` | The exemplar brief and worked timeline; run it as a rehearsal |
-| `references/fable-showcase.md` | The Fable 5.1 launch page measured from its bundles, what could not be evidenced, the recipe |
-| `references/fable.md` | The launch page torn down: the WebGL hero, the barycentric blend, the post chain, what it wastes |
-| `references/stack.md` | Which library for which job; the engines that ship here; the tools by need; GSAP, three.js, anime.js v4 |
-| `references/typography.md` | Faces, the fluid scale, tracking and line-height, the OKLCH palette, the accent, hairlines |
-| `references/motion.md` | Scroll-driven CSS, layered parallax, the exploded view, three.js and callouts, sequences, GSAP, Lenis |
-| `references/imagery.md` | Sourcing and licensing, grading, duotone, scrims, gradient skies, grain, technical drawing |
-| `references/sections.md` | The grid, spacing, dot leaders, glass, forms, archetypes the library lacks |
-| `references/tells.md` | What gives a generated page away, and what to do instead |
-| `references/games.md` | Game sites and start screens: two exhibits measured, thirteen more, the checkable tells; then in-game rendering, shipping a networked game, what playing it caught, and the play pass |
-| `references/apps.md` | Apps: shipped references with first screen, type, palette, navigation, motion, empty states, copy; the app tells |
-| `references/copy-tells.md` | Copy that reads as generated in 2026 - vocabulary, sentence shapes, microcopy - and what human copy does |
-| `references/image-tells.md` | What gives a generated picture away, the prompt template, the post-processing order, when to photograph |
-| `references/graphic-design.md` | A brand as a system, one icon set, a job for every colour (Radix's 12 steps), WCAG 2.2 plus APCA Lc 75 on dark grounds, composition |
-| `references/checklist.md` | The pre-ship pass, and what the audit cannot see |
-| `references/video.md` | Making a video from references: `video scene`, a frame-exact `ufsFrame(t)`, `video render --draft`, then the final |
-| `references/video-tells.md` | What gives a video away as machine-made - in the frame and across the edit - and the check before a final render |
-| `references/motion-graphics.md` | A company motion piece (explainer, launch film, brand reel): stages, copy length, type on screen, `video lint`, and when to use Remotion, HyperFrames or Manim instead |
-| `references/editing.md` | Editing footage someone shot: the order a cut is decided in, J and L cuts, loudness and caption targets, and `edit probe/scenes/transcribe/captions/cut/deliver` |
-
-The audit enforces mechanically most of what is in `tells.md`, so you do not
-have to carry it in your head - build, then run it.
+| `references/pipeline.md` | **First.** Nine stages and their gates |
+| `references/awards.md` | The corpus, techniques, what jurors score, 2026 case studies |
+| `references/skill-packs.md`, `references/plugins.md` | Other packs and plugins, who owns what |
+| `references/ui.md`, `references/craft.md` | Components and their states; what a senior does unasked |
+| `references/three.md`, `references/blender.md` | Real-time 3D; when Blender is the answer |
+| `references/image-gen.md`, `references/imagery.md` | Generated and photographic imagery |
+| `references/stack.md` | Which library for which job, pinned versions, the tools by need |
+| `references/typography.md`, `references/graphic-design.md` | Type; identity, icons, colour roles, contrast |
+| `references/motion.md` | Reveals, page transitions, springs, parallax, the exploded view |
+| `references/sections.md` | The grid, spacing, archetypes the library lacks |
+| `references/tells.md`, `references/copy-tells.md`, `references/image-tells.md` | What gives generated work away |
+| `references/games.md`, `references/apps.md` | Games and apps |
+| `references/video.md`, `references/video-tells.md`, `references/motion-graphics.md`, `references/editing.md` | Video: rendering, tells, company pieces, editing footage |
+| `references/fable.md`, `references/fable-showcase.md`, `references/briefs/dive-watch.md` | The launch page measured; the exemplar brief |
+| `references/checklist.md`, `references/security.md` | Before it ships |
 
 ## Before you call it done
 
-Run the audit; it must exit 0. Then walk `references/checklist.md`. Then look at
-the page at 360px and at 1600px - if you can drive a browser, do, and actually
-look at it. Then write your two sentences and stop.
-
-## Security, before it ships
-
-Run `node scripts/webdesign.mjs security <dir>` on the build directory before
-any deploy; `references/security.md` says what each finding means. It reads
-source for what must never leave a laptop (keys, `.env`, a served `.git`,
-source maps), forms sending personal data over GET or http, unpinned CDN
-scripts, the header configuration and the quiet disclosures, and exits 1 on
-high only. Two rules: a secret is "remove and rotate", never "remove"; and
-after the deploy the three curl checks in the reference are what tell you the
-headers arrived and `/.git/HEAD` is a 404 - never call a site secure because
-the command printed nothing.
-
-## One command for all of it
-
-`node scripts/webdesign.mjs verify <dir|url> [--design REF] [--json]` runs the
-audit, one browser pass covering rendering and the quality budgets, the
-security scan and, with a design reference, the parity check, then reports
-one verdict: findings by severity (`error`, `warning`, `low`, `note`) and one
-exit code, 1 exactly when audit, render/quality or security would have exited
-1 alone. Use it as the single before-you-call-it-done check; `--json` gives
-the same result as data. A URL target has no source, so its audit and
-security sections come back `skipped`, as does a design reference that cannot
-be read or rendered - never a verdict from a check that never ran.
+`webdesign.mjs verify <dir|url>` runs the audit, the render and quality pass,
+the security scan and, with `--design`, the parity check, and gives one
+verdict (`references/checklist.md`, "One command for all of it"). Run
+`webdesign.mjs security <dir>` before any deploy: a secret is "remove and
+rotate", and after the deploy the curl checks in `references/security.md` are
+what prove the headers arrived. Then walk `references/checklist.md`, look at the
+page at 360 and 1600 px, write your two sentences and stop.

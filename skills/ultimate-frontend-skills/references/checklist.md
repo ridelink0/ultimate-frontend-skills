@@ -118,3 +118,24 @@ Ask the two questions that matter:
 
 Two plain sentences and the file paths. No palette, no type scale, no rationale,
 no design vocabulary. Build it, hand it over, stop.
+
+## One command for all of it
+
+`node scripts/webdesign.mjs verify <dir|url> [--design REF] [--json]` runs the
+audit, one browser pass covering rendering and the quality budgets, the
+security scan and, with a design reference, the parity check, then reports one
+verdict: findings by severity (`error`, `warning`, `low`, `note`), each named
+once with the widths and motion modes it was seen at, and one exit code, 1
+exactly when audit, render/quality or security would have exited 1 alone.
+`--json` gives the same result as data. A URL target has no source, so its
+audit and security sections come back `skipped`, as does a design reference
+that cannot be read or rendered: never a verdict from a check that never ran.
+
+Security before any deploy: `node scripts/webdesign.mjs security <dir>` reads
+the source for what must never leave a laptop (keys, `.env`, a served `.git`,
+source maps), personal data sent over GET or http, unpinned CDN scripts, the
+header configuration and quiet disclosures, and exits 1 on high only. A secret
+is "remove and rotate", never "remove". After the deploy, the curl checks in
+`references/security.md` are what tell you the headers arrived and
+`/.git/HEAD` is a 404: never call a site secure because the command printed
+nothing.
