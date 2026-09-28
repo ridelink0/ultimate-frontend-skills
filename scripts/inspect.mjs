@@ -471,7 +471,7 @@ export const CANVAS_INIT = `(() => {
 /* Runs inside the page. Everything it needs must be self-contained. */
 export const PROBE = `(() => {
   const out = { overlaps: [], overflow: [], contrast: [], collapsed: [], broken: [],
-                tiny: [], offscreen: [], imageCandidates: [], brokenWords: [], stats: {} };
+                tiny: [], offscreen: [], imageCandidates: [], brokenWords: [], apca: [], stats: {} };
   const vw = innerWidth, vh = innerHeight;
 
   const vis = (el) => {
@@ -532,6 +532,20 @@ export const PROBE = `(() => {
   const ratio = (a, b) => {
     const l1 = lum(a), l2 = lum(b);
     return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+  };
+  // APCA (apca-w3 0.1.9, the SA98G constants), in the page and in Node:
+  // lightness contrast Lc, positive for dark text on a light ground and
+  // negative for light on dark. WCAG 3 has not chosen its contrast method
+  // (Working Draft, 2026-09-10); the house rule is WCAG 2.2 AA, which is
+  // normative, plus Lc 75 for body text on a dark ground, where WCAG 2's
+  // ratio overstates the contrast of dark colours.
+  const apcaY = (c) => 0.2126729 * Math.pow(c.r / 255, 2.4) + 0.7151522 * Math.pow(c.g / 255, 2.4) + 0.0721750 * Math.pow(c.b / 255, 2.4);
+  const apcaLc = (fg, bg) => {
+    const clamp = (y) => (y > 0.022 ? y : y + Math.pow(0.022 - y, 1.414));
+    const t = clamp(apcaY(fg)), b = clamp(apcaY(bg));
+    if (Math.abs(b - t) < 0.0005) return 0;
+    if (b > t) { const s = (Math.pow(b, 0.56) - Math.pow(t, 0.57)) * 1.14; return s < 0.1 ? 0 : (s - 0.027) * 100; }
+    const s = (Math.pow(b, 0.65) - Math.pow(t, 0.62)) * 1.14; return s > -0.1 ? 0 : (s + 0.027) * 100;
   };
   // Returns the solid colour actually behind the element, or null when we
   // genuinely cannot tell - a background image, or a positioned sibling layer
@@ -713,8 +727,13 @@ export const PROBE = `(() => {
     const bg = bgOf(el, layer);
     if (bg) {
       const cr = ratio(fg, bg);
+      const lc = Math.round(apcaLc(fg, bg));
       if (cr < need)
-        out.contrast.push({ el: label(el), ratio: +cr.toFixed(2), need, size: Math.round(size), method: 'solid' });
+        out.contrast.push({ el: label(el), ratio: +cr.toFixed(2), need, size: Math.round(size), method: 'solid', lc });
+      // Body-size light text on a dark ground that passes WCAG 2 and still
+      // falls short of Lc 75.
+      else if (!large && lc < 0 && Math.abs(lc) < 75)
+        out.apca.push({ el: label(el), ratio: +cr.toFixed(2), lc, size: Math.round(size) });
       continue;
     }
     // Only a box at least partly on screen is worth a pixel sample, and only
@@ -740,6 +759,8 @@ export const PROBE = `(() => {
   }
   out.contrast.sort((a, b) => a.ratio - b.ratio);
   out.contrast = out.contrast.slice(0, 10);
+  out.apca.sort((a, b) => Math.abs(a.lc) - Math.abs(b.lc));
+  out.apca = out.apca.slice(0, 8);
   out.imageCandidates = out.imageCandidates.slice(0, 20);
 
   // A display heading broken inside a word. core.css sets overflow-wrap:
@@ -915,6 +936,18 @@ const TRIM = 0.25;
 // data, so the candidate is dropped and nothing is reported.
 const MIXED_SD = 0.16;
 
+/* APCA Lc on the Node side, for grounds read from the screenshot. The same
+   code as the in-page apcaLc in PROBE (apca-w3 0.1.9, SA98G). */
+export function apcaLc(fg, bg) {
+  const y = (c) => 0.2126729 * Math.pow(c.r / 255, 2.4) + 0.7151522 * Math.pow(c.g / 255, 2.4) + 0.0721750 * Math.pow(c.b / 255, 2.4);
+  const clamp = (v) => (v > 0.022 ? v : v + Math.pow(0.022 - v, 1.414));
+  const t = clamp(y(fg)), b = clamp(y(bg));
+  if (Math.abs(b - t) < 0.0005) return 0;
+  if (b > t) { const s = (Math.pow(b, 0.56) - Math.pow(t, 0.57)) * 1.14; return s < 0.1 ? 0 : (s - 0.027) * 100; }
+  const s = (Math.pow(b, 0.65) - Math.pow(t, 0.62)) * 1.14;
+  return s > -0.1 ? 0 : (s + 0.027) * 100;
+}
+
 const meanColor = (list) => ({
   r: Math.round(list.reduce((a, p) => a + p.r, 0) / list.length),
   g: Math.round(list.reduce((a, p) => a + p.g, 0) / list.length),
@@ -957,7 +990,7 @@ export function sampleImageContrast(png, candidates) {
     const byRisk = ground.slice().sort((a, b) => contrastRatio(cand.fg, a) - contrastRatio(cand.fg, b));
     const worstRatio = contrastRatio(cand.fg, meanColor(byRisk.slice(0, Math.max(1, Math.round(ground.length * 0.1)))));
     if (avgRatio < cand.need)
-      found.push({ el: cand.el, ratio: +avgRatio.toFixed(2), worstRatio: +worstRatio.toFixed(2), need: cand.need, size: cand.size, method: 'photo', ground: cand.ground || 'page' });
+      found.push({ el: cand.el, ratio: +avgRatio.toFixed(2), worstRatio: +worstRatio.toFixed(2), need: cand.need, size: cand.size, method: 'photo', ground: cand.ground || 'page', lc: Math.round(apcaLc(cand.fg, meanColor(ground))) });
   }
   return found;
 }
@@ -1231,7 +1264,12 @@ export function formatReport(results, { missed = null } = {}) {
       if (severe) errors++; else warns++;
       const behind = { image: 'photo', canvas: 'canvas', gradient: 'gradient' }[c.ground] || 'page';
       const via = c.method === 'photo' ? ` [sampled from the ${behind} behind it` + (c.worstRatio != null ? `, ${c.worstRatio}:1 at its worst` : '') + ']' : ' [solid background]';
-      lines.push(`  ${severe ? 'ERROR' : 'warn '} contrast ${c.ratio}:1 (needs ${c.need}) at ${c.size}px: ${c.el}${via}`);
+      const lc = Number.isFinite(c.lc) ? `, APCA Lc ${c.lc}` : '';
+      lines.push(`  ${severe ? 'ERROR' : 'warn '} contrast ${c.ratio}:1${lc} (needs ${c.need}) at ${c.size}px: ${c.el}${via}`);
+    }
+    for (const a of r.apca || []) {
+      warns++;
+      lines.push(`  warn  APCA Lc ${a.lc} for body text on a dark ground (the house rule asks for 75) at ${a.size}px, though WCAG passes it at ${a.ratio}:1: ${a.el}`);
     }
     for (const t of r.tiny) { warns++; lines.push(`  warn  tap target ${t.w}x${t.h}px (needs 24): ${t.el}`); }
     for (const c of r.clipped || []) { warns++; lines.push(`  warn  control cut short, ${c.shown}px of the ${c.needs}px it needs: ${c.el}`); }

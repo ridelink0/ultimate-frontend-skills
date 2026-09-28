@@ -8,7 +8,7 @@ import { once } from 'node:events';
 import { spawn, spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { debugSite } from '../scripts/debug.mjs';
-import { Session, findBrowser, inspect, decodePNG, sampleImageContrast, readPortFile } from '../scripts/inspect.mjs';
+import { Session, findBrowser, inspect, decodePNG, sampleImageContrast, readPortFile, apcaLc, formatReport } from '../scripts/inspect.mjs';
 import { launch, closeBrowser, removeProfile, sweepProfiles, flushProfiles, PROFILE_PREFIX, LAUNCH_FLAGS, LAUNCH_DEADLINE_MS } from '../scripts/inspect.mjs';
 import { writeReview } from '../scripts/review.mjs';
 import { runVerify, formatVerify } from '../scripts/verify.mjs';
@@ -599,4 +599,36 @@ test('a browser that takes longer than 15 s to open its port is waited for, and 
       assert.deepEqual(readdirSync(own), [], 'a launch that failed left its profile behind');
     });
   } finally { rmSync(own, { recursive: true, force: true }); }
+});
+
+/* APCA beside WCAG (references/graphic-design.md, "Contrast"). The expected
+   values are what the reference implementation, apca-w3 0.1.9's
+   APCAcontrast(sRGBtoY(text), sRGBtoY(background)), returns for these pairs;
+   the first two are the pairs its README uses. */
+test('APCA Lc matches the reference implementation on its published pairs', () => {
+  const c = ([r, g, b]) => ({ r, g, b });
+  for (const [text, bg, want] of [
+    [[136, 136, 136], [255, 255, 255], 63.056469930209424], [[255, 255, 255], [136, 136, 136], -68.54146436644962],
+    [[0, 0, 0], [170, 170, 170], 58.146262578561334], [[170, 170, 170], [0, 0, 0], -56.24113336839742],
+    [[17, 34, 51], [221, 238, 255], 91.66830811481631], [[221, 238, 255], [17, 34, 51], -93.06770049484275],
+  ]) assert.ok(Math.abs(apcaLc(c(text), c(bg)) - want) < 1e-9, JSON.stringify([text, bg]));
+  assert.equal(apcaLc(c([120, 120, 120]), c([120, 120, 120])), 0);
+});
+
+test('light body text on a dark ground that passes WCAG and falls under Lc 75 is reported with both numbers', { skip: !findBrowser(), timeout: 90000 }, async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'ufs-apca-'));
+  writeFileSync(join(dir, 'index.html'), '<!doctype html><html lang="en"><meta charset="utf-8"><title>a</title>'
+    + '<body style="margin:0;background:#111;font:16px system-ui"><main><p style="color:#9a9a9a;padding:20px">Grey body copy on a near-black ground.</p>'
+    + '<p style="color:#f2efe7;padding:20px">Bone body copy on the same ground.</p><h1 style="color:#9a9a9a;font-size:48px">Large grey</h1></main></body></html>');
+  const server = startServer(dir, 0);
+  await once(server, 'listening');
+  try {
+    const results = await inspect('http://127.0.0.1:' + server.address().port + '/', { widths: [900], wait: 200 });
+    const text = formatReport(results).text;
+    const grey = text.split('\n').filter((l) => /APCA Lc/.test(l) && /Grey body copy/.test(l));
+    assert.equal(grey.length, 1, text);
+    assert.match(grey[0], /warn {2}APCA Lc -\d+ for body text on a dark ground .* WCAG passes it at \d+(\.\d+)?:1/);
+    assert.doesNotMatch(text, /APCA Lc[^\n]*Bone body copy/, 'bone on near-black clears Lc 75');
+    assert.doesNotMatch(text, /APCA Lc[^\n]*Large grey/, 'the Lc 75 rule is for body text');
+  } finally { await new Promise((r) => server.close(r)); rmSync(dir, { recursive: true, force: true }); }
 });

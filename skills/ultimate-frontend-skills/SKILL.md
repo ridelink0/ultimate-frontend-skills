@@ -348,6 +348,7 @@ Read one only when you need it. Each is self-contained.
 | `references/apps.md` | Apps: shipped references with first screen, type, palette, navigation, motion, empty states, copy; the app tells |
 | `references/copy-tells.md` | Copy that reads as generated in 2026 - vocabulary, sentence shapes, microcopy - and what human copy does |
 | `references/image-tells.md` | What gives a generated picture away, the prompt template, the post-processing order, when to photograph |
+| `references/graphic-design.md` | A brand as a system, one icon set, a job for every colour (Radix's 12 steps), WCAG 2.2 plus APCA Lc 75 on dark grounds, composition |
 | `references/checklist.md` | The pre-ship pass, and what the audit cannot see |
 | `references/video.md` | Making a video from references: `video scene`, a frame-exact `ufsFrame(t)`, `video render --draft`, then the final |
 | `references/video-tells.md` | What gives a video away as machine-made - in the frame and across the edit - and the check before a final render |

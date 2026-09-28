@@ -44,6 +44,7 @@ const defectKey = (f) => f.severity + '|' + f.text
   .replace(/https?:\/\/(127\.0\.0\.1|localhost):\d+/g, 'local')
   .replace(/\d+(\.\d+)?:1/g, '#:1')
   .replace(/\bat y=\d+/g, 'at y=#')
+  .replace(/Lc -?\d+/g, 'Lc #')
   .replace(/\b\d+(\.\d+)?(px|%| characters| ms| fps| KB)/g, '#$2');
 const ratioOf = (f) => { const m = f.text.match(/contrast (\d+(?:\.\d+)?):1/); return m ? Number(m[1]) : Infinity; };
 

@@ -166,6 +166,13 @@ you use it you must restate `wght` there too - which is why the `.it` rule in
 Display weight is **300-400, never 600+**. Presence comes from size and negative
 space.
 
+**Grade, where the face has it.** `GRAD` is a custom axis (uppercase, set
+through `font-variation-settings`) that changes a face's weight "without
+changing text layout" (MDN, variable fonts guide). Use it, not `wght`, for a
+hover state or for the slight thinning light text needs on a dark ground:
+nothing reflows. Optical size is registered and interoperable (OpenType axis
+registry): two fonts at `opsz 20` are both meant for text set at 20 points.
+
 ## Wrapping and optical alignment
 
 ```css
@@ -238,7 +245,10 @@ Measured contrast in the `core.css` palette:
 | `--bone-100` on `--ink-950` | 18:1 | too hot for running copy |
 
 Beyond ~12:1 the extra contrast buys no legibility and starts producing halation
-on serif hairlines. `#000` is also a dead pixel on OLED, so scroll motion smears
+on serif hairlines. On a dark ground, WCAG's ratio flatters dark colours: the
+house rule adds APCA Lc 75 for body text there, and the render check reports
+both. Every colour's job (ground, surface, border, solid, text) and the
+contrast policy in full are in `references/graphic-design.md`. `#000` is also a dead pixel on OLED, so scroll motion smears
 against it.
 
 ### Deriving the accent from a photograph
