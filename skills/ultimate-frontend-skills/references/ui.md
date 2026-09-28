@@ -4,6 +4,50 @@ Which element to build a thing from, what states it has, what the accessible nam
 has to be, and what a junior ships that a senior rejects. Read the row you need
 mid-build. Do not read this file end to end.
 
+<!-- contents: written by scripts/contents.mjs -->
+
+**Contents.** Read the section you need; search the file for its heading.
+
+- What the chassis already ships
+- Decision one: button or link
+- Decision two: modal or a page
+- The one colour the system is missing
+- Navigation
+  - Primary
+  - Secondary and in-page
+  - Mega menu
+  - Mobile navigation
+  - Breadcrumb
+  - Pagination, load more, infinite scroll
+- Forms
+  - Which control
+  - Labels, placeholders, help, required
+  - Validation timing
+  - Errors
+  - Autofill
+  - Multi-step
+  - Select
+  - File upload
+  - Date and time
+  - Search, filters, faceted search
+- Content
+  - Cards and lists
+  - Tables and dense data
+  - Tabs, accordion, disclosure
+- Overlays and messages
+  - Drawer, popover, tooltip
+  - Toasts, banners, inline alerts
+- The four states everyone ships as one
+- Sections that sell
+  - Pricing and comparison
+  - Testimonials and social proof
+- Dashboards
+- Onboarding and progressive disclosure
+- Newly native in 2026: what you can delete
+- UNVERIFIED, collected
+
+<!-- /contents -->
+
 Scope, so nothing is written twice:
 
 | For | Read |

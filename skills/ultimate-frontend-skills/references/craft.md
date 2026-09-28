@@ -4,6 +4,65 @@ Six things that separate a page that looks finished from a page that is
 finished. None of them are visible in a screenshot, which is why they get
 skipped.
 
+<!-- contents: written by scripts/contents.mjs -->
+
+**Contents.** Read the section you need; search the file for its heading.
+
+- 1. Interaction states as a system
+  - The matrix
+  - The rules
+  - Hover is conditional
+  - The loading button, written out
+  - The error state, extending the house field
+  - When not to build the matrix
+  - What a junior ships and a senior rejects
+- 2. Accessibility past the checklist
+  - WCAG 2.2, named correctly
+  - Focus management: the two moments
+  - Keyboard traps, and the thing that is not one
+  - Accessible name computation, in precedence order
+  - Live regions, and when they are noise
+  - Motion sensitivity beyond the media query
+  - What automated checkers cannot see
+  - When not to do all of this
+  - What a junior ships and a senior rejects
+- 3. Responsive strategy
+  - Container queries against media queries
+  - Fluid type and the zoom trap
+  - The widths that matter
+  - The missing mobile nav
+  - Thumb zones, honestly
+  - Target sizing, put together
+  - Mobile first is a build order
+  - What a junior ships and a senior rejects
+- 4. Performance as a design constraint
+  - Core Web Vitals as they stand
+  - LCP is a design decision first
+  - CLS is almost entirely design
+  - Fonts: the one table
+  - Budgets
+  - The seven the designer owns
+  - When not to optimise
+  - What a junior ships and a senior rejects
+- 5. Content design
+  - Button labels
+  - Error messages
+  - Empty states
+  - Confirmations
+  - The honesty rule, applied to small print
+  - When not to write any of this
+  - What a junior ships and a senior rejects
+- 6. Tokens and systems thinking
+  - The three layers
+  - The interchange format, if it ever matters
+  - Naming rules
+  - When a system is premature
+  - Staying consistent on one page without building a system
+  - What a junior ships and a senior rejects
+- Sources
+
+<!-- /contents -->
+
 Read this when the composition is settled and the page has to survive contact
 with a keyboard, a phone, a slow connection and a real user. It does not repeat
 the files that already own their subjects:

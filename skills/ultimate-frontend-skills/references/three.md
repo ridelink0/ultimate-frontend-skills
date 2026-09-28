@@ -6,6 +6,49 @@ three@0.186.0. GPU timings are ANGLE (NVIDIA GeForce RTX 3060, Direct3D11) in
 headless Chromium via `EXT_disjoint_timer_query_webgl2`, median of 24 queries,
 disjoint frames discarded.
 
+<!-- contents: written by scripts/contents.mjs -->
+
+**Contents.** Read the section you need; search the file for its heading.
+
+- 1. Should this be 3D at all
+- 2. The import map that works
+  - The second file: three is not one module
+  - Rules for the specifier
+  - Migration notes that change how a page looks
+  - WebGPU: measured, and still no
+- 3. Lighting, and materials that read as metal
+  - The cheapest convincing studio: PMREM from RoomEnvironment
+  - What each layer costs
+  - The recipes
+  - The recompile trap
+- 4. The scroll architecture
+  - What is actually invertible
+  - Which engine
+  - Lenis, if the page has inertia as a brand decision
+  - The pattern, in full
+- 5. Choreography
+  - Easing, sampled
+  - Overlap
+  - Holds and anticipation
+- 6. Wireframe to solid
+  - The dissolve, which is the transition worth building
+- 7. HTML callouts on 3D points
+  - The projection, and the guard
+  - CSS2DRenderer, and why not
+  - Occlusion, and its real cost
+  - Making them enter and leave with the choreography
+- 8. 60 fps, in cost order
+- 9. Mobile, and the fallback
+  - DPR clamping is the whole game
+  - Adapt the choreography, do not just shrink it
+  - The rest of the mobile list
+  - When to ship the sequence instead
+- 10. Measuring it
+- 11. Field notes from HQ's Lab (2026-09-24)
+- 12. The hand-drawn look: the light whitens the texture (2026-09-25)
+
+<!-- /contents -->
+
 ## 1. Should this be 3D at all
 
 Six questions. Two "no" answers and you are building a slower version of a page

@@ -2,6 +2,45 @@
 
 Research pass over two named exhibits plus 13 additional sites, all fetched/rendered directly (curl for CSS/JS/HTML, `webdesign.mjs` for screenshots). Unconfirmed claims are marked UNVERIFIED inline; everything else was pulled from a live response in this session.
 
+<!-- contents: written by scripts/contents.mjs -->
+
+**Contents.** Read the section you need; search the file for its heading.
+
+- Exhibit 1 — HUMAN-LOOKING: Doodle District
+  - Fonts & colour (from `:root` and `body`)
+  - Structural craft (verbatim CSS, the actual tells)
+  - Verbatim menu copy
+  - Verbatim in-game / HUD copy (from JS strings)
+  - World behind the card
+- Exhibit 2 — AI-LOOKING: Whiteout
+  - Credits (verbatim, from the page's own footer — the single most load-bearing primary source in this whole study)
+  - Fonts & colour
+  - Verbatim start-screen structure (from the live HTML)
+  - Other screens (verbatim)
+- Additional corpus (13 sites across three groups)
+  - Group A — human-made / indie / distinctive
+  - Group B — AI-generated (all `*.chatgpt.site`, OpenAI's own hosting domain for AI-built apps)
+  - Group C — ordinary studio / publisher pages
+- Synthesis
+  - The short form
+  - Checkable tells that mark an AI-generated game start screen
+  - What human-made ones do instead
+  - Studio/publisher marketing page vs. an in-game start screen — the third pole
+- In-game rendering: five mistakes Doodle Voyager made (2026-09-24)
+- Shipping a networked game: five more mistakes Doodle Voyager made (2026-09-25)
+- Playing it: what Gev's review caught that every check passed (2026-09-25)
+- Before you call a game done: the play pass
+- Feel, input, engines and portals (2026-09-28 research)
+  - Feel
+  - Accessibility
+  - Input and platform (MDN)
+  - Engines
+  - Portals
+- URLs referenced
+- From the 2026-09-28 research
+
+<!-- /contents -->
+
 Tools used: `curl` against CSS/JS/HTML endpoints; `node C:\Users\OWNER\cinematic-web-design\scripts\webdesign.mjs debug|look|study <url>` for renders. `debug`/`look` timed out on both `whiteout.plgb.chatgpt.site` (three.js scene never fired a load event inside the timeout) and a few other heavy WebGL sites — noted per-site below. Where render failed, the site's own static HTML/CSS was still fetched with curl, which is what actually carries a start screen's copy and structure (canvas paints the 3D scene, not the UI overlay), so the analysis is not compromised.
 
 ---

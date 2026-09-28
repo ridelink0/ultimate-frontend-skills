@@ -244,3 +244,18 @@ test('SKILL.md stays under 14 KB, and names every reference, each of which exist
   const description = skill.match(/^description: (.*)$/m)[1];
   for (const word of ['motion graphics', 'editing']) assert.ok(description.includes(word), 'the description does not trigger on ' + word);
 });
+
+/* PLAN item 13: a build reads only the section it needs. Every reference over
+   40 KB carries a contents list of its headings, kept current by
+   scripts/contents.mjs. */
+test('every reference over 40 KB has a current contents list naming each of its headings', async () => {
+  const { heavyReferences, withContents } = await import('../scripts/contents.mjs');
+  const heavy = heavyReferences();
+  assert.ok(heavy.length >= 5, heavy.length + ' heavy references');
+  for (const f of heavy) {
+    const text = readFileSync(f, 'utf8');
+    assert.equal(withContents(text), text, f + ' has no contents list, or an old one: run node scripts/contents.mjs');
+    const listed = text.slice(text.indexOf('**Contents.**'), text.indexOf('<!-- /contents -->'));
+    for (const m of text.replace(/```[\s\S]*?```/g, '').matchAll(/^## (.+)$/gm)) assert.ok(listed.includes('- ' + m[1].trim()), f + ': "' + m[1] + '" is not in the contents');
+  }
+});

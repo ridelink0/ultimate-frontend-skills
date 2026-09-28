@@ -5,6 +5,30 @@ description of what good looks like. This file is how to get those three, what
 to take from them, and what the people handing out the awards are actually
 grading.
 
+<!-- contents: written by scripts/contents.mjs -->
+
+**Contents.** Read the section you need; search the file for its heading.
+
+- The three-reference workflow
+  - The rest of the surface
+  - The `wall` verdict does not mean what it says
+  - What a row holds
+  - The method
+- The sources
+  - Studios
+- The technique taxonomy
+  - What 45 current Awwwards winners are actually built with
+  - Built with: 2026 case studies
+  - Three corrections to `references/stack.md`
+- What jurors actually score
+  - The measured distribution
+  - The honest gap between a good page and a winning one
+  - The other rubrics, for contrast
+- What now reads as dated
+- The line to carry into the build
+
+<!-- /contents -->
+
 Every number here was measured on **2026-09-14** by fetching the page or running
 the command. Re-run anything that looks stale; the commands are printed.
 

@@ -9,6 +9,61 @@ primary or reliable secondary source is marked **UNVERIFIED**. Exact hex
 codes and exact typeface names are only given where a source stated them;
 otherwise the palette/type is described qualitatively.
 
+<!-- contents: written by scripts/contents.mjs -->
+
+**Contents.** Read the section you need; search the file for its heading.
+
+- Motion in an app
+- Finance
+  - 1. Copilot Money
+  - 2. Monzo
+- Health
+  - 3. Headspace
+  - 4. Any Distance
+  - 5. Gentler Streak
+  - 6. Calm
+  - 7. Focus Friend
+  - 8. SwingVision
+  - 9. Strava
+- Notes / productivity
+  - 10. Things 3
+  - 11. Crouton
+  - 12. Bears Gratitude
+  - 13. Speechify
+  - 14. Goodnotes
+- Music
+  - 15. djay Pro
+  - 16. SoundCloud
+- Maps / transport
+  - 17. Flighty
+  - 18. oko
+  - 19. Watch Duty
+  - 20. Citymapper
+  - 21. AllTrails
+- Social
+  - 22. BeReal
+  - 23. Rooms (Cabinet of Curiosity)
+  - 24. Edits (by Instagram)
+- Developer tools
+  - 25. Linear
+  - 26. Raycast
+- Creative tools
+  - 27. Procreate Dreams
+  - 28. Feather: Draw in 3D
+  - 29. Halide
+  - 30. Universe (Website Builder)
+  - 31. Luminar
+- Games-adjacent utilities
+  - 32. Duolingo
+  - 33. CapWords
+- E-commerce
+  - 34. Taobao (Vision Pro spatial shopping)
+  - 35. Depop
+- App-specific AI tells (mobile/desktop equivalents of the web tells)
+- Dashboards: nine things Gev's review of HQ caught (2026-09-24)
+
+<!-- /contents -->
+
 Methodology note: Apple does not publish a machine-readable "why this won"
 brief beyond its newsroom copy, so "why it doesn't read as AI-generated" is
 this document's own analysis, grounded in the sourced facts about each app,
