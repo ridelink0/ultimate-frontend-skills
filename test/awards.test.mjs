@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, statSync } from 'node:fs';
-import { normaliseRow, applyCheck, buildCorpus, formatAwards, pickReferences, statusVerdict, errorVerdict, CORPUS } from '../scripts/awards.mjs';
+import { normaliseRow, applyCheck, buildCorpus, formatAwards, pickReferences, statusVerdict, errorVerdict, CORPUS, queryAwards, tagsOf } from '../scripts/awards.mjs';
 
 // The corpus had no tests of its own, and three of its bugs shipped: --pick ran
 // unfiltered, a rebuild resurrected dead URLs as verified, and the merge dropped
@@ -149,4 +149,31 @@ test('the shipped corpus is what the chunks build, and carries no stamp from a t
     'the rebuilt corpus must carry the aiGenerated flag the chunks record');
   const leaked = merged.filter((e) => e.checked === 'test' || (e.dead && e.dead.at === 'test')).map((e) => e.id);
   assert.deepEqual(leaked, []);
+});
+
+/* 2026-09-28 research (PLAN item 4): 18 rows sat at year 0 and --since kept
+   them all; the picker's "different technique" compared whole sentences, which
+   two rows almost never share, so it held for every pair. */
+test('an award with no year is dropped at build; an undated reference is kept', () => {
+  const report = { dropped: [] };
+  assert.equal(normaliseRow(row({ year: 0, award: 'sotd' }), 'chunk-y.json', report), null);
+  assert.match(report.dropped[0], /chunk-y\.json: X is an award with no year/);
+  const kept = normaliseRow(row({ year: 0, award: 'reference' }), 'f', report);
+  assert.equal(kept.year, 0);
+});
+
+test('tags are whole vocabulary terms from techniques, stack and motion', () => {
+  assert.deepEqual(tagsOf({ techniques: ['scroll-driven WebGL camera'], stack: ['gsap'], motion: '' }), ['gsap', 'webgl']);
+  assert.ok(!tagsOf({ techniques: ['a derived, driven layout'], stack: [] }).includes('rive'), '"rive" inside another word is not Rive');
+  assert.ok(tagsOf({ techniques: ['once still, the render loop stops'], stack: ['meshoptimizer'] }).includes('render on demand'));
+});
+
+test('--pick skips a row whose tags mostly repeat one already picked, and --technique matches a tag', () => {
+  const mk = (k, tags, source) => normaliseRow(row({ id: k, name: k, url: `https://${k}.example/`, source, studio: 'S' + k, techniques: tags }), 'f', { dropped: [] });
+  const corpus = [mk('a', ['gsap', 'lenis', 'webgl'], 'game'), mk('b', ['gsap', 'lenis', 'webgl'], 'threejs'), mk('c', ['rive', 'lottie'], 'awwwards'), mk('d', ['shader'], 'cssda')];
+  const picked = pickReferences('game', 3, { corpus, kind: 'game' });
+  assert.deepEqual(picked.map((e) => e.id), ['a', 'c', 'd']);
+  const shipped = queryAwards({ technique: 'rive' }).map((e) => e.id);
+  assert.ok(shipped.includes('floema-2026'), shipped.join(', '));
+  assert.ok(!queryAwards({ technique: 'rive' }).some((e) => !e.tags.includes('rive')));
 });

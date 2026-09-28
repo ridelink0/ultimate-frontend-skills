@@ -383,7 +383,7 @@
     "source": "minimalgallery",
     "kind": "brand",
     "stack": ["gsap", "lenis"],
-    "techniques": ["gsap scroll reveals paired with lenis inertial scroll"],
+    "techniques": ["gsap scroll reveals paired with lenis inertial scroll", "video, typography and interaction driven by gsap"],
     "palette": "unverified - not present in fetched markup",
     "type": "unverified - not present in fetched markup",
     "motion": "gsap and lenis together suggest scrubbed or timed reveals riding a smoothed scroll rather than native browser scroll behaviour.",

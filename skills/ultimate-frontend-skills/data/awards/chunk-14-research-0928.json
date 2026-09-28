@@ -1,0 +1,169 @@
+[
+ {
+  "id": "exo-ape-studio",
+  "name": "Exo Ape",
+  "url": "https://exoape.com",
+  "studio": "Exo Ape",
+  "year": 2026,
+  "award": "reference",
+  "source": "studio",
+  "kind": "studio",
+  "stack": [
+   "storyblok"
+  ],
+  "techniques": [
+   "sound design",
+   "work shown in motion"
+  ],
+  "palette": "UNVERIFIED",
+  "type": "UNVERIFIED",
+  "motion": "'Our work is best experienced in motion. Don't forget to put on your headphones' - sound is part of the presentation",
+  "why": "a studio home page that treats headphones as part of the brief; Awwwards annual nominee per its own page",
+  "verified": true,
+  "checked": "2026-09-28"
+ },
+ {
+  "id": "darkroom-engineering",
+  "name": "Darkroom Engineering (formerly Studio Freight)",
+  "url": "https://darkroom.engineering",
+  "studio": "Darkroom Engineering",
+  "year": 2026,
+  "award": "reference",
+  "source": "studio",
+  "kind": "studio",
+  "stack": [
+   "lenis",
+   "webgl"
+  ],
+  "techniques": [
+   "webgl",
+   "smooth scroll",
+   "headless commerce"
+  ],
+  "palette": "UNVERIFIED",
+  "type": "UNVERIFIED",
+  "motion": "motion and WebGL as stated services; maintainers of Lenis, Satus, Hamo, Tempus",
+  "why": "the studio behind Lenis - the smooth-scroll library UFS already pins - showing how it uses its own tools",
+  "verified": true,
+  "checked": "2026-09-28"
+ },
+ {
+  "id": "14islands-studio",
+  "name": "14islands",
+  "url": "https://14islands.com",
+  "studio": "14islands",
+  "year": 2026,
+  "award": "reference",
+  "source": "studio",
+  "kind": "studio",
+  "stack": [],
+  "techniques": [],
+  "palette": "UNVERIFIED",
+  "type": "UNVERIFIED",
+  "motion": "UNVERIFIED - fetch showed a portfolio gallery only",
+  "why": "admired studio home page; techniques not evidenced by the fetch",
+  "verified": true,
+  "checked": "2026-09-28"
+ },
+ {
+  "id": "merci-michel-studio",
+  "name": "Merci-Michel",
+  "url": "https://merci-michel.com",
+  "studio": "Merci-Michel",
+  "year": 2026,
+  "award": "reference",
+  "source": "studio",
+  "kind": "studio",
+  "stack": [],
+  "techniques": [
+   "branded games",
+   "personalisation"
+  ],
+  "palette": "UNVERIFIED",
+  "type": "UNVERIFIED",
+  "motion": "project cards describe playable mechanics (brick breaker, wave survival, draw-it-yourself)",
+  "why": "a studio whose work is branded games; pairs with its Awwwards SOTD 'The Tie-break'",
+  "verified": true,
+  "checked": "2026-09-28"
+ },
+ {
+  "id": "the-tie-break-2026",
+  "name": "The Tie-break",
+  "url": "https://thetiebreak.merci-michel.com",
+  "studio": "Merci-Michel",
+  "year": 2026,
+  "award": "sotd",
+  "source": "awwwards",
+  "kind": "game",
+  "stack": [],
+  "techniques": [
+   "browser game"
+  ],
+  "palette": "UNVERIFIED",
+  "type": "UNVERIFIED",
+  "motion": "UNVERIFIED",
+  "why": "Site of the Day 2026-09-25 with a Developer Award, in the Awwwards games category",
+  "verified": false,
+  "checked": "2026-09-28"
+ },
+ {
+  "id": "amix-threejs-game-gallery",
+  "name": "Three.js Game Gallery",
+  "url": "https://amix-design.com/tl/web-g-threejs/",
+  "studio": "AMIXDESIGN",
+  "year": 2026,
+  "award": "reference",
+  "source": "awwwards",
+  "kind": "game",
+  "stack": [
+   "three.js"
+  ],
+  "techniques": [
+   "three.js"
+  ],
+  "palette": "UNVERIFIED",
+  "type": "UNVERIFIED",
+  "motion": "UNVERIFIED",
+  "why": "listed in the Awwwards games collection; a gallery of small three.js games",
+  "verified": false,
+  "checked": "2026-09-28"
+ },
+ {
+  "id": "awards-racing",
+  "name": "Awards Racing",
+  "url": "https://awards.racing",
+  "studio": "Angelica P.",
+  "year": 2026,
+  "award": "sotd",
+  "source": "cssda",
+  "kind": "game",
+  "stack": [],
+  "techniques": [
+   "browser game"
+  ],
+  "palette": "UNVERIFIED",
+  "type": "UNVERIFIED",
+  "motion": "UNVERIFIED",
+  "why": "on both the Awwwards games list and the CSSDA Website of the Day list in September 2026",
+  "verified": false,
+  "checked": "2026-09-28"
+ },
+ {
+  "id": "format-obys",
+  "name": "FORMAT",
+  "url": "https://format.obys.agency",
+  "studio": "Obys Agency",
+  "year": 2026,
+  "award": "sotd",
+  "source": "cssda",
+  "kind": "experiment",
+  "stack": [],
+  "techniques": [],
+  "palette": "UNVERIFIED",
+  "type": "UNVERIFIED",
+  "motion": "UNVERIFIED",
+  "why": "recent CSSDA Website of the Day from a studio already in the corpus",
+  "verified": false,
+  "checked": "2026-09-28"
+ }
+]

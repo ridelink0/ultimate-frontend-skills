@@ -152,7 +152,32 @@ const VOCABULARY = [
   'audio', 'web audio', 'sound design', 'preloader', 'loading sequence',
   'infinite scroll', 'drag gallery', 'carousel', 'accordion', 'sticky nav',
   'dark mode', 'theme toggle', 'reduced motion', 'accessibility',
+  // 2026-09-28 research: what award sites are now built with.
+  'rive', 'dotlottie', 'webgpu', 'tsl', 'render on demand', 'meshopt',
 ];
+
+/* Other ways a harvester writes a term in VOCABULARY. */
+const ALIASES = [
+  [/render loop stops|render-on-demand|renders? only when/i, 'render on demand'],
+  [/meshoptimizer/i, 'meshopt'],
+  [/view-transition|view transitions api/i, 'view transition'],
+  [/three\.js shading language/i, 'tsl'],
+  [/sound-design/i, 'sound design'],
+];
+
+/* A row's techniques are sentences, which is right for reading and useless for
+   comparing: two rows almost never share one, so "a different technique" held
+   for every pair (334 rows had only prose). Tags are the vocabulary terms a
+   row's techniques, stack and motion mention, and they are what the picker
+   and --technique compare. */
+export function tagsOf(e) {
+  const hay = [...(e.techniques || []), ...(e.stack || []), e.motion || ''].join(' ; ').toLowerCase();
+  // Whole terms only: "rive" is inside "driven" and "derived".
+  const whole = (term) => new RegExp('(^|[^a-z0-9])' + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '($|[^a-z0-9])');
+  const tags = new Set(VOCABULARY.filter((term) => whole(term).test(hay)));
+  for (const [re, tag] of ALIASES) if (re.test(hay)) tags.add(tag);
+  return [...tags].sort();
+}
 
 function normalise(row, file, report) {
   if (!row || typeof row !== 'object') return null;
@@ -174,12 +199,21 @@ function normalise(row, file, report) {
     .map((s) => String(s).trim())
     .filter((s) => s && !(drop && NOISE.test(s)));
   const year = Number(row.year);
+  const dated = Number.isFinite(year) && year > 2000 && year < 2100;
+  // An award has a year; a row claiming one without it cannot be placed or
+  // filtered, and --since silently kept all 18 such rows. A reference (a game,
+  // a studio's work page) may be undated: its page carries no date to read,
+  // and a guessed year would be invented.
+  if (!dated && String(row.award || 'reference').toLowerCase() !== 'reference') {
+    report.dropped.push(`${file}: ${(row.name || row.id || 'row')} is an award with no year`);
+    return null;
+  }
   const clean = {
     id,
     name: String(row.name || id).trim(),
     url,
     studio: row.studio ? String(row.studio).trim() : null,
-    year: Number.isFinite(year) && year > 2000 && year < 2100 ? year : 0,
+    year: dated ? year : 0,
     award: String(row.award || 'reference').toLowerCase(),
     source: String(row.source || 'editorial').toLowerCase(),
     kind: KINDS.has(String(row.kind).toLowerCase()) ? String(row.kind).toLowerCase() : 'editorial',
@@ -197,6 +231,7 @@ function normalise(row, file, report) {
   // two apart. Carried only when a harvester actually said so: a missing flag
   // is "not recorded", never "made by a person".
   if (typeof row.aiGenerated === 'boolean') clean.aiGenerated = row.aiGenerated;
+  clean.tags = tagsOf(clean);
   return clean;
 }
 
@@ -222,7 +257,12 @@ export function queryAwards(opts = {}) {
     if (opts.since && e.year && e.year < Number(opts.since)) return false;
     if (opts.verified && !e.verified) return false;
     if (opts.stack && !e.stack.some((s) => s.toLowerCase().includes(String(opts.stack).toLowerCase()))) return false;
-    if (opts.technique && !e.techniques.some((t) => t.toLowerCase().includes(String(opts.technique).toLowerCase()))) return false;
+    if (opts.technique) {
+      const t = String(opts.technique).toLowerCase();
+      // A vocabulary term is matched as a tag, whole; anything else is looked
+      // for in the technique sentences, as before.
+      if (VOCABULARY.includes(t) ? !(e.tags || []).includes(t) : !e.techniques.some((s) => s.toLowerCase().includes(t))) return false;
+    }
     return true;
   });
 
@@ -277,7 +317,14 @@ export function pickReferences(register, n = 3, extra = {}) {
   const picked = [];
   const seenStudio = new Set();
   const seenSource = new Set();
-  const seenTech = new Set();
+  const pickedTags = [];
+  // Two rows use the same technique when more than half of the smaller tag
+  // set is shared. A row with no tags is compared by its sentences, as before.
+  const sameTech = (e) => {
+    const tags = e.tags || [];
+    if (!tags.length) return e.techniques.some((t) => picked.some((p) => p.techniques.some((q) => q.toLowerCase() === t.toLowerCase())));
+    return pickedTags.some((seen) => seen.length && tags.filter((t) => seen.includes(t)).length > Math.min(seen.length, tags.length) / 2);
+  };
   for (const pass of [0, 1]) {
     for (const e of pool) {
       if (picked.length >= n) break;
@@ -285,12 +332,12 @@ export function pickReferences(register, n = 3, extra = {}) {
       if (pass === 0) {
         if (e.studio && seenStudio.has(e.studio.toLowerCase())) continue;
         if (seenSource.has(e.source)) continue;
-        if (e.techniques.some((t) => seenTech.has(t.toLowerCase()))) continue;
+        if (sameTech(e)) continue;
       }
       picked.push(e);
       if (e.studio) seenStudio.add(e.studio.toLowerCase());
       seenSource.add(e.source);
-      for (const t of e.techniques) seenTech.add(t.toLowerCase());
+      pickedTags.push(e.tags || []);
     }
   }
   return picked.slice(0, n);
