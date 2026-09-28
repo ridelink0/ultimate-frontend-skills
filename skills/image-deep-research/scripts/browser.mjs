@@ -13,7 +13,7 @@
    screen. Needs Node 22+ for the built-in WebSocket. */
 
 import { spawn, spawnSync } from 'node:child_process';
-import { mkdtempSync, existsSync, readFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, existsSync, readFileSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { createServer } from 'node:net';
@@ -74,6 +74,19 @@ async function answers(port) {
   catch { return false; }
 }
 
+/* The browser's own temp directory, inside the profile that close() deletes.
+   Edge leaves an Importer_0_4 folder and cv_debug.log in the TEMP it inherits
+   whenever a page makes a network request, outside the profile where no
+   profile delete reaches them; with --disable-component-update missing it also
+   left msedge_url_fetcher_* folders (Ultimate Frontend Skills judge, round 3,
+   2026-09-27). Any casing of the variable is replaced: Windows reads TEMP and
+   Temp as one name. */
+function browserEnv(dir) {
+  const env = {};
+  for (const [k, v] of Object.entries(process.env)) if (!/^(TEMP|TMP|TMPDIR)$/i.test(k)) env[k] = v;
+  return { ...env, TEMP: dir, TMP: dir, TMPDIR: dir };
+}
+
 /* Starts the browser and resolves once DevTools answers. The returned close()
    asks the browser to quit over the protocol first, waits for it to stop
    answering, and only then falls back to ending the processes that carry this
@@ -82,13 +95,17 @@ export async function launch(bin = findBrowser()) {
   if (!bin) { const e = new Error(NO_BROWSER); e.code = 'no-browser'; throw e; }
   if (typeof WebSocket === 'undefined') throw new Error('image-deep-research needs Node 22 or newer (built-in WebSocket).');
   const udd = mkdtempSync(join(tmpdir(), 'idr-cdp-'));
+  const ownTmp = join(udd, 'tmp');
+  mkdirSync(ownTmp);
   const asked = await freePort();
+  // --disable-component-update: a fresh profile starts Edge's component
+  // updater, which leaves msedge_url_fetcher_* folders in TEMP.
   const proc = spawn(bin, [
     '--headless=new', '--hide-scrollbars', '--mute-audio',
     '--no-first-run', '--no-default-browser-check', '--disable-extensions',
-    '--disable-background-networking', '--disable-sync', '--disable-features=Translate',
+    '--disable-background-networking', '--disable-component-update', '--disable-sync', '--disable-features=Translate',
     `--user-data-dir=${udd}`, `--remote-debugging-port=${asked}`, 'about:blank',
-  ], { stdio: ['ignore', 'ignore', 'ignore'], windowsHide: true });
+  ], { stdio: ['ignore', 'ignore', 'ignore'], windowsHide: true, env: browserEnv(ownTmp) });
   let launchError;
   proc.once('error', (err) => { launchError = err; });
 
