@@ -394,6 +394,44 @@ framework. GSAP is on 58% of them, and reaching for it is what the field does -
 `references/stack.md` is right that hand-rolling a scroll engine to avoid it
 produces the low-effort version.
 
+### Built with: 2026 case studies
+
+From case studies published on Codrops and Awwwards in 2026 (each read on
+2026-09-28; the links are in the corpus rows and in the list below):
+
+- **The stack converges.** GSAP, Lenis and three.js together in
+  bleibtgleich'26, La Revoltosa and Floema; Webflow or WordPress underneath
+  several; Nuxt on Vercel with a headless CMS (Sanity, Storyblok, Strapi) for
+  the rest.
+- **Rive is on award sites now**: Floema, and Decathlon's Yestalgia.
+- **Performance is part of the craft.** Floema compresses 230+ product models
+  (glTF-Transform, Meshoptimizer, Draco), caches its shadow maps and stops
+  rendering when nothing moves: "Once everything is still, the render loop
+  stops." `awards --technique "render on demand"` finds it.
+- **Restraint wins too.** The New Obys uses no GSAP, three.js or Lenis: Bun,
+  React only for server templating, TypeScript, WebGL where it is needed, and
+  its own animation system on requestAnimationFrame and the Web Animations
+  API, to "use only what is necessary and stay in control of every detail".
+  Fluid Glass has no WebGL, no 3D and no custom cursor: ScrollTrigger and
+  small SVG details. So a pick of three references is not an instruction to
+  add WebGL.
+- **Type as geometry**: La Revoltosa renders its type as 3D geometry in the
+  scene, and gets it onto phones by reducing polygons, reusing textures and
+  loading progressively.
+- **A reveal without opacity**: bleibtgleich'26 blurs text from 50 to 0
+  through an SVG `feGaussianBlur` and `feColorMatrix` goo filter; "opacity is
+  never touched". Its author says all of its code was generated with Claude,
+  which puts the difference in the direction, not the tool.
+- **Studios ship their own tools**: Darkroom Engineering maintains Lenis;
+  Locomotive, Locomotive Scroll; basement.studio designed the Geist typeface
+  with Vercel.
+
+Case studies: tympanus.net/codrops/2026/09/23/bleibtgleich26-a-180-turn-from-brutalism-to-minimalism/ ;
+awwwards.com/la-revoltosa-rebooting-a-70-year-old-spanish-soda-brand-for-the-scroll-generation.html ;
+awwwards.com/floema-spaces-for-people-made-for-life.html ;
+tympanus.net/codrops/2026/09/12/yestalgia-bringing-decathlons-90s-spirit-to-life-through-a-playful-digital-experience/ ;
+awwwards.com/the-new-obys.html ; awwwards.com/fluid-glass-case-study.html
+
 ### Three corrections to `references/stack.md`
 
 Measured by fetching each build and gzipping it, 2026-09-14. All three of that
