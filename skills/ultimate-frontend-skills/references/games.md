@@ -506,6 +506,95 @@ each question out loud before the owner has to.
 - [ ] Read every control's name. Do any two name the same action?
 - [ ] Write down what the owner asked for that you cannot demonstrate, and
       say so before they find it.
+- [ ] Accessibility, the Game Accessibility Guidelines' basic tier: subtitles
+      for all important speech, on before any sound plays; controls that can
+      be remapped; no information carried by colour alone; a choice of
+      difficulty.
+- [ ] Switch tabs mid-game and come back. Did the world wait for you?
+- [ ] Play it on a keyboard that is not QWERTY (or bind an AZERTY layout).
+      Are the movement keys still where the hand expects them?
+
+## Feel, input, engines and portals (2026-09-28 research)
+
+### Feel
+
+Steve Swink's *Game Feel* (2008) defines it as "realtime control of virtual
+objects in a simulated space, with interactions emphasised by polish" and
+names six things to review, in this order: **input** (what the player
+presses), **response** (what the simulation does with it), **context** (the
+space it happens in), **polish** (particles, shake, sound that "emphasizes
+interactions"), **metaphor** (what the thing is meant to be), **rules**.
+Review a game's feel in that order: polish comes fourth, after the control
+and the space already work.
+
+Jonasson and Purho's "Juice it or lose it" (GDC Europe 2012) made juice the
+default; the rule here is the counter-view. Folmer Kelly: "such a tremendous
+focus on putting eye candy in our games, that the context doesn't get enough
+consideration", and polish can cost immersion. So every effect is tied to an
+event in the fiction and scaled to its weight, the big ones are rationed, and
+every effect felt in the body keeps its own control with a real zero
+(`references/motion.md`, "Screen effects a player feels in their body").
+
+Not given, on purpose: the numbers people quote for trauma-based shake,
+hitstop frames, coyote time, jump buffering and input latency. Their primary
+sources (Eiserloh, Nijman and others) could not be opened for this research,
+and a number from memory would be a guess. Source them before writing them
+down.
+
+### Accessibility
+
+The Game Accessibility Guidelines (gameaccessibilityguidelines.com) come in
+basic, intermediate and advanced tiers. The basic tier is on the play pass
+above. From the intermediate tier: let subtitle and caption presentation be
+customised, make sure subtitles can be on before any sound plays, and let the
+difficulty change during play. The Xbox Accessibility Guidelines (v3.2,
+learn.microsoft.com) are meant as a catalyst for designers and a checklist for
+testers, and say themselves that they are not a compliance checklist.
+
+### Input and platform (MDN)
+
+- **Keyboard:** bind movement to `event.code` (`KeyW`, `KeyA` ...), which is
+  the key's place, not `event.key`, which is its letter: WASD by letter is not
+  under the hand on AZERTY or Dvorak. The audit warns (`game-key-not-code`).
+- **Gamepad:** read `navigator.getGamepads()` fresh inside the frame loop;
+  `mapping === "standard"` means the browser remapped it; Firefox shows a pad
+  only after it is pressed while the page is visible.
+- **Pointer Lock:** `requestPointerLock({ unadjustedMovement: true })` for raw
+  mouse deltas, falling back when it throws `NotSupportedError`; it needs a
+  real user gesture and is not Baseline.
+- **Audio:** create or `resume()` the `AudioContext` inside the first input
+  handler; one made at load starts suspended. The audit warns
+  (`game-audio-autoplay`).
+- **Hidden tabs** stop `requestAnimationFrame`; pause the simulation on
+  `visibilitychange` so the world does not jump when the player comes back.
+  The audit warns (`game-no-visibility-pause`).
+- `ScreenOrientation.lock()` and WebGPU are not Baseline: feature-detect
+  (`navigator.gpu`) and keep a path without them.
+
+### Engines
+
+| Need | Engine | Version (npm or GitHub, 2026-09-28) |
+|---|---|---|
+| 2D at scale: many sprites, tilemaps | Phaser 4 (a rebuilt WebGL renderer, GPU sprite and tilemap layers) or PixiJS 8 (WebGPU renderer, device-loss recovery) | Phaser 4.2.1, PixiJS 8.21.0 |
+| A 3D scene with this plugin's chassis around it | three.js | 0.186.1 (`references/stack.md`) |
+| A full engine with an editor | PlayCanvas or Babylon.js | PlayCanvas 2.22.4, Babylon.js 9.28.0 |
+| Godot | GDScript only for the web: **C# projects cannot export to the web in Godot 4**; a multi-threaded export needs COOP `same-origin` and COEP `require-corp` headers, and the single-threaded export (since 4.3) is the one portals take | 4.7.2-stable |
+
+### Portals
+
+- **CrazyGames** (docs.crazygames.com/requirements): initial download at most
+  50 MB, total at most 250 MB, at most 1,500 files; a full launch needs its
+  SDK for ads and a gameplay-start event.
+- **Poki** (developers.poki.com, quality requirements): "Players tend to move
+  to another game if loading takes more than 10 seconds"; ads only through
+  its `commercialBreak()` and `rewardedBreak()`, sound muted during them,
+  rewarded ads optional; scale to 16:9; wrap localStorage in try/catch; no
+  requests to other hosts. Whether Poki requires web exclusivity could not be
+  confirmed on its requirements page, so it is not stated here.
+
+`webdesign.mjs games portal-check <build dir>` measures the build against the
+CrazyGames limits and warns on requests to other hosts and on localStorage
+outside a try/catch.
 
 ## URLs referenced
 

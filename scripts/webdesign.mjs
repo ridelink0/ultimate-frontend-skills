@@ -737,6 +737,20 @@ async function cmdVideo() {
   if (watch) console.log('video-watch is installed and reads footage better: node "' + watch + '" "' + positional[0] + '" --mode scene --sheet 3x3 --label');
 }
 
+/* A web game before a portal (references/games.md, "Portals"). */
+async function cmdGames() {
+  if (positional[0] !== 'portal-check' || !positional[1]) die('games portal-check <build dir>');
+  const { portalCheck } = await import('./games.mjs');
+  let r;
+  try { r = portalCheck(resolve(positional[1])); } catch (e) { die(e.message); }
+  const mb = (b) => (b / 1024 / 1024).toFixed(1) + ' MB';
+  console.log(`games portal-check  ${positional[1]}`);
+  console.log(`  ${r.files} files, ${mb(r.totalBytes)} in all, ${mb(r.initialBytes)} initial (${r.note})`);
+  for (const f of r.findings) console.log(`  ${f.level === 'error' ? 'ERROR' : 'warn '} ${f.text}`);
+  if (!r.findings.length) console.log('  ok    within the CrazyGames limits, no other hosts, localStorage guarded');
+  process.exit(r.findings.some((f) => f.level === 'error') ? 1 : 0);
+}
+
 /* Editing real footage: references/editing.md is the craft, scripts/edit.mjs
    the tools. A step whose program is not installed says so and exits 2. */
 async function cmdEdit() {
@@ -928,6 +942,7 @@ switch (cmd) {
   case 'parity': await cmdParity(); break;
   case 'video': await cmdVideo(); break;
   case 'edit': await cmdEdit(); break;
+  case 'games': await cmdGames(); break;
   case 'awards': case 'refs': await cmdAwards(); break;
   case 'packs': await cmdPacks(); break;
   case 'credits': await delegate('credits.mjs', argv.slice(1)); break;
@@ -988,6 +1003,7 @@ switch (cmd) {
   video render <scene.html> [--draft] [--audio FILE] [--out FILE]
                                           render the scene to MP4, one seeked frame at a time
   video lint <dir>                        copy density and captions, before a render
+  games portal-check <build dir>          a web game against the portals' size and request rules
   edit probe|scenes|transcribe|captions|cut|deliver <file>
                                           edit real footage (references/editing.md)
 `);

@@ -389,3 +389,25 @@ test("every item on Gev's Doodle Voyager list has a row saying where it went", (
   const ids = new Set(lessons('doodle-voyager.md').map((l) => l.title.split('.')[0]));
   for (const [item, where] of rows) for (const [id] of where.matchAll(/DV-\d+/g)) assert.ok(ids.has(id), 'item ' + item + ' names ' + id + ', which is not a lesson');
 });
+
+/* references/games.md, "Portals": a build is measured against CrazyGames'
+   limits, and requests to other hosts and unguarded localStorage are named. */
+test('games portal-check passes a build just under the limits and fails one just over them', async () => {
+  const { portalCheck } = await import('../scripts/games.mjs');
+  const limits = { initialBytes: 1000, totalBytes: 3000, files: 5 };
+  const dir = mkdtempSync(join(tmpdir(), 'ufs-portal-'));
+  try {
+    writeFileSync(join(dir, 'index.html'), '<!doctype html><title>g</title><script src="game.js"></script>');
+    writeFileSync(join(dir, 'game.js'), 'try { localStorage.setItem("k", "v"); } catch (e) {}\n' + 'x'.repeat(800));
+    writeFileSync(join(dir, 'level.bin'), 'y'.repeat(1500));
+    const ok = portalCheck(dir, limits);
+    assert.deepEqual(ok.findings, [], JSON.stringify(ok));
+    assert.equal(ok.files, 3);
+    writeFileSync(join(dir, 'game.js'), 'localStorage.setItem("k", "v"); fetch("https://cdn.example.net/a.json");\n' + 'x'.repeat(1200));
+    writeFileSync(join(dir, 'more.bin'), 'z'.repeat(1500));
+    for (let i = 0; i < 3; i++) writeFileSync(join(dir, 'f' + i + '.txt'), 'f');
+    const bad = portalCheck(dir, limits).findings.map((f) => f.level + ' ' + f.text);
+    for (const want of [/^error initial download/, /^error total/, /^error 7 files/, /^warn requests to other hosts: cdn\.example\.net/, /^warn localStorage outside a try\/catch in game\.js/])
+      assert.ok(bad.some((t) => want.test(t)), want + ' not in ' + bad.join(' | '));
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});

@@ -88,6 +88,11 @@ call a game done: the play pass".
       only read in the code.
 - [ ] Someone has played it with the controls in their hands and run the play
       pass, before the owner did.
+- [ ] Accessibility, the Game Accessibility Guidelines' basic tier: subtitles
+      for all important speech, on before any sound plays; controls that can
+      be remapped; no information carried by colour alone; a choice of
+      difficulty.
+- [ ] Before a portal: `webdesign.mjs games portal-check <build dir>` is clean.
 
 ## Then look at it
 
