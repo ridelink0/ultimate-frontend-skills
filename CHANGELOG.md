@@ -2,6 +2,43 @@
 
 Releases before 6.5.0 are recorded in their tag commits (`git log v6.4.2`) and on the GitHub releases page.
 
+## 6.7.0 - 2026-09-28
+
+A page that passed the 6.6.0 audit can fail this one: on demo content 6.6.0 left unmarked, on a local file the page asks for that does not exist, or on a counter whose number was not rewritten. The render check now fails body-size text under 3:1, which it used to warn about.
+
+### A correction to 6.6.0
+- The 6.6.0 note said every instruction, stand-in and demo specific in `assets/sections.html` was marked. It was not: the exploded-3d part list, the stats numerals, the hero eyebrow date, the index section's contents (headings taken from the launch page the showcase recreates) and the blueprint caption were unmarked, and a page that rewrote exactly what the audit named kept all of them and passed.
+
+### Scaffold and audit
+- The rest of the demo is marked: the watch's parts, the bridge's numerals, the `Viewpoint` card label, the exploded callouts and the drawing's caption and dimension. The launch-page contents and the eyebrow date are replaced by marked stand-ins, and the part `Case` is now `Middle case`, so no marked piece is part of another.
+- The audit errors on a local `src`, `href` or `poster` that points at no file (a root-absolute path is read from the site root; a path with no extension may be `name.html` or `name/index.html`), and on a `data-count` that does not match the number its text shows: `motion.js` counts up to the attribute and writes it over the text.
+- `motion.js` no longer treats an exploded-3d part's `data-count` (a chain's link count) as a counter; it wrote "5" over the part's name. The two examples carry the fix.
+- The scaffolded 404 uses root-absolute URLs for its stylesheets, scripts and links. A host serves it at whatever address was missing, and at `/menu/today` its relative URLs resolved under `/menu/`: no styles, and a way home that was another 404. It assumes the site is served from the root of its domain. Both example 404s are corrected.
+- The preview server (`serve`, `look`, `verify`) answers a missing address with the site's `404.html` and status 404, as the static hosts do.
+- After `new`, the scaffolder prints the audit command with the plugin's full path, quoted for the shell, so it runs when pasted; it was `node webdesign.mjs audit`, which failed outside the plugin. Its file list now names every file it wrote, `sky.js`, `404.html` and `img/` included.
+- `test/scaffold-copy.test.mjs` obeys the audit on a scaffold of every section under every hero (rewrite what it names, add what it says is missing, fix the counters it names) and fails on any library text left on the page that is not interface copy.
+
+### Render check and verify
+- The header's colour rule in `core.css` nested `:has()` inside `:has()`, which browsers reject, so it was dropped and the default bone preset shipped its nav at 1.06:1. The header now takes the page ink, and light type only over an opening hero (`#top`) that sets its type on media or is dark-toned. A hero with type on media is a dark field until its media paints, so hero-photo reads before a photo is added.
+- Contrast: body-size text under 3:1 is an ERROR. Sampled contrast says what was behind the text (`photo`, `canvas`, `gradient` or `page`), from the elements actually painted there; it said "photo" for a bone page.
+- A display heading (`h1`, `h2`, `.t-hero`, `.t-mega`) broken inside a word, with no hyphen, is a warning naming the word and the width.
+- verify reports one finding per defect and lists the widths and motion modes it was seen at; a missing image was sixteen errors. The render check drops "image failed to load" when an HTTP 4xx already named that file.
+- The body measure budget depends on the width: 30 to 80 characters under 700px, 45 to 80 above, and the finding names the width.
+
+### Browser launcher
+- The browser gets TEMP, TMP and TMPDIR inside its own temporary profile. Edge had left an `Importer_0_4` folder and `cv_debug.log` in the inherited TEMP on every page with a network request. A full suite with TEMP pointed at an empty folder left 65 such folders before this; the leak test now fails on any name left in its temp directory.
+- One 45 s launch deadline on the clock (`LAUNCH_DEADLINE_MS`), the value the bundled image-deep-research uses; it was about 15 s and failed under load.
+- A launcher ending in `.mjs` runs under Node, and `test/fixtures/stub-browser.mjs` stands in for a browser: one that hands off to a child and exits 0 (HQ-2, now tested, including that closing it ends the child), one that answers after 17 s, and one that never answers.
+
+### Records, docs and install
+- HQ-12 cited run 36216733416 as green on both runners; it failed on Ubuntu and was cancelled on Windows. It now cites 36222752391 on 4d26192. `docs/field-tests/ci-runs.json` records every cited run as `gh` returned it, and a test checks each citation's sha and stated result against it.
+- `docs/field-tests/doodle-voyager.md` maps each of Gev's seventeen items to where it went, item 10 included, and DV-13 is closed without a harness scaffold, with the reason.
+- The README no longer says a bare word finds a command: with many plugins installed, another plugin's command can rank first. The full `/ultimate-frontend-skills:` prefix lists them all.
+- `assets.mjs` reads its User-Agent version from `package.json` (it said 5.0.0). `docs/HANDOFF-v5.md` is removed, and a link two renames old in `docs/audit-2026-09-07/README.md` is fixed. Tests fail on a broken relative link in the shipped markdown and on an off-version plugin version in a shipped file.
+- `webdesign.mjs tools` says when Codex loads a copy of this plugin's skills from `~/.agents/skills` beside the plugin enabled there.
+- `graphify-out/` is ignored.
+- The bundled image-deep-research is 1.0.1: its browser gets `--disable-component-update` and a private TEMP.
+
 ## 6.6.0 - 2026-09-26
 
 A page scaffolded by 6.5.1 and audited by 6.6.0 can now fail on scaffold copy the old audit did not know about: that is the point of the release, not a regression.
