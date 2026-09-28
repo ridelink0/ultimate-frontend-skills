@@ -572,3 +572,22 @@ Write the static state as the default and add motion inside
 `@media (prefers-reduced-motion: no-preference)`. The `!important` reset block in
 `core.css` is a safety net, not the mechanism - and it uses `1ms`, not `0`,
 because a zero duration suppresses `transitionend`.
+
+## From the 2026-09-28 research
+
+Each row is an entry in `data/ai-tells.json`, which holds its source and,
+where a machine can see the pattern, the check the audit runs (named in the
+last column; `webdesign.mjs audit` prints the id beside the finding). The
+rest are judgements for whoever reviews the work.
+
+| Id | Tell | Why it reads as generated | Instead | Check |
+|---|---|---|---|---|
+| M1 | Identical fade-up on every section with uniform stagger | Framer Motion default repeated; no hierarchy | Reveal only what carries the argument; vary the verb; leave sections still | motion-uniform-reveal |
+| M2 | 0.1 s stagger everywhere; 4 px card hover lift | Library defaults | Stagger ordered lists only; hover changes state | motion-hover-lift |
+| M3 | Scroll progress bar on a short marketing page | Default kit item | Only on long reads | motion-progress-short-page |
+| M4 | Count-up stat banners | Pairs with invented numbers | Count only cited figures | motion-counter-uncited |
+| M5 | Bounce/elastic easing on dialogs and cards | Tutorial-data curves; dated | Springs only for direct manipulation | motion-overshoot-dialog |
+| M6 | ease-in entrances; scale(0) starts | Wrong ingredient | ease-out in; start at 0.95-0.97 | motion-scale-zero |
+| M7 | Motion incoherence | No motion system | One token set | motion-token-sprawl |
+| M8 | Cursor-following glow / drifting blobs | Tailwind demo pattern | One colour field with a reason | motion-cursor-glow |
+| M9 | Infinite loop or marquee with no pause | WCAG 2.2.2 failure | Pause control | motion-loop-no-pause |

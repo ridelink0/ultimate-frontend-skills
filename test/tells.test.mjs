@@ -167,3 +167,21 @@ test('the pause button holds a marquee where it is, and a second press lets it g
     s.close();
   } finally { await closeBrowser(b); await new Promise((r) => server.close(r)); rmSync(dir, { recursive: true, force: true }); }
 });
+
+/* PLAN item 10: every tell in the data sits in the shipped reference for its
+   domain, and every tell a reference lists is in the data. */
+test('every tell in ai-tells.json is a row in its reference, and every row is in the data', () => {
+  const FILES = { 'web-motion': 'motion.md', web: 'tells.md', copy: 'tells.md', 'motion-graphics': 'video-tells.md', editing: 'video-tells.md', games: 'games.md', 'graphic-design': 'image-tells.md' };
+  const data = tellData().entries;
+  const listed = new Map();
+  for (const f of new Set(Object.values(FILES))) {
+    const text = readFileSync(join(root, 'skills/ultimate-frontend-skills/references', f), 'utf8').replace(/\r/g, '');
+    const at = text.indexOf('## From the 2026-09-28 research');
+    assert.ok(at >= 0, f + ' has no research section');
+    const end = text.indexOf('\n## ', at + 5);
+    for (const m of text.slice(at, end < 0 ? undefined : end).matchAll(/^\| ([A-Z]\d+) \|/gm)) listed.set(m[1], f);
+  }
+  for (const e of data) assert.equal(listed.get(e.id), FILES[e.domain], e.id + ' is not listed in ' + FILES[e.domain]);
+  for (const id of listed.keys()) assert.ok(data.some((e) => e.id === id), id + ' is listed but not in the data');
+  for (const e of data) assert.ok(/^https?:\/\//.test(e.source), e.id + ' has no source URL');
+});

@@ -84,3 +84,21 @@ Watch the draft as frames and answer each with yes or no:
 - Does the cut end on a held real frame, with no template outro?
 
 Any "no" is fixed in the scene before the final render.
+
+## From the 2026-09-28 research
+
+Each row is an entry in `data/ai-tells.json`, which holds its source and,
+where a machine can see the pattern, the check the audit runs (named in the
+last column; `webdesign.mjs audit` prints the id beside the finding). The
+rest are judgements for whoever reviews the work.
+
+| Id | Tell | Why it reads as generated | Instead | Check |
+|---|---|---|---|---|
+| V1 | Script longer than runtime | Crammed narration | About 150 wpm | video-script-density |
+| V2 | Corporate Memphis figures | Oversaturated cliche | Characters from the product world | - |
+| V3 | Generated footage in a warmth-based brand film | Backlash (Coca-Cola 2024) | Real footage and set type | - |
+| V4 | Generator physics or continuity errors in any clip | Named limits of the video models | Reject the clip | - |
+| E1 | Mass-produced template videos | YouTube inauthentic content (July 2026) | Own footage and perspective | video-batch-sameness |
+| E2 | Captions breaking reading rules | Auto-caption defaults | Netflix rules | captions-rules |
+| E3 | Loudness jumps and clipped peaks | Unmixed output | Two-pass loudnorm to -14 LUFS, TP -1 | audio-loudness |
+| E4 | One preset grade on every clip | A look applied instead of shots balanced; the teal-and-orange trend dates from 2010 | Balance each shot, then apply one look | - |

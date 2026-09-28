@@ -530,3 +530,19 @@ each question out loud before the owner has to.
 - https://www.fortnite.com
 
 Not successfully examined this session (attempted, blocked/errored, excluded from the corpus rather than guessed at): `http://www.celestegame.com` (`Page load timed out`), `https://dredgegame.com` (`net::ERR_SSL_PROTOCOL_ERROR`), Slay the Spire's site (not attempted — turn budget spent on the above 13 plus two exhibits, which already covers the 10–14 target with confirmed primary-source data).
+
+## From the 2026-09-28 research
+
+Each row is an entry in `data/ai-tells.json`, which holds its source and,
+where a machine can see the pattern, the check the audit runs (named in the
+last column; `webdesign.mjs audit` prints the id beside the finding). The
+rest are judgements for whoever reviews the work.
+
+| Id | Tell | Why it reads as generated | Instead | Check |
+|---|---|---|---|---|
+| G1 | Juice on everything | Context lost to eye candy | Effects tied to fiction events | game-effect-rate |
+| G2 | Generated assets shipped without saying so | Steam requires disclosure of AI-generated content (clarified January 2026) | Disclose them; better, make them | - |
+| G3 | Unreviewed generated code | Godot rejects "vibe coded" pull requests | Review it, then play it | - |
+| G4 | WASD bound to event.key | QWERTY-only | event.code | game-key-not-code |
+| G5 | AudioContext outside a gesture, never resumed | Silent first load | Create/resume in the first input handler | game-audio-autoplay |
+| G6 | Simulation runs in hidden tab | Untested tab switching | Pause on visibilitychange | game-no-visibility-pause |

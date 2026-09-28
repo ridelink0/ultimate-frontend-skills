@@ -27,7 +27,8 @@
     "scope": "audit",
     "rule": "warn when one reveal keyframe/duration pair is applied inside more than 60% of section elements"
    },
-   "ufs_chassis_ships_it": true
+   "ufs_chassis_ships_it": false,
+   "ufs_fixed_in": "6.8.0"
   },
   {
    "id": "M2",
@@ -59,7 +60,8 @@
     "scope": "audit",
     "rule": "warn when .progress or a scroll() timeline bar exists and body text is under about 1,500 words"
    },
-   "ufs_chassis_ships_it": true
+   "ufs_chassis_ships_it": false,
+   "ufs_fixed_in": "6.8.0"
   },
   {
    "id": "M4",
@@ -75,7 +77,8 @@
     "scope": "audit",
     "rule": "warn when data-count is used and no cite element, footnote or source link sits in the same section"
    },
-   "ufs_chassis_ships_it": true
+   "ufs_chassis_ships_it": false,
+   "ufs_fixed_in": "6.8.0"
   },
   {
    "id": "M5",
@@ -155,7 +158,8 @@
     "scope": "audit",
     "rule": "warn on an infinite animation with no button[aria-pressed] or [data-pause] in the page"
    },
-   "ufs_chassis_ships_it": true
+   "ufs_chassis_ships_it": false,
+   "ufs_fixed_in": "6.8.0"
   },
   {
    "id": "W1",
@@ -294,6 +298,17 @@
    "ufs_chassis_ships_it": false
   },
   {
+   "id": "V4",
+   "domain": "motion-graphics",
+   "tell": "Generator physics or continuity errors in any clip",
+   "why": "Named limits of the video models",
+   "instead": "Reject the clip",
+   "source": "https://en.wikipedia.org/wiki/Sora_(text-to-video_model)",
+   "source_verified": "scraper-fetched",
+   "detectable": false,
+   "ufs_chassis_ships_it": false
+  },
+  {
    "id": "E1",
    "domain": "editing",
    "tell": "Mass-produced template videos",
@@ -342,6 +357,17 @@
    "ufs_chassis_ships_it": false
   },
   {
+   "id": "E4",
+   "domain": "editing",
+   "tell": "One preset grade on every clip",
+   "why": "A look applied instead of shots balanced; the teal-and-orange trend dates from 2010",
+   "instead": "Balance each shot, then apply one look",
+   "source": "https://en.wikipedia.org/wiki/Teal_and_orange",
+   "source_verified": "scraper-fetched",
+   "detectable": false,
+   "ufs_chassis_ships_it": false
+  },
+  {
    "id": "G1",
    "domain": "games",
    "tell": "Juice on everything",
@@ -355,6 +381,28 @@
     "scope": "quality --game",
     "rule": "report shake/flash triggers per second over a recorded session (report only)"
    },
+   "ufs_chassis_ships_it": false
+  },
+  {
+   "id": "G2",
+   "domain": "games",
+   "tell": "Generated assets shipped without saying so",
+   "why": "Steam requires disclosure of AI-generated content (clarified January 2026)",
+   "instead": "Disclose them; better, make them",
+   "source": "https://www.gamedeveloper.com",
+   "source_verified": "scraper-fetched",
+   "detectable": false,
+   "ufs_chassis_ships_it": false
+  },
+  {
+   "id": "G3",
+   "domain": "games",
+   "tell": "Unreviewed generated code",
+   "why": "Godot rejects \"vibe coded\" pull requests",
+   "instead": "Review it, then play it",
+   "source": "https://www.gamedeveloper.com",
+   "source_verified": "scraper-fetched",
+   "detectable": false,
    "ufs_chassis_ships_it": false
   },
   {
@@ -406,6 +454,17 @@
    "ufs_chassis_ships_it": false
   },
   {
+   "id": "D1",
+   "domain": "graphic-design",
+   "tell": "A logo that fills every inch, template symmetry, no one-colour or small version",
+   "why": "One image, not a system",
+   "instead": "A construction grid, and positive, negative, one-colour and minimum-size versions",
+   "source": "https://lefthd.com",
+   "source_verified": "snippet only (not re-read on the page)",
+   "detectable": false,
+   "ufs_chassis_ships_it": false
+  },
+  {
    "id": "D2",
    "domain": "graphic-design",
    "tell": "Raster inside a vector mark",
@@ -435,6 +494,28 @@
     "scope": "audit",
     "rule": "warn when more than one icon library is referenced, or inline SVG icons carry more than one stroke-width value"
    },
+   "ufs_chassis_ships_it": false
+  },
+  {
+   "id": "D4",
+   "domain": "graphic-design",
+   "tell": "Corporate Memphis illustration",
+   "why": "A cliche since 2017, now parody",
+   "instead": "One drawn voice, from the subject",
+   "source": "https://en.wikipedia.org/wiki/Corporate_Memphis",
+   "source_verified": "scraper-fetched",
+   "detectable": false,
+   "ufs_chassis_ships_it": false
+  },
+  {
+   "id": "D5",
+   "domain": "graphic-design",
+   "tell": "Generated lettering anywhere",
+   "why": "Stroke weights that disagree across the alphabet",
+   "instead": "Real type only",
+   "source": "https://fontmirror.com",
+   "source_verified": "scraper-fetched",
+   "detectable": false,
    "ufs_chassis_ships_it": false
   }
  ]

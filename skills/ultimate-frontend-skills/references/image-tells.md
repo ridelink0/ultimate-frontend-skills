@@ -506,3 +506,18 @@ result of everyone drawing from the same small set of named presets.
 - Disclosa, "Do you need to disclose AI-generated image in the United States? (2026)" - https://disclosa.com/guides/image/us-federal
 - Oakgen.ai, "Free Stock Photo Sites That Don't Look Cheap: 2026 Guide" (Unsplash/Pexels/Pixabay AI-exclusion policies) - https://oakgen.ai/blog/free-stock-photo-alternatives-2026
 - `C:\Users\OWNER\cinematic-web-design\skills\ultimate-frontend-skills\references\image-gen.md` (read in full before writing this document; covers CC0 materials/HDRIs, three.js wiring, generation-provider ranking, and the relighting problem - not duplicated here).
+
+## From the 2026-09-28 research
+
+Each row is an entry in `data/ai-tells.json`, which holds its source and,
+where a machine can see the pattern, the check the audit runs (named in the
+last column; `webdesign.mjs audit` prints the id beside the finding). The
+rest are judgements for whoever reviews the work.
+
+| Id | Tell | Why it reads as generated | Instead | Check |
+|---|---|---|---|---|
+| D1 | A logo that fills every inch, template symmetry, no one-colour or small version | One image, not a system | A construction grid, and positive, negative, one-colour and minimum-size versions | - |
+| D2 | Raster inside a vector mark | Traced or generated | Draw the vector | svg-embedded-raster |
+| D3 | Mixed icon sets and stroke widths | No icon system | One set, one grid, one stroke | icons-mixed |
+| D4 | Corporate Memphis illustration | A cliche since 2017, now parody | One drawn voice, from the subject | - |
+| D5 | Generated lettering anywhere | Stroke weights that disagree across the alphabet | Real type only | - |

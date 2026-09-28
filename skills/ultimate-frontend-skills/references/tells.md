@@ -200,3 +200,19 @@ real scale. Asymmetric grid, one dominant element, section padding that varies.
 Real numbers with dates; never an invented customer or statistic. Semantic HTML,
 content visible at rest, no `transition: all`. One italic phrase. Copy that could
 not describe any other product.
+
+## From the 2026-09-28 research
+
+Each row is an entry in `data/ai-tells.json`, which holds its source and,
+where a machine can see the pattern, the check the audit runs (named in the
+last column; `webdesign.mjs audit` prints the id beside the finding). The
+rest are judgements for whoever reviews the work.
+
+| Id | Tell | Why it reads as generated | Instead | Check |
+|---|---|---|---|---|
+| W1 | Unmodified shadcn/Tailwind components | Everyone ships the same components | Restyle from page tokens | web-shadcn-defaults |
+| W2 | Lucide Sparkles/Zap/Shield/BarChart3/Check feature icons | Recurring AI icon set | Subject icons or none | web-lucide-slop-set |
+| W3 | Most Popular tier, Built with care footer, traffic-light terminal mockup | Default AI scaffold | Only sections the business has | web-scaffold-furniture |
+| W4 | blue-600 to purple-500/pink-500 gradient; emerald-500 success | Palette homogeneity | Palette from the subject | web-slop-gradient-pair |
+| W5 | Section waterfall order | Structural slop | Sections by register | web-section-waterfall |
+| W6 | Em-dash density and tricolons | 4-6x the 2019 rate | copy-tells.md rules | copy-emdash-density |
