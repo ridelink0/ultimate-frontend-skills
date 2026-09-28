@@ -51,9 +51,9 @@ test('scaffolder: skip link and nav precede <main id="main">, the footer follows
       // The 404 is its own document: its skip link jumps to its own main,
       // not to the home page's.
       assertLandmarks(notFound, preset + ' 404.html', '#main');
-      assert.ok(!notFound.includes('./#main'), preset + ' 404.html: no skip link to the home page');
+      assert.ok(!notFound.includes('/#main'), preset + ' 404.html: no skip link to the home page');
       // Every other in-page link on the 404 still points back at the index.
-      assert.ok(notFound.includes('href="./#top"'), preset + ' 404.html: the brand link still goes home');
+      assert.ok(notFound.includes('href="/#top"'), preset + ' 404.html: the brand link still goes home, root-absolute (it is served at any missing address)');
     }
   } finally { rmSync(temp, { recursive: true, force: true }); }
 });

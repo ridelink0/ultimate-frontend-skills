@@ -174,3 +174,48 @@ test('a sounding media element outside the AudioContext mix is a warning; a mute
   assert.equal(hit(runJs({ 'audio.js': audio }, '<video src="intro.mp4" autoplay></video>')).length, 1, 'an HTML element with sound counts too');
   assert.equal(hit(runJs({ 'audio.js': audio }, '<video src="loop.mp4" autoplay muted loop></video>')).length, 0);
 });
+
+/* Judge round 3: a page passed with img/hero.jpg absent and href="/privacy"
+   leading nowhere, and a counter keeps the library's number in data-count
+   after its text is rewritten (motion.js writes the attribute over the text). */
+test('a local file the page asks for that does not exist is an error; one that exists, a pretty URL and external links are not', async () => {
+  const { mkdtempSync, writeFileSync, mkdirSync, rmSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const { join } = await import('node:path');
+  const dir = mkdtempSync(join(tmpdir(), 'ufs-audit-files-'));
+  try {
+    mkdirSync(join(dir, 'img'));
+    mkdirSync(join(dir, 'about'));
+    writeFileSync(join(dir, 'img', 'real.jpg'), 'x');
+    writeFileSync(join(dir, 'terms.html'), '<!doctype html><title>t</title>');
+    writeFileSync(join(dir, 'about', 'index.html'), '<!doctype html><title>a</title>');
+    writeFileSync(join(dir, 'index.html'), `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Files</title>
+<link rel="stylesheet" href="/missing.css"><script>const s = '<img src="not-a-file.png">';</script></head><body><main><h1>Files</h1>
+<img src="img/real.jpg" alt="a" width="1" height="1"><img src="img/hero.jpg?v=2" alt="b" width="1" height="1">
+<a href="/privacy">Privacy</a> <a href="/terms">Terms</a> <a href="about/">About</a> <a href="./#x">x</a>
+<a href="https://example.org/a">e</a> <a href="mailto:a@b.co">m</a> <a href="#x" id="x">in page</a></main></body></html>`);
+    const r = runAudit(dir);
+    const hit = r.findings.filter((f) => /the page asks for/.test(f.text));
+    assert.equal(hit.length, 1, JSON.stringify(r.findings));
+    assert.equal(hit[0].level, 'error');
+    for (const s of ['/missing.css (href)', 'img/hero.jpg?v=2 (src)', '/privacy (href)']) assert.ok(hit[0].text.includes(s), s + ' not named: ' + hit[0].text);
+    for (const s of ['real.jpg', '/terms', 'about/', 'example.org', 'mailto', 'not-a-file.png']) assert.ok(!hit[0].text.includes(s), s + ' was named: ' + hit[0].text);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test('a counter whose data-count does not match its text is an error; a matching one and an exploded part are not', async () => {
+  const { mkdtempSync, writeFileSync, rmSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const { join } = await import('node:path');
+  const dir = mkdtempSync(join(tmpdir(), 'ufs-audit-count-'));
+  try {
+    writeFileSync(join(dir, 'index.html'), `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Count</title></head><body><main><h1>Count</h1>
+<span data-count="1566">40</span> <span data-count="1200">1,200</span> <span data-count="21" data-count-suffix="m">21m</span>
+<ol><li data-shape="chain" data-count="5">Bracelet</li></ol></main><script src="motion.js" defer></script></body></html>`);
+    const r = runAudit(dir);
+    const hit = r.findings.filter((f) => /motion\.js counts up to data-count/.test(f.text));
+    assert.equal(hit.length, 1, JSON.stringify(r.findings));
+    assert.match(hit[0].text, /data-count="1566" on text "40"/);
+    assert.doesNotMatch(hit[0].text, /1200|"21m"|Bracelet/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});

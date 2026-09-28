@@ -280,17 +280,20 @@ h2, h3 { font-variation-settings: "opsz" 48, "wght" 360; }
   display: flex; align-items: center; justify-content: space-between; gap: var(--s-5);
   padding: var(--s-4) var(--gutter);
   font-family: var(--font-ui); font-size: var(--step--1);
-  color: var(--nav-ink, var(--bone-50));
+  color: var(--nav-ink, var(--fg));
   border-bottom: 1px solid transparent;
   transition: background var(--dur-2) var(--ease), color var(--dur-2) var(--ease),
               padding var(--dur-2) var(--ease), border-color var(--dur-2) var(--ease);
 }
-/* The light default assumes a photograph, a canvas or a dark ground under the
-   header. A hero with none of those - hero-split's type-and-object opener on
-   the bone ground - was getting bone-50 text on bone, near-invisible until the
-   nav stuck. Flat heroes take the page ink instead. */
-body:has(.hero:not(:has(.hero__media, canvas, .on-media)):not([data-tone="dark"])) .nav:not(.is-stuck) {
-  color: var(--nav-ink, var(--fg));
+/* The header takes the page ink, and light type only over an opening hero
+   that sets its own type on media (a photograph, a canvas, cut planes) or is
+   dark-toned. The rule this replaces nested :has() inside :has(), which no
+   browser accepts, so it was dropped whole: every flat hero kept bone-50 nav
+   type on bone paper, 1.06:1 (judge rounds 2 and 3). :where() keeps this at
+   the weight of .nav, so a preset or site.css that colours the nav still wins
+   by coming later; .nav.is-stuck outranks it once the page scrolls. */
+:where(body:has(#top.hero .on-media, #top.hero[data-tone="dark"])) .nav {
+  color: var(--nav-ink, var(--bone-50));
 }
 .nav__brand { font-family: var(--font-display); font-size: 1.05rem; letter-spacing: 0.04em; }
 .nav__links { display: flex; gap: clamp(1rem, 2.4vw, 2.25rem); list-style: none; padding: 0; }
@@ -387,6 +390,10 @@ body:has(.hero:not(:has(.hero__media, canvas, .on-media)):not([data-tone="dark"]
 .hero { position: relative; min-height: 100svh; display: grid; align-items: center;
         isolation: isolate; overflow: clip; }
 .hero__media { position: absolute; inset: 0; z-index: -2; }
+/* A hero that sets type on media is a dark field until its media paints:
+   before the photograph exists, while it loads, or when it fails. Bare paper
+   under light type and a light header was unreadable in exactly that state. */
+.hero:has(.on-media) { background-color: var(--ink-900); }
 .hero__media img, .hero__media video { width: 100%; height: 100%; object-fit: cover;
         filter: saturate(0.86) contrast(1.04) brightness(0.94); }
 

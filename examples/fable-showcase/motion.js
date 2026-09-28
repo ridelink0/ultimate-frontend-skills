@@ -108,7 +108,9 @@
   }
 
   /* ---- counters: <span data-count="1566"> ------------------------------- */
-  const counters = [...document.querySelectorAll('[data-count]')];
+  // An exploded-3d part (data-shape) uses data-count for how many links a
+  // chain has; counting it up wrote "5" over the part's name.
+  const counters = [...document.querySelectorAll('[data-count]:not([data-shape])')];
   if (counters.length) {
     const format = (n, dp) => n.toLocaleString(undefined, {
       minimumFractionDigits: dp, maximumFractionDigits: dp,

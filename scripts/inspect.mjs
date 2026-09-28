@@ -147,8 +147,18 @@ function profileHolders(udd) {
    the process and hoping. */
 export async function closeBrowser(browser) {
   if (!browser) return true;
-  const { proc, udd } = browser;
+  const { proc, udd, port } = browser;
   try { proc.kill(); } catch { /* already gone */ }
+  // A browser that was handed off (its launcher exited 0) is reachable only
+  // over the protocol or by its command line. The kill above asks both ways,
+  // but on Windows the command-line query blocks this process for seconds
+  // under load, long enough for the protocol request's own timeout to fire,
+  // and the child lived on (the HQ-2 stub test, on a machine at 100% CPU).
+  // So ask again until the port stops answering, and then end it by name.
+  if (port) {
+    for (let i = 0; i < 10 && await answers(port); i++) { closeOverCdp(port); await sleep(500); }
+    if (await answers(port)) endProfileProcesses(udd);
+  }
   // A handed-off launcher has exitCode set already, so its 'exit' event has
   // fired and awaiting it would hang; the kill above ended the real browser.
   if (proc && proc.exitCode === null && proc.signalCode === null) {
@@ -461,7 +471,7 @@ export const CANVAS_INIT = `(() => {
 /* Runs inside the page. Everything it needs must be self-contained. */
 export const PROBE = `(() => {
   const out = { overlaps: [], overflow: [], contrast: [], collapsed: [], broken: [],
-                tiny: [], offscreen: [], imageCandidates: [], stats: {} };
+                tiny: [], offscreen: [], imageCandidates: [], brokenWords: [], stats: {} };
   const vw = innerWidth, vh = innerHeight;
 
   const vis = (el) => {
@@ -567,6 +577,31 @@ export const PROBE = `(() => {
       }
     }
     return l < rr && t < b ? { left: l, top: t, width: rr - l, height: b - t } : null;
+  };
+
+  // What is painted under a text box: a photograph (an <img> that loaded, a
+  // playing video, a url() background), a canvas, a gradient, or none of them
+  // - the page itself, under a pinned header. Only the first is "the photo
+  // behind it"; the report called a bone page a photo (judge round 3).
+  const RANK = { page: 0, gradient: 1, canvas: 2, image: 3 };
+  const groundOf = (el, rect) => {
+    let kind = 'page';
+    for (const fx of [0.15, 0.5, 0.85]) {
+      const x = rect.left + rect.width * fx, y = rect.top + rect.height / 2;
+      for (const n of document.elementsFromPoint(x, y)) {
+        if (n === el || el.contains(n)) continue;
+        let k = null;
+        if (n.tagName === 'IMG') k = n.complete && n.naturalWidth > 0 ? 'image' : null;
+        else if (n.tagName === 'VIDEO') k = n.readyState >= 2 ? 'image' : null;
+        else if (n.tagName === 'CANVAS') k = 'canvas';
+        else {
+          const bi = getComputedStyle(n).backgroundImage;
+          if (bi && bi !== 'none') k = /url\\(/.test(bi) ? 'image' : 'gradient';
+        }
+        if (k && RANK[k] > RANK[kind]) kind = k;
+      }
+    }
+    return kind;
   };
 
   // Elements whose own text is painted (not just inherited from a child).
@@ -700,12 +735,32 @@ export const PROBE = `(() => {
     if (width < 2 || height < 2) continue;
     out.imageCandidates.push({
       el: label(el), fg, need, size: Math.round(size),
-      rect: { left, top, width, height },
+      rect: { left, top, width, height }, ground: groundOf(el, { left, top, width, height }),
     });
   }
   out.contrast.sort((a, b) => a.ratio - b.ratio);
   out.contrast = out.contrast.slice(0, 10);
   out.imageCandidates = out.imageCandidates.slice(0, 20);
+
+  // A display heading broken inside a word. core.css sets overflow-wrap:
+  // break-word so a long word never runs off the page, and in a narrow hero
+  // column that split "Unapologetically" into "Unapolog" / "etically" with no
+  // hyphen, which every check above passed (judge rounds 2 and 3). A word
+  // whose glyphs land on more than one line has been broken; hyphens:auto
+  // adds its own hyphen and is left alone.
+  for (const el of document.querySelectorAll('h1, h2, .t-hero, .t-mega')) {
+    if (!vis(el) || getComputedStyle(el).hyphens === 'auto') continue;
+    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+    for (let t = walker.nextNode(); t; t = walker.nextNode()) {
+      for (const w of t.textContent.matchAll(/[^\\s\\u00ad-]{4,}/g)) {
+        _range.setStart(t, w.index);
+        _range.setEnd(t, w.index + w[0].length);
+        const tops = new Set([..._range.getClientRects()].filter((b) => b.width > 0.5).map((b) => Math.round(b.top)));
+        if (tops.size > 1) out.brokenWords.push({ el: label(el), word: w[0], lines: tops.size });
+      }
+    }
+  }
+  out.brokenWords = out.brokenWords.slice(0, 8);
 
   // Content that is present but has collapsed to nothing.
   for (const el of document.querySelectorAll('body *')) {
@@ -902,7 +957,7 @@ export function sampleImageContrast(png, candidates) {
     const byRisk = ground.slice().sort((a, b) => contrastRatio(cand.fg, a) - contrastRatio(cand.fg, b));
     const worstRatio = contrastRatio(cand.fg, meanColor(byRisk.slice(0, Math.max(1, Math.round(ground.length * 0.1)))));
     if (avgRatio < cand.need)
-      found.push({ el: cand.el, ratio: +avgRatio.toFixed(2), worstRatio: +worstRatio.toFixed(2), need: cand.need, size: cand.size, method: 'photo' });
+      found.push({ el: cand.el, ratio: +avgRatio.toFixed(2), worstRatio: +worstRatio.toFixed(2), need: cand.need, size: cand.size, method: 'photo', ground: cand.ground || 'page' });
   }
   return found;
 }
@@ -1087,14 +1142,19 @@ export async function inspect(url, { widths = [1440, 390], out = null, full = fa
     }
   } finally {
     if (session) session.close();
-    await closeBrowser({ proc, udd });
+    await closeBrowser({ proc, udd, port });
   }
   return results;
 }
 
-export function formatReport(results) {
+export function formatReport(results, { missed = null } = {}) {
   const lines = [];
   let errors = 0, warns = 0;
+  // A missing image is one defect: the HTTP 404 names it, at the one scroll
+  // position whose events carried it, and every probe after also found the
+  // image broken. `missed` lets a caller formatting one result at a time pass
+  // the whole run's failures.
+  const failed = missed || results.flatMap((r) => (r.network || []).map((f) => String(f.error)));
   for (const r of results) {
     lines.push(`\n  ${r.width}px${r.scroll ? ' scrolled ' + r.scroll + 'px' : ''}  (${r.stats.textElements} text elements, page ${r.stats.scrollHeight}px tall)`);
     for (const error of r.actionErrors || []) { errors++; lines.push('  ERROR interaction: ' + error); }
@@ -1135,7 +1195,7 @@ export function formatReport(results) {
         { warns++; lines.push(`  warn  ${kind}${which} is ${Math.round(canvas.clipped * 100)}% clipped to pure white; a lit surface at 255 on every channel has lost its texture - shade the texture, do not add light`); }
     }
     if (r.measured) {
-      const found = judge(r.measured, { expectDepth: false });
+      const found = judge(r.measured, { expectDepth: false, width: r.width });
       const shown = formatQuality(r.measured, found);
       errors += shown.errors;
       warns += shown.warns;
@@ -1154,15 +1214,24 @@ export function formatReport(results) {
     for (const o of r.offscreen) { errors++; lines.push(`  ERROR ${o.el} is ${o.width}px in a ${o.vw}px viewport`); }
     for (const o of r.overflow) { errors++; lines.push(`  ERROR ${o.what} runs ${o.by}px past the right edge`); }
     for (const c of r.collapsed) { errors++; lines.push(`  ERROR collapsed to zero size but has text: ${c}`); }
-    for (const b of r.broken) { errors++; lines.push(`  ERROR image failed to load: ${b}`); }
+    for (const b of r.broken) {
+      const path = String(b).replace(/^\.?\//, '').split(/[?#]/)[0];
+      if (path && failed.some((e) => /^HTTP 4\d\d /.test(e) && e.split(/[?#]/)[0].endsWith('/' + path))) continue;
+      errors++; lines.push(`  ERROR image failed to load: ${b}`);
+    }
+    for (const w of r.brokenWords || []) { warns++; lines.push(`  warn  "${w.word}" is broken across ${w.lines} lines at ${r.width}px, with no hyphen: ${w.el} - give the column room, or set the heading smaller`); }
     for (const c of (r.console || [])) {
       if (c.level === 'error') { errors++; lines.push(`  ERROR console: ${c.text}`); }
       else { warns++; lines.push(`  warn  console: ${c.text}`); }
     }
     for (const c of r.contrast) {
-      warns++;
-      const via = c.method === 'photo' ? ' [sampled from the photo behind it' + (c.worstRatio != null ? `, ${c.worstRatio}:1 at its worst` : '') + ']' : ' [solid background]';
-      lines.push(`  warn  contrast ${c.ratio}:1 (needs ${c.need}) at ${c.size}px: ${c.el}${via}`);
+      // Body-size text (it needs 4.5:1) under 3:1 is unreadable, not a
+      // judgement call: the nav at 1.06:1 was a warning (judge round 3).
+      const severe = c.need > 3 && c.ratio < 3;
+      if (severe) errors++; else warns++;
+      const behind = { image: 'photo', canvas: 'canvas', gradient: 'gradient' }[c.ground] || 'page';
+      const via = c.method === 'photo' ? ` [sampled from the ${behind} behind it` + (c.worstRatio != null ? `, ${c.worstRatio}:1 at its worst` : '') + ']' : ' [solid background]';
+      lines.push(`  ${severe ? 'ERROR' : 'warn '} contrast ${c.ratio}:1 (needs ${c.need}) at ${c.size}px: ${c.el}${via}`);
     }
     for (const t of r.tiny) { warns++; lines.push(`  warn  tap target ${t.w}x${t.h}px (needs 24): ${t.el}`); }
     for (const c of r.clipped || []) { warns++; lines.push(`  warn  control cut short, ${c.shown}px of the ${c.needs}px it needs: ${c.el}`); }
@@ -1668,7 +1737,7 @@ export async function inspectStyles(url, { selector = 'h1,h2,h3,p,a,button', wid
     return { url, width, selector, ...page, resources, totalBytes: total };
   } finally {
     if (session) session.close();
-    await closeBrowser({ proc, udd });
+    await closeBrowser({ proc, udd, port });
   }
 }
 

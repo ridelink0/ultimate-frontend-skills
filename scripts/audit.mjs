@@ -5,7 +5,7 @@
    result back instead of having the whole process torn down under it. */
 
 import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
-import { join, extname, relative, basename } from 'node:path';
+import { join, extname, relative, basename, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const EMOJI = /[\u{1F000}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{FE0F}\u{1F1E6}-\u{1F1FF}]/u;
@@ -342,6 +342,51 @@ function slopChecks(hRaw, css, n, E, W) {
     W(`${n}: no text-wrap: balance on headings`);
 }
 
+/* Local files a page asks for, by src, href or poster, that are not on disk:
+   the hero photograph nobody added, a link to /privacy with no page behind
+   it. Both passed the audit (judge round 3). A root-absolute path is read
+   from the site root, anything else from the page's own folder; a path with
+   no extension may be a pretty URL for name.html or name/index.html, which is
+   how the static hosts serve it. External, data:, mailto: and in-page
+   references are not files. */
+function missingLocal(h, file, siteRoot) {
+  const missing = [];
+  const body = h.replace(/<!--[\s\S]*?-->/g, ' ').replace(/<(script|style|template)\b([^>]*)>[\s\S]*?<\/\1\s*>/gi, '<$1$2>');
+  for (const m of body.matchAll(/<([a-z][\w-]*)\b((?:[^>"']|"[^"]*"|'[^']*')*)>/gi)) {
+    for (const a of m[2].matchAll(/(?:^|\s)(src|href|poster)\s*=\s*(?:"([^"]*)"|'([^']*)')/gi)) {
+      const raw = (a[2] ?? a[3] ?? '').trim();
+      if (!raw || raw.startsWith('#') || raw.startsWith('//') || /^[a-z][\w+.-]*:/i.test(raw) || /[{}]/.test(raw)) continue;
+      let path = raw.split('#')[0].split('?')[0];
+      try { path = decodeURIComponent(path); } catch { /* keep it as written */ }
+      const abs = path.startsWith('/') ? join(siteRoot, path) : join(dirname(file), path || '.');
+      const tries = !path || path.endsWith('/') ? [join(abs, 'index.html')]
+        : extname(path) ? [abs] : [abs, abs + '.html', join(abs, 'index.html')];
+      if (!tries.some((t) => existsSync(t) && (t !== abs || statSync(t).isFile() || existsSync(join(t, 'index.html')))))
+        missing.push(`${raw} (${a[1].toLowerCase()})`);
+    }
+  }
+  return [...new Set(missing)];
+}
+
+/* A counter's number lives twice: in data-count, which motion.js counts up to
+   and writes over the element, and in the text. Rewriting the text and not the
+   attribute puts the library's numeral back on the page the moment it scrolls
+   into view. */
+function counterMismatches(h) {
+  const out = [];
+  for (const m of h.matchAll(/<([a-z][\w-]*)\b((?:[^>"']|"[^"]*"|'[^']*')*)>([^<]*)</gi)) {
+    const attr = (name) => { const v = m[2].match(new RegExp(`(?:^|\\s)${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)')`, 'i')); return v ? (v[1] ?? v[2]) : null; };
+    const count = attr('data-count');
+    if (count === null || attr('data-shape') !== null) continue;
+    const suffix = attr('data-count-suffix') || '';
+    const text = m[3].replace(/&nbsp;/g, ' ').trim();
+    const bare = (suffix && text.endsWith(suffix) ? text.slice(0, -suffix.length) : text).replace(/[,\s ]/g, '');
+    if (!/^-?\d+(\.\d+)?$/.test(bare) || parseFloat(bare) !== parseFloat(count))
+      out.push(`data-count="${count}" on text "${text}"`);
+  }
+  return out;
+}
+
 function walk(dir, out = []) {
   for (const e of readdirSync(dir, { withFileTypes: true })) {
     if (e.name === 'node_modules' || e.name.startsWith('.')) continue;
@@ -358,6 +403,7 @@ function walk(dir, out = []) {
 export function runAudit(target) {
   if (!existsSync(target)) throw new Error(`no such path: ${target}`);
   const files = statSync(target).isDirectory() ? walk(target) : [target];
+  const siteRoot = statSync(target).isDirectory() ? target : dirname(target);
   const htmls = files.filter((f) => extname(f) === '.html');
   const csss = files.filter((f) => extname(f) === '.css');
   const jss = files.filter((f) => extname(f) === '.js');
@@ -506,6 +552,11 @@ export function runAudit(target) {
     if (named.length) E(`${n}: ${named.length} piece${named.length > 1 ? 's' : ''} of scaffold copy still present: ${named.join(', ')}`);
 
     for (const [re, what] of FAKE_DATA) if (re.test(h)) E(`${n}: ${what}`);
+
+    const absent = missingLocal(h, f, siteRoot);
+    if (absent.length) E(`${n}: ${absent.length} local file${absent.length > 1 ? 's' : ''} the page asks for ${absent.length > 1 ? 'do' : 'does'} not exist: ${absent.join(', ')} - add ${absent.length > 1 ? 'them' : 'it'}, or point at what does exist`);
+    const counts = counterMismatches(h);
+    if (counts.length) E(`${n}: ${counts.join(', ')} - motion.js counts up to data-count and writes it over the text; set it to the number the text shows, or remove it`);
 
     const slop = SLOP_COPY.filter((s) => low.includes(s));
     if (slop.length) W(`${n}: marketing filler: "${slop[0]}"${slop.length > 1 ? ` (+${slop.length - 1} more)` : ''} - say the specific thing instead`);

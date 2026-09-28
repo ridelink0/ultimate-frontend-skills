@@ -942,6 +942,9 @@ export const BUDGETS = {
   totalKb: 2500,
   distinctSizes: 8,
   measureChars: [45, 80],
+  // A phone column: 16px type in a 390px viewport sets about 35-40
+  // characters, which is a normal phone measure, not a narrow one.
+  measureCharsPhone: [30, 80],
   depthSpread: 0.08,
   // Layouts forced per scroll event. A read-then-write scroll handler over 300
   // rows measured ~69; a passive handler writing one custom property measured
@@ -1151,10 +1154,15 @@ export function judge(measured, context = {}) {
       note('ok', type.distinctSizes + ' type sizes, largest ' + type.largestPx + 'px');
     }
     if (Number.isFinite(type.measureChars)) {
-      const [low, high] = BUDGETS.measureChars;
-      if (type.measureChars > high) note('warn', 'body measure is ' + type.measureChars + ' characters (over ' + high + ' is hard to track)');
-      else if (type.measureChars < low) note('warn', 'body measure is only ' + type.measureChars + ' characters');
-      else note('ok', 'body measure ' + type.measureChars + ' characters');
+      // The budget depends on the width it was measured at, and the finding
+      // names that width: 37 characters is a narrow desktop column and an
+      // ordinary phone one (judge round 3).
+      const phone = Number.isFinite(context.width) && context.width < 700;
+      const [low, high] = phone ? BUDGETS.measureCharsPhone : BUDGETS.measureChars;
+      const at = Number.isFinite(context.width) ? ' at ' + context.width + 'px' : '';
+      if (type.measureChars > high) note('warn', 'body measure is ' + type.measureChars + ' characters' + at + ' (over ' + high + ' is hard to track)');
+      else if (type.measureChars < low) note('warn', 'body measure is only ' + type.measureChars + ' characters' + at + ' (under ' + low + (phone ? ' on a phone' : '') + ')');
+      else note('ok', 'body measure ' + type.measureChars + ' characters' + at);
     }
     if (Number.isFinite(type.largestPx) && type.largestPx < 40) {
       note('warn', 'largest type on the page is ' + type.largestPx + 'px', 'the house style opens at display scale');

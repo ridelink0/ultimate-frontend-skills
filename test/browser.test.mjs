@@ -119,7 +119,7 @@ test('verify merges audit, render and security into one verdict with one exit co
   const dir = mkdtempSync(join(tmpdir(), 'verify-merge-'));
   try {
     // no <main>/<section>/<article> -> an audit ERROR; #222 on #141414 -> a
-    // render/contrast warning; nothing here trips a high-severity security rule.
+    // render/contrast error (1.1:1); nothing here trips a high-severity security rule.
     writeFileSync(join(dir, 'index.html'),
       '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width">' +
       '<title>Verify fixture</title><meta name="description" content="A fixture page long enough to pass the meta-description length check comfortably.">' +
@@ -127,7 +127,7 @@ test('verify merges audit, render and security into one verdict with one exit co
     const result = await runVerify(dir, { out: join(dir, 'review'), widths: [800], wait: 60 });
     assert.equal(result.exitCode, 1);
     assert.ok(result.sections.audit.errors >= 1, 'audit should flag the missing <main>/<section>/<article>');
-    assert.ok(result.sections.render.warns >= 1, 'render should flag the low-contrast text on the dark box');
+    assert.ok(result.sections.render.errors >= 1, 'render should flag the unreadable text on the dark box: body text under 3:1 is an error');
     assert.ok(!result.sections.security.skipped);
     assert.equal(result.totals.error, result.sections.audit.errors + result.sections.render.errors + (result.sections.security.errors || 0));
   } finally { rmSync(dir, { recursive: true, force: true }); }
@@ -568,7 +568,8 @@ test('a launcher that hands off to a child and exits 0 is a browser, and closing
       const version = await fetch(`http://127.0.0.1:${b.port}/json/version`).then((r) => r.json());
       assert.equal(version.Browser, 'stub/1');
       assert.equal(await closeBrowser(b), true, 'the profile was left behind');
-      for (let i = 0; i < 50 && alive(pid); i++) await new Promise((r) => setTimeout(r, 100));
+      // Under load the WMI query that ends it on Windows can take seconds.
+      for (let i = 0; i < 200 && alive(pid); i++) await new Promise((r) => setTimeout(r, 100));
       assert.equal(alive(pid), false, 'the handed-off child outlived closeBrowser: an orphaned browser');
     });
   } finally { rmSync(dir, { recursive: true, force: true }); }

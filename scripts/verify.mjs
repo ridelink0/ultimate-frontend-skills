@@ -10,6 +10,7 @@ import { resolve, relative } from 'node:path';
 import { runAudit } from './audit.mjs';
 import { debugSite } from './debug.mjs';
 import { securityAudit, formatSecurity } from './security.mjs';
+import { formatReport } from './inspect.mjs';
 
 // The render/quality checkers already print in the "  TAG  message" shape
 // (formatReport and formatQuality both use it - see inspect.mjs/measure.mjs).
@@ -19,13 +20,51 @@ function classifyLines(text) {
   const findings = [];
   for (const raw of text.split('\n')) {
     const m = raw.match(/^\s*(ERROR|warn|note)\s+(.*)$/);
-    if (!m) continue;
+    // An overlap's second line ("over: ...") belongs to the finding above it.
+    if (!m) {
+      const over = raw.match(/^\s+over: (.*)$/);
+      if (over && findings.length) findings[findings.length - 1].text += ' over ' + over[1].trim();
+      continue;
+    }
     findings.push({
       severity: m[1] === 'ERROR' ? 'error' : m[1] === 'warn' ? 'warning' : 'note',
       text: m[2].trim(),
     });
   }
   return findings;
+}
+
+/* The render pass runs every width, in both motion modes, at several scroll
+   positions, and printed each finding at each of them: one missing image was
+   16 errors and each contrast warning four, with no width named (judge round
+   3). One finding per defect now, saying where it was seen. Two readings are
+   one defect when they differ only in what was measured: a ratio, a pixel
+   count, a height, the port of the local server. */
+const defectKey = (f) => f.severity + '|' + f.text
+  .replace(/https?:\/\/(127\.0\.0\.1|localhost):\d+/g, 'local')
+  .replace(/\d+(\.\d+)?:1/g, '#:1')
+  .replace(/\bat y=\d+/g, 'at y=#')
+  .replace(/\b\d+(\.\d+)?(px|%| characters| ms| fps| KB)/g, '#$2');
+const ratioOf = (f) => { const m = f.text.match(/contrast (\d+(?:\.\d+)?):1/); return m ? Number(m[1]) : Infinity; };
+
+export function renderFindings(results) {
+  const byDefect = new Map();
+  const missed = results.flatMap((r) => (r.network || []).map((f) => String(f.error)));
+  for (const r of results) {
+    const mode = r.reducedMotion ? 'reduced' : 'normal';
+    for (const f of classifyLines(formatReport([r], { missed }).text)) {
+      const key = defectKey(f);
+      const seen = byDefect.get(key);
+      if (!seen) { byDefect.set(key, { ...f, widths: new Set([r.width]), modes: new Set([mode]) }); continue; }
+      seen.widths.add(r.width); seen.modes.add(mode);
+      // The worst reading of a contrast defect is the one shown.
+      if (ratioOf(f) < ratioOf(seen)) seen.text = f.text;
+    }
+  }
+  return [...byDefect.values()].map(({ widths, modes, ...f }) => ({
+    ...f,
+    text: f.text + ` - at ${[...widths].map((w) => w + 'px').join(', ')}; ${[...modes].join(' and ')} motion`,
+  }));
 }
 
 export async function runVerify(target, opts = {}) {
@@ -80,9 +119,11 @@ export async function runVerify(target, opts = {}) {
     scrolls: 'auto',
     measured: true,
   });
+  const renderList = renderFindings(debugResult.results);
   sections.render = {
-    errors: debugResult.errors, warns: debugResult.warns,
-    findings: classifyLines(debugResult.text),
+    errors: renderList.filter((f) => f.severity === 'error').length,
+    warns: renderList.filter((f) => f.severity === 'warning').length,
+    findings: renderList,
     reviewFile: debugResult.file,
   };
 

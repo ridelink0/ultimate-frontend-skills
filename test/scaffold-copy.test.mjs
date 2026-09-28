@@ -178,3 +178,95 @@ test('the shipped example sites carry no scaffold copy', () => {
     assert.deepEqual(copyFindings(r), [], ex);
   }
 });
+
+/* An agent that does exactly what the audit says and nothing more: rewrite
+   each piece it names, add each file it says is missing, fix each counter it
+   names, until it names none. The judge's obey.mjs did that on 6.6.0 and the
+   audit exited 0 with the watch's parts, the bridge's numerals, a date and the
+   launch page's contents still on the page (judge round 3). What is left after
+   obeying may share text with the library only where that text is interface
+   copy or a label that fits any subject: the list below. A new line of copy in
+   the library, unmarked and not on this list, fails this test. */
+const INTERFACE = new Set([
+  'skip to content', 'lantern', 'get in touch', 'see the detail', '[1]', '[2]', '[3]', '[4]', 'introduction',
+  'what changed', 'where to start', 'the method', 'construction', 'inside', 'nearby', 'what we do', 'how it goes',
+  'look', 'plan', 'build', 'leave', 'specification', 'material', 'dimensions', 'finish', 'warranty', 'selected work',
+  'questions', 'tell us what you need', 'leave blank', 'name', 'add your name so the reply has somewhere to go',
+  'email', 'that does not look like an email address. check for a missing @ or a stray space', 'what is happening',
+  'a sentence is enough. say what you need and when', 'send it', 'how your details are handled', 'back to top', '404',
+  'there is nothing at this address', 'the link may be old, or the page may have moved. nothing here is broken on your side',
+  'back to the start', 'work', 'method', 'detail', 'contact', 'top', 'page not found - lantern',
+  // the head's fixed values and the landmarks' names
+  'width=device-width, initial-scale=1', 'website', '#f2efe7', 'primary', 'menu', 'contents',
+]);
+const norm = (s) => s.replace(/&copy;|©/g, '').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim().toLowerCase().replace(/[\s.,;:!?]+$/, '');
+
+// The library's own text: every text node and every attribute a page shows or
+// announces, marked or not, with the marks taken off.
+function libraryText() {
+  const src = library.replace(/<!--[\s\S]*?-->/g, ' ').replace(/href="data:[^"]*"/g, '').replace(/\[\[([\s\S]*?)\]\]/g, '$1');
+  const out = new Set();
+  for (const t of src.split(/<[^>]*>/)) { const n = norm(t); if (n && /[a-z0-9]/.test(n)) out.add(n); }
+  for (const m of src.matchAll(/\s(?:alt|aria-label|title|placeholder|content)="([^"]*)"/g)) { const n = norm(m[1]); if (n) out.add(n); }
+  return out;
+}
+
+function pageText(html) {
+  const h = html.replace(/<!--[\s\S]*?-->/g, ' ').replace(/href="data:[^"]*"/g, '').replace(/<(script|style)\b[\s\S]*?<\/\1\s*>/gi, ' ');
+  const out = [];
+  for (const t of h.split(/<[^>]*>/)) { const n = norm(t); if (n) out.push(n); }
+  for (const m of h.matchAll(/\s(?:alt|aria-label|title|placeholder|content|data-count)="([^"]*)"/g)) { const n = norm(m[1]); if (n) out.push(n); }
+  return out;
+}
+
+const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+function obey(dir) {
+  let n = 0;
+  for (let round = 0; round < 10; round++) {
+    const r = runAudit(dir);
+    const copy = r.findings.filter((f) => /scaffold copy still present/.test(f.text));
+    const files = r.findings.filter((f) => /the page asks for/.test(f.text));
+    const counts = r.findings.filter((f) => /data-count="/.test(f.text));
+    if (!copy.length && !files.length && !counts.length) return { rounds: round, r };
+    for (const f of files) {
+      const page = f.text.split(':')[0];
+      for (const [, ref] of f.text.split(' not exist: ')[1].split(' - add')[0].matchAll(/(\S+) \((?:src|href|poster)\)/g)) {
+        const rel = ref.split(/[?#]/)[0];
+        const target = rel.startsWith('/') ? join(dir, rel) : join(dir, page, '..', rel);
+        writeFileSync(/\.[a-z0-9]+$/i.test(rel) ? target : target + '.html', /\.html?$/.test(rel) || !/\.[a-z0-9]+$/i.test(rel) ? '<!doctype html><title>Rye and Ember</title>' : 'x');
+      }
+    }
+    for (const file of readdirSync(dir).filter((x) => x.endsWith('.html'))) {
+      let h = readFileSync(join(dir, file), 'utf8');
+      for (const f of copy.filter((c) => c.text.startsWith(file + ':'))) {
+        for (const [, piece] of f.text.split('still present: ')[1].matchAll(/"([^"]+)"/g)) {
+          const re = new RegExp(piece.trim().split(/\s+/).map(escapeRe).join('(?:\\s|<[^>]+>)+'), 'gi');
+          h = h.replace(re, () => `Rye and Ember line ${++n}` + (/[.!?]$/.test(piece) ? '.' : ''));
+        }
+      }
+      for (const f of counts.filter((c) => c.text.startsWith(file + ':'))) {
+        for (const [, v] of f.text.matchAll(/data-count="([^"]*)"/g)) h = h.split(`data-count="${v}"`).join('');
+      }
+      writeFileSync(join(dir, file), h);
+    }
+  }
+  throw new Error('the audit never stopped naming scaffold copy, missing files or counters');
+}
+
+test('an agent that obeys the audit ends with none of the library\'s demo content on the page', () => {
+  const own = libraryText();
+  const { dir, pages } = scaffoldAll();
+  try {
+    for (const hero of heroes) {
+      const site = join(dir, hero);
+      const { rounds } = obey(site);
+      assert.ok(rounds >= 1, hero + ': the audit named nothing on a fresh scaffold');
+      for (const file of readdirSync(site).filter((x) => x.endsWith('.html'))) {
+        const left = [...new Set(pageText(readFileSync(join(site, file), 'utf8')).filter((t) => own.has(t) && !INTERFACE.has(t)))];
+        assert.deepEqual(left, [], `${hero}/${file}: library text still on the page after obeying the audit`);
+      }
+    }
+    void pages;
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});

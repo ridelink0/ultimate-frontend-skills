@@ -85,6 +85,24 @@ body{--bg:oklch(96.4% .008 88);--fg:oklch(22% .018 62);--fg-muted:oklch(44% .022
 };
 
 const DEFAULT_SECTIONS = ['nav', 'hero-photo', 'manifesto', 'services', 'stats', 'faq', 'contact', 'footer'];
+// The chassis and the engines, copied into every new project.
+const RUNTIME = ['core.css', 'motion.js', 'gradient.js', 'depth.js', 'exploded.js', 'sky.js'];
+
+/* The 404 is served at whatever address was missing, and the address bar
+   keeps that address (Netlify: "for any failed paths", and the URL "will not"
+   change). A relative core.css or ./ on it resolved against /menu/ at
+   /menu/today: no stylesheet, and a way home that was another 404 (judge
+   round 3, 2026-09-27). So every local src and href on it is root-absolute.
+   That assumes the site is served from the root of its domain; one published
+   under a sub-path (a GitHub project page) needs that prefix on each. The
+   skip link stays #main, a jump within this page. */
+function rootAbsolute(html) {
+  return html.replace(/\b(href|src)="(?!#|\/|[a-z][\w+.-]*:)(?:\.\/)?([^"]*)"/gi, (m, attr, path) => `${attr}="/${path}"`);
+}
+
+// A command the reader can paste as printed, quoted for the shell it runs in:
+// cmd.exe knows only double quotes, and a POSIX shell expands $ inside them.
+const shellQuote = (p) => (process.platform === 'win32' ? `"${p}"` : `'${p.replace(/'/g, `'\\''`)}'`);
 
 /* ------------------------------------------------------------------ new -- */
 function cmdNew() {
@@ -105,7 +123,7 @@ function cmdNew() {
   mkdirSync(dir, { recursive: true });
   mkdirSync(join(dir, 'img'), { recursive: true });
 
-  for (const f of ['core.css', 'motion.js', 'gradient.js', 'depth.js', 'exploded.js', 'sky.js']) writeFileSync(join(dir, f), readFileSync(join(ASSETS, f)));
+  for (const f of RUNTIME) writeFileSync(join(dir, f), readFileSync(join(ASSETS, f)));
 
   const head = sections.get('head').body
     .replace(/SITE NAME/g, name)
@@ -240,11 +258,11 @@ ${sections.get('footer').body.replace(/Brand Name/g, name)}
 ${sections.get('foot').body}
 </body>
 </html>
-`.replace(/href="#(?!main")/g, 'href="./#');
+`.replace(/href="#(?!main")/g, 'href="/#');
   // Every in-page link above points back at the index, except the skip link:
-  // it jumps to this page's own <main>, and as ./#main it took a keyboard
+  // it jumps to this page's own <main>, and as /#main it took a keyboard
   // user from the 404 to the home page.
-  writeFileSync(join(dir, '404.html'), notFound, 'utf8');
+  writeFileSync(join(dir, '404.html'), rootAbsolute(notFound), 'utf8');
   writeFileSync(join(dir, 'site.css'),
 `/* ${name} - project layer. core.css is the chassis; every choice specific to
    this subject belongs here. Do not edit core.css. */
@@ -286,8 +304,11 @@ ${preset.css}
 
   console.log(`ultimate-frontend-skills: ${relative(process.cwd(), dir) || '.'} (${presetName})`);
   console.log(`  index.html  ${wanted.join(', ')}`);
-  console.log(`  core.css motion.js gradient.js depth.js exploded.js site.css netlify.toml`);
-  console.log(`\nNext: replace every word of placeholder copy, then "node webdesign.mjs audit ${dir}".`);
+  console.log(`  ${['404.html', ...RUNTIME, 'site.css', 'netlify.toml', 'img/'].join(' ')}`);
+  // The script lives in the plugin, not in the project, so the command names
+  // it by its full path: "node webdesign.mjs audit" pasted in the project
+  // folder was MODULE_NOT_FOUND (judge round 3).
+  console.log(`\nNext: replace every word of placeholder copy, then run:\n  node ${shellQuote(fileURLToPath(import.meta.url))} audit ${shellQuote(dir)}`);
 }
 
 /* ----------------------------------------------------------------- list -- */
