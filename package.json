@@ -56,6 +56,7 @@
   ],
   "scripts": {
     "test": "node --test --test-concurrency=1 test/*.test.mjs",
+    "test:fast": "node test/run-fast.mjs",
     "audit": "node scripts/webdesign.mjs audit",
     "verify": "node scripts/webdesign.mjs verify",
     "awards": "node scripts/webdesign.mjs awards",

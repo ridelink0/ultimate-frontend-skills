@@ -28,7 +28,7 @@ test('a scene never overwrites another scene, and unknown references are refused
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
-test('stills and a clip render to an MP4 with exactly the requested frames', { skip: !(hasFfmpeg && findBrowser()), timeout: 180000 }, async () => {
+test('stills and a clip render to an MP4 with exactly the requested frames', { skip: !(hasFfmpeg && findBrowser()), timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 180000 }, async () => {
   const dir = mkdtempSync(join(tmpdir(), 'ufs-video-'));
   try {
     ff('-f', 'lavfi', '-i', 'color=c=0x8a6a3a:s=320x200', '-frames:v', '1', join(dir, 'a.png'));

@@ -61,7 +61,7 @@ async function nested404(dir) {
   } finally { await closeBrowser(b); await close(); }
 }
 
-test('the scaffolded 404 is styled at a nested missing address, and every way out of it is a real file', { skip, timeout: 120000 }, async () => {
+test('the scaffolded 404 is styled at a nested missing address, and every way out of it is a real file', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 120000 }, async () => {
   const { dir, site } = scaffold('nav,hero-split,manifesto,services,faq,contact,footer');
   try {
     // the contact section's /privacy link is a stand-in the audit names; a
@@ -80,7 +80,7 @@ test('the scaffolded 404 is styled at a nested missing address, and every way ou
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
-test('both shipped example 404s are styled at a nested missing address, and every way out of them is a real file', { skip, timeout: 120000 }, async () => {
+test('both shipped example 404s are styled at a nested missing address, and every way out of them is a real file', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 120000 }, async () => {
   for (const ex of ['fable-showcase', 'houston-roofing']) {
     const r = await nested404(join(root, 'examples', ex));
     assert.equal(r.status, 404, ex);
@@ -93,7 +93,7 @@ test('both shipped example 404s are styled at a nested missing address, and ever
 const navContrast = (results) => results.flatMap((r) => r.contrast.map((c) => ({ ...c, width: r.width })))
   .filter((c) => /nav__brand|nav__cta|"(Method|Work|Questions|Contact|Detail|Get in touch)"/.test(c.el));
 
-test('on the default bone preset the header reads at 4.5:1 over hero-split, and over hero-photo before its photo exists', { skip, timeout: 180000 }, async () => {
+test('on the default bone preset the header reads at 4.5:1 over hero-split, and over hero-photo before its photo exists', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 180000 }, async () => {
   for (const sections of ['nav,hero-split,manifesto,services,faq,contact,footer', 'nav,hero-photo,manifesto,services,faq,contact,footer']) {
     const { dir, site } = scaffold(sections);
     const { base, close } = await serve(site);
@@ -126,7 +126,7 @@ test('on the default bone preset the header reads at 4.5:1 over hero-split, and 
   }
 });
 
-test('body-size text under 3:1 is an ERROR, and "photo" is said only when image pixels are behind the text', { skip, timeout: 120000 }, async () => {
+test('body-size text under 3:1 is an ERROR, and "photo" is said only when image pixels are behind the text', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 120000 }, async () => {
   const dir = mkdtempSync(join(tmpdir(), 'ufs-ground-'));
   const png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP4//8/AwAI/AL+XJ/PIQAAAABJRU5ErkJggg==';
   writeFileSync(join(dir, 'white.png'), Buffer.from(png, 'base64'));
@@ -152,7 +152,7 @@ test('body-size text under 3:1 is an ERROR, and "photo" is said only when image 
   } finally { await close(); rmSync(dir, { recursive: true, force: true }); }
 });
 
-test('a display heading broken inside a word is named, with the word and the width', { skip, timeout: 120000 }, async () => {
+test('a display heading broken inside a word is named, with the word and the width', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 120000 }, async () => {
   const { dir, site } = scaffold('nav,hero-split,manifesto,footer');
   const index = join(site, 'index.html');
   writeFileSync(index, readFileSync(index, 'utf8').replace(/<h1 class="t-hero">[\s\S]*?<\/h1>/, '<h1 class="t-hero">Unapologetically slow sourdough.</h1>'));

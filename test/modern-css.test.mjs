@@ -57,7 +57,7 @@ test('the not-yet table carries grid-lanes, corner-shape, if() and scroll-state 
   assert.match(motion, /### Nav state: keep the JS, `scroll-state\(\)` is Chromium-only/);
 });
 
-test('a .stagger list takes its reveal offsets from its own order in a real browser', { skip: !findBrowser(), timeout: 90000 }, async () => {
+test('a .stagger list takes its reveal offsets from its own order in a real browser', { skip: !findBrowser(), timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
   const dir = mkdtempSync(join(tmpdir(), 'ufs-stagger-'));
   writeFileSync(join(dir, 'core.css'), coreCss);
   const items = Array.from({ length: 10 }, (_, i) => `<li class="r">${i + 1}</li>`).join('');

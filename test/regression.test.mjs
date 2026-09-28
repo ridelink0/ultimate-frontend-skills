@@ -261,7 +261,8 @@ test('CI installs a browser, points findBrowser() at it, and fails when tests sk
   // The one env var findBrowser() honours, read out of the function itself
   // rather than written down twice.
   const fn = src.slice(src.indexOf('export function findBrowser'), src.indexOf('const sleep ='));
-  const envVar = (fn.match(/process\.env\.([A-Z_]+)/) || [])[1];
+  // The one that names a browser path (UFS_NO_BROWSER only switches it off).
+  const envVar = (fn.match(/process\.env\.([A-Z_]+) && existsSync/) || [])[1];
   assert.ok(envVar, 'findBrowser() must resolve a browser from an env var');
   assert.match(yml, new RegExp('^ +' + envVar + ': +[$][{][{]', 'm'),
     `the workflow must set ${envVar} - findBrowser() reads no other name`);
@@ -405,4 +406,25 @@ test('a design reference is classified before it is rendered, and a bare .dc.htm
   near.type.textColours = [['rgb(78, 76, 70)', 4]];
   near.band = { left: 0.04, right: 0.96, n: 5 };
   assert.deepEqual(compareProfiles(profile, near).findings, []);
+});
+
+/* PLAN item 14: under heavy machine load (other agents, a local model) the
+   browser tests hit their own timeouts and passed alone. UFS_TEST_TIMEOUT_MS
+   raises every browser test's timeout without editing a file, and
+   UFS_NO_BROWSER=1 (npm run test:fast) skips them all. */
+test('every test with a timeout takes UFS_TEST_TIMEOUT_MS, and UFS_NO_BROWSER switches the browser off', async () => {
+  const { readdirSync: list } = await import('node:fs');
+  const dir = join(dirname(fileURLToPath(import.meta.url)));
+  for (const f of list(dir).filter((n) => n.endsWith('.test.mjs'))) {
+    for (const line of readFileSync(join(dir, f), 'utf8').split('\n').filter((l) => /^test\(/.test(l) && /timeout: /.test(l))) {
+      if (/UFS_NETWORK/.test(line)) continue;
+      assert.match(line, /timeout: Number\(process\.env\.UFS_TEST_TIMEOUT_MS\) \|\| \d+/, f + ': ' + line.slice(0, 90));
+    }
+  }
+  const { spawnSync } = await import('node:child_process');
+  const probe = (env) => spawnSync(process.execPath, ['-e', "import('./scripts/inspect.mjs').then((m) => process.stdout.write(String(m.findBrowser())))"],
+    { encoding: 'utf8', cwd: join(dir, '..'), env: { ...process.env, ...env } }).stdout;
+  assert.equal(probe({ UFS_NO_BROWSER: '1' }), 'null');
+  const pkg = JSON.parse(readFileSync(join(dir, '..', 'package.json'), 'utf8'));
+  assert.equal(pkg.scripts['test:fast'], 'node test/run-fast.mjs');
 });

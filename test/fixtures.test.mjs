@@ -90,12 +90,12 @@ const raisesAllowingTiming = (r, ...expected) => {
   expected.forEach((re, i) => assert.match(solid[i], re, 'fixture raised ' + JSON.stringify(got, null, 1)));
 };
 
-test('text overlapping text is caught, and only on the page that has it', { skip, timeout: 90000 }, async () => {
+test('text overlapping text is caught, and only on the page that has it', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
   raises(await measured('overlap.html'), /^layout: text over text$/);
   raises(await measured('clean-basic.html'));
 });
 
-test('content past the viewport is caught at 390px, and is gone at a width that fits it', { skip, timeout: 90000 }, async () => {
+test('content past the viewport is caught at 390px, and is gone at a width that fits it', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
   raises(await measured('overflow-390.html', { widths: [390] }), /^layout: past the viewport - div/);
   // The same 600px-wide box fits inside 1440, so the finding has to disappear
   // entirely rather than change wording: an overflow check that fires at every
@@ -103,7 +103,7 @@ test('content past the viewport is caught at 390px, and is gone at a width that 
   raises(await measured('overflow-390.html', { widths: [1440] }));
 });
 
-test('a canvas painted once reads as not animating', { skip, timeout: 90000 }, async () => {
+test('a canvas painted once reads as not animating', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
   const r = await measured('canvas-once.html');
   assert.equal(r.measured.motion.canvases[0].animating, false);
   raises(r, /^warn: 1 canvas painted once/);
@@ -113,13 +113,13 @@ test('a canvas painted once reads as not animating', { skip, timeout: 90000 }, a
 // enough apart, can both land on the same phase of a short loop and read a
 // genuinely animating canvas as dead. Sampling five times through the window
 // is what tells a blink from a still image.
-test('a two-state blink is recognised as animating, not mistaken for a still image', { skip, timeout: 90000 }, async () => {
+test('a two-state blink is recognised as animating, not mistaken for a still image', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
   const r = await measured('canvas-blink.html', { wait: 200 });
   assert.equal(r.measured.motion.canvases[0].animating, true);
   raises(r);
 });
 
-test('three data-depth planes with no engine behind them all move at the page rate, and it is flagged', { skip, timeout: 90000 }, async () => {
+test('three data-depth planes with no engine behind them all move at the page rate, and it is flagged', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
   const r = await measured('planes-same-rate.html');
   const rates = r.measured.depth.planes.map((p) => p.rate);
   assert.ok(rates.every((rate) => Math.abs(rate - 1) < 0.05), 'undriven planes should all read page rate: ' + JSON.stringify(rates));
@@ -132,13 +132,13 @@ test('three data-depth planes with no engine behind them all move at the page ra
     /^warn: plane "0\.8" declares depth/);
 });
 
-test('three data-depth planes that really move at different rates are not flagged', { skip, timeout: 90000 }, async () => {
+test('three data-depth planes that really move at different rates are not flagged', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
   const r = await measured('clean-depth.html');
   assert.equal(r.measured.depth.planes.length, 3, 'the fixture must actually declare three planes');
   raises(r);
 });
 
-test('a library loaded and never called is reported idle, and the same library actually running is not', { skip, timeout: 90000 }, async () => {
+test('a library loaded and never called is reported idle, and the same library actually running is not', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
   const idle = await measured('idle-library.html');
   assert.ok(idle.measured.cost.idleLibraries.includes('GSAP'));
   raises(idle, /^error: loaded and never used: GSAP$/);
@@ -147,7 +147,7 @@ test('a library loaded and never called is reported idle, and the same library a
   raises(used);
 });
 
-test('twenty distinct type sizes is over budget and named as such', { skip, timeout: 90000 }, async () => {
+test('twenty distinct type sizes is over budget and named as such', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
   const r = await measured('type-sizes-20.html');
   assert.equal(r.measured.type.distinctSizes, 20);
   assert.ok(r.measured.type.distinctSizes > BUDGETS.distinctSizes);
@@ -156,14 +156,14 @@ test('twenty distinct type sizes is over budget and named as such', { skip, time
   raises(r, /^warn: 20 distinct type sizes$/, /^warn: largest type on the page is 31px$/);
 });
 
-test('a measure past the readable width is over budget and named as such', { skip, timeout: 90000 }, async () => {
+test('a measure past the readable width is over budget and named as such', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
   const r = await measured('measure-140.html');
   assert.ok(r.measured.type.measureChars > BUDGETS.measureChars[1],
     'fixture should measure well past the ' + BUDGETS.measureChars[1] + '-character budget, got ' + r.measured.type.measureChars);
   raises(r, /^warn: body measure is 1\d\d characters/);
 });
 
-test('a page with nothing wrong raises nothing', { skip, timeout: 90000 }, async () => {
+test('a page with nothing wrong raises nothing', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
   const r = await measured('clean-basic.html');
   assert.equal(r.measured.type.distinctSizes <= BUDGETS.distinctSizes, true);
   raises(r);
@@ -172,7 +172,7 @@ test('a page with nothing wrong raises nothing', { skip, timeout: 90000 }, async
 /* ------------------------------------------------------- the driven run --- */
 /* Checks 1, 2 and 5 share one gesture, so they share their fixtures too. */
 
-test('a read-then-write scroll handler is caught, and the identical page without the read is not', { skip, timeout: 60000 }, async () => {
+test('a read-then-write scroll handler is caught, and the identical page without the read is not', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 60000 }, async () => {
   const bad = await measured('thrash-on-scroll.html');
   // Judged on the layout COUNT, which is a property of the code and reproduces
   // on any machine. Every millisecond figure is detail, never the trigger.
@@ -215,7 +215,7 @@ test('a read-then-write scroll handler is caught, and the identical page without
 // under window.scrollTo, so the teleporting probe read them as three planes at
 // one rate and raised "the parallax is in the markup but not on the screen"
 // against a page whose parallax is fine.
-test('planes driven by the wheel read three distinct rates under a real gesture', { skip, timeout: 60000 }, async () => {
+test('planes driven by the wheel read three distinct rates under a real gesture', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 60000 }, async () => {
   const r = await measured('planes-wheel-only.html');
   assert.equal(r.measured.depth.source, 'gesture', 'the rates must come from the driven scroll, not the teleport');
   const rates = r.measured.depth.planes.map((p) => p.rate);
@@ -225,7 +225,7 @@ test('planes driven by the wheel read three distinct rates under a real gesture'
   assert.ok(r.measured.run.samples >= 8 && r.measured.run.travel >= 400, JSON.stringify(r.measured.run));
 });
 
-test('a shift after load is attributed to the elements that actually moved', { skip, timeout: 60000 }, async () => {
+test('a shift after load is attributed to the elements that actually moved', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 60000 }, async () => {
   const r = await measured('shift-on-load.html', { wait: 900 });
   // Same rule as the thrash fixture: a page built to shift under load also
   // takes a long main-thread task on a busy machine, and that finding is
@@ -242,7 +242,7 @@ test('a shift after load is attributed to the elements that actually moved', { s
 
 /* ------------------------------------------------------ prefers-reduced --- */
 
-test('a looping animation with no reduced-motion query is caught; the same animation behind the query is not', { skip, timeout: 60000 }, async () => {
+test('a looping animation with no reduced-motion query is caught; the same animation behind the query is not', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 60000 }, async () => {
   raises(await measured('motion-ignores-reduce.html', { reducedMotion: true }),
     /^error: 1 looping animation still running under prefers-reduced-motion$/);
   raises(await measured('motion-honours-reduce.html', { reducedMotion: true }));
@@ -255,7 +255,7 @@ test('a looping animation with no reduced-motion query is caught; the same anima
 // perfectly by reading matchMedia once at boot - and because it never
 // re-evaluates, flipping the media mid-life leaves it animating. A checker
 // that reported that negative would condemn correct code.
-test('a page that reads matchMedia once at boot is never condemned by the live flip', { skip, timeout: 60000 }, async () => {
+test('a page that reads matchMedia once at boot is never condemned by the live flip', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 60000 }, async () => {
   const normal = await measured('motion-honours-reduce-via-js.html');
   assert.equal(normal.measured.reduce.liveFlip, true);
   assert.equal(normal.measured.reduce.runningUnderLiveFlip, 1, 'the live flip must genuinely still see it animating');
@@ -269,7 +269,7 @@ test('a page that reads matchMedia once at boot is never condemned by the live f
 
 /* ------------------------------------------------------------ page errors --- */
 
-test('a page that screenshots perfectly while failing underneath reports exactly what failed, once each', { skip, timeout: 60000 }, async () => {
+test('a page that screenshots perfectly while failing underneath reports exactly what failed, once each', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 60000 }, async () => {
   const r = await measured('broken-underneath.html');
   // A page this broken can also take a long task on a busy machine; that one
   // finding is triggered by a duration. The three below are still exact.
@@ -287,7 +287,7 @@ test('a page that screenshots perfectly while failing underneath reports exactly
   raises(await measured('clean-basic.html'));
 });
 
-test('a same-origin request that never resolves is reported; the same request answered is not', { skip, timeout: 90000 }, async () => {
+test('a same-origin request that never resolves is reported; the same request answered is not', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
   const { createServer } = await import('node:http');
   const sockets = new Set();
   const stall = createServer((req, res) => {
@@ -321,7 +321,7 @@ test('a same-origin request that never resolves is reported; the same request an
 
 /* ---------------------------------------------------------- interactions --- */
 
-test('three buttons with one defect each raise one finding each; the correct three raise none', { skip, timeout: 60000 }, async () => {
+test('three buttons with one defect each raise one finding each; the correct three raise none', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 60000 }, async () => {
   const r = await measured('click-defects.html', { interact: true });
   raises(r,
     /^a11y: no focus ring - button#noring/,
@@ -349,7 +349,7 @@ const parity = async (impl, opts = {}) => {
 };
 const texts = (result) => result.findings.map((f) => f.severity + ': ' + f.text).sort();
 
-test('an implementation that kept the design reports no delta at all', { skip, timeout: 90000 }, async () => {
+test('an implementation that kept the design reports no delta at all', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
   const r = await parity('match');
   // Proof the artboard was what got measured. The canvas top document has four
   // toolbar labels; the design inside the frame has five text elements.
@@ -359,7 +359,7 @@ test('an implementation that kept the design reports no delta at all', { skip, t
   assert.equal(r.errors, 0);
 });
 
-test('an implementation rebuilt in the house style reports exactly its type-scale and palette delta', { skip, timeout: 90000 }, async () => {
+test('an implementation rebuilt in the house style reports exactly its type-scale and palette delta', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
   const r = await parity('drift');
   assert.deepEqual(texts(r), [
     'error: this page does not implement the supplied design: 3 of 3 type sizes and 2 of 2 text colours are absent from it. A supplied design is preserved, not rebuilt in the house style.',
@@ -375,7 +375,7 @@ test('an implementation rebuilt in the house style reports exactly its type-scal
   assert.equal(r.errors, 1);
 });
 
-test('a page whose palette is written in oklch matches a design written in hex', { skip, timeout: 90000 }, async () => {
+test('a page whose palette is written in oklch matches a design written in hex', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
   // The false positive this check can least afford. getComputedStyle returns
   // oklch() verbatim, so before the probes converted colours to sRGB, a page
   // carrying the design's exact colours was told three of them were "not in
@@ -386,7 +386,7 @@ test('a page whose palette is written in oklch matches a design written in hex',
   assert.equal(r.errors, 0);
 });
 
-test('a drifted display line is named even though a headline is used exactly once', { skip, timeout: 90000 }, async () => {
+test('a drifted display line is named even though a headline is used exactly once', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
   // Only the h1 changed: 48px amber to 28px teal. The stray filter used to
   // drop both values before the comparison, which exempted the single element
   // a design is most about from the entire check.
@@ -401,7 +401,7 @@ test('a drifted display line is named even though a headline is used exactly onc
   assert.equal(r.errors, 0);
 });
 
-test('measuring a canvas without frame awareness reads the editor chrome, not the design', { skip, timeout: 90000 }, async () => {
+test('measuring a canvas without frame awareness reads the editor chrome, not the design', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
   // The failure this whole design exists to prevent, demonstrated rather than
   // described: aimed at the top document, the same correct implementation that
   // matches perfectly above now "fails" against a toolbar.
@@ -411,7 +411,7 @@ test('measuring a canvas without frame awareness reads the editor chrome, not th
   assert.ok(r.findings.length > 0, 'measuring the wrong frame must not look like a pass');
 });
 
-test('a bare .dc.html is refused rather than measured', { skip, timeout: 90000 }, async () => {
+test('a bare .dc.html is refused rather than measured', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
   const { runParity } = await import('../scripts/parity.mjs');
   await assert.rejects(
     () => runParity(join(DESIGN, 'match'), join(DESIGN, 'Main.dc.html'), { wait: 200 }),
@@ -423,7 +423,7 @@ test('a bare .dc.html is refused rather than measured', { skip, timeout: 90000 }
    a control that must NOT trip it. Several of the controls are the whole
    point: they are the correct, common patterns the checks were accusing. */
 
-test('a control that resizes itself under the pointer is not "moved out from under the pointer"', { skip, timeout: 60000 }, async () => {
+test('a control that resizes itself under the pointer is not "moved out from under the pointer"', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 60000 }, async () => {
   // Two toggles in a centred flex row. Changing the label moves each button's
   // own start point, so the layout-shift API reports it as an unstable element
   // whose PREVIOUS rect contained the click - which is all the check used to
@@ -435,7 +435,7 @@ test('a control that resizes itself under the pointer is not "moved out from und
   assert.deepEqual((bad.shifted || []).map((s) => s.el), ['BUTTON#jumps']);
 });
 
-test('a focus ring drawn on a pseudo element, an inner span or a :focus-within wrapper is seen', { skip, timeout: 60000 }, async () => {
+test('a focus ring drawn on a pseudo element, an inner span or a :focus-within wrapper is seen', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 60000 }, async () => {
   // getComputedStyle(el) with no second argument sees none of these three, so
   // all three read as "no visible focus indicator" - an accusation against
   // what most design systems actually ship.
@@ -445,7 +445,7 @@ test('a focus ring drawn on a pseudo element, an inner span or a :focus-within w
   assert.deepEqual((bad.focus || []).map((f) => f.el), ['button#noring "No focus ring at all"']);
 });
 
-test('a one-off lazy measurement is not reported as per-scroll-event thrash', { skip, timeout: 60000 }, async () => {
+test('a one-off lazy measurement is not reported as per-scroll-event thrash', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 60000 }, async () => {
   const r = await measured('lazy-measure-once.html');
   const run = r.measured.run;
   // Non-vacuous, and this is the whole discrimination: the ratio IS over
@@ -474,7 +474,7 @@ test('a one-off lazy measurement is not reported as per-scroll-event thrash', { 
   raisesAllowingTiming(bad, /^error: scrolling forces \d+(\.\d+)? layouts per scroll event \(budget 4\)$/);
 });
 
-test('collapsing animation-duration under reduced motion is honouring it, not ignoring it', { skip, timeout: 60000 }, async () => {
+test('collapsing animation-duration under reduced motion is honouring it, not ignoring it', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 60000 }, async () => {
   // The framework reset, written the third of the three canonical ways. The
   // animation is still infinite and still "running"; each pass covers a
   // hundredth of a millisecond.
@@ -484,7 +484,7 @@ test('collapsing animation-duration under reduced motion is honouring it, not ig
     /^error: 1 looping animation still running under prefers-reduced-motion$/);
 });
 
-test('a declared progress indicator is not condemned for spinning under reduced motion', { skip, timeout: 60000 }, async () => {
+test('a declared progress indicator is not condemned for spinning under reduced motion', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 60000 }, async () => {
   raises(await measured('spinner.html', { reducedMotion: true }));
   // Same infinite rotation with no role on it is still judged, so the
   // exemption is the declaration and not the shape.
@@ -492,7 +492,7 @@ test('a declared progress indicator is not condemned for spinning under reduced 
     /^error: 1 looping animation still running under prefers-reduced-motion$/);
 });
 
-test('requestAnimationFrame motion that ignores reduced motion is caught, and the same loop asked first is not', { skip, timeout: 90000 }, async () => {
+test('requestAnimationFrame motion that ignores reduced motion is caught, and the same loop asked first is not', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
   // The hole this closes: a rAF loop creates no Animation object, so
   // getAnimations() was empty and a page that flatly ignores the setting
   // reported clean. Every animation in this plugin's own house style is one.
@@ -509,7 +509,7 @@ test('requestAnimationFrame motion that ignores reduced motion is caught, and th
   assert.deepEqual(css.measured.reduce.rafMoving, []);
 });
 
-test('the shift-source buffer still answers on a page that shifts a thousand times', { skip, timeout: 90000 }, async () => {
+test('the shift-source buffer still answers on a page that shifts a thousand times', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
   // The buffer had a hard 80-entry ceiling that was never released, and every
   // reader takes an offset into it - so on a page that shifts a lot the click
   // check went permanently empty and reported nothing, which reads as "no

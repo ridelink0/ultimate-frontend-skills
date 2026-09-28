@@ -95,6 +95,11 @@ jobs:
               console.log('browser for the test run:', bin);
             });
           "
+      # The quick pass first (npm run test:fast: every file, browser checks
+      # skipped), so a failure outside the browser half shows in seconds.
+      - name: npm run test:fast
+        shell: bash
+        run: npm run test:fast
       - name: node --test (browser tests must not skip)
         shell: bash
         env:

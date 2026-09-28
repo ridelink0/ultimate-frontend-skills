@@ -140,7 +140,7 @@ const GAME = `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>
   gl.scissor(0, 0, c.width >> 1, c.height >> 1); gl.clearColor(0.9, 0.3, 0.2, 1); gl.clear(gl.COLOR_BUFFER_BIT);
 </script></body></html>`;
 
-test('a game title screen: text in fixed layers is measured, a closed map canvas is a note, a real clash is still an overlap', { skip, timeout: 90000 }, async () => {
+test('a game title screen: text in fixed layers is measured, a closed map canvas is a note, a real clash is still an overlap', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
   const site = await serve(GAME);
   try {
     const [r] = await inspect(site.url, { widths: [1366], wait: 300, scrolls: [0] });
@@ -161,7 +161,7 @@ test('a game title screen: text in fixed layers is measured, a closed map canvas
   } finally { await site.close(); }
 });
 
-test('a pinned header over scrolled content is still not an overlap, and its text is sampled against what is behind it', { skip, timeout: 90000 }, async () => {
+test('a pinned header over scrolled content is still not an overlap, and its text is sampled against what is behind it', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
   const rows = Array.from({ length: 30 }, (_, i) => '<p style="margin:0 0 8px">Body line ' + (i + 1) + ' of the long article</p>').join('');
   const site = await serve('<!doctype html><html lang="en"><meta charset="utf-8"><title>x</title><body style="margin:0;font:16px Georgia,serif;background:#f4efe6;color:#1b1914">' +
     '<header style="position:fixed;top:0;left:0;right:0;padding:10px 16px;color:#fff">Site name and navigation</header><main style="padding:0 16px">' + rows + '</main></body></html>');
@@ -174,7 +174,7 @@ test('a pinned header over scrolled content is still not an overlap, and its tex
   } finally { await site.close(); }
 });
 
-test('a native date field squeezed below its own width is reported; one at its width is not (HQ)', { skip, timeout: 90000 }, async () => {
+test('a native date field squeezed below its own width is reported; one at its width is not (HQ)', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
   const site = await serve('<!doctype html><html lang="en"><meta charset="utf-8"><title>x</title><body style="font:16px system-ui;padding:16px">' +
     '<form style="display:flex;gap:8px"><input aria-label="Task" style="flex:1"><input id="due" type="date" aria-label="Due" style="width:70px">' +
     '<input id="ok" type="date" aria-label="Start"><select id="tag" aria-label="Tag" style="width:44px"><option>Everything else</option></select>' +
@@ -192,7 +192,7 @@ test('a native date field squeezed below its own width is reported; one at its w
 
 // windows-latest has no GPU, and there Chrome's WebGL context was lost the
 // moment it was made (measured 2026-09-26): every WebGL page read as a flat fill.
-test('the game world reads as two colours in a browser with the GPU switched off', { skip, timeout: 90000 }, async () => {
+test('the game world reads as two colours in a browser with the GPU switched off', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
   const site = await serve(GAME);
   try {
     const [r] = await inspect(site.url, { widths: [1366], wait: 300, scrolls: [0], browserArgs: ['--disable-gpu'] });
@@ -204,7 +204,7 @@ test('the game world reads as two colours in a browser with the GPU switched off
   } finally { await site.close(); }
 });
 
-test('a browser whose WebGL is dead is relaunched on the software renderer, and says so', { skip, timeout: 90000 }, async () => {
+test('a browser whose WebGL is dead is relaunched on the software renderer, and says so', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
   // --disable-software-rasterizer on top of --disable-gpu leaves no WebGL at
   // all, the state the runner was in; the fallback launch does not carry them.
   const b = await launchRendering(findBrowser(), [], { firstAttempt: ['--disable-gpu', '--disable-software-rasterizer'] });
@@ -217,7 +217,7 @@ test('a browser whose WebGL is dead is relaunched on the software renderer, and 
   } finally { await closeBrowser(b); }
 });
 
-test('a page that loses its own WebGL context is told so, not told it drew a flat fill', { skip, timeout: 90000 }, async () => {
+test('a page that loses its own WebGL context is told so, not told it drew a flat fill', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
   const site = await serve('<!doctype html><html lang="en"><meta charset="utf-8"><title>x</title><body style="margin:0">' +
     '<canvas id="w" style="width:600px;height:400px;display:block"></canvas><script>' +
     'const gl = document.getElementById("w").getContext("webgl"); gl.clearColor(1,0,0,1); gl.clear(gl.COLOR_BUFFER_BIT);' +
@@ -248,7 +248,7 @@ test('CANVAS_INIT is exported, so a project suite can read WebGL pixels the way 
   assert.doesNotThrow(() => new Function(CANVAS_INIT));
 });
 
-test('a key screen can be typed through, and the key never reaches the report (HQ)', { skip, timeout: 90000 }, async () => {
+test('a key screen can be typed through, and the key never reaches the report (HQ)', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
   const site = await serve('<!doctype html><html lang="en"><meta charset="utf-8"><title>x</title><body style="font:16px system-ui;padding:16px">' +
     '<form id="gate"><label for="k">Room key</label> <input id="k" autocomplete="off"></form>' +
     '<main id="board" hidden><h1>To do</h1><p>Ship the field tests</p></main>' +
@@ -305,7 +305,7 @@ const LIT = `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>L
   fill('paper', 0.957, 0.6);    // paper white (244) with its shaded side
 </script></body></html>`;
 
-test('a WebGL canvas clipped to pure white is a warning; paper white with shading is not (Doodle Voyager)', { skip, timeout: 90000 }, async () => {
+test('a WebGL canvas clipped to pure white is a warning; paper white with shading is not (Doodle Voyager)', { skip, timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
   const site = await serve(LIT);
   try {
     const [r] = await inspect(site.url, { widths: [1280], wait: 300, scrolls: [0] });

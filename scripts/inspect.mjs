@@ -37,6 +37,8 @@ const CANDIDATES = process.platform === 'win32'
        '/usr/bin/microsoft-edge', '/snap/bin/chromium'];
 
 export function findBrowser() {
+  // `npm run test:fast` sets this, so every real-browser check skips.
+  if (process.env.UFS_NO_BROWSER === '1') return null;
   if (process.env.ATELIER_BROWSER && existsSync(process.env.ATELIER_BROWSER))
     return process.env.ATELIER_BROWSER;
   return CANDIDATES.find((p) => p && existsSync(p)) || null;
