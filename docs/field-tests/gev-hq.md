@@ -295,8 +295,10 @@ the software renderer before giving up.
 page's console, and relaunches with `SOFTWARE_WEBGL` (SwiftShader) only when
 it is dead; the report says when WebGL ran in software, a page that loses its
 own context is told so, and with no WebGL anywhere a canvas is a note naming
-the browser. The Windows job has been green since (run 36216733416 on
-5480e0d, both runners). The practice, for the checker and for pages, is in
+the browser. The first run green on both runners after the fix is run
+36222752391 on 4d26192; the runs in between, from 5480e0d on, failed or were
+cancelled on at least one runner (run 36216733416 on 5480e0d: Ubuntu failed,
+Windows cancelled). The practice, for the checker and for pages, is in
 `references/visual-debug.md`, section "A machine with no GPU".
 
 **Regression check.** `test/field-tests.test.mjs`, "the game world reads as two colours in a browser with the GPU switched off"

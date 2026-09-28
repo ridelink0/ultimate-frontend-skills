@@ -319,11 +319,16 @@ the plan recorded "a game test harness" as something UFS does not cover.
 follow (real transport under the served headers, simulated time, the
 placement function) and the browser pieces to build it from.
 
-**The UFS fix.** Partly done. The rules are in `references/games.md`, section
+**The UFS fix.** The rules are in `references/games.md`, section
 "Shipping a networked game: five more mistakes Doodle Voyager made", items
 6 to 8, and the browser pieces are importable from scripts/inspect.mjs
-(`findBrowser`, `launch`, `Session`, and now `CANVAS_INIT`). A scaffolded
-game harness is not built; see the note at the end.
+(`findBrowser`, `launch`, `Session`, and now `CANVAS_INIT`). Closed on
+2026-09-28 without a scaffolded harness, by decision: every check in the
+game's own tools/test.mjs is about that game (its `window.__dv` hooks, its
+netcode, its CSP), so a generic scaffold would be a wrapper around the
+pieces above with nothing of a game in it, which is a placeholder, and
+shipping a placeholder as a harness is what this record exists to stop. A
+game gets the rules and the pieces; its harness is its own.
 
 **Regression check.** Not testable: there is no harness scaffold in UFS yet
 to test. What exists (the exported browser pieces) is held by
@@ -845,11 +850,33 @@ the shipped reference, if the play-pass section goes missing, or if it drops
 below one question per lesson. That is the check that holds "teach other claudes
 from other people".
 
+## Gev's seventeen items, mapped
+
+Every item on Gev's list of 2026-09-25, by his numbering, and where it went.
+
+| Item | What Gev said | Where it went |
+|---|---|---|
+| 1 | Light should make the texture white, with shading toward the edges | DV-14 |
+| 2 | Enemy ships look like normal ships; the enemies inside clip through walls; hard to get inside | DV-15, DV-16, DV-17 |
+| 3 | Motion blur has no intensity control, and it shakes the screen | DV-18 |
+| 4 | The ship windows are too small | DV-19 |
+| 5 | Too close to the black hole loops the death | DV-20 |
+| 6 | No ads, as asked | DV-21 |
+| 7 | Boxes cannot be picked up | DV-22 |
+| 8 | Visit other people's ships; players as blue enemies | DV-23 |
+| 9 | Ships far faster, with acceleration control | DV-24 |
+| 10 | Find any other way to improve the game | DV-30: the play pass is the standing way to find the next improvement, and its questions are in `references/games.md` |
+| 11 | The game goes at the end of everything | Priority, not a lesson: the review was recorded as UFS work and the game stayed paused |
+| 12 | Do this on Sunday during the reset | Timing, not a lesson |
+| 13 | Free roam, not only plotted courses | DV-25 |
+| 14 | A different death screen for each cause | DV-26 |
+| 15 | Praise for clearing the C: drive | Not a task |
+| 16a | Other music fighting the soundtrack | DV-27 |
+| 16b | Record every mistake for UFS and teach other Claudes | This record, and the shipped references each lesson names |
+| 17 | Remove cruise; the player moves at cruise speed | DV-28 |
+
 ## Still open
 
-- A scaffolded game test harness (DV-13). It needs a design pass against the
-  game's own tools/test.mjs before it is worth shipping; a thin wrapper would
-  be a placeholder.
 - DV-2, DV-4, DV-5, DV-9 to DV-11 stay reference-only; each says why above.
 - DV-15 to DV-28 are shipped as rules and as the play pass, and each says
   above what a UFS check can and cannot decide. DV-14 (a lit surface clipped

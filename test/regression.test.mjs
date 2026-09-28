@@ -209,6 +209,17 @@ test('the bench reports a copy of this plugin\'s skills that is out of date or l
     const off = pick(await detectBench({ home, cwd, probe: false }));
     assert.deepEqual(off['personal:ultimate-frontend-skills'], { state: 'stale', duplicate: false });
     assert.deepEqual(off['personal:visual-research'], { state: 'current', duplicate: false });
+
+    // Codex reads ~/.agents/skills. With the plugin enabled there, a copy in
+    // that folder is loaded twice by Codex, and the bench says so.
+    mkdirSync(join(home, '.codex'), { recursive: true });
+    writeFileSync(join(home, '.codex', 'config.toml'), '[plugins."ultimate-frontend-skills@ultimate-frontend-skills"]\nenabled = true\n');
+    const codex = await detectBench({ home, cwd, probe: false });
+    assert.equal(codex.selfCopies.find((c) => c.where === 'agents' && c.name === 'image-deep-research').codexDuplicate, true);
+    assert.equal(codex.selfCopies.find((c) => c.where === 'personal' && c.name === 'visual-research').codexDuplicate, false);
+    assert.match(formatBench(codex), /Codex loads this beside the plugin enabled there/);
+    writeFileSync(join(home, '.codex', 'config.toml'), '[plugins."ultimate-frontend-skills@ultimate-frontend-skills"]\nenabled = false\n');
+    assert.ok((await detectBench({ home, cwd, probe: false })).selfCopies.every((c) => !c.codexDuplicate));
   } finally { rmSync(temp, { recursive: true, force: true }); }
 });
 

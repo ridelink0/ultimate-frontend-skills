@@ -1,0 +1,42 @@
+{
+  "note": "Every GitHub Actions run cited in docs/field-tests, as `gh run view <id> --json headSha,conclusion,jobs` returned it on 2026-09-28. test/field-tests.test.mjs checks each citation against this file: a run named green must have every job green, a run named failed must have failed. Add a run here when a record cites it.",
+  "repo": "ridelink0/ultimate-frontend-skills",
+  "runs": {
+    "36208761961": {
+      "sha": "fcb96b3",
+      "conclusion": "failure",
+      "ubuntu-latest": "success",
+      "windows-latest": "failure"
+    },
+    "36209230456": {
+      "sha": "f9bc58c",
+      "conclusion": "failure",
+      "ubuntu-latest": "success",
+      "windows-latest": "failure"
+    },
+    "36209682631": {
+      "sha": "e2bd1e3",
+      "conclusion": "failure",
+      "ubuntu-latest": "success",
+      "windows-latest": "failure"
+    },
+    "36209979300": {
+      "sha": "df4b7c5",
+      "conclusion": "failure",
+      "ubuntu-latest": "success",
+      "windows-latest": "failure"
+    },
+    "36216733416": {
+      "sha": "5480e0d",
+      "conclusion": "failure",
+      "ubuntu-latest": "failure",
+      "windows-latest": "cancelled"
+    },
+    "36222752391": {
+      "sha": "4d26192",
+      "conclusion": "success",
+      "ubuntu-latest": "success",
+      "windows-latest": "success"
+    }
+  }
+}

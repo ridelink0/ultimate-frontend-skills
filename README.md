@@ -361,8 +361,12 @@ the Met for image research. Details in [PRIVACY.md](PRIVACY.md).
 Every capability you would want to start directly has its own command. In
 Claude Code each one is `/ultimate-frontend-skills:<name>`; the bare
 `/<name>` works too, as long as no other installed plugin uses that name.
-Type the words you are after - `/image`, `/deep`, `/video`, `/blender` - and
-the menu finds the command whose name contains them.
+Typing `/ultimate-frontend-skills:` lists every one of them. A bare word such
+as `/video` or `/audit` also searches, but it searches every installed plugin,
+and with many installed another plugin's command can rank above this one; a
+replica of Claude Code 2.1.283's matcher over one install of about 500
+commands put UFS first for `/scaffold` and `/verify` and seventh for `/video`
+and `/audit`. The full name always finds it.
 
 | Command | What it starts |
 |---|---|

@@ -22,7 +22,7 @@ A fresh plugin reading matched the native Codex meter for both account windows. 
 
 ## Claude Design
 
-[Connection, sources and handoff workflow](../../skills/ultimate-website-skills/references/claude-design.md) (path corrected after the 4.0.0 rename; the old `skills/cinematic-web-design/` path in this audit's original text no longer exists). That reference was rewritten on 8 September 2026 against the running host: the live routes on a current Claude Code build are the built-in `design` canvas skill and the native `DesignSync` tool, and `scripts/design.mjs` now detects rather than registers. Authenticated remote design creation and the quality of a particular generated website were not tested, then or since.
+[Connection, sources and handoff workflow](../../skills/ultimate-frontend-skills/references/claude-design.md) (path corrected after the 4.0.0 and 5.0.0 renames; the old `skills/cinematic-web-design/` and `skills/ultimate-website-skills/` paths no longer exist). That reference was rewritten on 8 September 2026 against the running host: the live routes on a current Claude Code build are the built-in `design` canvas skill and the native `DesignSync` tool, and `scripts/design.mjs` now detects rather than registers. Authenticated remote design creation and the quality of a particular generated website were not tested, then or since.
 
 ## Reproduce
 

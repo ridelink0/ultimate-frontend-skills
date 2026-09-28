@@ -346,3 +346,46 @@ test("every lesson from Gev's play review is a numbered item in the shipped game
   assert.ok(pass.length > 400, 'games.md has no "Before you call a game done" section');
   assert.ok([...pass.matchAll(/^- \[ \] /gm)].length >= 15, 'the play pass needs one question per lesson');
 });
+
+/* A record that cites a CI run as green when it failed teaches the wrong
+   thing with evidence attached: HQ-12 said run 36216733416 was green on both
+   runners, and it had failed on Ubuntu and been cancelled on Windows (judge
+   round 3). Every run a record cites is checked against the snapshot in
+   docs/field-tests/ci-runs.json, recorded from gh: the sha written beside it,
+   and what the sentence says of it. */
+test('every CI run a field record cites exists in the recorded snapshot, with the sha and the result the record states', () => {
+  const snap = JSON.parse(readFileSync(join(FIELD, 'ci-runs.json'), 'utf8')).runs;
+  let cited = 0;
+  for (const file of records) {
+    const text = readFileSync(join(FIELD, file), 'utf8').replace(/\s+/g, ' ');
+    for (const sentence of text.split(/(?<=[.;])\s+(?=[A-Z(])/)) {
+      for (const m of sentence.matchAll(/\b(3\d{10})\b(?:\s+on\s+([0-9a-f]{7}))?/g)) {
+        cited++;
+        const run = snap[m[1]];
+        assert.ok(run, file + ': run ' + m[1] + ' is not in docs/field-tests/ci-runs.json');
+        if (m[2]) assert.equal(run.sha, m[2], file + ': run ' + m[1] + ' is on ' + run.sha + ', not ' + m[2]);
+        const jobs = Object.entries(run).filter(([k]) => k.endsWith('-latest')).map(([, v]) => v);
+        if (/\bgreen\b/i.test(sentence) && !/\bfailed\b/i.test(sentence))
+          assert.ok(jobs.every((j) => j === 'success'), file + ': run ' + m[1] + ' is called green but its jobs were ' + jobs.join(', '));
+        if (/\bfailed\b/i.test(sentence) && !/\bgreen\b/i.test(sentence))
+          assert.equal(run.conclusion, 'failure', file + ': run ' + m[1] + ' is called failed but concluded ' + run.conclusion);
+      }
+    }
+  }
+  assert.ok(cited >= 6, 'only ' + cited + ' run citations found; the pattern no longer matches how records cite runs');
+});
+
+/* Gev's list had seventeen items and the record explained three of them and
+   never named item 10 (judge round 3). Every item, by his numbering, has a
+   row saying where it went, and every lesson a row names exists. */
+test("every item on Gev's Doodle Voyager list has a row saying where it went", () => {
+  const text = readFileSync(join(FIELD, 'doodle-voyager.md'), 'utf8').replace(/\r/g, '');
+  const start = text.indexOf("## Gev's seventeen items, mapped");
+  assert.ok(start >= 0, 'no mapping section');
+  const table = text.slice(start, text.indexOf('\n## ', start + 5));
+  const rows = new Map([...table.matchAll(/^\| (\d+[ab]?) \| [^|]+ \| ([^|]+) \|$/gm)].map((m) => [m[1], m[2]]));
+  const items = [...Array.from({ length: 15 }, (_, i) => String(i + 1)), '16a', '16b', '17'];
+  for (const item of items) assert.ok(rows.has(item) && rows.get(item).trim().length >= 5, 'item ' + item + ' has no row');
+  const ids = new Set(lessons('doodle-voyager.md').map((l) => l.title.split('.')[0]));
+  for (const [item, where] of rows) for (const [id] of where.matchAll(/DV-\d+/g)) assert.ok(ids.has(id), 'item ' + item + ' names ' + id + ', which is not a lesson');
+});

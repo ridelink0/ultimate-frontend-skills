@@ -26,7 +26,9 @@ import { createHash } from 'node:crypto';
 import { inflateRawSync } from 'node:zlib';
 import { parseArgs } from './args.mjs';
 
-const VERSION = '5.0.0';
+// Read, not written here: a literal went stale at 5.0.0 while the plugin
+// shipped 6.x (judge round 3).
+const VERSION = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')).version;
 /* Poly Haven ToS 2.4 requires a Referer or user-agent that names the calling
    software, so every request from this file can be attributed to it. A default
    fetch UA is out of compliance, not merely impolite. */

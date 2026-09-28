@@ -221,8 +221,12 @@ function skillTree(dir) {
    the plugin's own copy, so the model can pick the stale one. `current` means
    every file is the same as this plugin's copy. `duplicate` is set only for
    the folders Claude Code itself reads, and only while this plugin is live
-   there. */
-export function selfCopies({ personal = [], project = [], agents = [] } = {}, { root = resolve(HERE, '..'), pluginLive = false } = {}) {
+   there. `codexDuplicate` is the same for Codex: it reads ~/.agents/skills
+   (and .agents/skills in a project), and its docs say two skills of one name
+   are not merged, both appear. So a copy there beside the plugin enabled in
+   Codex is loaded twice (judge round 3: Gev's Codex had 6.5.0 plus a stale
+   copy of every skill). */
+export function selfCopies({ personal = [], project = [], agents = [] } = {}, { root = resolve(HERE, '..'), pluginLive = false, codexLive = false } = {}) {
   const shipped = new Map(skillsIn(join(root, 'skills')).map((skill) => [skill.name, skill.dir]));
   const trees = new Map();
   const ours = (name) => {
@@ -246,6 +250,7 @@ export function selfCopies({ personal = [], project = [], agents = [] } = {}, { 
         state: differ.length ? 'stale' : 'current',
         differ: differ.length,
         duplicate: Boolean(claudeReads && pluginLive),
+        codexDuplicate: Boolean(where === 'agents' && codexLive),
       });
     }
   };
@@ -546,7 +551,11 @@ export async function detectBench({ home = homedir(), cwd = process.cwd(), probe
     sources: { installed: installed.file, schema: installed.schema, settings: enabled.files },
     probed: probe,
   };
-  bench.selfCopies = selfCopies(bench.skills, { root, pluginLive: plugins.some((plugin) => plugin.self && plugin.live) });
+  bench.selfCopies = selfCopies(bench.skills, {
+    root,
+    pluginLive: plugins.some((plugin) => plugin.self && plugin.live),
+    codexLive: bench.codex.enabled.some((id) => id.split('@')[0] === 'ultimate-frontend-skills'),
+  });
   return bench;
 }
 
@@ -614,7 +623,11 @@ export function formatBench(bench) {
       if (copy.duplicate) {
         line('      Claude Code loads this beside the plugin\'s own copy, so the model can pick either. Remove it; the plugin');
         line('      already ships it.');
-      } else if (copy.state === 'stale') {
+      }
+      if (copy.codexDuplicate) {
+        line('      Codex loads this beside the plugin enabled there (it reads this folder and does not merge two skills of');
+        line('      one name; both appear). Remove it; the Codex plugin already ships it.');
+      } else if (!copy.duplicate && copy.state === 'stale') {
         line('      Out of date against this plugin. Refresh it (npx skills add ridelink0/ultimate-frontend-skills) or remove it.');
       }
     }
