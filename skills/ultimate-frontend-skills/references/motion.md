@@ -4,6 +4,42 @@
 buttons, per-word headline reveal, nav shrink and scroll progress. Read this when
 you need something they do not cover.
 
+## What the chassis reveals, and what it leaves still
+
+The first motion tell of a generated page is the same fade-up on every
+section (`data/ai-tells.json`, M1), and the audit now warns when more than 60%
+of a page's sections reveal the same way. So `core.css` has four verbs and the
+section library uses them by content, one reveal group per section at most,
+with sections left still:
+
+| Class | What it does | For |
+|---|---|---|
+| `.r` | rises 18px and fades in | a list of rows (services) |
+| `.r .r--mask` | wipes in from the baseline (`clip-path`) | a headline, a statement, a row of numerals |
+| `.r .r--settle` | fades in from 97% scale | an image, a drawing, a figure |
+| `.r .r--none` | stays still inside a revealed group | the one item that must not move |
+
+Body copy takes no reveal. Every verb keeps the chassis rules: visible by
+default, motion only inside `prefers-reduced-motion: no-preference`, the scroll
+timeline where it exists and the IntersectionObserver fallback where it does
+not.
+
+Three more rules the chassis follows, each held by an audit check:
+
+- **A loop can be paused.** Anything that moves for more than five seconds
+  needs a control (WCAG 2.2.2, Pause, Stop, Hide; an ERROR in the audit). Put a
+  `<button type="button" data-pause aria-pressed="false">Pause motion</button>`
+  on the page: `motion.js` toggles `data-paused` on `<html>`, which holds every
+  CSS animation where it is and stops `gradient.js`, and a `.marquee` also holds
+  while it is pointed at or focused. hero-gradient ships the button.
+- **A number counts up only beside its source.** `motion.js` animates a
+  `data-count` only when the element has `data-source` or its section holds a
+  `<cite>`, a footnote (`<sup>`) or a link; otherwise the number is shown still.
+  The stats section carries a `Source:` line for that reason.
+- **`.progress` is for long reads.** A reading-progress bar on a page under
+  about 1,500 words is decoration; the audit says so, and nothing in the
+  section library emits one.
+
 ## Seven things that silently break scroll motion
 
 1. **The `animation` shorthand resets `animation-timeline` to `auto`.** Declare

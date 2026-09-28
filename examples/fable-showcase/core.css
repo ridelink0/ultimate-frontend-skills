@@ -457,7 +457,7 @@ body:has(.hero:not(:has(.hero__media, canvas, .on-media)):not([data-tone="dark"]
         background: color-mix(in oklab, var(--bg-raised) 92%, transparent);
         border: 1px solid var(--rule-soft);
         transition: transform var(--dur-2) var(--ease), border-color var(--dur-2) var(--ease); }
-.card:hover { transform: translateY(-3px); border-color: var(--rule); }
+.card:hover { border-color: color-mix(in oklab, var(--fg) 40%, transparent); }
 .card--glass {
   background: rgb(255 255 255 / 0.13); color: var(--bone-50);
   border: 1px solid rgb(255 255 255 / 0.22);

@@ -1,0 +1,441 @@
+{
+ "schema": {
+  "id": "domain letter + number, matching DO-NOT.md",
+  "domain": "web-motion|web|copy|motion-graphics|editing|games|graphic-design",
+  "tell": "the pattern",
+  "why": "why it reads as generated",
+  "instead": "what to do",
+  "source": "URL opened",
+  "source_verified": "verifier-confirmed | scraper-fetched",
+  "detectable": "true when a mechanical check is proposed",
+  "proposed_check": "id, where it runs, and the rule",
+  "ufs_chassis_ships_it": "true when UFS assets currently produce this pattern"
+ },
+ "checked": "2026-09-28",
+ "entries": [
+  {
+   "id": "M1",
+   "domain": "web-motion",
+   "tell": "Identical fade-up on every section with uniform stagger",
+   "why": "Framer Motion default repeated; no hierarchy",
+   "instead": "Reveal only what carries the argument; vary the verb; leave sections still",
+   "source": "https://github.com/febbhav/signs-of-ai-design",
+   "source_verified": "verifier-confirmed",
+   "detectable": true,
+   "proposed_check": {
+    "id": "motion-uniform-reveal",
+    "scope": "audit",
+    "rule": "warn when one reveal keyframe/duration pair is applied inside more than 60% of section elements"
+   },
+   "ufs_chassis_ships_it": true
+  },
+  {
+   "id": "M2",
+   "domain": "web-motion",
+   "tell": "0.1 s stagger everywhere; 4 px card hover lift",
+   "why": "Library defaults",
+   "instead": "Stagger ordered lists only; hover changes state",
+   "source": "https://vibecodekit.dev/ai-slop-design",
+   "source_verified": "scraper-fetched",
+   "detectable": true,
+   "proposed_check": {
+    "id": "motion-hover-lift",
+    "scope": "audit",
+    "rule": "warn on :hover translateY(-4px) or -translate-y-1 on card-like selectors"
+   },
+   "ufs_chassis_ships_it": false
+  },
+  {
+   "id": "M3",
+   "domain": "web-motion",
+   "tell": "Scroll progress bar on a short marketing page",
+   "why": "Default kit item",
+   "instead": "Only on long reads",
+   "source": "https://vibecodekit.dev/ai-slop-design",
+   "source_verified": "scraper-fetched",
+   "detectable": true,
+   "proposed_check": {
+    "id": "motion-progress-short-page",
+    "scope": "audit",
+    "rule": "warn when .progress or a scroll() timeline bar exists and body text is under about 1,500 words"
+   },
+   "ufs_chassis_ships_it": true
+  },
+  {
+   "id": "M4",
+   "domain": "web-motion",
+   "tell": "Count-up stat banners",
+   "why": "Pairs with invented numbers",
+   "instead": "Count only cited figures",
+   "source": "https://github.com/febbhav/signs-of-ai-design",
+   "source_verified": "verifier-confirmed",
+   "detectable": true,
+   "proposed_check": {
+    "id": "motion-counter-uncited",
+    "scope": "audit",
+    "rule": "warn when data-count is used and no cite element, footnote or source link sits in the same section"
+   },
+   "ufs_chassis_ships_it": true
+  },
+  {
+   "id": "M5",
+   "domain": "web-motion",
+   "tell": "Bounce/elastic easing on dialogs and cards",
+   "why": "Tutorial-data curves; dated",
+   "instead": "Springs only for direct manipulation",
+   "source": "https://github.com/febbhav/signs-of-ai-design",
+   "source_verified": "verifier-confirmed",
+   "detectable": true,
+   "proposed_check": {
+    "id": "motion-overshoot-dialog",
+    "scope": "audit",
+    "rule": "warn on cubic-bezier with y1 or y2 above 1, or back/elastic/bounce eases, on dialog/modal/card selectors"
+   },
+   "ufs_chassis_ships_it": false
+  },
+  {
+   "id": "M6",
+   "domain": "web-motion",
+   "tell": "ease-in entrances; scale(0) starts",
+   "why": "Wrong ingredient",
+   "instead": "ease-out in; start at 0.95-0.97",
+   "source": "https://emilkowal.ski/ui/agents-with-taste",
+   "source_verified": "scraper-fetched",
+   "detectable": true,
+   "proposed_check": {
+    "id": "motion-scale-zero",
+    "scope": "audit",
+    "rule": "warn on scale(0) in from/0% keyframes and ease-in on keyframes named in/enter/show/reveal"
+   },
+   "ufs_chassis_ships_it": false
+  },
+  {
+   "id": "M7",
+   "domain": "web-motion",
+   "tell": "Motion incoherence",
+   "why": "No motion system",
+   "instead": "One token set",
+   "source": "https://github.com/febbhav/signs-of-ai-design",
+   "source_verified": "scraper-fetched",
+   "detectable": true,
+   "proposed_check": {
+    "id": "motion-token-sprawl",
+    "scope": "audit",
+    "rule": "warn when more than 6 distinct durations or more than 4 distinct timing functions appear"
+   },
+   "ufs_chassis_ships_it": false
+  },
+  {
+   "id": "M8",
+   "domain": "web-motion",
+   "tell": "Cursor-following glow / drifting blobs",
+   "why": "Tailwind demo pattern",
+   "instead": "One colour field with a reason",
+   "source": "https://vibecodekit.dev/ai-slop-design",
+   "source_verified": "scraper-fetched",
+   "detectable": true,
+   "proposed_check": {
+    "id": "motion-cursor-glow",
+    "scope": "audit",
+    "rule": "warn when a mousemove/pointermove handler writes a CSS variable used in a radial-gradient position"
+   },
+   "ufs_chassis_ships_it": false
+  },
+  {
+   "id": "M9",
+   "domain": "web-motion",
+   "tell": "Infinite loop or marquee with no pause",
+   "why": "WCAG 2.2.2 failure",
+   "instead": "Pause control",
+   "source": "https://www.w3.org/WAI/WCAG22/Understanding/pause-stop-hide.html",
+   "source_verified": "scraper-fetched",
+   "detectable": true,
+   "proposed_check": {
+    "id": "motion-loop-no-pause",
+    "scope": "audit",
+    "rule": "warn on an infinite animation with no button[aria-pressed] or [data-pause] in the page"
+   },
+   "ufs_chassis_ships_it": true
+  },
+  {
+   "id": "W1",
+   "domain": "web",
+   "tell": "Unmodified shadcn/Tailwind components",
+   "why": "Everyone ships the same components",
+   "instead": "Restyle from page tokens",
+   "source": "https://claudecodehq.com/playbooks/unslop-ui",
+   "source_verified": "scraper-fetched",
+   "detectable": true,
+   "proposed_check": {
+    "id": "web-shadcn-defaults",
+    "scope": "audit",
+    "rule": "warn when the shadcn default variable block (--radius: 0.5rem with --background/--card/--popover/--muted) is present unmodified"
+   },
+   "ufs_chassis_ships_it": false
+  },
+  {
+   "id": "W2",
+   "domain": "web",
+   "tell": "Lucide Sparkles/Zap/Shield/BarChart3/Check feature icons",
+   "why": "Recurring AI icon set",
+   "instead": "Subject icons or none",
+   "source": "https://vibecodekit.dev/ai-slop-design",
+   "source_verified": "scraper-fetched",
+   "detectable": true,
+   "proposed_check": {
+    "id": "web-lucide-slop-set",
+    "scope": "audit",
+    "rule": "warn when three or more of these lucide names appear"
+   },
+   "ufs_chassis_ships_it": false
+  },
+  {
+   "id": "W3",
+   "domain": "web",
+   "tell": "Most Popular tier, Built with care footer, traffic-light terminal mockup",
+   "why": "Default AI scaffold",
+   "instead": "Only sections the business has",
+   "source": "https://vibecodekit.dev/ai-slop-design",
+   "source_verified": "scraper-fetched",
+   "detectable": true,
+   "proposed_check": {
+    "id": "web-scaffold-furniture",
+    "scope": "audit",
+    "rule": "warn on the strings \"Most Popular\" and \"Built with care\", and on three adjacent round red/yellow/green dots"
+   },
+   "ufs_chassis_ships_it": false
+  },
+  {
+   "id": "W4",
+   "domain": "web",
+   "tell": "blue-600 to purple-500/pink-500 gradient; emerald-500 success",
+   "why": "Palette homogeneity",
+   "instead": "Palette from the subject",
+   "source": "https://vibecodekit.dev/ai-slop-design",
+   "source_verified": "scraper-fetched",
+   "detectable": true,
+   "proposed_check": {
+    "id": "web-slop-gradient-pair",
+    "scope": "audit",
+    "rule": "extend SLOP_HEX with #10b981 and flag gradients pairing #2563eb with #a855f7 or #ec4899 in any notation"
+   },
+   "ufs_chassis_ships_it": false
+  },
+  {
+   "id": "W5",
+   "domain": "web",
+   "tell": "Section waterfall order",
+   "why": "Structural slop",
+   "instead": "Sections by register",
+   "source": "https://sailop.com/blog/ai-slop-2026-state-of-the-ai-generated-web",
+   "source_verified": "scraper-fetched",
+   "detectable": true,
+   "proposed_check": {
+    "id": "web-section-waterfall",
+    "scope": "audit",
+    "rule": "warn when section ids/classes follow hero, logos, features, stats, testimonials, pricing, faq, cta in that order"
+   },
+   "ufs_chassis_ships_it": false
+  },
+  {
+   "id": "W6",
+   "domain": "copy",
+   "tell": "Em-dash density and tricolons",
+   "why": "4-6x the 2019 rate",
+   "instead": "copy-tells.md rules",
+   "source": "https://vibecodekit.dev/ai-slop-design",
+   "source_verified": "scraper-fetched",
+   "detectable": true,
+   "proposed_check": {
+    "id": "copy-emdash-density",
+    "scope": "audit",
+    "rule": "warn above 20 em dashes per 1,000 words of visible text (threshold already stated in tells.md)"
+   },
+   "ufs_chassis_ships_it": false
+  },
+  {
+   "id": "V1",
+   "domain": "motion-graphics",
+   "tell": "Script longer than runtime",
+   "why": "Crammed narration",
+   "instead": "About 150 wpm",
+   "source": "https://www.yumyumvideos.com/blog/explainer-video-script",
+   "source_verified": "verifier-confirmed",
+   "detectable": true,
+   "proposed_check": {
+    "id": "video-script-density",
+    "scope": "video lint",
+    "rule": "warn when words in scene text or a VO script exceed 2.7 per second of video.json seconds"
+   },
+   "ufs_chassis_ships_it": false
+  },
+  {
+   "id": "V2",
+   "domain": "motion-graphics",
+   "tell": "Corporate Memphis figures",
+   "why": "Oversaturated cliche",
+   "instead": "Characters from the product world",
+   "source": "https://en.wikipedia.org/wiki/Corporate_Memphis",
+   "source_verified": "scraper-fetched",
+   "detectable": false,
+   "proposed_check": null,
+   "ufs_chassis_ships_it": false
+  },
+  {
+   "id": "V3",
+   "domain": "motion-graphics",
+   "tell": "Generated footage in a warmth-based brand film",
+   "why": "Backlash (Coca-Cola 2024)",
+   "instead": "Real footage and set type",
+   "source": "https://www.nbcnews.com/tech/innovation/coca-cola-causes-controversy-ai-made-ad-rcna180665",
+   "source_verified": "scraper-fetched",
+   "detectable": false,
+   "proposed_check": null,
+   "ufs_chassis_ships_it": false
+  },
+  {
+   "id": "E1",
+   "domain": "editing",
+   "tell": "Mass-produced template videos",
+   "why": "YouTube inauthentic content (July 2026)",
+   "instead": "Own footage and perspective",
+   "source": "https://techcrunch.com/2026/07/20/youtube-clarifies-policies-around-ai-slop-and-upsetting-videos/",
+   "source_verified": "verifier-confirmed",
+   "detectable": true,
+   "proposed_check": {
+    "id": "video-batch-sameness",
+    "scope": "video render --batch",
+    "rule": "warn when a batch of renders differs only in text nodes"
+   },
+   "ufs_chassis_ships_it": false
+  },
+  {
+   "id": "E2",
+   "domain": "editing",
+   "tell": "Captions breaking reading rules",
+   "why": "Auto-caption defaults",
+   "instead": "Netflix rules",
+   "source": "https://partnerhelp.netflixstudios.com/hc/en-us/articles/217350977-English-USA-Timed-Text-Style-Guide",
+   "source_verified": "verifier-confirmed",
+   "detectable": true,
+   "proposed_check": {
+    "id": "captions-rules",
+    "scope": "video lint / edit captions",
+    "rule": "error over 42 chars per line or 2 lines; warn over 20 CPS or outside 5/6 s to 7 s"
+   },
+   "ufs_chassis_ships_it": false
+  },
+  {
+   "id": "E3",
+   "domain": "editing",
+   "tell": "Loudness jumps and clipped peaks",
+   "why": "Unmixed output",
+   "instead": "Two-pass loudnorm to -14 LUFS, TP -1",
+   "source": "https://support.spotify.com/us/artists/article/loudness-normalization/",
+   "source_verified": "verifier-confirmed",
+   "detectable": true,
+   "proposed_check": {
+    "id": "audio-loudness",
+    "scope": "video render / edit deliver",
+    "rule": "measure with ffmpeg ebur128; warn outside target +/-1 LU or TP above -1 dBTP"
+   },
+   "ufs_chassis_ships_it": false
+  },
+  {
+   "id": "G1",
+   "domain": "games",
+   "tell": "Juice on everything",
+   "why": "Context lost to eye candy",
+   "instead": "Effects tied to fiction events",
+   "source": "https://www.gamedeveloper.com/design/video-indies-resist-the-urge-to-juice-it-or-lose-it-",
+   "source_verified": "scraper-fetched",
+   "detectable": true,
+   "proposed_check": {
+    "id": "game-effect-rate",
+    "scope": "quality --game",
+    "rule": "report shake/flash triggers per second over a recorded session (report only)"
+   },
+   "ufs_chassis_ships_it": false
+  },
+  {
+   "id": "G4",
+   "domain": "games",
+   "tell": "WASD bound to event.key",
+   "why": "QWERTY-only",
+   "instead": "event.code",
+   "source": "https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/code",
+   "source_verified": "scraper-fetched",
+   "detectable": true,
+   "proposed_check": {
+    "id": "game-key-not-code",
+    "scope": "audit",
+    "rule": "warn when a script compares event.key to w/a/s/d letters"
+   },
+   "ufs_chassis_ships_it": false
+  },
+  {
+   "id": "G5",
+   "domain": "games",
+   "tell": "AudioContext outside a gesture, never resumed",
+   "why": "Silent first load",
+   "instead": "Create/resume in the first input handler",
+   "source": "https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Best_practices",
+   "source_verified": "scraper-fetched",
+   "detectable": true,
+   "proposed_check": {
+    "id": "game-audio-autoplay",
+    "scope": "audit",
+    "rule": "warn when new AudioContext appears at top level and no .resume() call exists"
+   },
+   "ufs_chassis_ships_it": false
+  },
+  {
+   "id": "G6",
+   "domain": "games",
+   "tell": "Simulation runs in hidden tab",
+   "why": "Untested tab switching",
+   "instead": "Pause on visibilitychange",
+   "source": "https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API",
+   "source_verified": "scraper-fetched",
+   "detectable": true,
+   "proposed_check": {
+    "id": "game-no-visibility-pause",
+    "scope": "audit",
+    "rule": "warn when a requestAnimationFrame game loop exists and no visibilitychange listener"
+   },
+   "ufs_chassis_ships_it": false
+  },
+  {
+   "id": "D2",
+   "domain": "graphic-design",
+   "tell": "Raster inside a vector mark",
+   "why": "Traced or generated",
+   "instead": "Draw the vector",
+   "source": "https://worldvectorlogo.com/blog/how-to-spot-an-ai-generated-logo-and-why-it-matters-more-than-you-think/",
+   "source_verified": "scraper-fetched",
+   "detectable": true,
+   "proposed_check": {
+    "id": "svg-embedded-raster",
+    "scope": "audit",
+    "rule": "warn on an image element inside an SVG used as a logo or icon"
+   },
+   "ufs_chassis_ships_it": false
+  },
+  {
+   "id": "D3",
+   "domain": "graphic-design",
+   "tell": "Mixed icon sets and stroke widths",
+   "why": "No icon system",
+   "instead": "One set, one grid, one stroke",
+   "source": "https://github.com/tabler/tabler-icons",
+   "source_verified": "scraper-fetched",
+   "detectable": true,
+   "proposed_check": {
+    "id": "icons-mixed",
+    "scope": "audit",
+    "rule": "warn when more than one icon library is referenced, or inline SVG icons carry more than one stroke-width value"
+   },
+   "ufs_chassis_ships_it": false
+  }
+ ]
+}

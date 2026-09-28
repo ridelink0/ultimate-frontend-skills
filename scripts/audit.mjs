@@ -7,6 +7,7 @@
 import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { join, extname, relative, basename, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { aiTells } from './tells.mjs';
 
 const EMOJI = /[\u{1F000}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{FE0F}\u{1F1E6}-\u{1F1FF}]/u;
 
@@ -174,6 +175,15 @@ const SLOP_OKLCH = [
   ['#c084fc', 72.2, 0.177, 305.5], ['#2563eb', 54.6, 0.215, 262.9],
   ['#3b82f6', 62.3, 0.188, 259.8], ['#60a5fa', 71.4, 0.143, 254.6],
   ['#ec4899', 65.6, 0.212, 354.3], ['#f472b6', 72.5, 0.175, 349.8],
+  // Tailwind v4's own values (theme.css of tailwindcss 4.3.3, read
+  // 2026-09-28): v4 writes these defaults as oklch() with more chroma than
+  // the v3 hex above converts to. After the hex, so a v3 value keeps its name.
+  ['indigo-500 (Tailwind v4)', 58.5, 0.233, 277.1], ['indigo-600 (Tailwind v4)', 51.1, 0.262, 277.0],
+  ['indigo-400 (Tailwind v4)', 67.3, 0.182, 276.9], ['violet-500 (Tailwind v4)', 60.6, 0.25, 292.7],
+  ['violet-600 (Tailwind v4)', 54.1, 0.281, 293.0], ['purple-500 (Tailwind v4)', 62.7, 0.265, 303.9],
+  ['purple-400 (Tailwind v4)', 71.4, 0.203, 305.5], ['blue-600 (Tailwind v4)', 54.6, 0.245, 262.9],
+  ['blue-500 (Tailwind v4)', 62.3, 0.214, 259.8], ['blue-400 (Tailwind v4)', 70.7, 0.165, 254.6],
+  ['pink-500 (Tailwind v4)', 65.6, 0.241, 354.3], ['pink-400 (Tailwind v4)', 71.8, 0.202, 349.8],
 ];
 const toOklch = (r8, g8, b8) => {
   const lin = (c) => { c /= 255; return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); };
@@ -317,7 +327,7 @@ function slopChecks(hRaw, css, n, E, W) {
   const words = (h.replace(/<[^>]+>/g, ' ').match(/\S+/g) || []).length || 1;
   const dashes = (h.match(/—/g) || []).length;
   if (words > 200 && (dashes / words) * 1000 > 20)
-    W(`${n}: ${((dashes / words) * 1000).toFixed(1)} em dashes per 1000 words (over 20 reads as machine-written)`);
+    W(`${n}: ${((dashes / words) * 1000).toFixed(1)} em dashes per 1000 words (over 20 reads as machine-written) [copy-emdash-density, W6]`);
 
   // 13. semantics
   if (!/<(main|section|article)\b/i.test(h)) E(`${n}: no <main>, <section> or <article> - div soup`);
@@ -610,6 +620,14 @@ export function runAudit(target) {
 
     slopChecks(h, allCss, n, E, W);
   }
+
+  /* --- AI tells (data/ai-tells.json) ---------------------------------- */
+  const tellFindings = aiTells({
+    htmls: htmls.map((f) => ({ name: basename(f), h: readFileSync(f, 'utf8') })),
+    css: allCss,
+    js: jss.map((f) => readFileSync(f, 'utf8')).join('\n'),
+  });
+  for (const t of tellFindings) (t.level === 'error' ? E : W)(t.text);
 
   /* --- css sanity ------------------------------------------------------- */
   if (csss.length) {

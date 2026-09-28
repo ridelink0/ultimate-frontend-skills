@@ -198,6 +198,8 @@ const INTERFACE = new Set([
   'back to the start', 'work', 'method', 'detail', 'contact', 'top', 'page not found - lantern',
   // the head's fixed values and the landmarks' names
   'width=device-width, initial-scale=1', 'website', '#f2efe7', 'primary', 'menu', 'contents',
+  // the stats' source line and the gradient hero's pause control
+  'source', 'pause motion',
 ]);
 const norm = (s) => s.replace(/&copy;|©/g, '').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim().toLowerCase().replace(/[\s.,;:!?]+$/, '');
 

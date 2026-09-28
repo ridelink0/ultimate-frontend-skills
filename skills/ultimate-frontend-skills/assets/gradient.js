@@ -173,24 +173,32 @@
 
     if (reduced) return;                           // one frame: the picture, not the motion
 
-    let raf = 0, t0 = 0, running = false, visible = false;
+    // Elapsed time only advances while the loop runs, so a pause (the page's
+    // [data-pause] button, the tab hidden, the canvas scrolled away) resumes
+    // where it stopped instead of jumping.
+    let raf = 0, last = 0, elapsed = 0, running = false, visible = false;
+    const paused = () => document.documentElement.dataset.paused === 'true';
     const loop = (ts) => {
-      if (!t0) t0 = ts;
-      draw((ts - t0) / 1000);
+      if (last) elapsed += ts - last;
+      last = ts;
+      draw(elapsed / 1000);
       if (running) raf = requestAnimationFrame(loop);
     };
+    const stop = () => { running = false; last = 0; cancelAnimationFrame(raf); };
+    const go = () => { if (!running && visible && !document.hidden && !paused()) { running = true; raf = requestAnimationFrame(loop); } };
+    document.addEventListener('ufs:motion', () => (paused() ? stop() : go()));
     // only run while it is on screen - an offscreen shader is pure waste
     const io = new IntersectionObserver(([e]) => {
       visible = e.isIntersecting;
-      if (visible && !running) { running = true; raf = requestAnimationFrame(loop); }
-      else if (!visible && running) { running = false; cancelAnimationFrame(raf); }
+      if (visible) go();
+      else if (running) stop();
     }, { threshold: 0 });
     io.observe(cv);
     // Coming back to the tab restarts the loop only if the canvas is on
     // screen; otherwise a tab switch quietly undid the off-screen pause.
     document.addEventListener('visibilitychange', () => {
-      if (document.hidden && running) { running = false; cancelAnimationFrame(raf); }
-      else if (!document.hidden && !running && visible) { running = true; raf = requestAnimationFrame(loop); }
+      if (document.hidden && running) stop();
+      else go();
     });
   }
 

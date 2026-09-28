@@ -35,6 +35,18 @@
     document.querySelectorAll('.r').forEach((el) => io.observe(el));
   }
 
+  /* ---- pause: every [data-pause] button holds all motion on the page ---- */
+  // WCAG 2.2.2: anything that moves for more than five seconds can be
+  // stopped. The button is a toggle (aria-pressed); data-paused on <html>
+  // holds every CSS animation (core.css) and stops gradient.js's loop.
+  const pausers = [...document.querySelectorAll('[data-pause]')];
+  const setPaused = (on) => {
+    doc.dataset.paused = on ? 'true' : 'false';
+    for (const b of pausers) b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    document.dispatchEvent(new CustomEvent('ufs:motion', { detail: { paused: on } }));
+  };
+  for (const b of pausers) b.addEventListener('click', () => setPaused(doc.dataset.paused !== 'true'));
+
   /* ---- publish the header height so anchors clear it ---------------------- */
   const header = document.querySelector('.nav');
   if (header) {
@@ -109,8 +121,12 @@
 
   /* ---- counters: <span data-count="1566"> ------------------------------- */
   // An exploded-3d part (data-shape) uses data-count for how many links a
-  // chain has; counting it up wrote "5" over the part's name.
-  const counters = [...document.querySelectorAll('[data-count]:not([data-shape])')];
+  // chain has; counting it up wrote "5" over the part's name. And a number
+  // counts up only when its source is beside it (a <cite>, a footnote, a
+  // link, or data-source on the element): an uncited counter is a claim
+  // dressed as data (data/ai-tells.json, M4). Otherwise it is shown still.
+  const cited = (el) => el.dataset.source || el.closest('section, header, article')?.querySelector('cite, sup, a[href]');
+  const counters = [...document.querySelectorAll('[data-count]:not([data-shape])')].filter(cited);
   if (counters.length) {
     const format = (n, dp) => n.toLocaleString(undefined, {
       minimumFractionDigits: dp, maximumFractionDigits: dp,

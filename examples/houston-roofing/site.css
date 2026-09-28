@@ -53,3 +53,12 @@ h1 + .lead, .t-hero + .lead { margin-block-start: var(--s-5); }
 
 /* The 404 and privacy pages */
 .page{max-width:40rem}
+
+/* The hero's gradient moves for good, so it can be stopped (WCAG 2.2.2).
+   From core.css 6.8.0; this example's core.css predates it. */
+html[data-paused="true"] *, html[data-paused="true"] *::before, html[data-paused="true"] *::after { animation-play-state: paused !important; }
+.pause { font: inherit; font-family: var(--font-ui); font-size: var(--step--2); letter-spacing: 0.04em;
+  color: inherit; background: rgb(15 11 9 / 0.28); border: 1px solid currentColor; border-radius: 999px;
+  padding: 0.35rem 0.8rem; cursor: pointer; }
+.pause[aria-pressed="true"] { background: rgb(15 11 9 / 0.55); }
+.pause:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }

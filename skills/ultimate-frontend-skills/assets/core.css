@@ -171,7 +171,7 @@ hr { border: 0; border-top: 1px solid var(--rule); }
   outline-offset: 3px;
   border-radius: inherit;
   box-shadow: 0 0 0 5px var(--bg);
-  transition: outline-offset 120ms var(--ease);
+  transition: outline-offset var(--dur-1) var(--ease);
 }
 :focus:not(:focus-visible) { outline: none; }
 @media (forced-colors: active) {
@@ -322,7 +322,7 @@ h2, h3 { font-variation-settings: "opsz" 48, "wght" 360; }
 .nav__menu[open] > summary .nav__bar1 { transform: translateY(5px) rotate(45deg); }
 .nav__menu[open] > summary .nav__bar2 { opacity: 0; }
 .nav__menu[open] > summary .nav__bar3 { transform: translateY(-5px) rotate(-45deg); }
-.nav__menu svg path { transform-origin: center; transition: transform .22s cubic-bezier(.22,1,.36,1), opacity .12s linear; }
+.nav__menu svg path { transform-origin: center; transition: transform var(--dur-1) var(--ease), opacity var(--dur-1) linear; }
 .nav__panel {
   position: fixed; inset: var(--nav-h, 68px) 0 auto 0;
   background: var(--bg); color: var(--fg);
@@ -464,7 +464,9 @@ h2, h3 { font-variation-settings: "opsz" 48, "wght" 360; }
         background: color-mix(in oklab, var(--bg-raised) 92%, transparent);
         border: 1px solid var(--rule-soft);
         transition: transform var(--dur-2) var(--ease), border-color var(--dur-2) var(--ease); }
-.card:hover { transform: translateY(-3px); border-color: var(--rule); }
+/* Hover changes the card's state (its rule darkens); lifting it a few pixels
+   is the library default and reads as generated (data/ai-tells.json, M2). */
+.card:hover { border-color: color-mix(in oklab, var(--fg) 40%, transparent); }
 .card--glass {
   background: rgb(255 255 255 / 0.13); color: var(--bone-50);
   border: 1px solid rgb(255 255 255 / 0.22);
@@ -504,7 +506,7 @@ figcaption { margin-top: var(--s-3); font-family: var(--font-ui); font-size: var
 .layer { will-change: transform; }
 .layer--fg { z-index: 3; } .layer--mid { z-index: 2; } .layer--bg { z-index: 1; }
 [data-tilt] { transform: translate3d(var(--tx, 0), var(--ty, 0), 0);
-              transition: transform 400ms var(--ease); }
+              transition: transform var(--dur-2) var(--ease); }
 
 .exploded { position: relative; aspect-ratio: 4 / 5; max-width: 34rem; margin-inline: auto; }
 .exploded .part { position: absolute; inset-inline: 0; margin-inline: auto;
@@ -572,6 +574,17 @@ figcaption { margin-top: var(--s-3); font-family: var(--font-ui); font-size: var
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
   mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
 .marquee > * { display: inline-block; padding-inline-end: 2em; animation: slide 32s linear infinite; }
+/* Anything that moves for more than five seconds needs a way to stop it
+   (WCAG 2.2.2). A [data-pause] button (motion.js) sets data-paused on <html>,
+   which holds every CSS animation where it is and stops gradient.js; the
+   marquee also holds while it is pointed at or focused. */
+.marquee:hover > *, .marquee:focus-within > * { animation-play-state: paused; }
+html[data-paused="true"] *, html[data-paused="true"] *::before, html[data-paused="true"] *::after { animation-play-state: paused !important; }
+.pause { font: inherit; font-family: var(--font-ui); font-size: var(--step--2); letter-spacing: 0.04em;
+  color: inherit; background: rgb(15 11 9 / 0.28); border: 1px solid currentColor; border-radius: 999px;
+  padding: 0.35rem 0.8rem; cursor: pointer; }
+.pause[aria-pressed="true"] { background: rgb(15 11 9 / 0.55); }
+.pause:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
 @keyframes slide { to { transform: translateX(-50%); } }
 
 /* ================================================================ texture == */
@@ -622,6 +635,25 @@ figcaption { margin-top: var(--s-3); font-family: var(--font-ui); font-size: var
   .stagger > .r { --i: min(sibling-index() - 1, 6); }
 }
 @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+/* Three more verbs, so a page does not reveal every section the same way
+   (the identical fade-up is the first motion tell, data/ai-tells.json M1):
+   .r--mask wipes a headline in from its baseline, .r--settle brings an image
+   from 97% to full size, and .r--none keeps an element still inside a
+   revealed group. Body copy takes no reveal at all. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .r.r--mask { opacity: 1; animation-name: mask-in; }
+    .r.r--settle { animation-name: settle; }
+  }
+  html.js-reveal .r.r--mask { opacity: 1; transform: none; clip-path: inset(0 0 100% 0);
+    transition: clip-path var(--dur-3) var(--ease); transition-delay: calc(var(--i) * 90ms); }
+  html.js-reveal .r.r--mask.is-in { clip-path: inset(0 0 0 0); }
+  html.js-reveal .r.r--settle { transform: scale(0.97); }
+  html.js-reveal .r.r--settle.is-in { transform: none; }
+}
+.r.r--none { opacity: 1 !important; transform: none !important; clip-path: none !important; animation: none !important; }
+@keyframes mask-in { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes settle { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: none; } }
 
 .progress { position: fixed; inset-block-start: 0; inset-inline-start: 0; height: 2px;
             width: 100%; transform-origin: 0 50%; transform: scaleX(0);
@@ -629,6 +661,9 @@ figcaption { margin-top: var(--s-3); font-family: var(--font-ui); font-size: var
 @supports (animation-timeline: scroll()) {
   .progress { animation: grow linear both; animation-timeline: scroll(root block); }
 }
+/* .progress is for a long read (an essay, documentation) and nothing else:
+   on a short page it is decoration, and the audit says so under about 1,500
+   words (data/ai-tells.json, M3). Nothing in the section library emits it. */
 @keyframes grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 
 /* ============================================================== utilities == */
@@ -649,6 +684,7 @@ figcaption { margin-top: var(--s-3); font-family: var(--font-ui); font-size: var
     animation-timeline: auto !important;
   }
   .r, .layer, .part, [data-px] { opacity: 1 !important; transform: none !important; }
+  .r { clip-path: none !important; }
 }
 
 /* ══════════════════════════════════════════════ WebGL gradient (gradient.js) ══ */
@@ -676,7 +712,7 @@ figcaption { margin-top: var(--s-3); font-family: var(--font-ui); font-size: var
   position: absolute; top: 0; left: 0; opacity: 0; white-space: nowrap;
   font-family: var(--font-ui); font-size: var(--step--2); font-weight: 500;
   letter-spacing: .12em; text-transform: uppercase; color: var(--fg-muted);
-  transition: opacity 240ms var(--ease);
+  transition: opacity var(--dur-1) var(--ease);
 }
 .exploded__tag > span { position: relative; padding-left: 2.4rem; }
 .exploded__tag > span::before { content: ""; position: absolute; left: 0; top: 50%;

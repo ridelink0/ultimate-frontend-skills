@@ -108,7 +108,7 @@
       </p>
       <p><a class="btn" href="#detail">See the detail</a></p>
     </div>
-    <figure style="grid-column:span 7 / content-end" class="r">
+    <figure style="grid-column:span 7 / content-end" class="r r--settle">
       <img src="img/object.png" alt="[[Description of the object]]" width="1400" height="1400"
            data-tilt="10" fetchpriority="high">
     </figure>
@@ -155,10 +155,10 @@
 <!-- @section manifesto | eyebrow + two-line serif statement + one narrow paragraph -->
 <section class="section" id="method">
   <div class="wrap grid">
-    <div style="grid-column:content-start / span 4" class="r">
+    <div style="grid-column:content-start / span 4">
       <p class="eyebrow">The method</p>
     </div>
-    <div style="grid-column:span 7 / content-end" class="stack r r-2">
+    <div style="grid-column:span 7 / content-end" class="stack r r--mask">
       <h2>[[Drawn before it was made.]]</h2>
       <p class="prose">
         [[Two short paragraphs.]] [[Say the thing that is actually true about how the work is done,
@@ -176,12 +176,12 @@
 <!-- @section blueprint | hand-drawn technical SVG + copy. Replace the path with the real object. -->
 <section class="section" id="detail">
   <div class="wrap grid" style="align-items:center;row-gap:var(--s-7)">
-    <div style="grid-column:content-start / span 4" class="stack r">
+    <div style="grid-column:content-start / span 4" class="stack">
       <p class="eyebrow">Construction</p>
       <h2>[[Every line has a reason.]]</h2>
       <p class="prose">[[Describe the geometry, the tolerance, the material.]] [[Numbers here read as proof.]]</p>
     </div>
-    <figure style="grid-column:span 7 / content-end" class="r r-2">
+    <figure style="grid-column:span 7 / content-end" class="r r--settle">
       <svg viewBox="0 0 640 420" role="img" aria-label="[[Technical drawing of the object]]"
            style="width:100%;color:var(--fg)">
         <g fill="none" stroke="currentColor" stroke-width="1" vector-effect="non-scaling-stroke">
@@ -215,7 +215,7 @@
 <!-- @section exploded | dark section; layers pull apart on scroll (2D parallax = depth) -->
 <section class="section" data-tone="dark" id="inside">
   <div class="wrap grid" style="align-items:center;row-gap:var(--s-8)">
-    <div style="grid-column:content-start / span 4" class="stack r">
+    <div style="grid-column:content-start / span 4" class="stack r r--mask">
       <p class="eyebrow">Inside</p>
       <h2>[[Nine parts. Nothing decorative.]]</h2>
       <p class="prose">[[Each one is here because the thing does not work without it.]]</p>
@@ -250,10 +250,11 @@
 <section class="section section--tight">
   <div class="wrap">
     <ul class="stats stagger">
-      <li class="stat r"><p class="stat__n"><span data-count="1566">[[1566]]</span></p><p class="stat__label">[[Original bridge completed]]</p></li>
-      <li class="stat r r-2"><p class="stat__n"><span data-count="2005">[[2005]]</span></p><p class="stat__label">[[Inscribed by UNESCO]]</p></li>
-      <li class="stat r r-3"><p class="stat__n"><span data-count="21" data-count-suffix="m">[[21m]]</span></p><p class="stat__label">[[Height above the river]]</p></li>
+      <li class="stat r r--mask"><p class="stat__n"><span data-count="1566">[[1566]]</span></p><p class="stat__label">[[Original bridge completed]]</p></li>
+      <li class="stat r r--mask r-2"><p class="stat__n"><span data-count="2005">[[2005]]</span></p><p class="stat__label">[[Inscribed by UNESCO]]</p></li>
+      <li class="stat r r--mask r-3"><p class="stat__n"><span data-count="21" data-count-suffix="m">[[21m]]</span></p><p class="stat__label">[[Height above the river]]</p></li>
     </ul>
+    <p class="caption" style="margin-top:var(--s-5)">Source: <cite>[[Where these numbers come from]]</cite></p>
   </div>
 </section>
 <!-- @end -->
@@ -294,7 +295,7 @@
 <!-- @section services | hairline-separated rows; the editorial answer to a card grid -->
 <section class="section" id="work">
   <div class="wrap">
-    <p class="eyebrow r">What we do</p>
+    <p class="eyebrow">What we do</p>
     <ul class="steps" style="margin-top:var(--s-6)">
       <li class="r">
         <h3>[[First service]]</h3>
@@ -466,13 +467,17 @@
 <header class="hero" id="top">
   <canvas class="gradient" data-gradient="#0b1226,#2c3a56,#a5735a,#e8ac66"
           data-speed="0.10" data-scale="1.5" aria-hidden="true"></canvas>
+  <!-- The field moves for as long as the page is open, so it can be stopped
+       (WCAG 2.2.2). motion.js wires every [data-pause] button. -->
+  <button class="pause on-media" type="button" data-pause aria-pressed="false"
+          style="position:absolute;inset:auto var(--gutter) var(--s-5) auto;z-index:2">Pause motion</button>
   <div class="hero__scrim"></div>
   <div class="hero__inner wrap center on-media">
-    <p class="eyebrow r">[[Eyebrow, in small caps]]</p>
-    <h1 class="r r-2" style="margin-top:var(--s-5)">
+    <p class="eyebrow">[[Eyebrow, in small caps]]</p>
+    <h1 class="r r--mask" style="margin-top:var(--s-5)">
       [[First half of the claim]]<span class="display__b">[[and the turn.]]</span>
     </h1>
-    <p class="lead center r r-3" style="margin-top:var(--s-6)">
+    <p class="lead center" style="margin-top:var(--s-6)">
       [[One sentence that adds a fact rather than repeating the headline.]]
     </p>
   </div>
@@ -489,8 +494,8 @@
   </div>
   <div class="hero__scrim"></div>
   <div class="hero__inner wrap center on-media">
-    <p class="eyebrow r">[[Place, or date]]</p>
-    <h1 class="r r-2" style="margin-top:var(--s-5)">[[The line that reframes it.]]</h1>
+    <p class="eyebrow">[[Place, or date]]</p>
+    <h1 class="r r--mask" style="margin-top:var(--s-5)">[[The line that reframes it.]]</h1>
   </div>
 </header>
 <!-- @end -->
@@ -499,7 +504,7 @@
 <!-- @section exploded-3d | a made thing taken apart in three.js: parts as shapes and materials, or a GLB; the list is the fallback -->
 <section class="section" data-tone="dark" id="inside" data-explode-track>
   <div class="wrap grid" style="align-items:center;row-gap:var(--s-9)">
-    <div style="grid-column:content-start / span 4" class="stack r">
+    <div style="grid-column:content-start / span 4" class="stack r r--mask">
       <p class="eyebrow eyebrow--ruled">Inside</p>
       <h2>[[Six parts, and four of them are invisible once it is finished.]]</h2>
       <p class="prose">[[Scroll and they come apart.]] [[Say what each one is for.]]</p>
@@ -527,11 +532,11 @@
   <div class="sky" data-sky data-moods="Noon:#7ea9de|Night:#1a2237|Morning:#dcc4b3"></div>
   <div class="hero__scrim"></div>
   <div class="hero__inner wrap center on-media">
-    <p class="eyebrow r">[[A date, or a place]]</p>
-    <h1 class="r r-2" style="margin-top:var(--s-5)">
+    <p class="eyebrow">[[A date, or a place]]</p>
+    <h1 class="r r--mask" style="margin-top:var(--s-5)">
       [[First half of the claim]]<span class="display__b">[[and the turn.]]</span>
     </h1>
-    <ol class="index r r-3" style="margin-top:var(--s-8);margin-inline:auto">
+    <ol class="index" style="margin-top:var(--s-8);margin-inline:auto">
       <li><span class="index__n">[1]</span><span class="index__dots"></span><a class="index__label link" href="#method">Introduction</a></li>
       <li><span class="index__n">[2]</span><span class="index__dots"></span><a class="index__label link" href="#work">What changed</a></li>
       <li><span class="index__n">[3]</span><span class="index__dots"></span><a class="index__label link" href="#contact">Where to start</a></li>
