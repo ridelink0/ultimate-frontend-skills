@@ -2,6 +2,40 @@
 
 Releases before 6.5.0 are recorded in their tag commits (`git log v6.4.2`) and on the GitHub releases page.
 
+## 6.8.0 - 2026-09-28
+
+Built from the 2026-09-28 research plan (16 items). The audit now names the AI tells that research sourced, and the chassis was changed until it ships none of them, so a page that passed 6.7.0 can now warn on its reveals, counters, loops or hover lift, and fail on a loop with no pause control.
+
+### The audit and the chassis
+- `scripts/tells.mjs` runs the checks proposed in `data/ai-tells.json` (the research's tells, each with its source): one reveal on most sections, the card hover lift, a progress bar on a short page, an uncited count-up, overshoot on a dialog, `scale(0)` and ease-in entrances, too many durations and easings, the cursor glow, a loop with no pause (an ERROR, WCAG 2.2.2), the shadcn default variables, the lucide feature set, scaffold furniture, the emerald success green, the section waterfall, a raster in a logo SVG, mixed icon sets, and three game checks (`event.key` for WASD, an AudioContext never resumed, a loop that ignores `visibilitychange`). Each finding carries its check id and the data's "instead". The palette check knows Tailwind v4's own oklch values.
+- `core.css` and `motion.js`: reveals in four verbs (`.r`, `.r--mask`, `.r--settle`, `.r--none`) used by content, one group per section, with sections left still; `.card:hover` changes its rule instead of lifting; literal durations are the `--dur` tokens; a `[data-pause]` button holds every CSS animation and `gradient.js`, the marquee holds under the pointer and focus, and hero-gradient ships the button; a `data-count` counts up only beside a source, and the stats section has a Source line. `core.css` also ships a cross-document view transition inside `prefers-reduced-motion: no-preference` and `--ease-spring`, a damped spring sampled into `linear()`.
+- Both examples carry the new engines and no longer lift cards; houston-roofing's gradient hero gets the pause button.
+
+### References
+- New: `motion-graphics.md` (company pieces: stages, copy length, type on screen, the tools to reach for instead), `editing.md` (the order a cut is decided in, J and L cuts, loudness and caption targets, the edit tools), `graphic-design.md` (a brand as a system, one icon set, Radix's 12 steps as colour roles, WCAG 2.2 plus APCA Lc 75 on dark grounds, composition).
+- `motion.md`: what the chassis reveals and leaves still, page transitions, springs and the Web Animations API, and the motion scale scoped to page choreography with Carbon's, Atlassian's and NN/g's UI numbers. `stack.md`: dotLottie or Rive (canvas, webgl2, canvas-lite) or CSS, and Rive's price. `apps.md`: motion in an app (Material 3's spring split, Reanimated 4, Apple's HIG Motion, SwiftUI's spring defaults). `games.md`: feel, accessibility, input and platform, engines, portals. `ui.md`: CSS animation triggers as not yet. `awards.md`: what 2026's case studies were built with. `typography.md`: the GRAD axis.
+- Every AI tell from the research is a row in the reference for its domain (tells, motion, video-tells, games, image-tells), generated from `data/ai-tells.json`; a test keeps the two in step.
+- Every reference over 40 KB opens with a contents list of its headings (`scripts/contents.mjs`). The research proposed splitting those files; that would have broken every "`references/<file>.md`, section" citation, so they stay whole.
+- `SKILL.md` is 12 KB (it was 24 KB): the verify and security prose moved to `references/checklist.md`, and the description now triggers on motion graphics, company videos and footage editing.
+
+### Tools
+- `video lint <dir>`: copy density (over 2.7 words a second warns) and captions checked against Netflix's reading rules (`scripts/captions.mjs`, which also splits timed words into cues and writes SRT).
+- `webdesign.mjs edit probe|scenes|transcribe|captions|cut|deliver`: ffprobe with EBU R128 loudness; scene cuts by PySceneDetect or ffmpeg `scdet`; whisper.cpp transcription; captions from a transcript; auto-editor's silence cut; two-pass loudness to a delivery target, measured again after. A missing program is named and the command exits 2. Checked against auto-editor 29.3.1, PySceneDetect 0.7.1 and whisper.cpp b5130.
+- `webdesign.mjs games portal-check <build dir>`: the CrazyGames size and file limits, requests to other hosts and unguarded localStorage.
+- The render check prints APCA Lc beside the WCAG ratio (apca-w3 0.1.9, checked on six pairs) and warns on body text on a dark ground that passes WCAG and falls under Lc 75.
+
+### Data
+- The awards corpus: each row has tags (whole vocabulary terms), the picker compares tags instead of whole sentences, `--technique` matches a tag, an award row with no year is dropped at build (the 18 undated rows are references and stay undated), eight new rows and four stack patches from the research.
+- Pins read against npm on 2026-09-28: three 0.186.1, motion 13.4.4, @rive-app/canvas 2.43.1, pixi.js 8.21.0, p5 2.3.4, plus @rive-app/webgl2 and @lottiefiles/dotlottie-web; @unseenco/taxi stays at 1.9.1 (2.0.0 is a major). `test/pins.test.mjs` holds the three.js pin everywhere and, with `UFS_NETWORK=1`, reads the registry.
+
+### Tests
+- `npm run test:fast` runs every file with the browser switched off (`UFS_NO_BROWSER=1`), and CI runs it before the full suite. `UFS_TEST_TIMEOUT_MS` raises every browser test's timeout on a loaded machine.
+
+### Not done from the plan
+- The Remotion agent skills were not installed and the ecc chrome-devtools MCP was not re-pointed: both change what Claude Code loads, which is Gev's call. The commands are `npx skills add remotion-dev/skills` and `npm i -g chrome-devtools-mcp` with the MCP entry pointed at that binary.
+- HyperFrames was not benchmarked against `video render`.
+- The game-feel numbers (shake, hitstop, coyote time), the FWA and Awwwards annual winners, and the platforms' own caption and safe-area specs stay unverified: their pages rendered no content or are talks, not pages.
+
 ## 6.7.0 - 2026-09-28
 
 A page that passed the 6.6.0 audit can fail this one: on demo content 6.6.0 left unmarked, on a local file the page asks for that does not exist, or on a counter whose number was not rewritten. The render check now fails body-size text under 3:1, which it used to warn about.
