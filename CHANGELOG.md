@@ -2,6 +2,13 @@
 
 Releases before 6.5.0 are recorded in their tag commits (`git log v6.4.2`) and on the GitHub releases page.
 
+## 6.8.1 - 2026-09-28
+
+From Doodle Voyager's to-do list: a game is checked at the sizes it is played at even when nobody remembers `--game`.
+
+- `look`, `debug` and `verify` on a local page with a canvas and keyboard controls (WASD, the arrows, Space, pointer lock) default to 1366, 1280 and 1920 instead of 1440 and 390; a page that also listens for touch gets 390 back. Vendored libraries are not read, so a three.js page with OrbitControls stays a page. `--widths` and `--game` still win (`scripts/args.mjs`, `test/args-game.test.mjs`).
+- `references/games.md`, "In-game rendering", item 5 names the target resolutions (1366x768, 1280x720, 1920x1080) and says a phone width comes only with touch controls.
+
 ## 6.8.0 - 2026-09-28
 
 Built from the 2026-09-28 research plan (16 items). The audit now names the AI tells that research sourced, and the chassis was changed until it ships none of them, so a page that passed 6.7.0 can now warn on its reveals, counters, loops or hover lift, and fail on a loop with no pause control.
