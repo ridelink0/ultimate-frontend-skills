@@ -2,6 +2,43 @@ import { spawn, spawnSync } from 'node:child_process';
 import { resolve, join, basename, dirname, relative } from 'node:path';
 import { existsSync, mkdirSync, writeFileSync, copyFileSync, readFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
+import { readdirSync } from 'node:fs';
+import { parseCues, checkCaptions } from './captions.mjs';
+
+/* ------------------------------------------------------------- lint ------ */
+/* What can be read from a scene before it is rendered (references/
+   motion-graphics.md): how much copy it asks a viewer to take in, and whether
+   its captions keep the reading rules. `dir` is a scene folder (video.json,
+   scene.html, any .srt/.vtt and a script.txt or vo.txt narration).
+   Returns { seconds, words, wordsPerSecond, findings }. */
+export const WORDS_PER_SECOND = 2.7; // about 160 spoken words a minute
+export function lintVideo(dir) {
+  const root = resolve(dir);
+  if (!existsSync(root)) throw new Error('No such scene folder: ' + dir);
+  let meta = {};
+  if (existsSync(join(root, 'video.json'))) {
+    try { meta = JSON.parse(readFileSync(join(root, 'video.json'), 'utf8')); } catch { throw new Error('video.json is not valid JSON.'); }
+  }
+  const seconds = Number(meta.seconds);
+  const findings = [];
+  // The copy a viewer reads or hears: the scene's visible text (scripts,
+  // styles and comments are not copy) and a narration script if there is one.
+  let words = 0;
+  const count = (t) => (t.match(/[\p{L}\p{N}][\p{L}\p{N}'’-]*/gu) || []).length;
+  if (existsSync(join(root, 'scene.html'))) {
+    const h = readFileSync(join(root, 'scene.html'), 'utf8').replace(/<!--[\s\S]*?-->/g, ' ')
+      .replace(/<(script|style|template|title)\b[\s\S]*?<\/\1\s*>/gi, ' ').replace(/<[^>]+>/g, ' ');
+    words += count(h);
+  }
+  for (const f of ['script.txt', 'vo.txt']) if (existsSync(join(root, f))) words += count(readFileSync(join(root, f), 'utf8'));
+  const wps = seconds > 0 ? words / seconds : null;
+  if (wps !== null && wps > WORDS_PER_SECOND)
+    findings.push({ level: 'warn', rule: 'video-script-density', text: `${words} words in ${seconds} s is ${wps.toFixed(1)} a second (at most ${WORDS_PER_SECOND}, about 160 a minute): cut the copy before animating it, do not read it faster` });
+  for (const f of readdirSync(root).filter((n) => /\.(srt|vtt)$/i.test(n)).sort()) {
+    for (const c of checkCaptions(parseCues(readFileSync(join(root, f), 'utf8')))) findings.push({ ...c, text: f + ': ' + c.text });
+  }
+  return { seconds: Number.isFinite(seconds) ? seconds : null, words, wordsPerSecond: wps === null ? null : +wps.toFixed(2), findings };
+}
 export function studyVideo(file, { out, frames = 8 } = {}) {
   if (!existsSync(file)) throw new Error('Video does not exist: ' + file);
   if (!Number.isInteger(frames) || frames < 2 || frames > 24) throw new Error('Frames must be between 2 and 24.');

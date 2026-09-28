@@ -718,7 +718,16 @@ async function cmdVideo() {
     console.log('Now watch it: video ' + r.file + ' --frames 12, and open every frame before calling it done.');
     return;
   }
-  if (!positional[0]) die('video needs a local video file, or: video scene <dir> / video render <scene.html>');
+  if (positional[0] === 'lint') {
+    if (!positional[1]) die('video lint <scene dir>');
+    let r;
+    try { r = V.lintVideo(positional[1]); } catch (e) { die(e.message); }
+    console.log(`video lint  ${positional[1]}  (${r.words} words${r.seconds ? ' in ' + r.seconds + ' s' : ''})`);
+    for (const f of r.findings) console.log(`  ${f.level === 'error' ? 'ERROR' : 'warn '} ${f.text} [${f.rule}]`);
+    if (!r.findings.length) console.log('  ok    copy density and captions within the reading rules');
+    process.exit(r.findings.some((f) => f.level === 'error') ? 1 : 0);
+  }
+  if (!positional[0]) die('video needs a local video file, or: video scene <dir> / video render <scene.html> / video lint <dir>');
   const frames = studyVideo(positional[0], { out: flag('out'), frames: Number(flag('frames', 8)) });
   console.log(JSON.stringify(frames, null, 2));
   console.log('Open these frames in timestamp order; do not infer motion from one still.');

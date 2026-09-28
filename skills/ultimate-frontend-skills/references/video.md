@@ -51,6 +51,15 @@ what `tells.md` is to pages.
 - Sizes: 1080x1920 for TikTok, Reels and Shorts; 1920x1080 wide; 1080x1080
   square; 1000x1500 for a Pin. Sides are rounded down to even numbers.
 
+## Before a render, and when to use something else
+
+`video lint <dir>` reads a scene before it is rendered: more than 2.7 words a
+second of copy is a warning, and captions (`.srt` or `.vtt` in the folder)
+are checked against the reading rules. How a company piece is built - stages,
+copy length, type on screen, and the tools to reach for when this renderer is
+not the one (Remotion for data-driven volume, HyperFrames, Manim, Rive) - is in
+`references/motion-graphics.md`.
+
 ## Limits, stated plainly
 
 - No audio mixing beyond laying one track under the picture.

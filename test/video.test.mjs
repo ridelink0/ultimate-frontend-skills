@@ -45,3 +45,62 @@ test('stills and a clip render to an MP4 with exactly the requested frames', { s
     assert.ok(Math.abs(out.duration - 1) < 0.05, 'duration ' + out.duration);
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
+
+/* references/motion-graphics.md: copy is counted before it is animated, and
+   on-screen text and captions keep Netflix's reading rules. */
+import { writeFileSync as writeFile } from 'node:fs';
+import { lintVideo } from '../scripts/video.mjs';
+import { parseCues, checkCaptions, splitCaptions, toSrt, RULES } from '../scripts/captions.mjs';
+
+const words = (n) => Array.from({ length: n }, (_, i) => 'word' + i).join(' ');
+function scene(seconds, body, extra = {}) {
+  const dir = mkdtempSync(join(tmpdir(), 'ufs-lint-'));
+  writeFile(join(dir, 'video.json'), JSON.stringify({ seconds }));
+  writeFile(join(dir, 'scene.html'), `<!doctype html><title>t</title><style>.a{}</style><script>var x = "not copy";</script><p>${body}</p>`);
+  for (const [f, t] of Object.entries(extra)) writeFile(join(dir, f), t);
+  return dir;
+}
+
+test('video lint warns when the copy outruns the runtime, and counts a narration script', () => {
+  const ok = scene(15, words(30));
+  const fast = scene(15, words(60));
+  const vo = scene(15, words(10), { 'script.txt': words(50) });
+  try {
+    assert.deepEqual(lintVideo(ok).findings, []);
+    const f = lintVideo(fast);
+    assert.equal(f.words, 60);
+    assert.equal(f.findings.length, 1);
+    assert.equal(f.findings[0].rule, 'video-script-density');
+    assert.match(f.findings[0].text, /60 words in 15 s is 4\.0 a second/);
+    assert.equal(lintVideo(vo).words, 60);
+  } finally { for (const d of [ok, fast, vo]) rmSync(d, { recursive: true, force: true }); }
+});
+
+test('captions: a line over 42 characters or a third line is an error; too fast, too short or too long a warning', () => {
+  const srt = `1\n00:00:00,000 --> 00:00:02,000\nA short line\n\n2\n00:00:02,000 --> 00:00:04,000\nThis caption line is far longer than forty-two characters\n\n3\n00:00:04,000 --> 00:00:06,000\none\ntwo\nthree\n\n4\n00:00:06,000 --> 00:00:06,500\nToo quick\n\n5\n00:00:07,000 --> 00:00:15,000\nToo long on screen\n\n6\n00:00:15,000 --> 00:00:16,000\nThis is a lot of text to read in one second\n`;
+  const found = checkCaptions(parseCues(srt));
+  const at = (cue) => found.filter((f) => f.cue === cue).map((f) => f.level + ' ' + f.text);
+  assert.deepEqual(at(1), []);
+  assert.match(at(2).join(), /^error cue 2 has a line of \d+ characters/);
+  assert.match(at(3).join(), /^error cue 3 has 3 lines/);
+  assert.match(at(4).join(), /warn cue 4 is on screen 0\.50 s/);
+  assert.match(at(5).join(), /warn cue 5 is on screen 8\.00 s/);
+  assert.match(at(6).join(), /warn cue 6 asks for \d+\.\d characters per second/);
+  // WebVTT, tags and all, reads the same way.
+  assert.deepEqual(parseCues('WEBVTT\n\n00:01.000 --> 00:03.000 align:start\n<v Ana><i>Hello</i> there\n'), [{ start: 1, end: 3, lines: ['Hello there'] }]);
+  const dir = scene(20, words(10), { 'captions.srt': srt });
+  try { assert.ok(lintVideo(dir).findings.some((f) => f.level === 'error' && /captions\.srt: cue 2/.test(f.text))); }
+  finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test('timed words are split into captions that keep every reading rule', () => {
+  const text = 'Wood-fired stoneware from the old mill on Kiln Row. It is fired twice a year and sold from the yard, and the next firing is in October. Bring a box.';
+  const ws = text.split(' ').map((word, i) => ({ word, start: i * 0.32 + (i > 9 ? 0.4 : 0), end: i * 0.32 + 0.28 + (i > 9 ? 0.4 : 0) }));
+  const cues = splitCaptions(ws);
+  assert.ok(cues.length >= 3, JSON.stringify(cues));
+  assert.deepEqual(checkCaptions(cues).filter((f) => f.level === 'error' || /characters per second|at most 7/.test(f.text)), []);
+  assert.equal(cues.map((c) => c.lines.join(' ')).join(' '), text, 'no word lost or reordered');
+  assert.ok(cues.every((c) => c.lines.length <= RULES.maxLines && c.lines.every((l) => l.length <= RULES.maxLine)));
+  assert.match(toSrt(cues), /^1\n00:00:00,000 --> 00:00:0\d,\d{3}\n/);
+  assert.match(toSrt([{ start: 1.9996, end: 3, lines: ['x'] }]), /00:00:02,000 --> 00:00:03,000/);
+});
