@@ -399,7 +399,81 @@ every scroll timeline. If the page uses CSS scroll-driven animation, use Lenis.
 Lenis does not move focus on anchor links. That is the real accessibility
 failure; set `tabindex="-1"` and `focus({ preventScroll: true })` on arrival.
 
+## Page transitions
+
+A site of several pages moves between them with a **cross-document view
+transition**: `@view-transition { navigation: auto; }` in the CSS of both
+same-origin pages, and the browser snapshots the old page and the new one and
+animates between them. `core.css` ships it inside `prefers-reduced-motion:
+no-preference`, with `view-transition-name: wordmark` on `.nav__brand` and
+`page-title` on the page's `h1`, so the scaffold's index and 404 already do it.
+
+- **Support.** MDN marks `@view-transition` as not Baseline: Chromium and
+  Safari 18.2 and later run it; elsewhere the page navigates as it always did.
+  That is the right failure, so no fallback is needed.
+- **Names are unique per page.** Two elements with one `view-transition-name`
+  on a page cancel the transition. One `h1` per page (the audit enforces it)
+  keeps `page-title` unique.
+- **Direction.** Transition types (`types` in `@view-transition`, styled with
+  `:active-view-transition-type(forward, back)`) give forward and back their
+  own motion; `:active-view-transition` became Baseline newly available on
+  2026-01-13 (MDN).
+- **Speed.** Pair it with Speculation Rules prerendering, so the next page is
+  ready when the transition starts and the transition does not delay LCP
+  (corewebvitals.io, a third-party write-up).
+- **Libraries.** Barba and `@unseenco/taxi` are now the fallback for a site
+  that needs JavaScript control of the swap, not the default.
+- **Same-document** transitions (`document.startViewTransition()`) are
+  Baseline newly available since 2025-10-14 (`references/ui.md`, "Newly native
+  in 2026"); `view-transition-name: match-element` names elements by identity
+  there, and only there.
+
+Sources: developer.mozilla.org `@view-transition`, `:active-view-transition`,
+`ViewTransition.types`; developer.chrome.com "Cross-document view
+transitions"; drafts.csswg.org/css-view-transitions-2.
+
+## Springs, and the Web Animations API
+
+**Springs are `linear()`.** There is no `spring()` in CSS or its current
+drafts (csswg-drafts issue 280, css-easing-2); a spring is a curve sampled
+into `linear()`, which is Baseline since 2023. `core.css` carries one as
+`--ease-spring` (mass 1, stiffness 200, damping 17, 500 ms, in a comment
+beside it). Jake Archibald and Adam Argyle's generator
+(linear-easing-generator.netlify.app) makes others from spring parameters,
+with a slider for how many stops. Use a spring where a hand let go of
+something - a dragged sheet, a magnetic button releasing, a card snapping
+back - and never on a reveal or a dialog: overshoot on a dialog is one of the
+tells (`data/ai-tells.json`, M5).
+
+**The Web Animations API** (`element.animate()`) is the tool for motion a
+script decides at run time. Three things it does differently from CSS:
+
+- The default easing is `linear`, not `ease`; the duration is in ms.
+- Do not leave `fill: 'forwards'` animations running: call `commitStyles()`
+  to write the end state into the element's style, then `cancel()`. Filling
+  animations are removed automatically unless `persist()` is called.
+- `animation.finished` is a promise, and `document.getAnimations()` returns
+  every running animation on the page, which is how one control can pause or
+  slow all of them. `core.css` and `motion.js` do that with `data-paused`
+  (the chassis section above).
+
+Only `transform` and `opacity` animate on the compositor; anything else costs
+main-thread work every frame (web.dev, "Animations guide").
+
+Source: developer.mozilla.org "Using the Web Animations API", `commitStyles()`.
+
 ## The motion scale
+
+The tiers below are for **page choreography**: a reveal on scroll, a staged
+hero, a route change, each happening once. Anything a user triggers stays
+under 400 ms, as every design system does for UI: IBM Carbon's duration tokens
+run from 70 ms (fast-01) to 700 ms (slow-02), Atlassian's interactions take
+50-150 ms and its transitions 150-400 ms, and NN/g puts feedback at about
+100 ms, modals at 200-300 ms and calls 500 ms "a real drag". Carbon's split
+between **productive** motion (functional, quick: standard easing
+`cubic-bezier(0.2, 0, 0.38, 0.9)`) and **expressive** motion (the moments
+that should be noticed: `cubic-bezier(0.4, 0.14, 0.3, 1)`) is the vocabulary
+for choosing between them.
 
 | Tier | ms | Use |
 |---|---|---|

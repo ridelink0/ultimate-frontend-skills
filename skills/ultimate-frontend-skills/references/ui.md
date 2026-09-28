@@ -1123,6 +1123,7 @@ Not yet, whatever a blog post says:
 | `hidden="until-found"` | limited: 102 / 148 / no | Enhancement only |
 | `<input type=checkbox switch>` | limited: Safari 17.4 only | Build the APG switch |
 | `prefers-reduced-transparency` | limited: 119 / no / no | |
+| CSS animation triggers (`animation-trigger-*`, `timeline-trigger-*`) | Editor's Draft, 2026-09-04; design questions open in csswg-drafts issue 12119 | A scroll-*triggered* (not scrubbed) animation still needs an IntersectionObserver, which is what `motion.js` uses |
 | Native masonry: `display: grid-lanes` | limited: no / no / 26.4 | Safari only (26.4, 2026-03-24). Chrome has not shipped it: chromestatus names a `css-grid-lanes-layout` flag and gives no ship milestone; browser-compat-data lists no Firefox version. The spec is a CSS Grid 3 Editor's Draft (2 September 2026), so the syntax can still move. Enhancement only, below |
 | `corner-shape` (`squircle`, `superellipse()`) | limited: 139 / no / no | Chrome and Edge only; Firefox and Safari have it in preview builds. Does nothing without a non-zero `border-radius`, so it degrades to the plain rounded corner by itself. Never fake the squircle with an SVG `clip-path`, which also clips the focus ring and the shadow |
 | CSS `if()` | limited: 137 / no / no | Chrome and Edge only; Firefox bug 1981485 and WebKit bug 296995 are open. A browser without it throws the whole declaration away, so a plain declaration must come first. Nothing the system does needs it: `@media` and `@supports` blocks already express the same branches |

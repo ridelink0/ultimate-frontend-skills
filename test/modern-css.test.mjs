@@ -110,3 +110,32 @@ test('a .stagger list takes its reveal offsets from its own order in a real brow
     rmSync(dir, { recursive: true, force: true });
   }
 });
+
+/* PLAN item 5 (2026-09-28 research): cross-document view transitions ship in
+   core.css, and only for someone who has not asked for less motion; the
+   spring token is a real linear() curve. */
+test('@view-transition ships only inside the no-preference guard, with the wordmark and the title named', () => {
+  const css = coreCss.replace(/\/\*[\s\S]*?\*\//g, '');
+  const at = css.indexOf('@view-transition');
+  assert.ok(at > 0, 'core.css has no @view-transition');
+  assert.equal(css.indexOf('@view-transition', at + 1), -1, 'more than one @view-transition');
+  const guard = css.lastIndexOf('@media (prefers-reduced-motion: no-preference)', at);
+  assert.ok(guard >= 0, 'no reduced-motion guard before @view-transition');
+  let depth = 0;
+  for (let i = css.indexOf('{', guard); i < at; i++) { if (css[i] === '{') depth++; else if (css[i] === '}') depth--; }
+  assert.equal(depth, 1, '@view-transition is not inside the no-preference block');
+  assert.match(css, /\.nav__brand\s*\{\s*view-transition-name:\s*wordmark/);
+  assert.match(css, /main h1\s*\{\s*view-transition-name:\s*page-title/);
+});
+
+test('--ease-spring is a linear() curve from 0 to 1 that overshoots and settles', () => {
+  const m = coreCss.match(/--ease-spring:\s*linear\(([^)]*)\)/);
+  assert.ok(m, 'no --ease-spring linear()');
+  const stops = m[1].split(',').map((s) => Number(s.trim()));
+  assert.ok(stops.length >= 10 && stops.every(Number.isFinite), m[1]);
+  assert.equal(stops[0], 0);
+  assert.equal(stops[stops.length - 1], 1);
+  const peak = Math.max(...stops);
+  assert.ok(peak > 1 && peak < 1.2, 'overshoot ' + peak);
+  assert.ok(Math.abs(stops[stops.length - 2] - 1) < 0.01, 'it does not settle before the end');
+});

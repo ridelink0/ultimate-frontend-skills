@@ -92,6 +92,12 @@
   --ease:    cubic-bezier(0.22, 1, 0.36, 1);
   --ease-io: cubic-bezier(0.65, 0, 0.35, 1);
   --dur-1: 180ms; --dur-2: 380ms; --dur-3: 720ms; --dur-4: 1200ms;
+  /* A spring, for direct manipulation and snap-back only (a dragged sheet, a
+     magnetic button letting go), never for a reveal. CSS has no spring();
+     this is one sampled into linear(): mass 1, stiffness 200, damping 17
+     (damping ratio 0.6, 9% overshoot), 25 stops over 500 ms, the first value
+     0 and the last 1. Use it with a 500 ms duration. */
+  --ease-spring: linear(0, 0.038, 0.135, 0.266, 0.411, 0.555, 0.689, 0.805, 0.901, 0.976, 1.03, 1.065, 1.086, 1.094, 1.093, 1.085, 1.074, 1.06, 1.046, 1.033, 1.022, 1.012, 1.004, 0.999, 1);
 }
 
 /* Above 1600px keep growing, but far more slowly. Continuous at the seam. */
@@ -600,6 +606,18 @@ html[data-paused="true"] *, html[data-paused="true"] *::before, html[data-paused
   background: radial-gradient(125% 95% at 50% 42% in oklab,
     rgb(15 11 9 / 0) 0%, rgb(15 11 9 / 0) 48%, rgb(15 11 9 / 0.05) 63%,
     rgb(15 11 9 / 0.13) 76%, rgb(15 11 9 / 0.24) 88%, rgb(15 11 9 / 0.36) 100%); }
+
+/* ======================================================= page transitions == */
+/* Cross-document view transitions between the pages of one site (index and
+   404 on a scaffold): the browser snapshots both pages and cross-fades them,
+   and the wordmark and the page title morph in place. Chromium and Safari
+   18.2+; elsewhere the navigation is an ordinary one. Only for someone who
+   has not asked for less motion. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+  .nav__brand { view-transition-name: wordmark; }
+  main h1 { view-transition-name: page-title; }
+}
 
 /* ================================================================ reveals == */
 /* The default state is VISIBLE. Motion is added inside the guards, so a browser

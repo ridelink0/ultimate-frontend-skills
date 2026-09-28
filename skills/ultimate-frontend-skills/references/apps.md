@@ -14,6 +14,25 @@ brief beyond its newsroom copy, so "why it doesn't read as AI-generated" is
 this document's own analysis, grounded in the sourced facts about each app,
 not a quote from Apple or Google.
 
+## Motion in an app
+
+- **Springs move things; nothing bounces a colour.** Material 3 Expressive's
+  motion system splits its tokens into *spatial* springs (position, size,
+  shape; these may overshoot) and *effects* springs (colour, opacity; no
+  bounce), each in default, fast and slow, with an Expressive scheme (lower
+  damping, visible overshoot) and a Standard one (m3.material.io, "M3
+  Expressive motion theming" and the easing and duration token specs).
+- **React Native: Reanimated 4.** Stable, with a CSS-compatible declarative
+  API for animations and transitions; it needs the New Architecture (React
+  Native 0.76 or later) and moves worklets to the separate
+  `react-native-worklets` package (Software Mansion's release post and
+  migration guide). Reach for the CSS API first and write worklets only for
+  motion driven by a gesture. npm had 4.7.0 on 2026-09-27.
+- **The system's reduce-motion setting wins**, in an app as on the web.
+  Apple's HIG motion guidance and SwiftUI's spring defaults are not given
+  here: their pages could not be read when this was written, and a number
+  from memory would be a guess.
+
 ---
 
 ## Finance
