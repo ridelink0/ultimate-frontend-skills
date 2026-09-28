@@ -84,9 +84,20 @@ not a quote from Apple or Google.
   migration guide). Reach for the CSS API first and write worklets only for
   motion driven by a gesture. npm had 4.7.0 on 2026-09-27.
 - **The system's reduce-motion setting wins**, in an app as on the web.
-  Apple's HIG motion guidance and SwiftUI's spring defaults are not given
-  here: their pages could not be read when this was written, and a number
-  from memory would be a guess.
+- **Apple's HIG, Motion** (read 2026-09-28 in a headless browser): add motion
+  purposefully, never for its own sake; make it optional and never the only
+  way to say something (pair it with haptics or sound); keep feedback brief
+  and precise; avoid motion on interactions people repeat often; let people
+  cancel an animation rather than wait for it. For games, a consistent 30 to
+  60 fps. In visionOS: no motion at the edges of the field of view, fade an
+  object out and in to relocate it, do not rotate the world, give a
+  stationary frame of reference, and avoid sustained oscillation near 0.2 Hz.
+- **SwiftUI's spring** (`spring(duration:bounce:blendDuration:)`, Apple's
+  documentation, same date): defaults `duration 0.5`, `bounce 0.0`,
+  `blendDuration 0`. The duration is perceptual, about the settling time;
+  `bounce` 0 is critically damped, up to 1.0 is undamped, down to -1.0
+  overdamped. `--ease-spring` in `core.css` is a bouncier web equivalent
+  (damping ratio 0.6) for snap-back only.
 
 ---
 

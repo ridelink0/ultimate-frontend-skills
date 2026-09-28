@@ -22,7 +22,7 @@ free, CDN-loadable, and needs no build step.
 | 2D WebGL: particles, displacement, filters at scale | **pixi.js** | ~120 KB gz |
 | Page-wide scroll inertia, as a brand decision | **lenis** | ~5 KB gz |
 | Designer-authored vector animation, played start to end | **@lottiefiles/dotlottie-web** (a `.lottie` file: Rust core in WASM on ThorVG, with state machines, theming and audio in one file). lottie-web still plays a `.json`, but its npm entry was last modified on 2025-05-21 and its repository last pushed on 2025-09-01 | see its build |
-| Interactive vector animation: a character, states, live data | **@rive-app/canvas** by default (Canvas2D, every blend mode, no context limit); **@rive-app/webgl2** when feathering and editor-identical rendering matter (it uses the Rive Renderer and counts against the page's WebGL contexts); **@rive-app/canvas-lite** when there is no text, layout or audio | 90 KB (canvas) |
+| Interactive vector animation: a character, states, live data (the Rive editor is free to create in; exporting a `.riv` to ship needs a paid seat, from $9 a seat a month on Cadet, rive.app/pricing, 2026-09-28) | **@rive-app/canvas** by default (Canvas2D, every blend mode, no context limit); **@rive-app/webgl2** when feathering and editor-identical rendering matter (it uses the Rive Renderer and counts against the page's WebGL contexts); **@rive-app/canvas-lite** when there is no text, layout or audio | 90 KB (canvas) |
 | A spinner, a checkmark, a two-state icon | CSS (`@keyframes`, `transition`), no library | 0 |
 | Physics (falling, springs, collisions) | **matter-js** | ~25 KB gz |
 | Generative/creative sketch work | **p5** | ~350 KB, lazy-load only |
