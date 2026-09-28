@@ -58,10 +58,10 @@ Verified on this machine, this exact block: written to a file, rendered by
      decoration: see "the second file" below. -->
 <script type="importmap">
 {"imports":{
-  "three":         "https://cdn.jsdelivr.net/npm/three@0.186.0/build/three.module.min.js",
-  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.0/examples/jsm/",
-  "https://cdn.jsdelivr.net/npm/three@0.186.0/build/three.core.js":
-                   "https://cdn.jsdelivr.net/npm/three@0.186.0/build/three.core.min.js"
+  "three":         "https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.min.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/",
+  "https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.core.js":
+                   "https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.core.min.js"
 }}</script>
 <script type="module">
 import * as THREE from 'three';
@@ -142,11 +142,12 @@ correction to it. The number to budget is **191 KB gz with the core remapped,
 4. **`RGBELoader` is a deprecated stub at r186** - the whole file extends
    `HDRLoader` and warns. Import `three/addons/loaders/HDRLoader.js`.
    `RGBMLoader` was removed in r180 (200 at 0.179.0, 404 at 0.180.0).
-5. **The rest of this plugin pins `three@0.185.1`** - `stack.md`, `motion.md`,
-   `security.md`, `fable-showcase.md` and the `webdesign.mjs new` scaffold all
-   print that version. This file is measured on 0.186.0, which is the current
-   release. Either is fine; one page must not use both, and `retroreflectivity`
-   and `Object3D.dispose()` exist only on 0.186.0.
+5. **This plugin pins `three@0.186.1`** - `stack.md`, `motion.md`,
+   `security.md` and the `webdesign.mjs new` scaffold all print that version
+   (the example sites and `fable-showcase.md` record 0.186.0, which they were
+   built on). This file is measured on 0.186.0; 0.186.1 is its patch release.
+   One page must never use two versions, and `retroreflectivity` and
+   `Object3D.dispose()` need 0.186 or later.
 
 Addon paths verified 200 on jsDelivr at 0.186.0:
 `environments/RoomEnvironment.js`, `controls/OrbitControls.js`,

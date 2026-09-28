@@ -195,8 +195,8 @@ function cmdNew() {
   if (needs.exploded || needs.sky) {
     engines.push(
       '<script type="importmap">\n{"imports":{\n' +
-      '  "three": "https://cdn.jsdelivr.net/npm/three@0.186.0/build/three.module.js",\n' +
-      '  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.0/examples/jsm/"\n' +
+      '  "three": "https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js",\n' +
+      '  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/"\n' +
       '}}</script>',
     );
     if (needs.sky) engines.push('<script type="module" src="sky.js"></script>');

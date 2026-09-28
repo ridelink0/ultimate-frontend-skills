@@ -74,14 +74,20 @@ scaffolder. Use them before reaching for anything heavier.
 
 ## Exact specifiers, verified
 
+Read against the npm registry on 2026-09-28 (`npm view <name> version`);
+`UFS_NETWORK=1 node --test test/pins.test.mjs` reads them again and fails on a
+pin a major version behind. @unseenco/taxi 2.0.0 is out and is a major; the
+pin stays at 1.9.1 until its API is read again.
+
 ```
-three@0.186.0        anime.js@4.5.0       gsap@3.15.0        lenis@1.3.26
-ogl@1.0.11           pixi.js@8.20.1       postprocessing@6.39.5
-lottie-web@5.13.0    @rive-app/canvas@2.42.1                 matter-js@0.20.0
-split-type@0.3.4     p5@2.3.2             simplex-noise@4.0.3
+three@0.186.1        anime.js@4.5.0       gsap@3.15.0        lenis@1.3.26
+ogl@1.0.11           pixi.js@8.21.0       postprocessing@6.39.5
+lottie-web@5.13.0    @rive-app/canvas@2.43.1                 matter-js@0.20.0
+@rive-app/webgl2@2.43.1                   @lottiefiles/dotlottie-web@0.80.0
+split-type@0.3.4     p5@2.3.4             simplex-noise@4.0.3
 troika-three-text@0.52.5                  meshline@3.3.1
 curtainsjs@8.1.6     embla-carousel@8.6.0 @unseenco/taxi@1.9.1  @barba/core@2.10.3
-motion@13.2.0        gl-matrix@3.4.4      splitting@1.1.0       hover-effect@1.2.1
+motion@13.4.4        gl-matrix@3.4.4      splitting@1.1.0       hover-effect@1.2.1
 zdog@1.1.3
 ```
 
@@ -96,8 +102,8 @@ zdog@1.1.3
      two copies of three and every instanceof check fails -->
 <script type="importmap">
 {"imports":{
-  "three": "https://cdn.jsdelivr.net/npm/three@0.186.0/build/three.module.js",
-  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.0/examples/jsm/"
+  "three": "https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/"
 }}</script>
 
 <!-- anime.js v4 is ESM-only and the API is NOTHING like v3 -->

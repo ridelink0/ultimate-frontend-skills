@@ -61,7 +61,7 @@ Three more rules the chassis follows, each held by an audit check:
 6. **`Vector3.project()` returns mirrored garbage behind the camera.** Reject in
    view space first.
 7. **cdnjs does not host three.js addons.** Use jsDelivr, and `three@r185` is not
-   a valid npm specifier - it is `three@0.186.0`.
+   a valid npm specifier - it is `three@0.186.1`.
 
 ## Choosing the tool
 
@@ -300,8 +300,8 @@ importmap, or you get two copies of three and `instanceof` failures:
 ```html
 <script type="importmap">
 {"imports":{
-  "three": "https://cdn.jsdelivr.net/npm/three@0.186.0/build/three.module.js",
-  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.0/examples/jsm/"
+  "three": "https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/"
 }}</script>
 ```
 
