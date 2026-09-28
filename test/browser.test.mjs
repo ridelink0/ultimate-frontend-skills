@@ -9,7 +9,7 @@ import { spawn, spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { debugSite } from '../scripts/debug.mjs';
 import { Session, findBrowser, inspect, decodePNG, sampleImageContrast, readPortFile } from '../scripts/inspect.mjs';
-import { launch, closeBrowser, removeProfile, sweepProfiles, flushProfiles, PROFILE_PREFIX, LAUNCH_FLAGS } from '../scripts/inspect.mjs';
+import { launch, closeBrowser, removeProfile, sweepProfiles, flushProfiles, PROFILE_PREFIX, LAUNCH_FLAGS, LAUNCH_DEADLINE_MS } from '../scripts/inspect.mjs';
 import { writeReview } from '../scripts/review.mjs';
 import { runVerify, formatVerify } from '../scripts/verify.mjs';
 import { startServer } from '../scripts/preview-server.mjs';
@@ -381,7 +381,6 @@ test('inspect reads computed type, loaded fonts, the type scale and resources fr
    into an empty catch while the browser still had the files open, and never
    ran at all in a CLI that exited first. Gev's %TEMP% gave up 1,647 stray
    webdesign-cdp-* folders in one sweep and 572 more the next evening. */
-const tempProfiles = (dir = tmpdir()) => new Set(readdirSync(dir).filter((n) => n.startsWith(PROFILE_PREFIX)));
 
 test('a finished run of the render check leaves no temporary browser profile behind', { skip: !findBrowser(), timeout: 180000 }, async () => {
   // The contract is about a finished run, so this drives the real CLI in a
@@ -398,8 +397,15 @@ test('a finished run of the render check leaves no temporary browser profile beh
   const dir = mkdtempSync(join(tmpdir(), 'ufs-profile-leak-'));
   const privateTmp = join(dir, 'tmp');
   mkdirSync(privateTmp);
+  // The page makes network requests of its own (a stylesheet and an image):
+  // Edge writes Importer_0_4 (N) and cv_debug.log into the TEMP it inherits
+  // only when a page does, and a bare page left nothing to find (judge round
+  // 3, 2026-09-27: 65 such folders from one full suite on a clean TEMP).
   writeFileSync(join(dir, 'index.html'), '<!doctype html><html lang="en"><meta charset="utf-8"><title>Leak</title>' +
-    '<body style="font:16px system-ui;padding:16px"><h1>Leak check</h1><p>One paragraph, one heading.</p></body></html>');
+    '<link rel="stylesheet" href="leak.css"><body style="font:16px system-ui;padding:16px"><h1>Leak check</h1>' +
+    '<p>One paragraph, one heading.</p><img src="dot.png" alt="A dot" width="1" height="1"></body></html>');
+  writeFileSync(join(dir, 'leak.css'), 'h1{letter-spacing:-.01em}');
+  writeFileSync(join(dir, 'dot.png'), Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAAJJRU5ErkJggg==', 'base64'));
   try {
     const cli = spawn(process.execPath, [join(ROOT_DIR, 'scripts', 'webdesign.mjs'), 'look', dir, '--widths', '900', '--out', join(dir, 'shots')],
       { stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true, env: { ...process.env, TMPDIR: privateTmp, TEMP: privateTmp, TMP: privateTmp } });
@@ -416,7 +422,9 @@ test('a finished run of the render check leaves no temporary browser profile beh
     const seen = spawnSync(process.execPath, ['-e', 'process.stdout.write(require("os").tmpdir())'],
       { encoding: 'utf8', env: { ...process.env, TMPDIR: privateTmp, TEMP: privateTmp, TMP: privateTmp } }).stdout;
     assert.equal(seen, privateTmp, 'the child would not use the private temp directory');
-    const added = [...tempProfiles(privateTmp)];
+    // Every name, not a list of known prefixes: whatever the browser or the
+    // CLI leaves in the temp directory is a leak, whoever named it.
+    const added = readdirSync(privateTmp);
     const why = added.map((n) => {
       const path = join(privateTmp, n);
       // Who still holds it, where the question can be asked cheaply.
@@ -425,7 +433,7 @@ test('a finished run of the render check leaves no temporary browser profile beh
       try { return n + ' (last written ' + Math.round((Date.now() - statSync(path).mtimeMs) / 100) / 10 + 's ago, ' + readdirSync(path).length + ' entries' + (ps ? '; held by: ' + ps : '') + ')'; }
       catch { return n + ' (it went away while we looked)'; }
     }).join('; ');
-    assert.deepEqual(added, [], 'the run left ' + added.length + ' profile(s) in its temp directory: ' + why);
+    assert.deepEqual(added, [], 'the run left ' + added.length + ' entr' + (added.length === 1 ? 'y' : 'ies') + ' in its temp directory: ' + why);
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
@@ -530,4 +538,64 @@ test('no test asks for a review folder in the temp directory it never deletes', 
 test('every launch turns off the component updater that leaves msedge_* folders in the temp directory', () => {
   assert.ok(LAUNCH_FLAGS.includes('--disable-component-update'), JSON.stringify(LAUNCH_FLAGS));
   assert.ok(LAUNCH_FLAGS.includes('--headless=new'), 'LAUNCH_FLAGS is the list launch() spawns with');
+});
+
+/* The launcher, against a stand-in browser (test/fixtures/stub-browser.mjs).
+   HQ-2: Edge 153 hands its session to a child and the launcher exits 0 at
+   once. UFS took that exit as a failed launch, then cleaned up with a kill
+   that never reached the child, and headless browsers piled up (thirty, on
+   HQ). A real Edge only takes that path on some machines; the stub takes it
+   everywhere, so the hand-off and the clean-up are both asserted. */
+const STUB = join(ROOT_DIR, 'test', 'fixtures', 'stub-browser.mjs');
+const alive = (pid) => { try { process.kill(pid, 0); return true; } catch (e) { return e.code === 'EPERM'; } };
+async function withStub(env, fn) {
+  const saved = {};
+  for (const k of Object.keys(env)) { saved[k] = process.env[k]; process.env[k] = env[k]; }
+  try { return await fn(); } finally {
+    for (const [k, v] of Object.entries(saved)) { if (v === undefined) delete process.env[k]; else process.env[k] = v; }
+  }
+}
+
+test('a launcher that hands off to a child and exits 0 is a browser, and closing it ends the child (HQ-2)', { timeout: 60000 }, async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'ufs-stub-'));
+  const pidFile = join(dir, 'child.pid');
+  try {
+    await withStub({ STUB_MODE: 'handoff', STUB_PIDFILE: pidFile }, async () => {
+      const b = await launch(STUB);
+      assert.equal(b.proc.exitCode, 0, 'the stub launcher should have exited 0 before the port answered');
+      const pid = Number(readFileSync(pidFile, 'utf8'));
+      assert.ok(alive(pid), 'the handed-off child is the browser, and it is running');
+      const version = await fetch(`http://127.0.0.1:${b.port}/json/version`).then((r) => r.json());
+      assert.equal(version.Browser, 'stub/1');
+      assert.equal(await closeBrowser(b), true, 'the profile was left behind');
+      for (let i = 0; i < 50 && alive(pid); i++) await new Promise((r) => setTimeout(r, 100));
+      assert.equal(alive(pid), false, 'the handed-off child outlived closeBrowser: an orphaned browser');
+    });
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test('a browser that takes longer than 15 s to open its port is waited for, and one that never does is given up on (judge round 3)', { timeout: 90000 }, async () => {
+  // One deadline for both launchers: image-deep-research, bundled here, waits
+  // the same 45 s.
+  assert.equal(LAUNCH_DEADLINE_MS, 45000);
+  const bundled = readFileSync(join(ROOT_DIR, 'skills', 'image-deep-research', 'scripts', 'browser.mjs'), 'utf8');
+  assert.match(bundled, /Date\.now\(\) \+ 45000/, 'the bundled image-deep-research launcher no longer waits 45 s');
+  await withStub({ STUB_MODE: 'slow', STUB_DELAY: '17000' }, async () => {
+    const started = Date.now();
+    const b = await launch(STUB);
+    assert.ok(Date.now() - started >= 16000, 'the stub answered early, so this proves nothing');
+    assert.equal(await closeBrowser(b), true);
+  });
+  // A temp directory of its own, so the profile a failed launch must remove
+  // can be looked for without counting anyone else's.
+  const own = mkdtempSync(join(tmpdir(), 'ufs-stub-never-'));
+  try {
+    await withStub({ STUB_MODE: 'never', TEMP: own, TMP: own, TMPDIR: own }, async () => {
+      const started = Date.now();
+      await assert.rejects(launch(STUB, [], { deadlineMs: 2500 }), /did not expose a debugging port/);
+      const took = Date.now() - started;
+      assert.ok(took >= 2400 && took < 15000, 'the deadline was not kept: ' + took + ' ms');
+      assert.deepEqual(readdirSync(own), [], 'a launch that failed left its profile behind');
+    });
+  } finally { rmSync(own, { recursive: true, force: true }); }
 });

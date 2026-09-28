@@ -242,20 +242,48 @@ export const LAUNCH_FLAGS = [
   '--disable-background-networking', '--disable-component-update', '--disable-sync', '--disable-features=Translate',
 ];
 
-export async function launch(bin, args = []) {
+/* How long a browser gets to open its debugging port: one deadline on the
+   clock, the same 45 s image-deep-research's launcher allows (its first start
+   on a fresh Windows CI runner took longer than 15 s). It used to be 150 polls
+   of 100 ms, about 15 s, and on a loaded machine (a local model and other
+   agents, 99% CPU) two render checks in one suite failed with "browser did not
+   expose a debugging port" at 16 s and 26 s and passed alone (judge round 3,
+   2026-09-27). A healthy start answers in about a second either way. */
+export const LAUNCH_DEADLINE_MS = 45000;
+
+/* The browser's own temp directory, inside the profile closeBrowser deletes.
+   Edge writes an Importer_0_4 folder (numbered (1) to (100), then it stops)
+   and cv_debug.log into the TEMP it inherits whenever a page makes a network
+   request, outside the profile where no profile delete reaches them: one full
+   suite left 65 such folders in an empty TEMP, and 100 plus the log were on
+   Gev's machine (judge round 3, 2026-09-27). Any casing of the variable is
+   replaced, since Windows reads TEMP and Temp as the same name. */
+function browserEnv(dir) {
+  const env = {};
+  for (const [k, v] of Object.entries(process.env)) if (!/^(TEMP|TMP|TMPDIR)$/i.test(k)) env[k] = v;
+  return { ...env, TEMP: dir, TMP: dir, TMPDIR: dir };
+}
+
+export async function launch(bin, args = [], { deadlineMs = LAUNCH_DEADLINE_MS } = {}) {
   // Off the critical path: the sweep is housekeeping, never a reason to wait.
   if (!sweptThisProcess) { sweptThisProcess = true; sweepProfiles().catch(() => {}); }
   const udd = mkdtempSync(join(tmpdir(), PROFILE_PREFIX));
+  const ownTmp = join(udd, 'tmp');
+  mkdirSync(ownTmp);
   const asked = await freePort();
-  const proc = spawn(bin, [
-    ...LAUNCH_FLAGS,
+  // A launcher given as a Node script runs under this Node. That is how the
+  // tests stand in for a browser that hands off to a child, or starts slowly.
+  const [cmd, pre] = /\.m?js$/i.test(bin) ? [process.execPath, [bin]] : [bin, []];
+  const proc = spawn(cmd, [
+    ...pre, ...LAUNCH_FLAGS,
     `--user-data-dir=${udd}`, `--remote-debugging-port=${asked}`, ...args, 'about:blank',
-  ], { stdio: ['ignore', 'ignore', 'ignore'], windowsHide: true });
+  ], { stdio: ['ignore', 'ignore', 'ignore'], windowsHide: true, env: browserEnv(ownTmp) });
   let launchError;
   proc.once('error', err => { launchError = err; });
 
   const portFile = join(udd, 'DevToolsActivePort');
-  for (let i = 0; i < 150; i++) {
+  const deadline = Date.now() + deadlineMs;
+  for (let i = 0; Date.now() < deadline; i++) {
     // Edge 153 hands the session to a child and its launcher exits 0 at once;
     // only a failed exit means there is no browser to wait for.
     if (launchError || (proc.exitCode !== null && proc.exitCode !== 0)) break;

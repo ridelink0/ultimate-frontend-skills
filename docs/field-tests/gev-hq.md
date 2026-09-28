@@ -54,11 +54,10 @@ this run's own temporary profile.
 **The UFS fix.** 6.2.0: `launch()` in scripts/inspect.mjs. It is a tool fix
 with no reference text; the comments in `launch()` carry the reasons.
 
-**Regression check.** Not testable automatically: it needs a browser whose
-launcher hands off (Edge 153 and later on Windows). On such a machine every
-real-browser test goes through this path and fails with "did not expose a
-debugging port" if it breaks, but no test isolates it, and the process
-clean-up is not asserted.
+**Regression check.** `test/browser.test.mjs`, "a launcher that hands off to a child and exits 0 is a browser, and closing it ends the child (HQ-2)"
+(a stand-in browser, test/fixtures/stub-browser.mjs, whose launcher exits 0
+and leaves a detached child serving DevTools without a port file; the test
+asserts the port is found and that closeBrowser ends the child).
 
 ### HQ-3. Scrolling panels read as text on top of text
 
