@@ -18,9 +18,13 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve, dirname, basename, extname, join } from 'node:path';
 import { parseCues, checkCaptions, splitCaptions, toSrt } from './captions.mjs';
 
-const run = (bin, args, opts = {}) => spawnSync(bin, args, { encoding: 'utf8', windowsHide: true, timeout: 600000, maxBuffer: 64 * 1024 * 1024, ...opts });
+/* A program not on PATH can be named by its full path:
+   UFS_AUTO_EDITOR, UFS_SCENEDETECT and UFS_WHISPER (whisper-cli). */
+const OVERRIDE = { 'auto-editor': 'UFS_AUTO_EDITOR', scenedetect: 'UFS_SCENEDETECT', 'whisper-cli': 'UFS_WHISPER' };
+const tool = (bin) => (OVERRIDE[bin] && process.env[OVERRIDE[bin]]) || bin;
+const run = (bin, args, opts = {}) => spawnSync(tool(bin), args, { encoding: 'utf8', windowsHide: true, timeout: 600000, maxBuffer: 64 * 1024 * 1024, ...opts });
 export function has(bin) {
-  const r = run(bin, [bin === 'auto-editor' ? '--version' : bin.startsWith('whisper') ? '--help' : '-version'], { timeout: 20000 });
+  const r = run(bin, [bin === 'auto-editor' ? '--version' : bin === 'scenedetect' ? 'version' : bin.startsWith('whisper') ? '--help' : '-version'], { timeout: 20000 });
   return !r.error && (r.status === 0 || /usage|whisper/i.test((r.stdout || '') + (r.stderr || '')));
 }
 const need = (bin, what) => {
@@ -66,9 +70,16 @@ export function probe(file) {
    installed; otherwise ffmpeg's scdet filter, whose score is 0-100. */
 export function scenes(file, { threshold = 10 } = {}) {
   if (has('scenedetect')) {
-    const r = run('scenedetect', ['-i', resolve(file), '-q', 'detect-adaptive', 'list-scenes', '-n', '-s']);
-    const times = [...(r.stdout || '').matchAll(/\|\s*\d+\s*\|\s*\d+\s*\|\s*[\d:.]+\s*\|\s*\d+\s*\|\s*([\d.]+)\s*\|/g)].map((m) => Number(m[1]));
-    if (r.status === 0 && times.length) return { via: 'scenedetect', cuts: times.slice(1) };
+    // It prints the cut points as one comma-separated timecode list (the
+    // line after "Comma-separated timecode list:"); -q would suppress it.
+    const r = run('scenedetect', ['-i', resolve(file), 'detect-adaptive', 'list-scenes', '-n']);
+    const out = (r.stdout || '') + (r.stderr || '');
+    const at = out.indexOf('Comma-separated timecode list:');
+    if (r.status === 0 && at >= 0) {
+      const line = out.slice(at).split(/\r?\n/)[1] || '';
+      const cuts = [...line.matchAll(/(\d+):(\d+):(\d+(?:\.\d+)?)/g)].map((m) => Number(m[1]) * 3600 + Number(m[2]) * 60 + Number(m[3]));
+      return { via: 'scenedetect', cuts };
+    }
   }
   need('ffmpeg', 'scene detection');
   const r = run('ffmpeg', ['-hide_banner', '-nostats', '-i', resolve(file), '-vf', `scdet=threshold=${Number(threshold)},metadata=print`, '-an', '-f', 'null', '-']);

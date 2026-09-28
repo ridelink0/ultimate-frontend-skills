@@ -154,3 +154,31 @@ test('whisper.cpp JSON becomes timed words, and edit captions writes an SRT that
     assert.match(readFileSync(r.file, 'utf8'), /^1\n00:00:00,000 --> 00:00:01,400\nThe kiln is lit\.\n/);
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
+
+/* The real programs, where they are installed (on PATH, or named by
+   UFS_SCENEDETECT, UFS_AUTO_EDITOR and UFS_WHISPER with UFS_WHISPER_MODEL).
+   Registered only where they are all there, because CI fails any run with a
+   skipped test and does not install them; the wrappers' "not installed" path
+   is tested above on every machine. */
+const toolsHere = hasFfmpeg && edit.has('scenedetect') && edit.has('auto-editor') && edit.has('whisper-cli') && Boolean(process.env.UFS_WHISPER_MODEL);
+if (toolsHere) test('edit drives PySceneDetect, auto-editor and whisper.cpp when they are installed', { timeout: 600000 }, () => {
+  const dir = mkdtempSync(join(tmpdir(), 'ufs-tools-'));
+  try {
+    const clip = join(dir, 'cut.mp4');
+    ff('-f', 'lavfi', '-i', 'color=c=0x2a1f14:s=320x180:d=2:r=25', '-f', 'lavfi', '-i', 'color=c=0xe8dcc8:s=320x180:d=2:r=25',
+      '-filter_complex', '[0:v][1:v]concat=n=2:v=1[v]', '-map', '[v]', '-pix_fmt', 'yuv420p', clip);
+    const s = edit.scenes(clip);
+    assert.equal(s.via, 'scenedetect');
+    assert.ok(s.cuts.some((t) => Math.abs(t - 2) < 0.2), JSON.stringify(s));
+    const gaps = join(dir, 'gaps.wav');
+    ff('-f', 'lavfi', '-i', 'sine=f=440:d=2', '-f', 'lavfi', '-i', 'anullsrc=r=44100:cl=mono:d=3', '-f', 'lavfi', '-i', 'sine=f=660:d=2',
+      '-filter_complex', '[0:a][1:a][2:a]concat=n=3:v=0:a=1[a]', '-map', '[a]', gaps);
+    const cut = edit.cutSilence(gaps);
+    const d = edit.probe(cut.file).duration;
+    assert.ok(d > 3.5 && d < 5.5, 'the 3 s of silence should be gone from a 7 s file: ' + d);
+    const tone = join(dir, 'tone.wav');
+    ff('-f', 'lavfi', '-i', 'sine=f=440:d=2', tone);
+    const t = edit.transcribe(tone, { model: process.env.UFS_WHISPER_MODEL });
+    assert.ok(existsSync(t.json) && existsSync(t.srt), JSON.stringify(t));
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});

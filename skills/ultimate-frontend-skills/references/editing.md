@@ -73,6 +73,12 @@ differ in their transfer function; SDR is about 100 nits.
 | Dead air out | `edit cut <file> --silence [--margin 0.2s]` | auto-editor | says so and exits 2 |
 | Loudness and shape | `edit deliver <file> --for youtube` | ffmpeg | install FFmpeg |
 
+A program that is installed but not on PATH is named by its full path in
+`UFS_AUTO_EDITOR`, `UFS_SCENEDETECT` or `UFS_WHISPER` (whisper-cli; the model
+still comes from `--model`). Checked on 2026-09-28 with auto-editor 29.3.1,
+PySceneDetect 0.7.1 and whisper.cpp b5130 with `ggml-base.en.bin`: the
+scene list, the silence cut and the transcript to captions all ran.
+
 Also worth knowing: WhisperX for word timestamps and speaker labels,
 faster-whisper, OpenTimelineIO for handing a timeline between programs,
 auto-editor's `--export resolve|premiere|fcp7` for handing a cut to an editor.
