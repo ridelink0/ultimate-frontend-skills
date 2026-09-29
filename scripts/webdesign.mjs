@@ -13,11 +13,11 @@ import { fileURLToPath } from 'node:url';
 import { startServer } from './preview-server.mjs';
 import { parseArgs, defaultWidths, targetWidths } from './args.mjs';
 import { runAudit } from './audit.mjs';
+import { ASSETS, DEFAULT_SECTIONS, loadSections } from './sections.mjs';
 import { tmpdir } from 'node:os';
 import { spawnSync } from 'node:child_process';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const ASSETS = resolve(HERE, '..', 'skills', 'ultimate-frontend-skills', 'assets');
 
 const argv = process.argv.slice(2);
 const cmd = argv[0];
@@ -33,18 +33,6 @@ try {
   ({ positional, flag } = parseArgs(argv));
 } catch (err) {
   die(err.message + '\nRun with no arguments for the usage.');
-}
-
-/* ------------------------------------------------------------- sections -- */
-function loadSections() {
-  const src = readFileSync(join(ASSETS, 'sections.html'), 'utf8');
-  const out = new Map();
-  const re = /<!--\s*@section\s+([\w-]+)\s*\|\s*([\s\S]*?)\s*-->\s*([\s\S]*?)\s*<!--\s*@end\s*-->/g;
-  let m;
-  // [[ ]] marks the library's scaffold copy for the audit (audit.mjs reads the
-  // marks back out of this file). The page gets the copy without them.
-  while ((m = re.exec(src))) out.set(m[1], { note: m[2].trim(), body: m[3].replace(/\[\[([\s\S]*?)\]\]/g, '$1') });
-  return out;
 }
 
 /* -------------------------------------------------------------- presets -- */
@@ -84,7 +72,6 @@ body{--bg:oklch(96.4% .008 88);--fg:oklch(22% .018 62);--fg-muted:oklch(44% .022
   },
 };
 
-const DEFAULT_SECTIONS = ['nav', 'hero-photo', 'manifesto', 'services', 'stats', 'faq', 'contact', 'footer'];
 // The chassis and the engines, copied into every new project.
 const RUNTIME = ['core.css', 'motion.js', 'gradient.js', 'depth.js', 'exploded.js', 'sky.js'];
 
@@ -666,6 +653,24 @@ async function cmdVerify() {
   else console.log(formatVerify(result));
   process.exitCode = result.exitCode;
 }
+/* The rendered tells as a vector (tells-render.mjs): what the audit cannot
+   see from source - the ground's colour, the face each element asks for, a
+   row of big numerals, a marquee - one feature per id, fired or not, with the
+   value and the evidence. It never fails a build; verify and the audit do. */
+async function cmdTells() {
+  const { runTells, formatTells } = await import('./tells-render.mjs');
+  const target = positional[0] || '.';
+  const widths = defaultWidths(flag, targetWidths(target)).split(',').map((s) => parseInt(s, 10)).filter(Boolean);
+  let result;
+  try {
+    result = await runTells(/^https?:\/\//i.test(target) ? target : resolve(target), { widths, wait: Number(flag('wait', 600)) });
+  } catch (e) {
+    if (e && e.code === 'no-browser') { console.error('webdesign tells: ' + e.message); process.exitCode = 2; return; }
+    die(e.message);
+  }
+  if (flag('json')) console.log(JSON.stringify(result, null, 2));
+  else console.log(formatTells(result));
+}
 /* Parity on its own, for when the question is only "is this still the design"
    and the rest of the verdict is not wanted yet. verify --design runs the same
    code and folds the result into the one verdict. */
@@ -939,6 +944,7 @@ switch (cmd) {
   case 'quality': case 'measure': await cmdQuality(); break;
   case 'security': case 'secure': await cmdSecurity(); break;
   case 'verify': await cmdVerify(); break;
+  case 'tells': await cmdTells(); break;
   case 'parity': await cmdParity(); break;
   case 'video': await cmdVideo(); break;
   case 'edit': await cmdEdit(); break;
@@ -997,6 +1003,9 @@ switch (cmd) {
                                   palette, vertical rhythm, content geometry
   verify <dir|url> [--widths 1440,390] [--wait MS] [--design REF] [--json]
                                   one verdict: audit + render/quality + security (+ design parity), by severity
+  tells <dir|file|url> [--widths 1440,390] [--wait MS] [--json]
+                                  the rendered AI tells as a vector (ufs-tells/1): cream ground, overused face,
+                                  template chrome, stat banner, marquee, section order and the rest; no verdict
   video <file> [--frames 8] [--out DIR]   inspect timestamped local video frames
   video scene <dir> --refs a.jpg,b.mp4 [--seconds 12] [--size 1080x1920]
                                           scaffold a frame-exact video scene from references

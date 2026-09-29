@@ -6,12 +6,15 @@
   "why": "why it reads as generated",
   "instead": "what to do",
   "source": "URL opened",
-  "source_verified": "verifier-confirmed | scraper-fetched",
+  "source_verified": "verifier-confirmed (an independent verifier re-ran it at the primary source) | source-read (read at the source itself, at the version named in detectors) | scraper-fetched",
   "detectable": "true when a mechanical check is proposed",
-  "proposed_check": "id, where it runs, and the rule",
-  "ufs_chassis_ships_it": "true when UFS assets currently produce this pattern"
+  "proposed_check": "id, where it runs (audit: scripts/tells.mjs on source; tells: scripts/tells-render.mjs on the rendered page), and the rule",
+  "ufs_chassis_ships_it": "true when UFS assets currently produce this pattern",
+  "first_seen": "the earliest date UFS has evidence the source names it (YYYY-MM when the source dates it only by month)",
+  "last_confirmed": "the last date the source was re-read and still names it",
+  "detectors": "the detector rules and skill sections that name it, with versions"
  },
- "checked": "2026-09-28",
+ "checked": "2026-09-29",
  "entries": [
   {
    "id": "M1",
@@ -256,6 +259,311 @@
     "rule": "warn above 20 em dashes per 1,000 words of visible text (threshold already stated in tells.md)"
    },
    "ufs_chassis_ships_it": false
+  },
+  {
+   "id": "W7",
+   "domain": "web",
+   "tell": "A warm cream or beige ground",
+   "why": "The \"tasteful\" AI surface: the escape route from white became the default",
+   "instead": "A ground taken from the subject, or white or a cool neutral; cream only when the subject is paper",
+   "source": "https://github.com/pbakaus/impeccable",
+   "source_verified": "verifier-confirmed",
+   "detectable": true,
+   "proposed_check": {
+    "id": "cream-ground",
+    "scope": "tells",
+    "rule": "the largest-area ground among html, body, main and the first section is OKLCH L >= 0.90, C 0.005-0.04, H 60-100"
+   },
+   "ufs_chassis_ships_it": true,
+   "first_seen": "2026-08",
+   "last_confirmed": "2026-09-29",
+   "detectors": [
+    "impeccable 4.1.0 cream-palette",
+    "slop-detect 0.5.2 cream_default_bg (weight 7, since 2026.08)",
+    "frontend-design SKILL.md cluster 1"
+   ]
+  },
+  {
+   "id": "W8",
+   "domain": "web",
+   "tell": "Near-black ground with no light scheme",
+   "why": "Dark as a look rather than a choice the reader can undo",
+   "instead": "A light scheme, or dark because the subject is night, with a prefers-color-scheme: light answer",
+   "source": "https://github.com/ravidsrk/slop-detect",
+   "source_verified": "source-read",
+   "detectable": true,
+   "proposed_check": {
+    "id": "perma-dark",
+    "scope": "tells",
+    "rule": "ground OKLCH L <= 0.25 and no prefers-color-scheme: light rule"
+   },
+   "ufs_chassis_ships_it": true,
+   "first_seen": "2026-09-29",
+   "last_confirmed": "2026-09-29",
+   "detectors": [
+    "slop-detect 0.5.2 perma_dark_mode (weight 4)",
+    "frontend-design SKILL.md cluster 2"
+   ]
+  },
+  {
+   "id": "W9",
+   "domain": "web",
+   "tell": "Cream ground, high-contrast serif, terracotta or clay accent",
+   "why": "The first cluster AI design converges on; the accent near #D97757 is Anthropic's own",
+   "instead": "Break at least two legs of it: the ground, the serif, the accent",
+   "source": "https://github.com/anthropics/skills/blob/main/skills/frontend-design/SKILL.md",
+   "source_verified": "source-read",
+   "detectable": true,
+   "proposed_check": {
+    "id": "cluster-1",
+    "scope": "tells",
+    "rule": "cream-ground, a serif h1, and a rendered colour at C >= 0.08 with H 20-60"
+   },
+   "ufs_chassis_ships_it": false,
+   "first_seen": "2026-09-28",
+   "last_confirmed": "2026-09-29",
+   "detectors": [
+    "frontend-design SKILL.md cluster 1",
+    "avoid-ai-design (cream with a terracotta accent)"
+   ]
+  },
+  {
+   "id": "W10",
+   "domain": "web",
+   "tell": "Near-black with one acid-green or vermilion accent",
+   "why": "The second cluster: one loud accent on black reads as a template",
+   "instead": "A palette with more than one idea, or a ground chosen by the subject",
+   "source": "https://github.com/anthropics/skills/blob/main/skills/frontend-design/SKILL.md",
+   "source_verified": "source-read",
+   "detectable": true,
+   "proposed_check": {
+    "id": "cluster-2",
+    "scope": "tells",
+    "rule": "perma-dark and every colour at C >= 0.15 in one hue group"
+   },
+   "ufs_chassis_ships_it": false,
+   "first_seen": "2026-09-28",
+   "last_confirmed": "2026-09-29",
+   "detectors": [
+    "frontend-design SKILL.md cluster 2"
+   ]
+  },
+  {
+   "id": "W11",
+   "domain": "web",
+   "tell": "Tracked all-caps eyebrows, mono data labels, \"·\"-joined meta, \"→\" on links",
+   "why": "Chrome that appears whatever the subject",
+   "instead": "Labels only where they carry information, in sentence case; plain link text",
+   "source": "https://github.com/anthropics/skills/blob/main/skills/frontend-design/SKILL.md",
+   "source_verified": "source-read",
+   "detectable": true,
+   "proposed_check": {
+    "id": "template-chrome",
+    "scope": "tells",
+    "rule": "count text <= 14px in uppercase at >= 0.08em tracking, short mono labels, \" · \" meta strings and links ending in \"→\"; fire at 4"
+   },
+   "ufs_chassis_ships_it": true,
+   "first_seen": "2026-09-28",
+   "last_confirmed": "2026-09-29",
+   "detectors": [
+    "frontend-design SKILL.md cluster 5",
+    "slop-detect 0.5.2 all_caps_labels (weight 3, verifier-confirmed on bone)",
+    "impeccable 4.1.0 kicker-above-heading"
+   ]
+  },
+  {
+   "id": "W12",
+   "domain": "web",
+   "tell": "Instrument Sans, Plus Jakarta Sans, Mona Sans, Open Sans, Geist Mono and the rest of SLOP_FONTS",
+   "why": "Each wave of generated UI converges on the same faces; this is the Anthropic-skill and Vercel wave",
+   "instead": "A face chosen for the subject (typography.md)",
+   "source": "https://github.com/pbakaus/impeccable",
+   "source_verified": "verifier-confirmed",
+   "detectable": true,
+   "proposed_check": {
+    "id": "overused-face",
+    "scope": "tells",
+    "rule": "the first family the h1, body or button asks for is on SLOP_FONTS"
+   },
+   "ufs_chassis_ships_it": true,
+   "first_seen": "2026-09-08",
+   "last_confirmed": "2026-09-29",
+   "detectors": [
+    "impeccable 4.1.0 overused-font",
+    "slop-detect 0.5.2 slop_fonts"
+   ]
+  },
+  {
+   "id": "W13",
+   "domain": "web",
+   "tell": "One headline word set apart in italic, colour or weight",
+   "why": "The most imitated headline device of 2026",
+   "instead": "Let the whole headline carry it; one such device per page at most",
+   "source": "https://github.com/anthropics/skills/blob/main/skills/frontend-design/SKILL.md",
+   "source_verified": "source-read",
+   "detectable": true,
+   "proposed_check": {
+    "id": "accent-word",
+    "scope": "tells",
+    "rule": "an h1 descendant differs in colour, style, face, weight or gradient from the rest of the h1"
+   },
+   "ufs_chassis_ships_it": false,
+   "first_seen": "2026-09-28",
+   "last_confirmed": "2026-09-29",
+   "detectors": [
+    "frontend-design SKILL.md (accenting a single headline word)"
+   ]
+  },
+  {
+   "id": "W14",
+   "domain": "web",
+   "tell": "01 / 02 / 03 on headings that are not a sequence",
+   "why": "Editorial scaffolding: a page numbering its own chapters",
+   "instead": "Number only a real sequence",
+   "source": "https://github.com/pbakaus/impeccable",
+   "source_verified": "source-read",
+   "detectable": true,
+   "proposed_check": {
+    "id": "decorative-numbering",
+    "scope": "tells",
+    "rule": "three sibling headings, or siblings holding one, prefixed 01, 02, 03 in text, ::before or the list marker"
+   },
+   "ufs_chassis_ships_it": true,
+   "first_seen": "2026-09-28",
+   "last_confirmed": "2026-09-29",
+   "detectors": [
+    "impeccable 4.1.0 numbered-section-labels",
+    "slop-detect 0.5.2 numbered_steps",
+    "frontend-design SKILL.md"
+   ]
+  },
+  {
+   "id": "W15",
+   "domain": "web",
+   "tell": "A row of big numerals with small labels",
+   "why": "The default hero and proof treatment",
+   "instead": "Numbers inside sentences, with a source and a date",
+   "source": "https://github.com/ravidsrk/slop-detect",
+   "source_verified": "verifier-confirmed",
+   "detectable": true,
+   "proposed_check": {
+    "id": "stat-banner",
+    "scope": "tells",
+    "rule": "three or more siblings whose largest text is a number at >= 2x the body size"
+   },
+   "ufs_chassis_ships_it": true,
+   "first_seen": "2026-09-29",
+   "last_confirmed": "2026-09-29",
+   "detectors": [
+    "slop-detect 0.5.2 stat_banner (weight 3)",
+    "frontend-design SKILL.md hero"
+   ]
+  },
+  {
+   "id": "W16",
+   "domain": "web",
+   "tell": "Identical rounded cards with the same soft shadow",
+   "why": "The SaaS card kit: one radius on everything regardless of hierarchy",
+   "instead": "Radius and elevation by hierarchy, or none",
+   "source": "https://github.com/anthropics/skills/blob/main/skills/frontend-design/SKILL.md",
+   "source_verified": "source-read",
+   "detectable": true,
+   "proposed_check": {
+    "id": "uniform-radius",
+    "scope": "tells",
+    "rule": "six or more boxes of 120x80 px or more sharing one border-radius and one box-shadow"
+   },
+   "ufs_chassis_ships_it": false,
+   "first_seen": "2026-09-28",
+   "last_confirmed": "2026-09-29",
+   "detectors": [
+    "frontend-design SKILL.md cluster 4"
+   ]
+  },
+  {
+   "id": "W17",
+   "domain": "web",
+   "tell": "An auto-scrolling marquee",
+   "why": "Motion that demands attention it has not earned and hides half its content",
+   "instead": "Static text, or motion that answers the reader",
+   "source": "https://github.com/pbakaus/impeccable",
+   "source_verified": "verifier-confirmed",
+   "detectable": true,
+   "proposed_check": {
+    "id": "marquee",
+    "scope": "tells",
+    "rule": "a stylesheet rule or running animation that loops forever and translates on x, or a <marquee>"
+   },
+   "ufs_chassis_ships_it": true,
+   "first_seen": "2026-09-28",
+   "last_confirmed": "2026-09-29",
+   "detectors": [
+    "impeccable 4.1.0 marquee"
+   ]
+  },
+  {
+   "id": "W18",
+   "domain": "web",
+   "tell": "Everything centred on the page axis",
+   "why": "A centred stack is the layout a generator reaches for first",
+   "instead": "Left-aligned text on a grid; centre one element, not the page",
+   "source": "https://github.com/ravidsrk/slop-detect",
+   "source_verified": "source-read",
+   "detectable": true,
+   "proposed_check": {
+    "id": "centred-share",
+    "scope": "tells",
+    "rule": "the share of text blocks whose every line is centred within 2% of the axis; fire at half, over 5 blocks"
+   },
+   "ufs_chassis_ships_it": false,
+   "first_seen": "2026-09-29",
+   "last_confirmed": "2026-09-29",
+   "detectors": [
+    "slop-detect 0.5.2 centered_hero (the h1 only)"
+   ]
+  },
+  {
+   "id": "W19",
+   "domain": "web",
+   "tell": "The scaffold's default section order, left as it came",
+   "why": "UFS's own waterfall: nav, hero-photo, manifesto, services, stats, faq, contact, footer",
+   "instead": "Sections chosen and ordered for the brief (new --sections)",
+   "source": "https://github.com/ridelink0/ultimate-frontend-skills/blob/main/skills/ultimate-frontend-skills/references/tells.md",
+   "source_verified": "source-read",
+   "detectable": true,
+   "proposed_check": {
+    "id": "section-waterfall",
+    "scope": "tells",
+    "rule": "the rendered top-level blocks, matched to library sections, run in exactly DEFAULT_SECTIONS"
+   },
+   "ufs_chassis_ships_it": true,
+   "first_seen": "2026-09-28",
+   "last_confirmed": "2026-09-29",
+   "detectors": [
+    "UFS tells.md W5"
+   ]
+  },
+  {
+   "id": "W20",
+   "domain": "web",
+   "tell": "Crushed display tracking",
+   "why": "Collided letters on display type read as a template setting",
+   "instead": "-0.01 to -0.035em on display sizes; never -0.05em or tighter",
+   "source": "https://github.com/ravidsrk/slop-detect",
+   "source_verified": "source-read",
+   "detectable": true,
+   "proposed_check": {
+    "id": "display-tracking",
+    "scope": "tells",
+    "rule": "records the tightest tracking on display text (28px and up); fires at -0.05em or tighter"
+   },
+   "ufs_chassis_ships_it": false,
+   "first_seen": "2026-08",
+   "last_confirmed": "2026-09-29",
+   "detectors": [
+    "slop-detect 0.5.2 crushed_tracking (weight 5, since 2026.08)",
+    "impeccable 4.1.0 extreme-negative-tracking"
+   ]
   },
   {
    "id": "V1",

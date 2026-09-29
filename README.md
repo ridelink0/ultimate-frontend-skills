@@ -469,6 +469,8 @@ webdesign.mjs parity <dir|url> --design <canvas>.html
                                       compare a built page against its Claude Design artboards
 webdesign.mjs verify <dir|url> [--design REF]
                                       one verdict: audit + render/quality + security (+ design parity)
+webdesign.mjs tells <dir|url> [--json]  the rendered AI tells as a vector: cream ground, overused face,
+                                      template chrome, stat banner, marquee, section order (no verdict)
 webdesign.mjs video scene <dir> --refs a.jpg,b.mp4 [--seconds 12] [--size 1080x1920]
                                       a frame-exact video scene built from your references
 webdesign.mjs video render <scene.html> [--draft] [--audio FILE]
