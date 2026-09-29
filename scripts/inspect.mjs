@@ -13,35 +13,80 @@ import { spawn, spawnSync } from 'node:child_process';
 import { mkdtempSync, existsSync, readFileSync, writeFileSync, rmSync, mkdirSync, readdirSync, statSync } from 'node:fs';
 import { rm } from 'node:fs/promises';
 import { once } from 'node:events';
-import { join } from 'node:path';
-import { tmpdir } from 'node:os';
+import { join, posix } from 'node:path';
+import { tmpdir, homedir } from 'node:os';
 import { createServer } from 'node:net';
 import { inflateSync } from 'node:zlib';
 import { MEASURE_INIT, measure, judge, formatQuality } from './measure.mjs';
 
 /* ------------------------------------------------------------- browser ---- */
 
-const CANDIDATES = process.platform === 'win32'
-  ? [
-      `${process.env.PROGRAMFILES}\\Google\\Chrome\\Application\\chrome.exe`,
-      `${process.env['PROGRAMFILES(X86)']}\\Google\\Chrome\\Application\\chrome.exe`,
-      `${process.env.LOCALAPPDATA}\\Google\\Chrome\\Application\\chrome.exe`,
-      `${process.env['PROGRAMFILES(X86)']}\\Microsoft\\Edge\\Application\\msedge.exe`,
-      `${process.env.PROGRAMFILES}\\Microsoft\\Edge\\Application\\msedge.exe`,
-    ]
-  : process.platform === 'darwin'
-    ? ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-       '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge',
-       '/Applications/Chromium.app/Contents/MacOS/Chromium']
-    : ['/usr/bin/google-chrome', '/usr/bin/chromium', '/usr/bin/chromium-browser',
-       '/usr/bin/microsoft-edge', '/snap/bin/chromium'];
+/* The installed browsers each platform is searched for, in order. A function
+   of the platform and the environment so the tests can ask for another
+   platform's list. */
+export function browserCandidates(platform = process.platform, env = process.env) {
+  return platform === 'win32'
+    ? [
+        `${env.PROGRAMFILES}\\Google\\Chrome\\Application\\chrome.exe`,
+        `${env['PROGRAMFILES(X86)']}\\Google\\Chrome\\Application\\chrome.exe`,
+        `${env.LOCALAPPDATA}\\Google\\Chrome\\Application\\chrome.exe`,
+        `${env['PROGRAMFILES(X86)']}\\Microsoft\\Edge\\Application\\msedge.exe`,
+        `${env.PROGRAMFILES}\\Microsoft\\Edge\\Application\\msedge.exe`,
+      ]
+    : platform === 'darwin'
+      ? ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+         '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge',
+         '/Applications/Chromium.app/Contents/MacOS/Chromium']
+      : ['/usr/bin/google-chrome', '/usr/bin/chromium', '/usr/bin/chromium-browser',
+         '/usr/bin/microsoft-edge', '/snap/bin/chromium'];
+}
 
-export function findBrowser() {
+/* A cloud container or a CI image often has no system Chrome, only the
+   Chromium that Playwright downloaded: this one has
+   /opt/pw-browsers/chromium-1194/chrome-linux/chrome and nothing in
+   /usr/bin, so every render check reported "no Chrome, Edge or Chromium
+   found" and every browser test skipped (2026-09-29). Playwright keeps its
+   browsers under PLAYWRIGHT_BROWSERS_PATH when that is set, ~/.cache/ms-playwright
+   otherwise, and some images preinstall them at /opt/pw-browsers. Each root
+   is read for chromium-<revision> folders, newest revision first. Linux only:
+   the Windows and macOS lists above are unchanged. */
+/* os.homedir() throws when HOME is unset and the uid has no passwd entry
+   (`docker run --user 12345`, an OpenShift pod, `env -i`), and a default
+   parameter is evaluated on every call: findBrowser() threw there, even with
+   ATELIER_BROWSER set, where it used to return the browser (2026-09-29). No
+   home is one root fewer to search, not a reason to stop. */
+export function userHome(read = homedir) {
+  try { return read() || null; } catch { return null; }
+}
+
+export function playwrightChromes({ env = process.env, home = userHome(), fs = { existsSync, readdirSync } } = {}) {
+  const roots = [env.PLAYWRIGHT_BROWSERS_PATH, home && posix.join(home, '.cache', 'ms-playwright'), '/opt/pw-browsers'];
+  const found = [];
+  for (const root of roots) {
+    if (!root) continue;
+    let names;
+    try { names = fs.readdirSync(root); } catch { continue; }
+    const revisions = names.map((n) => /^chromium-(\d+)$/.exec(String(n))).filter(Boolean)
+      .sort((a, b) => Number(b[1]) - Number(a[1]));
+    for (const [folder] of revisions) {
+      const bin = posix.join(root, folder, 'chrome-linux', 'chrome');
+      if (!found.includes(bin) && fs.existsSync(bin)) found.push(bin);
+    }
+  }
+  return found;
+}
+
+/* Everything is injectable so the search can be tested for a platform and a
+   filesystem this machine does not have; called bare, it reads this one. */
+export function findBrowser({ env = process.env, platform = process.platform, home = userHome(), fs = { existsSync, readdirSync } } = {}) {
   // `npm run test:fast` sets this, so every real-browser check skips.
-  if (process.env.UFS_NO_BROWSER === '1') return null;
-  if (process.env.ATELIER_BROWSER && existsSync(process.env.ATELIER_BROWSER))
-    return process.env.ATELIER_BROWSER;
-  return CANDIDATES.find((p) => p && existsSync(p)) || null;
+  if (env.UFS_NO_BROWSER === '1') return null;
+  if (env.ATELIER_BROWSER && fs.existsSync(env.ATELIER_BROWSER))
+    return env.ATELIER_BROWSER;
+  const installed = browserCandidates(platform, env).find((p) => p && fs.existsSync(p));
+  if (installed) return installed;
+  if (platform !== 'linux') return null;
+  return playwrightChromes({ env, home, fs })[0] || null;
 }
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -254,6 +299,21 @@ export const LAUNCH_FLAGS = [
   '--disable-background-networking', '--disable-component-update', '--disable-sync', '--disable-features=Translate',
 ];
 
+/* Chrome will not start as root with its sandbox on ("Running as root
+   without --no-sandbox is not supported", then no debugging port), and a
+   cloud container or a Docker image usually runs as root: the render check
+   could not start there at all (2026-09-29). So the sandbox is dropped only
+   for root, or when UFS_NO_SANDBOX=1 asks for it (a container where it cannot
+   work for another reason). Anyone else keeps it, and CI, which runs as an
+   ordinary user, still runs the browser the way a developer does. */
+export function launchFlags(opts = {}) {
+  // `uid: undefined` stands for Windows, which has no getuid; only a missing
+  // key means "this process".
+  const uid = 'uid' in opts ? opts.uid : process.getuid?.();
+  const env = opts.env || process.env;
+  return uid === 0 || env.UFS_NO_SANDBOX === '1' ? [...LAUNCH_FLAGS, '--no-sandbox'] : [...LAUNCH_FLAGS];
+}
+
 /* How long a browser gets to open its debugging port: one deadline on the
    clock, the same 45 s image-deep-research's launcher allows (its first start
    on a fresh Windows CI runner took longer than 15 s). It used to be 150 polls
@@ -287,7 +347,7 @@ export async function launch(bin, args = [], { deadlineMs = LAUNCH_DEADLINE_MS }
   // tests stand in for a browser that hands off to a child, or starts slowly.
   const [cmd, pre] = /\.m?js$/i.test(bin) ? [process.execPath, [bin]] : [bin, []];
   const proc = spawn(cmd, [
-    ...pre, ...LAUNCH_FLAGS,
+    ...pre, ...launchFlags(),
     `--user-data-dir=${udd}`, `--remote-debugging-port=${asked}`, ...args, 'about:blank',
   ], { stdio: ['ignore', 'ignore', 'ignore'], windowsHide: true, env: browserEnv(ownTmp) });
   let launchError;
@@ -1011,7 +1071,7 @@ export async function inspect(url, { widths = [1440, 390], out = null, full = fa
       'no Chrome, Edge or Chromium found.\n' +
       '  Windows: winget install --id Microsoft.Edge (usually already present)\n' +
       '  macOS:   brew install --cask google-chrome\n' +
-      '  Linux:   apt-get install chromium\n' +
+      '  Linux:   apt-get install chromium, or npx playwright install chromium\n' +
       'Or set ATELIER_BROWSER to the executable.');
     err.code = 'no-browser';
     throw err;
@@ -1055,6 +1115,7 @@ export async function inspect(url, { widths = [1440, 390], out = null, full = fa
         expression: 'document.fonts ? document.fonts.ready.then(()=>1) : 1', awaitPromise: true,
       }).catch(() => {});
       await sleep(wait);
+      const icon = await declaresIcon(session);
 
       // A parallax layer that is fine at the top of the page can be sitting on
       // the headline 400px later. Probe at every requested scroll position.
@@ -1078,7 +1139,7 @@ export async function inspect(url, { widths = [1440, 390], out = null, full = fa
         // report.network used to be assigned here from a loadingFailed filter
         // and then immediately overwritten by collectEvents' own, better one.
         // Dead code that duplicated the 404 logic; removed.
-        Object.assign(report, collectEvents(session, { origin }));
+        Object.assign(report, collectEvents(session, { origin, declaresIcon: icon }));
 
         let file = null;
         // A screenshot is captured for the imageCandidates the probe found
@@ -1148,7 +1209,7 @@ export async function inspect(url, { widths = [1440, 390], out = null, full = fa
         const probe = await session.send('Runtime.evaluate', { expression: PROBE, returnByValue: true });
         if (probe.exceptionDetails || typeof probe.result?.value !== 'string') throw new Error('Interaction inspection returned no report.');
         const report = JSON.parse(probe.result.value);
-        Object.assign(report, collectEvents(session, { origin }));
+        Object.assign(report, collectEvents(session, { origin, declaresIcon: icon }));
         const state = await session.send('Runtime.evaluate', { expression: '(' + canvasProbe.toString() + ')()', returnByValue: true });
         let file = null;
         if (out || report.imageCandidates?.length) {
@@ -1182,7 +1243,7 @@ export async function inspect(url, { widths = [1440, 390], out = null, full = fa
   return results;
 }
 
-export function formatReport(results, { missed = null } = {}) {
+export function formatReport(results, { missed = null, env = null } = {}) {
   const lines = [];
   let errors = 0, warns = 0;
   // A missing image is one defect: the HTTP 404 names it, at the one scroll
@@ -1190,6 +1251,11 @@ export function formatReport(results, { missed = null } = {}) {
   // image broken. `missed` lets a caller formatting one result at a time pass
   // the whole run's failures.
   const failed = missed || results.flatMap((r) => (r.network || []).map((f) => String(f.error)));
+  // The same for an image whose request was env: it is one env finding, not
+  // also a broken image. `env` is the whole run's, for the same reason.
+  const envSeen = env || envList(results);
+  const bare = (u) => String(u).split('#')[0].replace(/^[a-z][a-z0-9+.-]*:(?=\/\/)/i, '');
+  const envUrls = new Set(envSeen.map((e) => bare(e.url)));
   for (const r of results) {
     lines.push(`\n  ${r.width}px${r.scroll ? ' scrolled ' + r.scroll + 'px' : ''}  (${r.stats.textElements} text elements, page ${r.stats.scrollHeight}px tall)`);
     for (const error of r.actionErrors || []) { errors++; lines.push('  ERROR interaction: ' + error); }
@@ -1252,6 +1318,7 @@ export function formatReport(results, { missed = null } = {}) {
     for (const b of r.broken) {
       const path = String(b).replace(/^\.?\//, '').split(/[?#]/)[0];
       if (path && failed.some((e) => /^HTTP 4\d\d /.test(e) && e.split(/[?#]/)[0].endsWith('/' + path))) continue;
+      if (envUrls.has(bare(b))) continue;
       errors++; lines.push(`  ERROR image failed to load: ${b}`);
     }
     for (const w of r.brokenWords || []) { warns++; lines.push(`  warn  "${w.word}" is broken across ${w.lines} lines at ${r.width}px, with no hyphen: ${w.el} - give the column room, or set the heading smaller`); }
@@ -1276,7 +1343,82 @@ export function formatReport(results, { missed = null } = {}) {
     for (const t of r.tiny) { warns++; lines.push(`  warn  tap target ${t.w}x${t.h}px (needs 24): ${t.el}`); }
     for (const c of r.clipped || []) { warns++; lines.push(`  warn  control cut short, ${c.shown}px of the ${c.needs}px it needs: ${c.el}`); }
   }
-  return { text: lines.join('\n'), errors, warns };
+  // Its own heading, after every width, and outside both counts.
+  const own = envList(results);
+  if (own.length) lines.push(formatEnv(own));
+  return { text: lines.join('\n'), errors, warns, env: own };
+}
+
+/* The env class: a failure that belongs to the machine or its network, not
+   to the page. In a cloud container every request to another host goes
+   through a proxy that re-signs TLS with its own authority, so a web font or
+   a CDN image fails with net::ERR_CERT_AUTHORITY_INVALID there and loads
+   everywhere else; and the browser's own /favicon.ico request 404s on every
+   page that never named an icon. Reported as ERROR, those made every render
+   check in the container fail for reasons no edit to the page could fix.
+
+   They are still reported, under their own heading and in env[], and never
+   counted as errors or warnings. Three kinds only, and never a request to
+   the page's own origin, whatever it failed with: the page's own assets are
+   always its own problem.
+     - a TLS, tunnel or proxy failure (ERR_CERT_*, ERR_TUNNEL_*, ERR_PROXY_*)
+       to another origin;
+     - a 404 for /favicon.ico when the page declares no icon (the browser
+       asked for it, the page did not);
+     - any failure to a host named in UFS_ENV_HOSTS (comma or space separated),
+       for a third party known to be unreachable from where the check runs. */
+export function envHosts(value = process.env.UFS_ENV_HOSTS) {
+  const hosts = new Set();
+  for (const raw of String(value || '').split(/[\s,]+/)) {
+    if (!raw) continue;
+    try { hosts.add(new URL(raw.includes('//') ? raw : 'http://' + raw).hostname.toLowerCase()); } catch { /* not a host */ }
+  }
+  return hosts;
+}
+
+export function envReason({ url, error = '', status = null } = {}, { origin = null, declaresIcon = false, hosts = envHosts() } = {}) {
+  let u;
+  try { u = new URL(url); } catch { return null; }
+  if (!origin) return null;
+  const sameOrigin = u.origin === origin;
+  if (sameOrigin) {
+    if (status === 404 && u.pathname === '/favicon.ico' && !declaresIcon) return 'the browser asked for /favicon.ico; the page declares no icon';
+    return null;
+  }
+  if (hosts.has(u.hostname.toLowerCase())) return 'the host is listed in UFS_ENV_HOSTS';
+  if (/\bERR_(CERT|TUNNEL|PROXY)_[A-Z_]+/.test(String(error))) return 'TLS or proxy failure to another origin: this machine\'s network, not the page';
+  return null;
+}
+
+/* Does the page name its own icon? When it does, the browser never asks for
+   /favicon.ico. */
+const DECLARES_ICON = `!!document.querySelector('link[rel~="icon" i]')`;
+async function declaresIcon(session) {
+  try {
+    const r = await session.send('Runtime.evaluate', { expression: DECLARES_ICON, returnByValue: true });
+    return r.result?.value === true;
+  } catch { return false; }
+}
+
+/* One line per env finding across the whole run, not one per width and
+   scroll position. */
+export function envList(results) {
+  const seen = new Map();
+  for (const e of results.flatMap((r) => r.env || [])) {
+    const key = e.url + '|' + e.error;
+    if (!seen.has(key)) seen.set(key, { url: e.url, error: e.error, type: e.type || null, reason: e.reason });
+  }
+  return [...seen.values()];
+}
+
+export function formatEnv(list) {
+  if (!list.length) return '';
+  const lines = [`\n  ${list.length} env - the machine or its network, not the page (not counted; never changes the exit code)`];
+  for (const e of list) {
+    const what = String(e.error).includes(e.url) ? e.error : e.error + ' ' + e.url;
+    lines.push(`  env   ${what}${e.type ? ' (' + e.type + ')' : ''} - ${e.reason}`);
+  }
+  return lines.join('\n');
 }
 
 /* A request that is still outstanding this long after it was sent has not
@@ -1301,12 +1443,24 @@ function collectEvents(session, options = {}) {
   // genuinely one per request, so a browser that does not mark the abort
   // canceled cannot reintroduce the double.
   const byRequest = new Map();
+  // A failed request's event carries no URL; the request it failed does.
+  // Kept across calls, like pending below, since a request can be sent in
+  // one batch of events and fail in the next.
+  if (!session.urls) session.urls = new Map();
+  for (const e of session.events) {
+    if (e.method === 'Network.requestWillBeSent' && e.params?.requestId) session.urls.set(e.params.requestId, String(e.params.request?.url || ''));
+  }
+  const envOptions = { origin: options.origin || null, declaresIcon: Boolean(options.declaresIcon), hosts: options.envHosts || envHosts() };
   for (const e of session.events) {
     const id = e.params?.requestId;
     if (!id) continue;
     if (e.method === 'Network.responseReceived' && e.params.response?.status >= 400) {
-      if (/favicon\.ico(?:$|\?)/.test(e.params.response.url)) continue;
-      byRequest.set(id, { error: 'HTTP ' + e.params.response.status + ' ' + e.params.response.url, type: e.params.type, blockedReason: null });
+      const url = e.params.response.url;
+      const status = e.params.response.status;
+      // A 404 for a favicon the page did declare stays out of the report, as
+      // it always has; an undeclared one is env (envReason).
+      if (/favicon\.ico(?:$|\?)/.test(url) && !envReason({ url, status }, envOptions)) continue;
+      byRequest.set(id, { error: 'HTTP ' + status + ' ' + url, type: e.params.type, blockedReason: null, url, status });
     } else if (e.method === 'Network.loadingFailed' && !e.params.canceled) {
       // blockedReason (csp, mixed-content, inspector) was being discarded
       // while the console filter below suppresses the net::ERR_BLOCKED text
@@ -1314,10 +1468,18 @@ function collectEvents(session, options = {}) {
       // reported nowhere at all.
       const blockedReason = e.params.blockedReason || null;
       if (byRequest.has(id) && !blockedReason) continue; // the 404 above already said it
-      byRequest.set(id, { error: e.params.errorText || 'request failed', type: e.params.type, blockedReason });
+      byRequest.set(id, { error: e.params.errorText || 'request failed', type: e.params.type, blockedReason, url: session.urls.get(id) || null, status: null });
     }
   }
-  const network = [...byRequest.values()].slice(0, 20);
+  const network = [];
+  const env = [];
+  for (const { status, ...failure } of byRequest.values()) {
+    const reason = failure.url ? envReason({ url: failure.url, error: failure.error, status }, envOptions) : null;
+    if (reason) env.push({ ...failure, reason });
+    else network.push(failure);
+  }
+  network.splice(20);
+  env.splice(20);
 
   // Requests that never resolved either way. Tracked across calls because
   // session.events is drained at the end of this function.
@@ -1395,6 +1557,7 @@ function collectEvents(session, options = {}) {
   session.events.length = 0;
 
   report.network = network;
+  report.env = env;
   return report;
 }
 

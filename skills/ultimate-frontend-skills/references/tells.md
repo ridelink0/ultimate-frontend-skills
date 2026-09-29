@@ -17,7 +17,11 @@ Public scanners weight these above everything else. In descending order:
 1. **The default font stack.** Inter, Geist, Space Grotesk, DM Sans, Poppins,
    Roboto, Playfair Display, Montserrat - and now **Instrument Serif, Fraunces,
    Syne and Cal Sans**, which were the 2025 escape route and have become the new
-   default. One family doing display, body and UI is the underlying tell.
+   default. Since 2026-09-29 also **Instrument Sans, Plus Jakarta Sans, Mona
+   Sans, Open Sans and Geist Mono**, from impeccable 4.1.0's list; Instrument
+   Sans is the chassis's own UI face, so the audit now warns on every scaffold
+   until the face is chosen for the subject. One family doing display, body and
+   UI is the underlying tell.
 2. **Indigo/violet CTAs.** `#6366f1`, `#4f46e5`, `#8b5cf6`, `#7c3aed`,
    `#a855f7`, and the Tailwind blues `#2563eb`, `#3b82f6`. Traceable to a single
    Tailwind UI decision in 2020 that its author has publicly apologised for.
@@ -54,6 +58,9 @@ column, section padding that varies with content weight, hairlines derived from
 the ink, an accent taken from the photograph, and depth built from layers. If you
 ship bone plus a serif and nothing else, you have built the tell. The `ink` and
 `cinema` presets exist so bone is a choice rather than a default - use them.
+The detectors cannot see those conditions: `webdesign.mjs tells` fires
+`cream-ground` on a fresh bone scaffold (#f2efe7, oklch 0.952 0.011 91), and so
+do impeccable 4.1.0 and slop-detect 0.5.2 (2026-09-29).
 
 **The italic accent word.** `Descent is gravity. *Ascent* is arithmetic.` is
 straight out of the reference sites and it is also the single most imitated
@@ -194,19 +201,47 @@ another gets 40.
 
 ## The one-line version
 
-No purple, no reflexive cream, no gradient text, no glow, no blob, no pill badge,
-no icon-tile card, no accent stripe, no nested cards. Two type families with a
-real scale. Asymmetric grid, one dominant element, section padding that varies.
+No purple, no gradient text, no glow, no blob, no pill badge, no icon-tile card,
+no accent stripe, no nested cards. Bone is cream because the chassis was drawn
+as print - a paper ground, ink type, photographs laid on the page - and that is
+now the reflex the detectors score, so keep it only when the subject is paper,
+print or stone; otherwise ink, cinema or a ground taken from the subject. Two
+type families with a real scale. Asymmetric grid, one dominant element, section padding that varies.
 Real numbers with dates; never an invented customer or statistic. Semantic HTML,
 content visible at rest, no `transition: all`. One italic phrase. Copy that could
 not describe any other product.
 
+## Rendered tells: `webdesign.mjs tells`
+
+Some tells exist only once the page is drawn: the colour the ground came out,
+the face each element asks for, a row of big numerals, a marquee.
+`webdesign.mjs tells <dir|url> [--json] [--widths 1440,390]` renders the page,
+follows the page's own redirect but fetches nothing else from any other origin,
+and reports fourteen features as
+`ufs-tells/1` (`{target, widths, ufsSha, features: [{id, fired, value,
+evidence}]}`): cream-ground, perma-dark, cluster-1, cluster-2, template-chrome,
+overused-face, accent-word, decorative-numbering, stat-banner, uniform-radius,
+marquee, centred-share, section-waterfall and display-tracking. It is a vector,
+not a verdict, and never fails a build. Each threshold, with why it sits there
+and its source, is in `data/tells-render.json`; fitted weights will move them
+there.
+
+What the chassis ships, as `test/tells-expected.mjs` pins it (2026-09-29): a
+fresh bone, cinema or fable scaffold fires cream-ground, template-chrome,
+overused-face (Instrument Sans), decorative-numbering (the services rows'
+01/02/03 counters), stat-banner, marquee (the `.marquee` rule in core.css) and
+section-waterfall; ink fires perma-dark in place of cream-ground. Undo them on
+the page, not in core.css: `--sections` for the order, a face chosen for the
+subject, sentence-case labels, and the stats section only when the numbers are
+the story.
+
 ## From the 2026-09-28 research
 
 Each row is an entry in `data/ai-tells.json`, which holds its source and,
-where a machine can see the pattern, the check the audit runs (named in the
-last column; `webdesign.mjs audit` prints the id beside the finding). The
-rest are judgements for whoever reviews the work.
+where a machine can see the pattern, the check that looks for it (named in the
+last column; `webdesign.mjs audit` prints the id beside the finding, and a
+check marked (tells) is a feature of `webdesign.mjs tells`). The rest are
+judgements for whoever reviews the work.
 
 | Id | Tell | Why it reads as generated | Instead | Check |
 |---|---|---|---|---|
@@ -216,3 +251,17 @@ rest are judgements for whoever reviews the work.
 | W4 | blue-600 to purple-500/pink-500 gradient; emerald-500 success | Palette homogeneity | Palette from the subject | web-slop-gradient-pair |
 | W5 | Section waterfall order | Structural slop | Sections by register | web-section-waterfall |
 | W6 | Em-dash density and tricolons | 4-6x the 2019 rate | copy-tells.md rules | copy-emdash-density |
+| W7 | A warm cream or beige ground | The "tasteful" AI surface: the escape route from white became the default | A ground taken from the subject, or white or a cool neutral; cream only when the subject is paper | cream-ground (tells) |
+| W8 | Near-black ground with no light scheme | Dark as a look rather than a choice the reader can undo | A light scheme, or dark because the subject is night, with a prefers-color-scheme: light answer | perma-dark (tells) |
+| W9 | Cream ground, high-contrast serif, terracotta or clay accent | The first cluster AI design converges on; the accent near #D97757 is Anthropic's own | Break at least two legs of it: the ground, the serif, the accent | cluster-1 (tells) |
+| W10 | Near-black with one acid-green or vermilion accent | The second cluster: one loud accent on black reads as a template | A palette with more than one idea, or a ground chosen by the subject | cluster-2 (tells) |
+| W11 | Tracked all-caps eyebrows, mono data labels, "·"-joined meta, "→" on links | Chrome that appears whatever the subject | Labels only where they carry information, in sentence case; plain link text | template-chrome (tells) |
+| W12 | Instrument Sans, Plus Jakarta Sans, Mona Sans, Open Sans, Geist Mono and the rest of SLOP_FONTS | Each wave of generated UI converges on the same faces; this is the Anthropic-skill and Vercel wave | A face chosen for the subject (typography.md) | overused-face (tells) |
+| W13 | One headline word set apart in italic, colour or weight | The most imitated headline device of 2026 | Let the whole headline carry it; one such device per page at most | accent-word (tells) |
+| W14 | 01 / 02 / 03 on headings that are not a sequence | Editorial scaffolding: a page numbering its own chapters | Number only a real sequence | decorative-numbering (tells) |
+| W15 | A row of big numerals with small labels | The default hero and proof treatment | Numbers inside sentences, with a source and a date | stat-banner (tells) |
+| W16 | Identical rounded cards with the same soft shadow | The SaaS card kit: one radius on everything regardless of hierarchy | Radius and elevation by hierarchy, or none | uniform-radius (tells) |
+| W17 | An auto-scrolling marquee | Motion that demands attention it has not earned and hides half its content | Static text, or motion that answers the reader | marquee (tells) |
+| W18 | Everything centred on the page axis | A centred stack is the layout a generator reaches for first | Left-aligned text on a grid; centre one element, not the page | centred-share (tells) |
+| W19 | The scaffold's default section order, left as it came | UFS's own waterfall: nav, hero-photo, manifesto, services, stats, faq, contact, footer | Sections chosen and ordered for the brief (new --sections) | section-waterfall (tells) |
+| W20 | Crushed display tracking | Collided letters on display type read as a template setting | -0.01 to -0.035em on display sizes; never -0.05em or tighter | display-tracking (tells) |

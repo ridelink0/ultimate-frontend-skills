@@ -328,10 +328,14 @@ you write the first pass.
    inside a cabin), and colour only on emitters: screens, lamps, signs,
    engines, enemies. Let a bloom threshold catch only those. Small interiors
    stay dim; large ones can carry more light.
-5. **Check a game at the sizes it is played at.** A keyboard-and-mouse game
-   has no controls at 390 px, so a phone-width render proves nothing. Use
-   `webdesign.mjs look --game` (1366, 1280, 1920); add phone widths only when
-   the game ships touch controls.
+5. **Check a game at the sizes it is played at.** Pick the sizes from the
+   input model and the target devices, not from a website's habits. A
+   keyboard-and-mouse game gets 1366x768 (the Chromebook), 1280x720 and
+   1920x1080; it has no controls at 390 px, so a phone-width render proves
+   nothing. Add a phone width only when the game ships touch controls. Use
+   `webdesign.mjs look --game` (1366, 1280, 1920). A local page with a canvas
+   and keyboard controls gets those widths without the flag, and 390 is added
+   back only when it listens for touch; an explicit `--widths` still wins.
 
 ## Shipping a networked game: five more mistakes Doodle Voyager made (2026-09-25)
 

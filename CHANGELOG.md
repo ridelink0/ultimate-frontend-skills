@@ -2,6 +2,33 @@
 
 Releases before 6.5.0 are recorded in their tag commits (`git log v6.4.2`) and on the GitHub releases page.
 
+## 6.9.0 - 2026-09-29
+
+Built from the 2026-09-29 expansion plan. Item 1: the render check runs in a cloud container, and a failure that belongs to the machine is reported as env instead of as the page's error. Item 2: the rendered tells, measured as a vector, and the data made honest about what the chassis ships.
+
+- On Linux, `findBrowser()` also finds Playwright's Chromium: `$PLAYWRIGHT_BROWSERS_PATH`, `~/.cache/ms-playwright` and `/opt/pw-browsers`, each `chromium-<revision>/chrome-linux/chrome`, newest revision first, after `ATELIER_BROWSER` and the system paths. The Windows and macOS lists are unchanged (`scripts/inspect.mjs`).
+- `findBrowser()` no longer throws when there is no home directory (HOME unset and a uid with no passwd entry, as in `docker run --user 12345`): `os.homedir()` threw there, even with `ATELIER_BROWSER` set. Without a home, `~/.cache/ms-playwright` is skipped.
+- Run as root, the browser starts with `--no-sandbox`, which Chrome requires there; `UFS_NO_SANDBOX=1` asks for it without root. Anyone else keeps the sandbox.
+- The env class in `look`, `debug` and `verify`: a TLS, tunnel or proxy failure (`ERR_CERT_*`, `ERR_TUNNEL_*`, `ERR_PROXY_*`) to another origin, a `/favicon.ico` 404 on a page that declares no icon, and any failure to a host in `UFS_ENV_HOSTS`. Env findings print under their own heading, go to `env[]` in `verify --json`, and never reach a count or the exit code. A request to the page's own origin is never env. `references/visual-debug.md` has the rules.
+- `verify --json` carries `"schema": "ufs-verify/1"`.
+- Tests: every browser test skips through `test/need-browser.mjs`, which names the reason, and fails at load when `UFS_REQUIRE_BROWSER=1` or `CI` is set. `test/headless.test.mjs` covers discovery and the sandbox flag with an injected filesystem; `test/env.test.mjs` covers the env class, with `err.html` (three real errors at each width) and an HTTPS server whose certificate is made at test time.
+
+### Item 2: the rendered tells
+- `webdesign.mjs tells <dir|file|url> [--json] [--widths 1440,390]` (`scripts/tells-render.mjs`): renders the page, runs one function in it through the render check's CDP session at each width, and reports fourteen features as `ufs-tells/1` (`{schema, target, widths, ufsSha, features: [{id, fired, value, evidence}]}`): cream-ground, perma-dark, cluster-1, cluster-2, template-chrome, overused-face, accent-word, decorative-numbering, stat-banner, uniform-radius, marquee, centred-share, section-waterfall and display-tracking. A vector, not a verdict: it never sets a failing exit code. Every request to another origin is failed in the browser, so a run fetches only the page's own origin (and, when the page itself redirects, the origin it lands on), and the hosts turned away are listed. A `--widths` with no usable width, and a target that is not an HTML page, are refused with a message, and a URL with a `#fragment` is measured at every width. About 2 s for a scaffold at two widths here.
+- The thresholds are in `data/tells-render.json`, each with its why and a source URL, so fitted weights can move them without a code change.
+- A fresh scaffold fires, at both widths: bone, cinema and fable cream-ground, template-chrome, overused-face (Instrument Sans, bone's UI face), decorative-numbering (the services rows' 01/02/03 counters), stat-banner, marquee (the `.marquee` rule in core.css) and section-waterfall; ink fires perma-dark in place of cream-ground. The chassis is unchanged: re-defaulting it is a later item.
+- `SLOP_FONTS` (`scripts/audit.mjs`) gains Instrument Sans, Plus Jakarta Sans, Mona Sans, Open Sans and Geist Mono (impeccable 4.1.0's list, 2026-09-29), so the audit now warns on every scaffold's Instrument Sans.
+- `data/ai-tells.json`: rows W7-W20, one per rendered tell, each with its source URL, `first_seen`, `last_confirmed: 2026-09-29`, `source_verified` and the detector rules that name it. `ufs_chassis_ships_it` is true for the eight a preset fires, the five impeccable and slop-detect flagged on bone among them. `references/tells.md` lists the rows and describes the command; its one-line version no longer says "no reflexive cream" and says why bone is cream. `typography.md` notes Instrument Sans's new status.
+- `DEFAULT_SECTIONS` and the section library loader moved to `scripts/sections.mjs`, which both the scaffolder and the tells read; the scaffold output is unchanged.
+- Tests: `test/tells-render.test.mjs` runs a fire and a no-fire fixture per feature and a restrained page that fires nothing (`test/fixtures/tells-render/`), each preset's fresh scaffold against `test/tells-expected.mjs` inside 15 s at two widths, and a stylesheet on a second origin that is never requested. The old "every scaffold passes every tell check" test now holds the audit's half of the same per-preset list.
+
+## 6.8.1 - 2026-09-28
+
+From Doodle Voyager's to-do list: a game is checked at the sizes it is played at even when nobody remembers `--game`.
+
+- `look`, `debug` and `verify` on a local page with a canvas and keyboard controls (WASD, the arrows, Space, pointer lock) default to 1366, 1280 and 1920 instead of 1440 and 390; a page that also listens for touch gets 390 back. The keys are looked for in the page, its local scripts and the relative modules those import (Doodle Voyager's are in `js/game.js`, which `js/main.js` imports). Vendored libraries are not read, so a three.js page with OrbitControls stays a page. `--widths` and `--game` still win (`scripts/args.mjs`, `test/args-game.test.mjs`).
+- `references/games.md`, "In-game rendering", item 5 names the target resolutions (1366x768, 1280x720, 1920x1080) and says a phone width comes only with touch controls.
+
 ## 6.8.0 - 2026-09-28
 
 Built from the 2026-09-28 research plan (16 items). The audit now names the AI tells that research sourced, and the chassis was changed until it ships none of them, so a page that passed 6.7.0 can now warn on its reveals, counters, loops or hover lift, and fail on a loop with no pause control.

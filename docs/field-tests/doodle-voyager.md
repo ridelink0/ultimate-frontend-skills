@@ -43,10 +43,14 @@ the target devices: a keyboard-and-mouse game gets 1366x768 (Chromebook),
 **The UFS fix.** 6.3.0 (dc48c12, 2026-09-24): `--game` switches `look`,
 `debug` and `verify` to 1366, 1280 and 1920; an explicit `--widths` still
 wins (scripts/args.mjs). `references/games.md`, section "In-game rendering:
-five mistakes Doodle Voyager made", item 5.
+five mistakes Doodle Voyager made", item 5. 6.8.1: a local page with a canvas
+and keyboard controls gets the game widths without `--game` (a phone width is
+added only for touch handlers), and item 5 names the target resolutions.
 
 **Regression check.** `test/args-game.test.mjs`, "--game switches the default widths to laptop and desktop sizes"
-and `test/args-game.test.mjs`, "an explicit --widths still wins over --game".
+`test/args-game.test.mjs`, "an explicit --widths still wins over --game",
+`test/args-game.test.mjs`, "a canvas game with keyboard controls defaults to the game widths",
+and `test/args-game.test.mjs`, "the keys are found in a module the page script imports, as in Doodle Voyager".
 
 ### DV-2. A stylised post pass that threw the lighting away
 

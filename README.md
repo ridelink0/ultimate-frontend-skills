@@ -469,6 +469,8 @@ webdesign.mjs parity <dir|url> --design <canvas>.html
                                       compare a built page against its Claude Design artboards
 webdesign.mjs verify <dir|url> [--design REF]
                                       one verdict: audit + render/quality + security (+ design parity)
+webdesign.mjs tells <dir|url> [--json]  the rendered AI tells as a vector: cream ground, overused face,
+                                      template chrome, stat banner, marquee, section order (no verdict)
 webdesign.mjs video scene <dir> --refs a.jpg,b.mp4 [--seconds 12] [--size 1080x1920]
                                       a frame-exact video scene built from your references
 webdesign.mjs video render <scene.html> [--draft] [--audio FILE]
@@ -673,12 +675,16 @@ summary line and one exit code. A URL target has no source files, so the
 audit and security sections are marked `skipped` instead of guessing at a
 tree that was never given; the render/quality section still runs.
 
-`--json` prints the same result as structured data (`{ target, sections,
-totals, exitCode }`) instead of the formatted text, for a script that wants
-to act on it rather than read it. The exit code is 1 exactly when any
-underlying checker would already have exited 1 today - an audit error, a
-render/quality `ERROR`, or a high-severity security finding - nothing here
-makes anything newly fatal.
+`--json` prints the same result as structured data (`{ schema: "ufs-verify/1",
+target, sections, totals, env, exitCode }`) instead of the formatted text, for
+a script that wants to act on it rather than read it. The exit code is 1
+exactly when any underlying checker would already have exited 1 today - an
+audit error, a render/quality `ERROR`, or a high-severity security finding -
+nothing here makes anything newly fatal. `env` lists what failed because of
+the machine rather than the page (a TLS or proxy failure to another origin,
+the browser's own `/favicon.ico` request on a page that declares no icon, a
+host named in `UFS_ENV_HOSTS`); it is printed under its own heading and never
+counted.
 
 `--design <reference>` adds one more section: the design parity check below.
 

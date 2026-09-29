@@ -62,7 +62,10 @@ Geist are the two most-generated sans faces on the web; using one is not wrong,
 it is just not a choice.
 
 - **Instrument Sans** (Google): `ital`, `wdth 75-100`, `wght 400-700`. The
-  `wdth` axis gives a real condensed. This is the default in `core.css`.
+  `wdth` axis gives a real condensed. This is the default in `core.css`, and
+  since 2026-09-29 it is on the overused list too (impeccable 4.1.0, and
+  `SLOP_FONTS` in the audit): the audit warns on it and `webdesign.mjs tells`
+  fires overused-face. Keep it only when it is the face the subject wants.
 - **Switzer** (Fontshare): the closest free match to Söhne / Suisse Int'l.
   `https://api.fontshare.com/v2/css?f[]=switzer@400,500&display=swap`. **Licence
   constraint: you may not self-host it** - the ITF Free Font License requires

@@ -11,12 +11,13 @@ import { readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { findBrowser, inspect } from '../scripts/inspect.mjs';
+import { browserSkip } from './need-browser.mjs';
 import { judge, BUDGETS } from '../scripts/measure.mjs';
 import { startServer } from '../scripts/preview-server.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const FIXTURES = join(HERE, 'fixtures');
-const skip = !findBrowser();
+const skip = browserSkip();
 
 // Every fixture is served from one directory so a relative <script src>
 // (fake-lib.js) resolves, and so the whole file shares one server.

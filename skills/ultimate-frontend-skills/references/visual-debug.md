@@ -69,6 +69,39 @@ works, release the probe with `WEBGL_lose_context` so it does not hold a
 context the renderer needs. HQ's key screen does exactly this, and it is why
 the key screen stays clean on a machine with no GPU.
 
+## A container, a CI image, or root
+
+The render check looks for a browser in this order: `ATELIER_BROWSER`, the
+installed Chrome, Edge or Chromium, and on Linux then the Chromium that
+Playwright downloaded (`$PLAYWRIGHT_BROWSERS_PATH`, `~/.cache/ms-playwright`,
+`/opt/pw-browsers`, each `chromium-<revision>/chrome-linux/chrome`, newest
+revision first). Run as root, the browser starts with `--no-sandbox`, which
+Chrome requires there; anyone else keeps the sandbox. `UFS_NO_SANDBOX=1` asks
+for it without root, for a container where the sandbox cannot start for
+another reason.
+
+Some failures belong to the machine, not the page, and are reported as
+**env**: under their own heading after the widths, in `env[]` of
+`verify --json`, and never in the error or warning counts or the exit code.
+
+- A TLS, tunnel or proxy failure (`net::ERR_CERT_*`, `ERR_TUNNEL_*`,
+  `ERR_PROXY_*`) to another origin. Behind a proxy that re-signs TLS, Google
+  Fonts and every CDN fail this way while loading fine everywhere else.
+- A 404 for `/favicon.ico` when the page declares no icon: the browser asked
+  for it, the page did not.
+- Any failure to a host named in `UFS_ENV_HOSTS` (comma or space separated):
+  a third party you know is unreachable from where the check runs.
+
+A request to the page's own origin is never env, whatever it failed with, and
+a third-party failure of any other kind (a 404 on a CDN, a name that does not
+resolve) is still an error. Read the env list anyway: a font that could not
+load here means the screenshots show the fallback face, not the design.
+
+`verify --json` carries `"schema": "ufs-verify/1"`; a script reading it can
+check that before trusting the shape. The test suite's browser tests skip
+with a reason when no browser is found, and fail instead when
+`UFS_REQUIRE_BROWSER=1` or `CI` is set.
+
 ## Required AI review
 
 1. Run the source audit and project tests. Run debug on the actual built website.

@@ -153,9 +153,14 @@ const LEAKED_REFUSAL = /as an ai language model|i do not have enough information
 
 // Faces that now read as "nobody chose a typeface". Fraunces and Instrument
 // Serif were the 2025 escape route and have since become the new default.
-const SLOP_FONTS = [
+// Added 2026-09-29, from impeccable 4.1.0's overused-font list: Instrument
+// Sans (bone's UI face, which that rule flags on a fresh scaffold), Plus
+// Jakarta Sans, Mona Sans, Open Sans and Geist Mono. The rendered tells
+// (tells-render.mjs, overused-face) read this same list.
+export const SLOP_FONTS = [
   'Inter', 'Instrument Serif', 'Space Grotesk', 'Geist', 'Syne', 'Cal Sans',
   'DM Sans', 'Poppins', 'Roboto', 'Playfair Display', 'Montserrat', 'Fraunces',
+  'Instrument Sans', 'Plus Jakarta Sans', 'Mona Sans', 'Open Sans', 'Geist Mono',
 ];
 // "VibeCode purple" plus the Tailwind blues.
 const SLOP_HEX = /#(6366f1|4f46e5|818cf8|8b5cf6|7c3aed|a855f7|c084fc|2563eb|3b82f6|60a5fa|ec4899|f472b6)\b/gi;

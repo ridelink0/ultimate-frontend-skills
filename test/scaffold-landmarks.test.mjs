@@ -7,6 +7,7 @@ import { join } from 'node:path';
 import { once } from 'node:events';
 import { fileURLToPath } from 'node:url';
 import { findBrowser, launch, closeBrowser, Session } from '../scripts/inspect.mjs';
+import { browserSkip } from './need-browser.mjs';
 import { startServer } from '../scripts/preview-server.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
@@ -78,7 +79,7 @@ const ENTER = { key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13, nativeVi
 // What a keyboard user actually gets: Tab to "Skip to content", Enter, Tab.
 // The second Tab has to land on the first focusable thing after the nav, on
 // the same page the key was pressed on.
-test('scaffolded pages in a real browser: Skip to content moves the next Tab past the nav, on the index and on the 404', { skip: !findBrowser(), timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 120000 }, async () => {
+test('scaffolded pages in a real browser: Skip to content moves the next Tab past the nav, on the index and on the 404', { skip: browserSkip(), timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 120000 }, async () => {
   const temp = mkdtempSync(join(tmpdir(), 'ufs-skip-'));
   let server, browser, s;
   try {

@@ -2,8 +2,9 @@
    by scripts/tells.mjs through the audit. One fixture pair per check: a page
    with the tell raises exactly that finding, the same page without it raises
    none. Then the negative controls (patterns that are not tells), the
-   chassis itself (every scaffold passes every check), and the pause control
-   in a real browser. */
+   chassis itself (every scaffold raises exactly the source tells its preset
+   is expected to, in test/tells-expected.mjs), and the pause control in a
+   real browser. */
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtempSync, writeFileSync, rmSync, readFileSync } from 'node:fs';
@@ -15,6 +16,8 @@ import { fileURLToPath } from 'node:url';
 import { runAudit } from '../scripts/audit.mjs';
 import { tellData } from '../scripts/tells.mjs';
 import { findBrowser, launch, closeBrowser, Session } from '../scripts/inspect.mjs';
+import { browserSkip } from './need-browser.mjs';
+import { EXPECTED_TELLS } from './tells-expected.mjs';
 import { startServer } from '../scripts/preview-server.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
@@ -32,7 +35,7 @@ function tellsOf(html, js = '') {
   try {
     writeFileSync(join(dir, 'index.html'), html);
     if (js) writeFileSync(join(dir, 'app.js'), js);
-    return runAudit(dir).findings.filter((f) => /\[[a-z]+-[a-z-]+, [A-Z]\d\]$/.test(f.text));
+    return runAudit(dir).findings.filter((f) => /\[[a-z]+-[a-z-]+, [A-Z]\d+\]$/.test(f.text));
   } finally { rmSync(dir, { recursive: true, force: true }); }
 }
 const ids = (found) => [...new Set(found.map((f) => f.text.match(/\[([a-z]+-[a-z-]+),/)[1]))];
@@ -125,24 +128,30 @@ test('the patterns that are not tells raise nothing: a bento grid, a mesh backgr
   assert.deepEqual(found.map((f) => f.text), []);
 });
 
-test('every scaffold the library can make passes every tell check (the chassis ships none of them)', () => {
+/* This used to assert that every scaffold passes every tell check, "the
+   chassis ships none of them". The source checks still find nothing, but the
+   rendered tells (tells-render.mjs) show the chassis does ship some, so the
+   expectation is now a list per preset: this test holds the audit's half of
+   it, test/tells-render.test.mjs the rendered half. */
+test('every scaffold the library can make raises exactly its preset\'s expected source tells', () => {
   const library = readFileSync(join(root, 'skills/ultimate-frontend-skills/assets/sections.html'), 'utf8');
   const all = [...library.matchAll(/@section\s+([\w-]+)\s*\|/g)].map((m) => m[1]);
   const heroes = all.filter((s) => s.startsWith('hero-'));
   const middle = all.filter((s) => !s.startsWith('hero-') && !['head', 'foot', 'not-found', 'nav', 'footer'].includes(s));
   const dir = mkdtempSync(join(tmpdir(), 'ufs-tells-chassis-'));
   try {
-    for (const preset of ['bone', 'ink', 'fable', 'cinema']) for (const hero of heroes) for (const [k, sections] of [['all', ['nav', hero, ...middle, 'footer']], ['default', ['nav', hero, 'manifesto', 'services', 'stats', 'faq', 'contact', 'footer']]]) {
+    assert.deepEqual(Object.keys(EXPECTED_TELLS).sort(), ['bone', 'cinema', 'fable', 'ink']);
+    for (const preset of Object.keys(EXPECTED_TELLS)) for (const hero of heroes) for (const [k, sections] of [['all', ['nav', hero, ...middle, 'footer']], ['default', ['nav', hero, 'manifesto', 'services', 'stats', 'faq', 'contact', 'footer']]]) {
       const out = join(dir, preset + '-' + hero + '-' + k);
       const made = spawnSync(process.execPath, [cli, 'new', out, '--preset', preset, '--sections', sections.join(',')], { encoding: 'utf8' });
       assert.equal(made.status, 0, made.stderr);
-      const tells = runAudit(out).findings.filter((f) => /\[[a-z]+-[a-z-]+, [A-Z]\d\]$/.test(f.text)).map((f) => f.text);
-      assert.deepEqual(tells, [], preset + ' ' + hero + ' ' + k);
+      const tells = runAudit(out).findings.filter((f) => /\[[a-z]+-[a-z-]+, [A-Z]\d+\]$/.test(f.text)).map((f) => f.text);
+      assert.deepEqual(ids(tells.map((text) => ({ text }))), EXPECTED_TELLS[preset].audit, preset + ' ' + hero + ' ' + k + ': ' + JSON.stringify(tells));
     }
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
-test('the pause button holds a marquee where it is, and a second press lets it go', { skip: !findBrowser(), timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
+test('the pause button holds a marquee where it is, and a second press lets it go', { skip: browserSkip(), timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
   const dir = mkdtempSync(join(tmpdir(), 'ufs-pause-'));
   for (const f of ['core.css', 'motion.js']) writeFileSync(join(dir, f), readFileSync(join(root, 'skills/ultimate-frontend-skills/assets', f)));
   writeFileSync(join(dir, 'index.html'), '<!doctype html><html lang="en"><meta charset="utf-8"><title>p</title><link rel="stylesheet" href="core.css">'

@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { judge, BUDGETS } from '../scripts/measure.mjs';
 import { findBrowser } from '../scripts/inspect.mjs';
+import { browserSkip } from './need-browser.mjs';
 import { debugSite } from '../scripts/debug.mjs';
 
 const clean = { motion: { frames: 100, fps: 60, worstFrameMs: 20, dropped: 2, canvases: [], reducedMotion: false },
@@ -60,7 +61,7 @@ test('a measurement that failed is reported as unmeasured, never as a pass', () 
   assert.equal(levels(found).length, 0);
 });
 
-test('the real page is measured, not the source', { skip: !findBrowser(), timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 60000 }, async () => {
+test('the real page is measured, not the source', { skip: browserSkip(), timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 60000 }, async () => {
   const dir = mkdtempSync(join(tmpdir(), 'measure-'));
   try {
     writeFileSync(join(dir, 'index.html'),

@@ -247,10 +247,11 @@ test('SKILL.md says what to do when the plugin root is empty, and the README say
   assert.match(route, /webdesign\.mjs tools/);
 });
 
-/* The browser half of this suite guards itself with { skip: !findBrowser() },
-   which means a runner with no browser reports every one of those tests as a
-   pass and exits 0. CI is the only thing standing between that and a green
-   badge that proves nothing, and the two halves of the arrangement live in
+/* The browser half of this suite guards itself with { skip: browserSkip() }
+   (test/need-browser.mjs). Under CI that fails at load when no browser is
+   found, but any other skip (no ffmpeg, a test left marked skip) is still
+   reported as a pass with exit 0. CI's own guard is what stands between that
+   and a green badge that proves nothing, and the two halves of the arrangement live in
    different files: findBrowser() reads one env var, the workflow sets another.
    Renaming either without the other is silent, so assert the coupling. */
 test('CI installs a browser, points findBrowser() at it, and fails when tests skip', () => {
@@ -262,7 +263,7 @@ test('CI installs a browser, points findBrowser() at it, and fails when tests sk
   // rather than written down twice.
   const fn = src.slice(src.indexOf('export function findBrowser'), src.indexOf('const sleep ='));
   // The one that names a browser path (UFS_NO_BROWSER only switches it off).
-  const envVar = (fn.match(/process\.env\.([A-Z_]+) && existsSync/) || [])[1];
+  const envVar = (fn.match(/\benv\.([A-Z_]+) && (?:fs\.)?existsSync/) || [])[1];
   assert.ok(envVar, 'findBrowser() must resolve a browser from an env var');
   assert.match(yml, new RegExp('^ +' + envVar + ': +[$][{][{]', 'm'),
     `the workflow must set ${envVar} - findBrowser() reads no other name`);

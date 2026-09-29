@@ -96,8 +96,9 @@ Constraints:
   node scripts/webdesign.mjs new /tmp/t --name "T" && node scripts/webdesign.mjs audit /tmp/t
   ```
   A fresh scaffold is *expected* to fail on scaffold copy (and to warn about
-  the placeholder images it cannot find) - that is the audit doing its job.
-  Everything else must be clean.
+  the placeholder images it cannot find, and, until the chassis is
+  re-defaulted, about Instrument Sans, on the overused-face list since 6.9.0)
+  - that is the audit doing its job. Everything else must be clean.
 - Scaffold copy in `assets/sections.html` is marked `[[like this]]`, and the
   audit takes its list of scaffold copy from those marks. New copy in the
   library is marked unless it is interface copy that is right on any site;

@@ -13,10 +13,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      # Both browser.test.mjs and measure.test.mjs guard their real assertions
-      # with { skip: !findBrowser() }, so a bare runner with no Chrome/Edge/
-      # Chromium silently skips the half of the suite that actually drives a
-      # page - the part most likely to be wrong. windows-latest ships Edge
+      # Every browser test is guarded by { skip: browserSkip() }
+      # (test/need-browser.mjs), which fails at load under CI when no Chrome/
+      # Edge/Chromium is found; without a browser the half of the suite that
+      # actually drives a page - the part most likely to be wrong - cannot run. windows-latest ships Edge
       # already; ubuntu-latest does not, so give it a Chromium and point
       # inspect.mjs's findBrowser() at it the same way a developer would.
       # The video suite needs ffmpeg; without it the test skips and the
