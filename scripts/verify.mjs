@@ -10,7 +10,7 @@ import { resolve, relative } from 'node:path';
 import { runAudit } from './audit.mjs';
 import { debugSite } from './debug.mjs';
 import { securityAudit, formatSecurity } from './security.mjs';
-import { formatReport } from './inspect.mjs';
+import { formatReport, envList, formatEnv } from './inspect.mjs';
 
 // The render/quality checkers already print in the "  TAG  message" shape
 // (formatReport and formatQuality both use it - see inspect.mjs/measure.mjs).
@@ -51,9 +51,10 @@ const ratioOf = (f) => { const m = f.text.match(/contrast (\d+(?:\.\d+)?):1/); r
 export function renderFindings(results) {
   const byDefect = new Map();
   const missed = results.flatMap((r) => (r.network || []).map((f) => String(f.error)));
+  const env = envList(results);
   for (const r of results) {
     const mode = r.reducedMotion ? 'reduced' : 'normal';
-    for (const f of classifyLines(formatReport([r], { missed }).text)) {
+    for (const f of classifyLines(formatReport([r], { missed, env }).text)) {
       const key = defectKey(f);
       const seen = byDefect.get(key);
       if (!seen) { byDefect.set(key, { ...f, widths: new Set([r.width]), modes: new Set([mode]) }); continue; }
@@ -163,8 +164,16 @@ export async function runVerify(target, opts = {}) {
   // Exactly what already exits 1 today: audit errors, a render/quality ERROR,
   // and a high-severity security finding. Nothing new is being made fatal.
   const exitCode = totals.error ? 1 : 0;
-  return { target: isUrl ? target : relative(process.cwd(), resolved) || '.', sections, totals, exitCode };
+  // env: failures that belong to the machine or its network (a proxy's TLS
+  // on a third-party font, the browser's own favicon request), listed beside
+  // the verdict and never inside it: they are in no section, no total and not
+  // the exit code (inspect.mjs, envReason). `schema` names this shape, so a
+  // script reading --json can tell when it changes.
+  const env = envList(debugResult.results);
+  return { schema: VERIFY_SCHEMA, target: isUrl ? target : relative(process.cwd(), resolved) || '.', sections, totals, env, exitCode };
 }
+
+export const VERIFY_SCHEMA = 'ufs-verify/1';
 
 const SEVERITIES = [
   ['error', 'ERROR', 'fix before this ships'],
@@ -213,6 +222,8 @@ export function formatVerify(result) {
   const clean = ran.filter(([, s]) => !(s.findings || []).length).map(([n]) => n);
   if (clean.length) lines.push(`\n  ok    nothing found in ${clean.join(', ')}`);
   if (!printed && !clean.length) lines.push('\n  ok    nothing ran');
+
+  if (result.env?.length) lines.push(formatEnv(result.env));
 
   if (result.sections.render?.reviewFile) lines.push(`\n  visual review: ${result.sections.render.reviewFile}`);
   return lines.join('\n');

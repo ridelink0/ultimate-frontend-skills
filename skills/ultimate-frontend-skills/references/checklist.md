@@ -127,7 +127,10 @@ security scan and, with a design reference, the parity check, then reports one
 verdict: findings by severity (`error`, `warning`, `low`, `note`), each named
 once with the widths and motion modes it was seen at, and one exit code, 1
 exactly when audit, render/quality or security would have exited 1 alone.
-`--json` gives the same result as data. A URL target has no source, so its
+`--json` gives the same result as data, marked `"schema": "ufs-verify/1"`.
+Failures that belong to the machine (a proxy's TLS on a third-party font, the
+browser's own favicon request) are listed as `env`, outside every count and
+the exit code; `references/visual-debug.md` says which. A URL target has no source, so its
 audit and security sections come back `skipped`, as does a design reference
 that cannot be read or rendered: never a verdict from a check that never ran.
 

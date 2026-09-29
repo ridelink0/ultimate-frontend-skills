@@ -9,6 +9,7 @@ import { spawn, spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { debugSite } from '../scripts/debug.mjs';
 import { Session, findBrowser, inspect, decodePNG, sampleImageContrast, readPortFile, apcaLc, formatReport } from '../scripts/inspect.mjs';
+import { browserSkip } from './need-browser.mjs';
 import { launch, closeBrowser, removeProfile, sweepProfiles, flushProfiles, PROFILE_PREFIX, LAUNCH_FLAGS, LAUNCH_DEADLINE_MS } from '../scripts/inspect.mjs';
 import { writeReview } from '../scripts/review.mjs';
 import { runVerify, formatVerify } from '../scripts/verify.mjs';
@@ -37,7 +38,7 @@ test('HTML review escapes untrusted target text', () => {
     assert.ok(readFileSync(result.file, 'utf8').includes('&lt;script&gt;'));
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
-test('real browser captures scroll, interaction, reduced motion and canvas evidence', { skip: !findBrowser(), timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 60000 }, async () => {
+test('real browser captures scroll, interaction, reduced motion and canvas evidence', { skip: browserSkip(), timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 60000 }, async () => {
   const dir = mkdtempSync(join(tmpdir(), 'visual-debug-'));
   try {
     const html = '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{margin:24px;background:#eeeeee;color:#222222;font:18px system-ui}main{height:2400px}button{padding:14px}canvas{display:block;width:200px;height:120px;margin-top:24px}#panel[hidden]{display:none}@media(prefers-reduced-motion:reduce){body{scroll-behavior:auto}}</style><main><h1>Visual fixture</h1><button id="toggle" onclick="document.querySelector(\'#panel\').hidden=false">Open details</button><p id="panel" hidden>Interaction passed</p><canvas width="200" height="120"></canvas><canvas id="gl" width="200" height="120"></canvas></main><script>const ctx=document.querySelector("canvas").getContext("2d");ctx.fillStyle="#305d89";ctx.fillRect(0,0,200,120);ctx.fillStyle="#e8be64";ctx.fillRect(30,20,100,60);const gl=document.querySelector("#gl").getContext("webgl",{preserveDrawingBuffer:true});gl.clearColor(0.2,0.4,0.6,1);gl.clear(gl.COLOR_BUFFER_BIT);gl.enable(gl.SCISSOR_TEST);gl.scissor(30,20,100,60);gl.clearColor(0.9,0.6,0.2,1);gl.clear(gl.COLOR_BUFFER_BIT);</script></html>';
@@ -52,11 +53,11 @@ test('real browser captures scroll, interaction, reduced motion and canvas evide
     assert.ok(readFileSync(result.file, 'utf8').includes('Website visual review'));
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
-test('a browser network error never becomes a passing inspection', { skip: !findBrowser(), timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
+test('a browser network error never becomes a passing inspection', { skip: browserSkip(), timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
   await assert.rejects(inspect('http://127.0.0.1:1/', { widths: [800], wait: 0 }), /Navigation failed/);
 });
 
-test('post-click exceptions, HTTP errors and visually hidden assertions fail the review', { skip: !findBrowser(), timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
+test('post-click exceptions, HTTP errors and visually hidden assertions fail the review', { skip: browserSkip(), timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
   const dir = mkdtempSync(join(tmpdir(), 'visual-negative-'));
   try {
     writeFileSync(join(dir, 'index.html'), '<!doctype html><html><meta name="viewport" content="width=device-width"><button style="padding:20px" id="fail">Run</button><div style="opacity:0"><p id="secret">Hidden text</p></div><script>document.querySelector("#fail").onclick=()=>{fetch("/missing-data.json");throw new Error("click regression");};</script></html>');
@@ -73,7 +74,7 @@ test('post-click exceptions, HTTP errors and visually hidden assertions fail the
 // solid-colour contrast path could never see. Two boxes with the same "image"
 // background: one text colour illegible against it, one legible. Only the
 // illegible one should be reported, and it must say it came from the sample.
-test('contrast against an image background is measured from the actual pixels', { skip: !findBrowser(), timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
+test('contrast against an image background is measured from the actual pixels', { skip: browserSkip(), timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
   const dir = mkdtempSync(join(tmpdir(), 'visual-photo-contrast-'));
   try {
     const html = '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
@@ -92,7 +93,7 @@ test('contrast against an image background is measured from the actual pixels', 
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
-test('text clipped inside a scrolling panel is not an overlap; text painted over text still is', { skip: !findBrowser(), timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
+test('text clipped inside a scrolling panel is not an overlap; text painted over text still is', { skip: browserSkip(), timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
   const dir = mkdtempSync(join(tmpdir(), 'visual-clipped-overlap-'));
   try {
     const rows = Array.from({ length: 12 }, (_, i) => '<p style="margin:0 0 6px">Scrolled list row number ' + (i + 1) + '</p>').join('');
@@ -115,7 +116,7 @@ test('text clipped inside a scrolling panel is not an overlap; text painted over
 // (contrast) and nothing wrong with security should end up with an error in
 // both of the first two sections, a clean third, and one exit code covering
 // all of it.
-test('verify merges audit, render and security into one verdict with one exit code', { skip: !findBrowser(), timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
+test('verify merges audit, render and security into one verdict with one exit code', { skip: browserSkip(), timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
   const dir = mkdtempSync(join(tmpdir(), 'verify-merge-'));
   try {
     // no <main>/<section>/<article> -> an audit ERROR; #222 on #141414 -> a
@@ -133,7 +134,7 @@ test('verify merges audit, render and security into one verdict with one exit co
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
-test('verify skips the source-only sections for a URL target instead of guessing', { skip: !findBrowser(), timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
+test('verify skips the source-only sections for a URL target instead of guessing', { skip: browserSkip(), timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
   const dir = mkdtempSync(join(tmpdir(), 'verify-url-'));
   try {
     writeFileSync(join(dir, 'index.html'), '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>t</title><meta name="description" content="A fixture page long enough to pass the meta-description length check comfortably."><main><h1>t</h1></main></html>');
@@ -152,7 +153,7 @@ test('verify skips the source-only sections for a URL target instead of guessing
 // The fixture above asks for preserveDrawingBuffer itself, which is why the
 // check passed while every real three.js hero read as blank: no library sets
 // that flag, and a composited drawing buffer reads back as transparent black.
-test('a WebGL canvas that never asked for a preserved buffer still reads as rendered', { skip: !findBrowser(), timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
+test('a WebGL canvas that never asked for a preserved buffer still reads as rendered', { skip: browserSkip(), timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
   const dir = mkdtempSync(join(tmpdir(), 'visual-webgl-'));
   try {
     writeFileSync(join(dir, 'index.html'), '<!doctype html><html lang="en"><meta charset="utf-8"><style>canvas{display:block;width:300px;height:200px}</style><h1>WebGL</h1><canvas id="live" width="300" height="200"></canvas><canvas id="dead" width="300" height="200"></canvas><script>const gl=document.querySelector("#live").getContext("webgl");gl.clearColor(0.1,0.2,0.4,1);gl.clear(gl.COLOR_BUFFER_BIT);gl.enable(gl.SCISSOR_TEST);gl.scissor(40,30,120,90);gl.clearColor(0.9,0.7,0.3,1);gl.clear(gl.COLOR_BUFFER_BIT);</script></html>');
@@ -265,7 +266,7 @@ test('the worst region is the one with the least contrast, not the darkest one',
 // The sampler only ever sees a candidate because bgOf() refused to guess. The
 // end-to-end shape of that: white display type over a real eased scrim, which
 // is the house style's single most likely legibility failure.
-test('white display type on an eased scrim is caught end to end', { skip: !findBrowser(), timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
+test('white display type on an eased scrim is caught end to end', { skip: browserSkip(), timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
   const dir = mkdtempSync(join(tmpdir(), 'visual-scrim-'));
   try {
     writeFileSync(join(dir, 'index.html'),
@@ -347,7 +348,7 @@ test('a half-written or unreadable DevToolsActivePort means keep waiting, not cr
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
-test('inspect reads computed type, loaded fonts, the type scale and resources from a live page', { skip: !findBrowser(), timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 45000 }, async () => {
+test('inspect reads computed type, loaded fonts, the type scale and resources from a live page', { skip: browserSkip(), timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 45000 }, async () => {
   // The Elements panel on demand: this is reference data, so every field a
   // teardown would copy by hand has to come back populated and typed.
   const server = startServer(new URL('./fixtures', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'), 0);
@@ -382,7 +383,7 @@ test('inspect reads computed type, loaded fonts, the type scale and resources fr
    ran at all in a CLI that exited first. Gev's %TEMP% gave up 1,647 stray
    webdesign-cdp-* folders in one sweep and 572 more the next evening. */
 
-test('a finished run of the render check leaves no temporary browser profile behind', { skip: !findBrowser(), timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 180000 }, async () => {
+test('a finished run of the render check leaves no temporary browser profile behind', { skip: browserSkip(), timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 180000 }, async () => {
   // The contract is about a finished run, so this drives the real CLI in a
   // child process and waits for it to exit: a browser can recreate its own
   // profile folder AFTER the delete that reported success (Ubuntu CI,
@@ -437,7 +438,7 @@ test('a finished run of the render check leaves no temporary browser profile beh
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
-test('closeBrowser ends the browser, deletes its profile, and reports that it is gone', { skip: !findBrowser(), timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 120000 }, async () => {
+test('closeBrowser ends the browser, deletes its profile, and reports that it is gone', { skip: browserSkip(), timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 120000 }, async () => {
   const b = await launch(findBrowser());
   assert.equal(existsSync(b.udd), true, 'the profile is made at launch');
   assert.equal(await closeBrowser(b), true, 'the profile was still there after closeBrowser: ' + b.udd);
@@ -615,7 +616,7 @@ test('APCA Lc matches the reference implementation on its published pairs', () =
   assert.equal(apcaLc(c([120, 120, 120]), c([120, 120, 120])), 0);
 });
 
-test('light body text on a dark ground that passes WCAG and falls under Lc 75 is reported with both numbers', { skip: !findBrowser(), timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
+test('light body text on a dark ground that passes WCAG and falls under Lc 75 is reported with both numbers', { skip: browserSkip(), timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 90000 }, async () => {
   const dir = mkdtempSync(join(tmpdir(), 'ufs-apca-'));
   writeFileSync(join(dir, 'index.html'), '<!doctype html><html lang="en"><meta charset="utf-8"><title>a</title>'
     + '<body style="margin:0;background:#111;font:16px system-ui"><main><p style="color:#9a9a9a;padding:20px">Grey body copy on a near-black ground.</p>'

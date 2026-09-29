@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Three real errors</title>
+<!-- Exactly three defects, all the page's own: a console.error, an uncaught
+     throw, and a missing same-origin image. No icon is declared, so the
+     browser's /favicon.ico request 404s too, and that one is env. -->
+<style>body{margin:24px;background:#fff;color:#1a1a1a;font:18px/1.5 system-ui,sans-serif}</style>
+<main>
+  <h1>Three real errors</h1>
+  <p>This page logs an error, throws one, and asks for an image that is not there.</p>
+  <img src="missing.png" alt="A picture that was never added" width="120" height="80">
+</main>
+<script>
+  console.error('err.html: logged on purpose');
+  throw new Error('err.html: thrown on purpose');
+</script>
+</html>

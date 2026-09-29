@@ -12,13 +12,14 @@ import { join } from 'node:path';
 import { once } from 'node:events';
 import { fileURLToPath } from 'node:url';
 import { findBrowser, launch, closeBrowser, Session, inspect, formatReport } from '../scripts/inspect.mjs';
+import { browserSkip } from './need-browser.mjs';
 import { startServer } from '../scripts/preview-server.mjs';
 import { renderFindings } from '../scripts/verify.mjs';
 import { judge } from '../scripts/measure.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const cli = join(root, 'scripts', 'webdesign.mjs');
-const skip = !findBrowser();
+const skip = browserSkip();
 
 function scaffold(sections, preset = 'bone') {
   const dir = mkdtempSync(join(tmpdir(), 'ufs-render-'));

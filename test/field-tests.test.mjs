@@ -15,6 +15,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { once } from 'node:events';
 import { findBrowser, inspect, formatReport, CANVAS_INIT, launchRendering, SOFTWARE_WEBGL, closeBrowser, removeProfile, sweepProfiles, PROFILE_PREFIX } from '../scripts/inspect.mjs';
+import { browserSkip } from './need-browser.mjs';
 import { startServer } from '../scripts/preview-server.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -95,7 +96,7 @@ test('the references carry every fix the records say they carry', () => {
   }
 });
 
-const skip = !findBrowser();
+const skip = browserSkip();
 
 async function serve(html) {
   const dir = mkdtempSync(join(tmpdir(), 'ufs-field-'));
