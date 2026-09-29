@@ -8,6 +8,9 @@
      --width 1440       viewport width (default 1440; 390 for a phone read)
      --wait 3500        ms to let the page settle after load (default 3500)
      --json             print the full report as JSON instead of text
+     --compact          one line per site, and compact sheets of 16 tiles
+                        (1288x812, 1,334 image tokens each), each tile
+                        badged with its site and scroll (s03, s03 y900)
 
    Each site is loaded in a headless browser, screenshotted at each scroll
    position, and measured: the ground colours by painted area, the text
@@ -121,7 +124,7 @@ export const PROBE = `(() => {
 
 export const slugFor = (i) => 's' + String(i + 1).padStart(2, '0');
 
-export async function study(urls, { out, scrolls = [0, 900], width = 1440, wait = 3500, log = () => {} } = {}) {
+export async function study(urls, { out, scrolls = [0, 900], width = 1440, wait = 3500, compact = false, log = () => {} } = {}) {
   mkdirSync(out, { recursive: true });
   return withBrowser(async (session) => {
     const sites = [];
@@ -150,12 +153,13 @@ export async function study(urls, { out, scrolls = [0, 900], width = 1440, wait 
         site.status = 'failed';
         site.note = (e && e.message) || String(e);
       }
-      log(site);
+      log(site, i);
       sites.push(site);
     }
     const tiles = sites.filter((s) => s.status === 'ok')
-      .flatMap((s) => s.shots.map((sh) => ({ src: sh.file, label: `${slugFor(sites.indexOf(s))} ${sh.scroll ? 'y' + sh.scroll : 'top'}  ${s.url.replace(/^https?:\/\/(www\.)?/, '')}` })));
-    const sheets = tiles.length ? await renderSheets(session, tiles, { out, prefix: 'sheet', fit: 'cover' }) : [];
+      .flatMap((s) => s.shots.map((sh) => ({ src: sh.file, label: `${slugFor(sites.indexOf(s))} ${sh.scroll ? 'y' + sh.scroll : 'top'}  ${s.url.replace(/^https?:\/\/(www\.)?/, '')}`,
+        ...(compact && { badge: slugFor(sites.indexOf(s)) + (sh.scroll ? ' y' + sh.scroll : '') }) })));
+    const sheets = tiles.length ? await renderSheets(session, tiles, { out, prefix: 'sheet', fit: 'cover', compact }) : [];
     const report = { out, width, scrolls, sites, sheets };
     writeFileSync(join(out, 'report.json'), JSON.stringify(report, null, 2));
     return report;
@@ -175,9 +179,33 @@ export function formatSite(s) {
   return lines.join('\n');
 }
 
+const hostOf = (url) => { try { return new URL(url).host.replace(/^www\./, ''); } catch { return String(url); } };
+const cut = (t, max) => (t.length > max ? t.slice(0, max - 1) + '~' : t);
+const px = (v) => String(v || '?').replace(/px$/, '').replace(/^(\d+\.\d)\d+$/, '$1');
+
+/* One line per site for --compact, at most 160 characters for a rendered
+   one: the leading ground and ink with their shares, and the heading and body
+   faces as family size/line-height and weight. A wall or a failure keeps its
+   reason, and nothing else. */
+export function formatSiteCompact(s, i) {
+  const slug = slugFor(i);
+  const host = cut(hostOf(s.url), 28);
+  if (s.status === 'wall') {
+    const reason = (s.probe && classify(s.probe).reason) || String(s.note || '').split('; left out of the sheet')[0];
+    return `${slug} wall ${host} (${reason.replace(/\s+/g, ' ')})`;
+  }
+  if (s.status !== 'ok' || !s.probe) return `${slug} ${s.status} ${host} (${String(s.note || 'no measurements').replace(/\s+/g, ' ')})`;
+  const p = s.probe;
+  const c = (g) => (g ? `${g.color} ${g.share}%` : 'none');
+  const f = (t) => (t ? `${cut(t.family.split(',')[0].replace(/["']/g, '').trim(), 16)} ${px(t.size)}/${px(t.lineHeight)} w${t.weight}` : 'none');
+  let line = `${slug} ok ${host} | ground ${c(p.grounds[0])} | ink ${c(p.inks[0])} | heading ${f(p.type.heading)} | body ${f(p.type.body)}`;
+  if (p.canvases && line.length + 10 <= 160) line += ` | canvas ${p.canvases}`;
+  return cut(line, 160);
+}
+
 async function main() {
   let a;
-  try { a = parseArgs(process.argv.slice(2), { switches: ['json'] }); } catch (e) { console.error('study: ' + e.message); process.exit(2); }
+  try { a = parseArgs(process.argv.slice(2), { switches: ['json', 'compact'] }); } catch (e) { console.error('study: ' + e.message); process.exit(2); }
   const { positional, flags } = a;
   let urls = positional.filter((u) => /^https?:\/\//i.test(u));
   const bad = positional.filter((u) => !/^https?:\/\//i.test(u));
@@ -188,7 +216,7 @@ async function main() {
     urls = urls.concat(l);
   }
   if (!urls.length) {
-    console.error('usage: node study.mjs <url> ... | --list ' + Object.keys(LISTS).join('|') + ' [--out dir] [--scroll 0,900] [--width 1440] [--wait 3500] [--json]');
+    console.error('usage: node study.mjs <url> ... | --list ' + Object.keys(LISTS).join('|') + ' [--out dir] [--scroll 0,900] [--width 1440] [--wait 3500] [--compact] [--json]');
     process.exit(2);
   }
   let scrolls, width, wait;
@@ -198,15 +226,25 @@ async function main() {
     wait = int(flags.wait, 3500, { min: 0, max: 30000 });
   } catch (e) { console.error('study: ' + e.message); process.exit(2); }
   const out = resolve(flags.out || join(tmpdir(), 'image-deep-research', 'study-' + new Date().toISOString().replace(/[:.]/g, '-')));
+  const compact = !!flags.compact;
+  const log = flags.json ? () => {} : compact ? (s, i) => console.log(formatSiteCompact(s, i)) : (s) => console.log(formatSite(s));
   let report;
   try {
-    report = await study(urls, { out, scrolls, width, wait, log: flags.json ? () => {} : (s) => console.log(formatSite(s)) });
+    report = await study(urls, { out, scrolls, width, wait, compact, log });
   } catch (e) {
     console.error('study: ' + ((e && e.message) || e));
     process.exit(e && e.code === 'no-browser' ? 3 : 1);
   }
   if (flags.json) { console.log(JSON.stringify(report, null, 2)); return; }
   const ok = report.sites.filter((s) => s.status === 'ok').length;
+  if (compact) {
+    console.log(`study ${urls.length} site(s), ${ok} rendered -> ${out}`);
+    for (const s of report.sheets) console.log(`sheet ${s.file} ${s.w}x${s.h} ${s.tokens} tok`);
+    if (!report.sheets.length) console.log('sheet none: nothing rendered cleanly (see the lines above)');
+    console.log('report ' + join(out, 'report.json'));
+    if (!ok) process.exitCode = 1;
+    return;
+  }
   console.log(`\nstudy  ${urls.length} site(s), ${ok} rendered -> ${out}`);
   if (report.sheets.length) {
     console.log('  Open these contact sheets first, left to right, top to bottom:');

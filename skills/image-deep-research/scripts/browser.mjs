@@ -13,34 +13,78 @@
    screen. Needs Node 22+ for the built-in WebSocket. */
 
 import { spawn, spawnSync } from 'node:child_process';
-import { mkdtempSync, mkdirSync, existsSync, readFileSync, rmSync } from 'node:fs';
-import { join } from 'node:path';
-import { tmpdir } from 'node:os';
+import { mkdtempSync, mkdirSync, existsSync, readFileSync, readdirSync, rmSync } from 'node:fs';
+import { join, posix } from 'node:path';
+import { tmpdir, homedir } from 'node:os';
 import { createServer } from 'node:net';
 
-const CANDIDATES = process.platform === 'win32'
-  ? [
-      `${process.env.PROGRAMFILES}\\Google\\Chrome\\Application\\chrome.exe`,
-      `${process.env['PROGRAMFILES(X86)']}\\Google\\Chrome\\Application\\chrome.exe`,
-      `${process.env.LOCALAPPDATA}\\Google\\Chrome\\Application\\chrome.exe`,
-      `${process.env['PROGRAMFILES(X86)']}\\Microsoft\\Edge\\Application\\msedge.exe`,
-      `${process.env.PROGRAMFILES}\\Microsoft\\Edge\\Application\\msedge.exe`,
-    ]
-  : process.platform === 'darwin'
-    ? ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-       '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge',
-       '/Applications/Chromium.app/Contents/MacOS/Chromium']
-    : ['/usr/bin/google-chrome', '/usr/bin/google-chrome-stable', '/usr/bin/chromium',
-       '/usr/bin/chromium-browser', '/usr/bin/microsoft-edge', '/snap/bin/chromium'];
+function candidates(platform, env) {
+  return platform === 'win32'
+    ? [
+        `${env.PROGRAMFILES}\\Google\\Chrome\\Application\\chrome.exe`,
+        `${env['PROGRAMFILES(X86)']}\\Google\\Chrome\\Application\\chrome.exe`,
+        `${env.LOCALAPPDATA}\\Google\\Chrome\\Application\\chrome.exe`,
+        `${env['PROGRAMFILES(X86)']}\\Microsoft\\Edge\\Application\\msedge.exe`,
+        `${env.PROGRAMFILES}\\Microsoft\\Edge\\Application\\msedge.exe`,
+      ]
+    : platform === 'darwin'
+      ? ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+         '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge',
+         '/Applications/Chromium.app/Contents/MacOS/Chromium']
+      : ['/usr/bin/google-chrome', '/usr/bin/google-chrome-stable', '/usr/bin/chromium',
+         '/usr/bin/chromium-browser', '/usr/bin/microsoft-edge', '/snap/bin/chromium'];
+}
+
+/* The Chromium builds Playwright downloads, newest revision first in each
+   folder: $PLAYWRIGHT_BROWSERS_PATH, the per-user cache, and /opt/pw-browsers,
+   where containers and cloud sandboxes (this repo's own test container among
+   them, 2026-09-29) keep one and nothing else. Up to Playwright 1.56 the
+   binary sits in chrome-linux/; later ones install Chrome for Testing into
+   chrome-linux64/ (x64) or chrome-linux-arm64/ (read from playwright-core
+   1.56.1 and 1.63.0's registries). */
+const PW_LAYOUTS = ['chrome-linux', 'chrome-linux64', 'chrome-linux-arm64'];
+
+function playwrightChromes({ env, home, readdir }) {
+  const bases = [env.PLAYWRIGHT_BROWSERS_PATH, home && posix.join(home, '.cache', 'ms-playwright'), '/opt/pw-browsers'];
+  const out = [];
+  for (const base of [...new Set(bases.filter(Boolean))]) {
+    let names;
+    try { names = readdir(base); } catch { continue; }
+    const revs = names.map((n) => /^chromium-(\d+)$/.exec(n)).filter(Boolean).sort((a, b) => b[1] - a[1]);
+    for (const m of revs) for (const d of PW_LAYOUTS) out.push(posix.join(base, m[0], d, 'chrome'));
+  }
+  return out;
+}
 
 /* IDR_BROWSER names the executable. ATELIER_BROWSER is the variable Ultimate
-   Frontend Skills reads, honoured too so one setting serves both. */
-export function findBrowser() {
+   Frontend Skills reads, honoured too so one setting serves both. Everything
+   the lookup touches can be injected, so a test can stand in a file system. */
+export function findBrowser({ env = process.env, platform = process.platform, home = homedir(),
+  exists = existsSync, readdir = (d) => readdirSync(d) } = {}) {
   for (const v of ['IDR_BROWSER', 'ATELIER_BROWSER']) {
-    const p = process.env[v];
-    if (p && existsSync(p)) return p;
+    const p = env[v];
+    if (p && exists(p)) return p;
   }
-  return CANDIDATES.find((p) => p && existsSync(p)) || null;
+  const found = candidates(platform, env).find((p) => p && exists(p));
+  if (found) return found;
+  if (platform !== 'linux') return null;
+  return playwrightChromes({ env, home, readdir }).find((p) => exists(p)) || null;
+}
+
+/* Chrome refuses to start as root unless its sandbox is switched off, and
+   exits before it opens a debugging port (measured in a root container,
+   2026-09-29). So --no-sandbox goes in for root, or when IDR_NO_SANDBOX=1
+   asks for it, and never otherwise. */
+export function launchArgs(udd, port, { uid = process.getuid?.(), env = process.env } = {}) {
+  // --disable-component-update: a fresh profile starts Edge's component
+  // updater, which leaves msedge_url_fetcher_* folders in TEMP.
+  return [
+    '--headless=new', '--hide-scrollbars', '--mute-audio',
+    '--no-first-run', '--no-default-browser-check', '--disable-extensions',
+    '--disable-background-networking', '--disable-component-update', '--disable-sync', '--disable-features=Translate',
+    ...(uid === 0 || env.IDR_NO_SANDBOX === '1' ? ['--no-sandbox'] : []),
+    `--user-data-dir=${udd}`, `--remote-debugging-port=${port}`, 'about:blank',
+  ];
 }
 
 export const NO_BROWSER = 'no Chrome, Edge or Chromium found.\n'
@@ -98,14 +142,7 @@ export async function launch(bin = findBrowser()) {
   const ownTmp = join(udd, 'tmp');
   mkdirSync(ownTmp);
   const asked = await freePort();
-  // --disable-component-update: a fresh profile starts Edge's component
-  // updater, which leaves msedge_url_fetcher_* folders in TEMP.
-  const proc = spawn(bin, [
-    '--headless=new', '--hide-scrollbars', '--mute-audio',
-    '--no-first-run', '--no-default-browser-check', '--disable-extensions',
-    '--disable-background-networking', '--disable-component-update', '--disable-sync', '--disable-features=Translate',
-    `--user-data-dir=${udd}`, `--remote-debugging-port=${asked}`, 'about:blank',
-  ], { stdio: ['ignore', 'ignore', 'ignore'], windowsHide: true, env: browserEnv(ownTmp) });
+  const proc = spawn(bin, launchArgs(udd, asked), { stdio: ['ignore', 'ignore', 'ignore'], windowsHide: true, env: browserEnv(ownTmp) });
   let launchError;
   proc.once('error', (err) => { launchError = err; });
 
