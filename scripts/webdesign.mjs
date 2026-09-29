@@ -660,7 +660,9 @@ async function cmdVerify() {
 async function cmdTells() {
   const { runTells, formatTells } = await import('./tells-render.mjs');
   const target = positional[0] || '.';
-  const widths = defaultWidths(flag, targetWidths(target)).split(',').map((s) => parseInt(s, 10)).filter(Boolean);
+  // Not filtered: a width that is not a number is refused by runTells, where
+  // dropping it used to leave no widths and an all-clear vector.
+  const widths = defaultWidths(flag, targetWidths(target)).split(',').filter((s) => s.trim()).map(Number);
   let result;
   try {
     result = await runTells(/^https?:\/\//i.test(target) ? target : resolve(target), { widths, wait: Number(flag('wait', 600)) });

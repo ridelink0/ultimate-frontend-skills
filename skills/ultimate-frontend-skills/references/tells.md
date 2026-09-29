@@ -216,7 +216,8 @@ not describe any other product.
 Some tells exist only once the page is drawn: the colour the ground came out,
 the face each element asks for, a row of big numerals, a marquee.
 `webdesign.mjs tells <dir|url> [--json] [--widths 1440,390]` renders the page,
-fetches nothing from any other origin, and reports fourteen features as
+follows the page's own redirect but fetches nothing else from any other origin,
+and reports fourteen features as
 `ufs-tells/1` (`{target, widths, ufsSha, features: [{id, fired, value,
 evidence}]}`): cream-ground, perma-dark, cluster-1, cluster-2, template-chrome,
 overused-face, accent-word, decorative-numbering, stat-banner, uniform-radius,

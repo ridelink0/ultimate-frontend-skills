@@ -102,6 +102,15 @@ test('the section library has a signature for every default section, and the usa
   assert.match(usage, /\btells <dir\|file\|url> \[--widths 1440,390\]/);
 });
 
+test('a --widths with no usable width is refused, not reported as a vector where nothing fired', () => {
+  for (const bad of ['abc', '1440,-3', '0']) {
+    const run = spawnSync(process.execPath, [cli, 'tells', join(FIXTURES, 'restrained.html'), '--json', '--widths', bad], { encoding: 'utf8', timeout: 60000 });
+    assert.equal(run.status, 1, bad + ': ' + run.stdout.slice(0, 200));
+    assert.equal(run.stdout, '', bad);
+    assert.match(run.stderr, /--widths takes whole CSS pixel widths/, bad);
+  }
+});
+
 test('every fixture fires exactly what it is written to fire, at 1440 and 390', { skip: browserSkip(), timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 180000 }, async () => {
   const server = startServer(FIXTURES, 0);
   await once(server, 'listening');
@@ -183,4 +192,38 @@ test('nothing is fetched from another origin: a stylesheet on a second local ser
     // other's dark ground never arrives.
     assert.deepEqual(fired, ['display-tracking']);
   } finally { other.close(); rmSync(dir, { recursive: true, force: true }); }
+});
+
+test('a URL that redirects to another origin is followed, and a #fragment is measured at every width', { skip: browserSkip(), timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 180000 }, async () => {
+  // The page and its stylesheet are on one origin; the URL given redirects
+  // there from another, as https://example.com does to https://www.example.com.
+  const page = createServer((req, res) => {
+    if (req.url === '/dark.css') { res.writeHead(200, { 'Content-Type': 'text/css' }); return res.end('html{background:#101010;color:#e8e8e8}'); }
+    res.writeHead(200, { 'Content-Type': 'text/html' });
+    res.end('<!doctype html><html lang="en"><meta charset="utf-8"><title>r</title><link rel="stylesheet" href="/dark.css"><main><h1 id="top">Harbour ferry times</h1><p>The 7:40 leaves from pier two.</p></main></html>');
+  }).listen(0, '127.0.0.1');
+  await once(page, 'listening');
+  const hop = createServer((req, res) => { res.writeHead(301, { Location: `http://localhost:${page.address().port}${req.url}` }); res.end(); }).listen(0, '127.0.0.1');
+  await once(hop, 'listening');
+  try {
+    // Through the redirect, and straight at the page: the second width asks
+    // for the very URL the page is already at, #fragment and all.
+    for (const url of [`http://127.0.0.1:${hop.address().port}/#top`, `http://localhost:${page.address().port}/#top`]) {
+      const run = await promisify(execFile)(process.execPath, [cli, 'tells', url, '--json'], { encoding: 'utf8', timeout: 90000 });
+      const r = JSON.parse(run.stdout);
+      assert.deepEqual(r.blocked, [], url);
+      // Its own stylesheet arrived, at both widths.
+      assert.deepEqual(r.features.find((f) => f.id === 'perma-dark').firedAt, [1440, 390], url);
+    }
+  } finally { page.close(); hop.close(); }
+});
+
+test('a target that is not an HTML page says so', { skip: browserSkip(), timeout: Number(process.env.UFS_TEST_TIMEOUT_MS) || 180000 }, () => {
+  const dir = mkdtempSync(join(tmpdir(), 'ufs-tells-svg-'));
+  try {
+    writeFileSync(join(dir, 'mark.svg'), '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><rect width="10" height="10"/></svg>');
+    const run = spawnSync(process.execPath, [cli, 'tells', join(dir, 'mark.svg'), '--widths', '1440'], { encoding: 'utf8', timeout: 60000 });
+    assert.equal(run.status, 1);
+    assert.match(run.stderr, /not an HTML page \(image\/svg\+xml\)/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
 });

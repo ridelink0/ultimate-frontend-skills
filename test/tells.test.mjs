@@ -141,7 +141,7 @@ test('every scaffold the library can make raises exactly its preset\'s expected 
   const dir = mkdtempSync(join(tmpdir(), 'ufs-tells-chassis-'));
   try {
     assert.deepEqual(Object.keys(EXPECTED_TELLS).sort(), ['bone', 'cinema', 'fable', 'ink']);
-  for (const preset of Object.keys(EXPECTED_TELLS)) for (const hero of heroes) for (const [k, sections] of [['all', ['nav', hero, ...middle, 'footer']], ['default', ['nav', hero, 'manifesto', 'services', 'stats', 'faq', 'contact', 'footer']]]) {
+    for (const preset of Object.keys(EXPECTED_TELLS)) for (const hero of heroes) for (const [k, sections] of [['all', ['nav', hero, ...middle, 'footer']], ['default', ['nav', hero, 'manifesto', 'services', 'stats', 'faq', 'contact', 'footer']]]) {
       const out = join(dir, preset + '-' + hero + '-' + k);
       const made = spawnSync(process.execPath, [cli, 'new', out, '--preset', preset, '--sections', sections.join(',')], { encoding: 'utf8' });
       assert.equal(made.status, 0, made.stderr);

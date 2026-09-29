@@ -16,11 +16,12 @@
    thresholds live in data/tells-render.json, each with its why and source, so
    weights fitted to human labels can move them without a code change.
 
-   Only the page's own origin is fetched. Every other request is failed in the
-   browser (Fetch domain), so a run is the same on a laptop, in CI and behind a
-   proxy that breaks third-party TLS, and a webfont from another origin never
-   loads here. The features that care about faces read the family the page
-   asks for, and record whether it loaded. */
+   Only the page's own origin is fetched (and the one a redirect of the page
+   itself lands on). Every other request is failed in the browser (Fetch
+   domain), so a run is the same on a laptop, in CI and behind a proxy that
+   breaks third-party TLS, and a webfont from another origin never loads here.
+   The features that care about faces read the family the page asks for, and
+   record whether it loaded. */
 import { readFileSync, existsSync, statSync, realpathSync } from 'node:fs';
 import { resolve, dirname, basename, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -98,6 +99,8 @@ const ufsVersion = () => { try { return JSON.parse(readFileSync(join(ROOT, 'pack
    { [id]: { fired, value, evidence } }. */
 export function pageProbe(arg) {
   const { cfg, slopFonts, signatures, defaultSections } = arg;
+  // An SVG, XML or text file has no body to measure; say so, not "getContext is not a function".
+  if (!(document.documentElement instanceof HTMLElement) || !document.body) throw new Error('not an HTML page (' + document.contentType + ')');
   const T = cfg.features;
   const W = document.documentElement.clientWidth || innerWidth;
   const out = {};
@@ -521,21 +524,28 @@ async function evaluate(session, fn, arg) {
   const r = await session.send('Runtime.evaluate', {
     expression: '(' + fn.toString() + ')(' + JSON.stringify(arg) + ')', returnByValue: true, awaitPromise: true,
   });
-  if (r.exceptionDetails) throw new Error('tells probe failed in the page: ' + ((r.exceptionDetails.exception && r.exceptionDetails.exception.description) || r.exceptionDetails.text));
+  if (r.exceptionDetails) throw new Error('tells probe failed in the page: ' + String((r.exceptionDetails.exception && r.exceptionDetails.exception.description) || r.exceptionDetails.text).split('\n')[0]);
   return r.result.value;
 }
 
 /* Fails, in the browser, every request that is not to the page's own origin
-   (or data:, blob:, about:). Returns the hosts it turned away. */
-function sameOriginOnly(session, origin) {
+   (or data:, blob:, about:). Returns the hosts it turned away. A redirect of
+   the page itself is followed, and the origin it lands on becomes the page's
+   own too: https://example.com answering with https://www.example.com used to
+   fail the whole run with ERR_BLOCKED_BY_CLIENT. */
+function sameOriginOnly(session, origin, mainFrame) {
   const blocked = new Set();
+  const own = new Set([origin]);
   const onMessage = (e) => {
     let msg;
     try { msg = JSON.parse(e.data); } catch { return; }
     if (msg.method !== 'Fetch.requestPaused') return;
-    const { requestId, request } = msg.params;
+    const { requestId, request, resourceType, frameId, redirectedRequestId } = msg.params;
+    if (redirectedRequestId && resourceType === 'Document' && frameId === mainFrame) {
+      try { own.add(new URL(request.url).origin); } catch {}
+    }
     let ok = /^(data|blob|about):/i.test(request.url);
-    try { if (!ok) ok = new URL(request.url).origin === origin; } catch {}
+    try { if (!ok) ok = own.has(new URL(request.url).origin); } catch {}
     if (ok) session.send('Fetch.continueRequest', { requestId }).catch(() => {});
     else {
       try { blocked.add(new URL(request.url).host); } catch { blocked.add(request.url.slice(0, 60)); }
@@ -556,6 +566,10 @@ export async function tellsOnSession(session, url, { widths = [1440, 390], wait 
     session.events.length = 0;
     const nav = await session.send('Page.navigate', { url });
     if (nav.errorText) throw new Error('Navigation failed: ' + nav.errorText);
+    // The same URL again, when it has a #fragment, is a same-document
+    // navigation (no loaderId): nothing loads, so the second width waited 20 s
+    // for a load event and failed. Reload it instead.
+    if (!nav.loaderId) await session.send('Page.reload');
     if (!await session.waitForEvent('Page.loadEventFired', 20000)) throw new Error('Page load timed out.');
     await new Promise((r) => setTimeout(r, wait));
     byWidth[width] = await evaluate(session, pageProbe, arg);
@@ -580,6 +594,9 @@ export function combine(byWidth, widths) {
 }
 
 export async function runTells(target, { widths = [1440, 390], wait = 600 } = {}) {
+  // No width measured is not "nothing fired": refuse it rather than print an
+  // all-clear vector.
+  if (!widths.length || !widths.every((w) => Number.isInteger(w) && w > 0)) throw new Error('--widths takes whole CSS pixel widths, comma-separated, such as 1440,390 (got ' + (widths.join(',') || 'none') + ').');
   if (typeof WebSocket === 'undefined') throw new Error('The rendered tells need Node 22 or newer (a global WebSocket).');
   const bin = findBrowser();
   if (!bin) { const err = new Error('no Chrome, Edge or Chromium found (set ATELIER_BROWSER to the executable).'); err.code = 'no-browser'; throw err; }
@@ -599,7 +616,8 @@ export async function runTells(target, { widths = [1440, 390], wait = 600 } = {}
     session = await Session.open(port);
     await session.send('Page.enable');
     await session.send('Runtime.enable');
-    const blocked = sameOriginOnly(session, new URL(url).origin);
+    const { frameTree } = await session.send('Page.getFrameTree');
+    const blocked = sameOriginOnly(session, new URL(url).origin, frameTree.frame.id);
     await session.send('Fetch.enable', { patterns: [{ urlPattern: '*' }] });
     const byWidth = await tellsOnSession(session, url, { widths, wait });
     return {
