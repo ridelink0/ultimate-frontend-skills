@@ -35,6 +35,11 @@ Deep research here means rounds, not one search:
    on the web, open collections for subjects, palettes, materials and art.
 3. **Read the contact sheets**, then only the two or three individual images
    worth a closer look. A sheet of eight costs one read instead of eight.
+   In a coding session or for a first look, add `--compact` to either
+   script: one sheet of up to 16 numbered tiles, 1288x812 and at most 1,334
+   image tokens on any Claude model, one text line per result or site, no
+   URLs (`images.mjs --pick 3,7 --results <path>` prints the ones you keep).
+   Open a single image only for what the sheet and the numbers cannot answer.
 4. **Refine and go again.** The first round tells you the right words: the
    name of the style, the photographer, the typeface, the movement. Search
    again with them. Stop when a new round stops changing the answer.
