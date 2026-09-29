@@ -6,7 +6,9 @@ import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { findBrowser, browserCandidates, playwrightChromes, launchFlags, LAUNCH_FLAGS } from '../scripts/inspect.mjs';
+import { spawnSync } from 'node:child_process';
+import { pathToFileURL } from 'node:url';
+import { findBrowser, browserCandidates, playwrightChromes, launchFlags, LAUNCH_FLAGS, userHome } from '../scripts/inspect.mjs';
 import { browserSkip } from './need-browser.mjs';
 
 /* A fake filesystem: a map of directory -> entries, and a set of files. */
@@ -75,6 +77,28 @@ test('the Playwright search is Linux only, and the Windows and macOS lists are u
   assert.deepEqual(browserCandidates('linux', env), [
     '/usr/bin/google-chrome', '/usr/bin/chromium', '/usr/bin/chromium-browser', '/usr/bin/microsoft-edge', '/snap/bin/chromium',
   ]);
+});
+
+test('a user with no home directory still gets a browser, instead of a crash', () => {
+  // os.homedir() throws when HOME is unset and the uid has no passwd entry.
+  const noHome = () => { throw Object.assign(new Error('uv_os_homedir returned ENOENT'), { code: 'ERR_SYSTEM_ERROR' }); };
+  assert.equal(userHome(noHome), null);
+  assert.equal(findBrowser({ env: {}, platform: 'linux', home: null, fs: containerFs() }), '/opt/pw-browsers/chromium-1194/chrome-linux/chrome');
+});
+
+// The same, for real: HOME unset and a uid that has no passwd entry. Only root
+// can switch to one, so elsewhere this says so and skips; the test above
+// covers the logic everywhere.
+const asNobody = process.platform !== 'win32' && process.getuid?.() === 0 ? false : 'needs root on Linux or macOS to switch to a uid with no home';
+test('findBrowser() with HOME unset and a uid with no passwd entry returns ATELIER_BROWSER', { skip: asNobody }, () => {
+  const url = pathToFileURL(join(dirname(fileURLToPath(import.meta.url)), '..', 'scripts', 'inspect.mjs')).href;
+  // Import first, then drop to the uid, so the repository need not be readable by it.
+  const code = `import(${JSON.stringify(url)}).then((m) => { process.setuid(2147480001); console.log(JSON.stringify(m.findBrowser())); })`;
+  const env = { ...process.env, ATELIER_BROWSER: process.execPath };
+  delete env.HOME; delete env.UFS_NO_BROWSER;
+  const run = spawnSync(process.execPath, ['-e', code], { env, encoding: 'utf8' });
+  assert.equal(run.status, 0, run.stderr);
+  assert.equal(JSON.parse(run.stdout), process.execPath);
 });
 
 test('root gets --no-sandbox, an ordinary user does not, and UFS_NO_SANDBOX=1 asks for it', () => {

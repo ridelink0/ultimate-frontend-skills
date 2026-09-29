@@ -50,7 +50,16 @@ export function browserCandidates(platform = process.platform, env = process.env
    otherwise, and some images preinstall them at /opt/pw-browsers. Each root
    is read for chromium-<revision> folders, newest revision first. Linux only:
    the Windows and macOS lists above are unchanged. */
-export function playwrightChromes({ env = process.env, home = homedir(), fs = { existsSync, readdirSync } } = {}) {
+/* os.homedir() throws when HOME is unset and the uid has no passwd entry
+   (`docker run --user 12345`, an OpenShift pod, `env -i`), and a default
+   parameter is evaluated on every call: findBrowser() threw there, even with
+   ATELIER_BROWSER set, where it used to return the browser (2026-09-29). No
+   home is one root fewer to search, not a reason to stop. */
+export function userHome(read = homedir) {
+  try { return read() || null; } catch { return null; }
+}
+
+export function playwrightChromes({ env = process.env, home = userHome(), fs = { existsSync, readdirSync } } = {}) {
   const roots = [env.PLAYWRIGHT_BROWSERS_PATH, home && posix.join(home, '.cache', 'ms-playwright'), '/opt/pw-browsers'];
   const found = [];
   for (const root of roots) {
@@ -69,7 +78,7 @@ export function playwrightChromes({ env = process.env, home = homedir(), fs = { 
 
 /* Everything is injectable so the search can be tested for a platform and a
    filesystem this machine does not have; called bare, it reads this one. */
-export function findBrowser({ env = process.env, platform = process.platform, home = homedir(), fs = { existsSync, readdirSync } } = {}) {
+export function findBrowser({ env = process.env, platform = process.platform, home = userHome(), fs = { existsSync, readdirSync } } = {}) {
   // `npm run test:fast` sets this, so every real-browser check skips.
   if (env.UFS_NO_BROWSER === '1') return null;
   if (env.ATELIER_BROWSER && fs.existsSync(env.ATELIER_BROWSER))
