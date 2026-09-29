@@ -2,6 +2,16 @@
 
 Releases before 6.5.0 are recorded in their tag commits (`git log v6.4.2`) and on the GitHub releases page.
 
+## 6.9.0 - 2026-09-29
+
+Built from the 2026-09-29 expansion plan. Item 1: the render check runs in a cloud container, and a failure that belongs to the machine is reported as env instead of as the page's error.
+
+- On Linux, `findBrowser()` also finds Playwright's Chromium: `$PLAYWRIGHT_BROWSERS_PATH`, `~/.cache/ms-playwright` and `/opt/pw-browsers`, each `chromium-<revision>/chrome-linux/chrome`, newest revision first, after `ATELIER_BROWSER` and the system paths. The Windows and macOS lists are unchanged (`scripts/inspect.mjs`).
+- Run as root, the browser starts with `--no-sandbox`, which Chrome requires there; `UFS_NO_SANDBOX=1` asks for it without root. Anyone else keeps the sandbox.
+- The env class in `look`, `debug` and `verify`: a TLS, tunnel or proxy failure (`ERR_CERT_*`, `ERR_TUNNEL_*`, `ERR_PROXY_*`) to another origin, a `/favicon.ico` 404 on a page that declares no icon, and any failure to a host in `UFS_ENV_HOSTS`. Env findings print under their own heading, go to `env[]` in `verify --json`, and never reach a count or the exit code. A request to the page's own origin is never env. `references/visual-debug.md` has the rules.
+- `verify --json` carries `"schema": "ufs-verify/1"`.
+- Tests: every browser test skips through `test/need-browser.mjs`, which names the reason, and fails at load when `UFS_REQUIRE_BROWSER=1` or `CI` is set. `test/headless.test.mjs` covers discovery and the sandbox flag with an injected filesystem; `test/env.test.mjs` covers the env class, with `err.html` (three real errors at each width) and an HTTPS server whose certificate is made at test time.
+
 ## 6.8.1 - 2026-09-28
 
 From Doodle Voyager's to-do list: a game is checked at the sizes it is played at even when nobody remembers `--game`.
