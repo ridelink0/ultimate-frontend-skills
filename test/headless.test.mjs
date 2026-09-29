@@ -86,14 +86,15 @@ test('a user with no home directory still gets a browser, instead of a crash', (
   assert.equal(findBrowser({ env: {}, platform: 'linux', home: null, fs: containerFs() }), '/opt/pw-browsers/chromium-1194/chrome-linux/chrome');
 });
 
-// The same, for real: HOME unset and a uid that has no passwd entry. Only root
-// can switch to one, so elsewhere this says so and skips; the test above
-// covers the logic everywhere.
-const asNobody = process.platform !== 'win32' && process.getuid?.() === 0 ? false : 'needs root on Linux or macOS to switch to a uid with no home';
-test('findBrowser() with HOME unset and a uid with no passwd entry returns ATELIER_BROWSER', { skip: asNobody }, () => {
+// The same, for real, in a child process with HOME unset. As root it drops to a
+// uid with no passwd entry; anywhere else os.homedir() is made to throw the way it
+// does there, so every CI runner proves it instead of skipping (CI fails a skip).
+test('findBrowser() with HOME unset and no home directory returns ATELIER_BROWSER', () => {
   const url = pathToFileURL(join(dirname(fileURLToPath(import.meta.url)), '..', 'scripts', 'inspect.mjs')).href;
+  const asRoot = process.platform !== 'win32' && process.getuid?.() === 0;
+  const noHome = "const os = require('node:os'); os.homedir = () => { throw Object.assign(new Error('uv_os_homedir returned ENOENT'), { code: 'ERR_SYSTEM_ERROR' }); }; require('node:module').syncBuiltinESMExports();";
   // Import first, then drop to the uid, so the repository need not be readable by it.
-  const code = `import(${JSON.stringify(url)}).then((m) => { process.setuid(2147480001); console.log(JSON.stringify(m.findBrowser())); })`;
+  const code = `${asRoot ? '' : noHome} import(${JSON.stringify(url)}).then((m) => { ${asRoot ? 'process.setuid(2147480001);' : ''} console.log(JSON.stringify(m.findBrowser())); })`;
   const env = { ...process.env, ATELIER_BROWSER: process.execPath };
   delete env.HOME; delete env.UFS_NO_BROWSER;
   const run = spawnSync(process.execPath, ['-e', code], { env, encoding: 'utf8' });
