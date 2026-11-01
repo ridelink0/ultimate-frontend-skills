@@ -148,7 +148,7 @@ test('the line names the binding window and hangs its numbers off it', () => {
   assert.match(text, /resets in 3h 52m/);
   assert.match(text, /Other windows: 5-hour 47%/);
   assert.match(text, /This session: 229 turns/);
-  assert.match(text, /Open with one short line/);
+  assert.match(text, /Before work, estimate the turns for the whole request/);
 });
 
 test('the numbers cannot be read against the wrong window', () => {

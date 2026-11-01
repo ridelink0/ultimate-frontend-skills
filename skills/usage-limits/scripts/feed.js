@@ -107,11 +107,14 @@ function number(value) {
 // A run without rate_limits (they only appear after the first API response)
 // keeps the previous ones rather than forgetting them.
 function slotFrom(input, previous, now) {
-  const prior = previous && typeof previous === 'object' ? previous : {};
+  const login = usage.accountUuid();
+  const prior = previous && typeof previous === 'object' && (!login || previous.accountUuid === login) ? previous : {};
   const model = input.model && typeof input.model === 'object' ? input.model : {};
   const hasHeaders = Boolean(input.rate_limits && typeof input.rate_limits === 'object');
   return {
     at: now,
+    accountUuid: login,
+    tokens: input.context_window ? require('./tokens.js').fromStatusLine(input) : prior.tokens || null,
     prevAt: Number.isFinite(prior.at) ? prior.at : null,
     sessionId: input.session_id || null,
     model: typeof model.id === 'string' ? model.id : prior.model || null,

@@ -39,17 +39,18 @@ function fresh(name) {
 const BINDING = { key: 'five_hour', label: '5-hour', percentUsed: 20, stale: false };
 const T = Date.UTC(2026, 8, 21, 21, 0, 0);
 
-test('the standing instruction is said in full once per session, then as twelve words', () =>
+test('the standing instruction is said in full once per session, then keeps the fit contract concise', () =>
   isolated(() => {
     const brief = fresh('brief');
     const parts = { binding: BINDING, turnsLeft: 50, resetsIn: '3h', pressure: 'roomy' };
     const full = brief.briefText(parts);
-    assert.match(full, /Open with one short line stating this/);
+    assert.match(full, /Before work, estimate the turns for the whole request/);
     assert.match(full, /Quote the binding window/);
     assert.match(full, /end it with one plain line giving the session total/);
     const short = brief.briefText(Object.assign({}, parts, { standingShort: true }));
     assert.ok(short.endsWith('\n' + brief.STANDING_SHORT), short);
-    assert.strictEqual(brief.STANDING_SHORT.split(/\s+/).length, 12);
+    assert.ok(brief.STANDING_SHORT.split(/\s+/).length <= 25);
+    assert.match(brief.STANDING_SHORT, /"fits" with evidence, otherwise "it may not fit"/);
     assert.doesNotMatch(short, /Quote the binding window/);
     assert.doesNotMatch(short, /Open with one short line stating/);
     // The wall keeps its own words whatever the memo says.

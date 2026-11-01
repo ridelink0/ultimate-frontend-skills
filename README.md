@@ -1,5 +1,14 @@
 # usage-limits
 
+Work-fit reports say `fits` only when the complete estimate is covered by all
+applicable measured windows. Missing or conflicting measurements, competing
+sessions, or an estimate that exceeds the window produce `it may not fit`.
+The model is told to assess verification work too and avoid repeated budget
+narration. The panel and VS Code view show latest-response Input and Output
+with separate cache counters; unknown fields display `?` rather than zero.
+Account-scoped readings, refresh backoff and UI caches are invalidated on an
+account switch, and late answers from an old login are discarded.
+
 [![npm](https://img.shields.io/npm/v/claude-usage-limits)](https://www.npmjs.com/package/claude-usage-limits)
 
 Most usage tools for Claude Code show **you** the numbers. This one shows them
@@ -546,16 +555,13 @@ fine. Nothing can upgrade a running session, so since 1.38.0 the budget line
 says so once: the installed version, the running one, and that a relay or cap
 set in that session follows the older rules until it restarts.
 
-**Two things that stopped it in practice, both fixed in 1.36.0.** A fresh
-Claude Code start asks two questions nobody is there to answer at four in the
-morning: whether to trust the folder, and whether bypass permissions is meant.
-On 2026-09-20 the wake opened its window and sat at the trust question until
-morning. Arming now writes both answers into .claude.json for the folder the
-relay will resume in (every spelling of the key, with a backup beside it), the
-wake writes them again right before the launch, and doctor reports when they
-are missing; relay preflight [cwd] does it by hand. And the relay used to hold
-one slot, so a second session arming on the same night was refused or
-displaced the first. Each session now has its own record and its own scheduled
+**Startup permissions stay with the user.** Arming and waking never grant
+folder trust, accept bypass warnings, or select a permission mode. `relay
+preflight [cwd]` is read-only and reports any trust prompt the user must answer
+in Claude Code. Legacy relay permission modes are ignored. Interactive runs
+retain native prompts; headless runs deny approvals nobody can answer. Existing
+user settings are left untouched. The relay used to hold one slot, so a second
+session arming on the same night was refused or displaced the first. Each session now has its own record and its own scheduled
 task; status lists them all, relay cancel takes down this session's, and
 relay cancel --all takes down every one.
 

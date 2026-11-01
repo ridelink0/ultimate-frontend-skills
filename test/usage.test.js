@@ -959,8 +959,8 @@ test('renderForecast says whether the job fits and why', () => {
   assert.ok(roomy.includes('Priced from 20 recent turns'));
 
   const blocked = usage.renderForecast(data, 50);
-  assert.ok(blocked.includes('does not fit'));
-  assert.ok(blocked.includes('Cut it down or split it'));
+  assert.ok(blocked.includes('it may not fit'));
+  assert.ok(blocked.includes('record the remaining work without reducing scope'));
 });
 
 test('renderForecast asks for a number rather than guessing', () => {

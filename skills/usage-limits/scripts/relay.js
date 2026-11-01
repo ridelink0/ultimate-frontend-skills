@@ -242,13 +242,8 @@ function dropRecord(state, id) {
 
 /* ------------------------------------------------- what stops a resume ---- */
 
-// Claude Code asks two questions on a start nobody is there to answer at four
-// in the morning: whether to trust the folder, and whether bypass permissions
-// is really meant. Both answers live in .claude.json. The folder key is spelled
-// the way the CLI that wrote it spelled it - on the machine this was written
-// on, both C:/x and C:\x keys exist for the same folder - so every spelling
-// gets the answer. This is what stopped the relay on 2026-09-20: the window
-// opened, the trust question appeared, and the wake waited forever.
+// Startup trust belongs to Claude Code and the user. This diagnostic reads
+// the existing answers but never creates or changes them.
 function claudeJsonFile() {
   if (process.env.CLAUDE_CONFIG_DIR) return path.join(process.env.CLAUDE_CONFIG_DIR, '.claude.json');
   return path.join(os.homedir(), '.claude.json');
@@ -323,41 +318,13 @@ function preflightPrompts(cwd, config, options) {
     if (raw !== null) return { ok: false, file, error: file + ' is not readable JSON; left untouched', changes: [] };
   }
   if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return { ok: false, file, error: file + ' is not an object; left untouched', changes: [] };
-  const changes = [];
-  if (!parsed.projects || typeof parsed.projects !== 'object' || Array.isArray(parsed.projects)) parsed.projects = {};
-  for (const key of projectKeys(cwd)) {
-    const entry = parsed.projects[key];
-    if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
-      parsed.projects[key] = { allowedTools: [], hasTrustDialogAccepted: true };
-      changes.push('folder trust for ' + key);
-    } else if (entry.hasTrustDialogAccepted !== true) {
-      entry.hasTrustDialogAccepted = true;
-      changes.push('folder trust for ' + key);
-    }
-  }
-  if (config && config.permissionMode === 'bypassPermissions' && parsed.bypassPermissionsModeAccepted !== true) {
-    parsed.bypassPermissionsModeAccepted = true;
-    changes.push('bypass permissions accepted');
-  }
-  // The current build gates that dialog on settings.json instead.
-  if (config && config.permissionMode === 'bypassPermissions') {
-    if (options && options.dry) {
-      if (!settingIs('skipDangerousModePermissionPrompt', true)) changes.push('skipDangerousModePermissionPrompt in settings.json');
-    } else {
-      const skipped = applySetting('skipDangerousModePermissionPrompt', true);
-      if (skipped.changed) changes.push('skipDangerousModePermissionPrompt in settings.json');
-    }
-  }
-  if (raw === null) changes.push('created ' + file);
-  if (!changes.length || (options && options.dry)) return { ok: true, file, changes, dry: Boolean(options && options.dry) };
-  try {
-    fs.mkdirSync(path.dirname(file), { recursive: true });
-    if (raw !== null) fs.writeFileSync(file + '.bak-usage-limits', raw);
-    writeAtomic(file, JSON.stringify(parsed, null, 2) + '\n');
-  } catch (err) {
-    return { ok: false, file, error: err.message, changes: [] };
-  }
-  return { ok: true, file, changes, backup: raw !== null ? file + '.bak-usage-limits' : null };
+  const projects = parsed.projects && typeof parsed.projects === 'object' ? parsed.projects : {};
+  const trusted = projectKeys(cwd).some((key) => projects[key] && projects[key].hasTrustDialogAccepted === true);
+  return {
+    ok: true, file, changes: [],
+    pending: trusted ? [] : ['folder trust for ' + cwd + ' must be accepted in Claude Code by the user'],
+    dry: true,
+  };
 }
 
 // Written to a sibling and renamed into place. Two hooks can run at once, and a
@@ -405,7 +372,8 @@ function settings(state) {
     graceMinutes: Math.min(180, Math.max(1, number(env.USAGE_LIMITS_RELAY_GRACE, number(stored.graceMinutes, DEFAULTS.graceMinutes)))),
     mode: pick(env.USAGE_LIMITS_RELAY_MODE, ['notify', 'resume'], pick(stored.mode, ['notify', 'resume'], DEFAULTS.mode)),
     thinking: pick(env.USAGE_LIMITS_RELAY_THINKING, ['off', 'resume', 'always'], pick(stored.thinking, ['off', 'resume', 'always'], DEFAULTS.thinking)),
-    permissionMode: typeof stored.permissionMode === 'string' ? stored.permissionMode : DEFAULTS.permissionMode,
+    // Ignore legacy modes: a plugin must never choose its own approvals.
+    permissionMode: null,
     model: typeof stored.model === 'string' ? stored.model : DEFAULTS.model,
     attempts: Math.min(10, Math.max(1, number(stored.attempts, DEFAULTS.attempts))),
     whenBusy: pick(stored.whenBusy, ['notify', 'resume'], DEFAULTS.whenBusy),
@@ -426,6 +394,7 @@ function settings(state) {
 function configure(changes) {
   const state = read();
   state.config = Object.assign({}, state.config, changes || {});
+  delete state.config.permissionMode;
   write(state);
   return settings(state);
 }
@@ -1392,8 +1361,8 @@ function arm(input) {
   let preflight = null;
   if (config.mode === 'resume' && (!options.hostName || options.hostName === host.CLAUDE) && options.preflight !== false) {
     preflight = preflightPrompts(launchCwd, config);
-    if (preflight.ok && preflight.changes.length) note('pre-answered for ' + id + ': ' + preflight.changes.join(', '), now);
-    else if (!preflight.ok) note('could not pre-answer the start-up questions for ' + id + ': ' + preflight.error, now);
+    if (preflight.ok && preflight.pending.length) note('user approval required for ' + id + ': ' + preflight.pending.join(', '), now);
+    else if (!preflight.ok) note('could not inspect the start-up questions for ' + id + ': ' + preflight.error, now);
   }
   // Re-arming the same session for the same reset would register the task
   // twice; -Force replaces it, and the record is rewritten either way.
@@ -1440,7 +1409,8 @@ function arm(input) {
     mode: config.mode,
     how: scheduled.how,
     warning: scheduled.warning || null,
-    preflight: preflight ? preflight.changes : null,
+    preflight: null,
+    startupQuestions: preflight && preflight.ok ? preflight.pending : null,
     attempt: 0,
     continuation: false,
     // The outstanding items travel with the record, not just their count. They
@@ -1536,7 +1506,7 @@ function status(now) {
         formatWait(armed.wakeAt - at) + ' (' + new Date(armed.wakeAt).toLocaleString() + '), via ' + armed.how + '.'
     );
     if (armed.warning) lines.push('  Caveat: ' + armed.warning + '.');
-    if (armed.preflight && armed.preflight.length) lines.push('  Pre-answered: ' + armed.preflight.join(', '));
+    if (armed.startupQuestions && armed.startupQuestions.length) lines.push('  User approval required: ' + armed.startupQuestions.join(', '));
     if (armed.launchCwd) lines.push('  Resumes from ' + armed.launchCwd + ' (the home folder can never be trusted) with --add-dir back to ' + armed.cwd);
     lines.push('  Continuation written: ' + (armed.continuation ? 'yes' : 'not yet'));
   }
@@ -1642,7 +1612,7 @@ async function armByHand(rest) {
   return (
     'Armed by hand for session ' + sessionId.slice(0, 8) + ': wake at ' +
       new Date(result.record.wakeAt).toLocaleString() + ' via ' + result.record.how + '.' +
-      (result.record.preflight && result.record.preflight.length ? ' Pre-answered: ' + result.record.preflight.join(', ') + '.' : '') +
+      (result.record.startupQuestions && result.record.startupQuestions.length ? ' User approval required: ' + result.record.startupQuestions.join(', ') + '.' : '') +
       (text ? ' Continuation saved.' : ' No continuation yet - add one with: relay note "<text>"') +
       lowPriorityNote
   );
@@ -1998,14 +1968,9 @@ async function doctor(now) {
     ? 'completion - it waits for the reply to finish, and stops waiting past ' + config.backstopAt + ' per cent'
     : 'threshold - it arms the moment the window crosses ' + config.at + ' per cent, even mid-reply', 'ok');
 
-  // The one that has cost the most windows: a headless resume starts in the
-  // default permission mode, so a run that needs to edit a file stops and asks
-  // a person who is asleep.
   if (config.mode === 'resume') {
-    add('permission mode', Boolean(config.permissionMode),
-      config.permissionMode
-        ? '--permission-mode ' + config.permissionMode
-        : 'not set - the resumed run will stop at the first approval and wait for nobody. Set: relay permission acceptEdits');
+    add('user permissions', true,
+      'native Claude Code permissions apply; interactive runs can ask the user, and unattended approval requests are denied', 'ok');
   }
 
   const cli = caps.claude || caps.codex;
@@ -2050,19 +2015,19 @@ async function doctor(now) {
   if (process.platform === 'win32') {
     for (const rec of records(state)) {
       const pre = preflightPrompts(rec.launchCwd || rec.cwd, config, { dry: true });
-      const quiet = pre.ok && !pre.changes.length;
+      const quiet = pre.ok && !pre.pending.length;
       add('start-up questions for ' + String(rec.id).slice(0, 8), quiet,
         pre.ok
-          ? (quiet ? 'folder trust and bypass permissions already answered in ' + pre.file : 'the resumed window would stop at: ' + pre.changes.join(', ') + ' - run relay preflight, or re-arm')
+          ? (quiet ? 'folder trust already recorded by Claude Code in ' + pre.file : pre.pending.join(', '))
           : pre.error,
         quiet ? 'ok' : 'warn');
     }
     if (!records(state).length && config.mode === 'resume') {
       const pre = preflightPrompts(launchDirFor(process.cwd()), config, { dry: true });
-      const quiet = pre.ok && !pre.changes.length;
+      const quiet = pre.ok && !pre.pending.length;
       add('start-up questions here', quiet,
         pre.ok
-          ? (quiet ? 'folder trust and bypass permissions already answered for ' + process.cwd() : 'a resume in ' + process.cwd() + ' would stop at: ' + pre.changes.join(', ') + ' - arming writes the answers')
+          ? (quiet ? 'folder trust already recorded by Claude Code for ' + process.cwd() : pre.pending.join(', '))
           : pre.error,
         quiet ? 'ok' : 'warn');
     }
@@ -2167,14 +2132,12 @@ function main(argv) {
       (config.mode === 'resume'
         ? '\nAt the wake it will run the CLI itself in the project directory, ' +
           (config.fresh ? 'as a new session (relay fresh on)' : 'resuming the same conversation (relay fresh on starts a new one instead)') +
-          '. Set a permission mode ' +
-          '(relay permission acceptEdits) or the resumed run will sit waiting for an approval nobody is there to give.'
+          '. Native user permissions apply; an unattended request for approval is denied.'
         : '')
     );
   }
   if (command === 'permission') {
-    if (!value) return 'Give one of: manual, acceptEdits, auto, dontAsk, plan, bypassPermissions.';
-    return 'Resumed runs will use --permission-mode ' + configure({ permissionMode: value }).permissionMode + '.';
+    return 'The relay does not set permission modes. Configure permissions directly in Claude Code; the relay never grants trust or approves actions.';
   }
   if (command === 'model') {
     return 'Resumed runs will use --model ' + (configure({ model: value || null }).model || '(the default)') + '.';
@@ -2280,7 +2243,7 @@ function main(argv) {
     const when = config.mode === 'resume' ? '' : ' It applies once relay mode resume is set; with mode notify nothing is started either way.';
     return config.fresh
       ? 'Fresh ON: the wake starts a new claude session in the project, with the whole hand-off as its first prompt, Remote Control on and ' +
-          (config.permissionMode ? '--permission-mode ' + config.permissionMode : 'no permission mode set (relay permission acceptEdits)') +
+          'native user permissions' +
           '. The old conversation is left as it was; if it is still open and working again, the wake stands down.' + when
       : 'Fresh OFF: the wake resumes the same conversation (claude --resume).' + when;
   }
@@ -2309,9 +2272,9 @@ function main(argv) {
 
     const r = preflightPrompts(target, settings(read()));
 
-    if (!r.ok) return 'Could not pre-answer: ' + r.error;
+    if (!r.ok) return 'Could not inspect startup trust: ' + r.error;
 
-    return r.changes.length ? 'Pre-answered: ' + r.changes.join('; ') + '.' + (r.backup ? ' Backup: ' + r.backup : '') : 'Nothing to pre-answer for ' + target + ': folder trust and bypass permissions are already in ' + r.file + '.';
+    return r.pending.length ? 'User approval required: ' + r.pending.join('; ') + '. No settings were changed.' : 'Claude Code already records folder trust for ' + target + '. No settings were changed.';
 
   }
 

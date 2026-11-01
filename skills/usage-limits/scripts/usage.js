@@ -1766,7 +1766,8 @@ function modelHeadroom(windows, events, families, remembered) {
 
 // What a job of this many turns would take out of one window.
 function forecastWindow(window, turns, rates) {
-  if (!window || !rates || !window.usdPerPercent || window.stale) return null;
+  if (!window || !rates || !Number.isFinite(window.usdPerPercent) || window.usdPerPercent <= 0 || window.stale || window.correctionUnreliable) return null;
+  if (!Number.isFinite(window.percentLeft) || !Number.isFinite(rates.median) || !Number.isFinite(rates.high) || rates.median <= 0 || rates.high < rates.median) return null;
   if (!Number.isFinite(turns) || turns <= 0) return null;
 
   const usdLow = turns * rates.median;
@@ -2910,7 +2911,7 @@ function preferLive(cache, fresh, accountUuid, now) {
   if (!fresh || !fresh.utilization || typeof fresh.utilization !== 'object') return false;
   if (!Number.isFinite(fresh.fetchedAtMs)) return false;
   if (fresh.fetchedAtMs > now + MINUTE) return false;
-  if (fresh.accountUuid && accountUuid && fresh.accountUuid !== accountUuid) return false;
+  if (accountUuid && fresh.accountUuid !== accountUuid) return false;
   if (!cache || !Number.isFinite(cache.fetchedAtMs)) return true;
   return fresh.fetchedAtMs > cache.fetchedAtMs;
 }
@@ -2943,12 +2944,13 @@ function sourcePercents(cache, fresh, used) {
 function collectClaude(now) {
   const account = readJson(accountFile()) || {};
   const settings = readJson(path.join(configDir(), 'settings.json')) || {};
-  const cache = account.cachedUsageUtilization || null;
   const oauth = account.oauthAccount || {};
+  const heldCache = account.cachedUsageUtilization || null;
+  const cache = oauth.accountUuid && heldCache && heldCache.accountUuid && heldCache.accountUuid !== oauth.accountUuid ? null : heldCache;
   // The panel and the status line take the same reading Claude Code takes for
   // /usage and keep it in a file of their own. When that is newer than what
   // Claude Code cached, it is the better description of the same account.
-  const fresh = live.readLive();
+  const fresh = live.readLive({ accountUuid: oauth.accountUuid });
   const useLive = preferLive(cache, fresh, oauth.accountUuid, now);
   const snapshot = useLive ? fresh : cache;
   const utilization = snapshot && snapshot.utilization ? snapshot.utilization : null;
@@ -4076,6 +4078,7 @@ function renderForecast(data, turns) {
   lines.push('Forecast for ' + turns + ' turns');
   lines.push('');
   if (!data.rates) {
+    lines.push('  it may not fit');
     lines.push('  Nothing recent to price this against yet. Do some work in this');
     lines.push('  session first, then ask again.');
     return lines.join('\n');
@@ -4089,6 +4092,7 @@ function renderForecast(data, turns) {
     .filter(Boolean);
 
   if (!rows.length) {
+    lines.push('  it may not fit');
     lines.push('  No window has enough measured spend to price a forecast against.');
     return lines.join('\n');
   }
@@ -4097,7 +4101,7 @@ function renderForecast(data, turns) {
     '  ' + pad('Window', 15) + padLeft('Would cost', 18) + padLeft('Leaves', 10) + '   Verdict'
   );
   for (const row of rows) {
-    const verdict = row.fits ? (row.tight ? 'fits, barely' : 'fits') : 'does not fit';
+    const verdict = row.fits ? (row.tight ? 'fits, barely' : 'fits') : 'it may not fit';
     lines.push(
       '  ' + pad(row.label, 15) +
         padLeft(formatPercent(row.percentLow) + ' to ' + formatPercent(row.percentHigh), 18) +
@@ -4126,10 +4130,15 @@ function renderForecast(data, turns) {
   const blocked = rows.filter((row) => !row.fits);
   const tight = rows.filter((row) => row.fits && row.tight);
   lines.push('');
-  if (blocked.length) {
+  const applicable = data.windows.filter((window) => window.applies !== false);
+  const known = rows.length === applicable.length && !applicable.some((window) => window.stale || window.correctionUnreliable) && (!data.sessions || data.sessions.length <= 1);
+  lines.push('  Work fit: ' + (known && !blocked.length ? 'fits' : 'it may not fit') + '.');
+  if (!known && !blocked.length) {
+    lines.push('  The available measurements do not cover every applicable window or competing session. Keep the fit unknown.');
+  } else if (blocked.length) {
     lines.push(
-      '  The ' + blocked[0].label + ' window does not cover this. Cut it down or ' +
-        'split it at a clean boundary rather than starting and getting cut off.'
+      '  The ' + blocked[0].label + ' window does not cover this. Save at a clean ' +
+        'boundary and record the remaining work without reducing scope.'
     );
   } else if (tight.length) {
     lines.push(

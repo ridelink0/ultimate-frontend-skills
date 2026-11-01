@@ -73,14 +73,14 @@ test('fresh is off by default, and relay fresh on|off says exactly what the wake
     const on = relay.main(['fresh', 'on']);
     assert.strictEqual(relay.settings(relay.read()).fresh, true);
     assert.match(on, /^Fresh ON: the wake starts a new claude session in the project, with the whole hand-off as its first prompt, Remote Control on/);
-    assert.match(on, /no permission mode set \(relay permission acceptEdits\)/);
+    assert.match(on, /native user permissions/);
     assert.match(on, /if it is still open and working again, the wake stands down/);
     assert.match(on, /applies once relay mode resume is set/, 'mode notify starts nothing either way, and it says so');
 
     relay.main(['mode', 'resume']);
     relay.main(['permission', 'acceptEdits']);
     const again = relay.main(['fresh', 'on']);
-    assert.match(again, /--permission-mode acceptEdits/);
+    assert.match(again, /native user permissions/);
     assert.doesNotMatch(again, /applies once relay mode resume/);
     assert.match(relay.status(Date.now()), /delivery resume into a new session \(fresh on\)\./);
 
@@ -118,7 +118,7 @@ test('fresh on: a new session in a window, the hand-off inline as its first prom
     const script = fs.readFileSync(opened[0], 'utf8');
     assert.ok(!script.includes('--resume'), 'not the same conversation');
     assert.ok(script.includes(
-      "'/usr/local/bin/claude' '--permission-mode' 'acceptEdits' '--model' 'opus' '--remote-control' 'usage-limits relay proj (new session)' " +
+      "'/usr/local/bin/claude' '--model' 'opus' '--remote-control' 'usage-limits relay proj (new session)' " +
         wake.shQuote(PROMPT)
     ), script);
     assert.ok(script.includes('cd ' + wake.shQuote(dir)), 'in the project directory');
@@ -144,7 +144,7 @@ test('the POSIX launcher hands claude the multi-line hand-off byte for byte', { 
     assert.strictEqual(result.ok, true);
     assert.strictEqual(result.how, 'a new claude session in a window', 'the fake exited 0 inside the grace period');
     const args = fs.readFileSync(out, 'utf8').split('\0').slice(0, -1);
-    assert.deepStrictEqual(args, ['--permission-mode', 'auto', '--remote-control', 'usage-limits relay proj (new session)', PROMPT]);
+    assert.deepStrictEqual(args, ['--remote-control', 'usage-limits relay proj (new session)', PROMPT]);
   }));
 
 test('on Windows the inline hand-off goes through node to the native claude.exe, never through cmd', () =>
@@ -165,7 +165,7 @@ test('on Windows the inline hand-off goes through node to the native claude.exe,
     assert.ok(!script.includes('it\'s'), 'the hand-off is not in the batch file at all');
     const spec = JSON.parse(fs.readFileSync(wake.specFile(ID), 'utf8'));
     assert.strictEqual(spec.cli, 'C:\\Users\\me\\.local\\bin\\claude.exe');
-    assert.deepStrictEqual(spec.args, ['--permission-mode', 'acceptEdits', '--remote-control', 'usage-limits relay proj (new session)', PROMPT]);
+    assert.deepStrictEqual(spec.args, ['--remote-control', 'usage-limits relay proj (new session)', PROMPT]);
   }));
 
 test('with only a batch shim, or a hand-off too long for one argument, the first prompt points at the file instead', () =>
@@ -217,7 +217,7 @@ test('the node bridge passes a multi-line hand-off to the program as one argumen
 test('relay show off with fresh on is a new headless run, the hand-off on stdin; fresh off is unchanged', () =>
   isolated((dir) => {
     const config = { show: false, fresh: true, permissionMode: 'acceptEdits' };
-    assert.deepStrictEqual(wake.claudeArgs({ id: ID, cwd: dir }, 'x', config, false), ['-p', '--permission-mode', 'acceptEdits', '--permission-prompts', 'none']);
+    assert.deepStrictEqual(wake.claudeArgs({ id: ID, cwd: dir }, 'x', config, false), ['-p', '--permission-prompts', 'none']);
     const calls = [];
     const runs = [];
     const result = wake.deliverClaude({ id: ID, cwd: dir }, PROMPT, config, '/bin/claude', runs, {

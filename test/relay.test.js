@@ -295,15 +295,15 @@ test('task names and PowerShell strings cannot carry anything through', () => {
   assert.strictEqual(relay.psQuote("'; whoami; '"), "'''; whoami; '''");
 });
 
-test('the resumed run is told the permission mode, because a resume does not inherit one', () => {
+test('the resumed run preserves native permissions and denies unattended approval requests', () => {
   const record = { id: 'sess-1234', cwd: '/work' };
   const args = wake.claudeArgs(record, 'go on', { permissionMode: 'acceptEdits', model: 'sonnet' }, false);
   // --permission-prompts none: nobody is awake to answer one, so an
   // unanswerable prompt must deny rather than stall the run to its timeout.
   // The prompt is deliberately ABSENT from argv - it travels on stdin.
-  assert.deepStrictEqual(args, ['--resume', 'sess-1234', '-p', '--permission-mode', 'acceptEdits', '--permission-prompts', 'none', '--model', 'sonnet']);
+  assert.deepStrictEqual(args, ['--resume', 'sess-1234', '-p', '--permission-prompts', 'none', '--model', 'sonnet']);
   const fallback = wake.claudeArgs(record, 'go on', { permissionMode: 'acceptEdits' }, true);
-  assert.deepStrictEqual(fallback, ['--continue', '-p', '--permission-mode', 'acceptEdits', '--permission-prompts', 'none']);
+  assert.deepStrictEqual(fallback, ['--continue', '-p', '--permission-prompts', 'none']);
   // Even with no config at all, the prompts flag goes on: the reason for it is
   // that nobody is there, which is true regardless of what was configured.
   assert.deepStrictEqual(wake.claudeArgs(record, 'go on', {}, false), ['--resume', 'sess-1234', '-p', '--permission-prompts', 'none']);
@@ -335,9 +335,9 @@ test('the command line drives every setting and reports honestly', () =>
     assert.match(relay.main(['on']), /Relay ON/);
     assert.match(relay.main(['at', '70']), /70 per cent/);
     assert.match(relay.main(['grace', '7']), /7 minutes/);
-    assert.match(relay.main(['mode', 'resume']), /permission mode/);
+    assert.match(relay.main(['mode', 'resume']), /Native user permissions/);
     assert.match(relay.main(['mode', 'sideways']), /notify or resume/);
-    assert.match(relay.main(['permission', 'acceptEdits']), /acceptEdits/);
+    assert.match(relay.main(['permission', 'acceptEdits']), /does not set permission modes/);
     assert.match(relay.main(['thinking', 'resume']), /ultrathink/);
     assert.match(relay.main(['thinking', 'sideways']), /off, resume or always/);
     assert.match(relay.main(['note', 'anything']), /Nothing is armed/);

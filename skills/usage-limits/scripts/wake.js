@@ -160,7 +160,6 @@ function claudeArgs(record, prompt, config, fallback) {
   // relay fresh on: a new conversation, so no id to resume. The hand-off is
   // still the stdin prompt, whole.
   const args = fallback ? ['--continue', '-p'] : freshFor(config) ? ['-p'] : ['--resume', record.id, '-p'];
-  if (config.permissionMode) args.push('--permission-mode', config.permissionMode);
   // Nobody is awake to answer a prompt. Deny it rather than stall on it: a
   // resumed run that sits waiting for a keystroke burns its whole timeout and
   // reports nothing.
@@ -276,7 +275,6 @@ function freshPointerPrompt(file) {
 function freshArgs(record, config, first) {
   const args = [];
   if (record.launchCwd) args.push('--add-dir', record.cwd);
-  if (config && config.permissionMode) args.push('--permission-mode', config.permissionMode);
   if (config && config.model) args.push('--model', config.model);
   args.push('--remote-control', freshName(record));
   args.push(first);
@@ -365,7 +363,6 @@ function cmdArg(text) {
 function visibleArgs(record, config, promptFile) {
   const args = ['--resume', record.id];
   if (record.launchCwd) args.push('--add-dir', record.cwd);
-  if (config && config.permissionMode) args.push('--permission-mode', config.permissionMode);
   if (config && config.model) args.push('--model', config.model);
   args.push('--remote-control', 'usage-limits relay ' + (record.project || path.basename(record.cwd)));
   args.push(pointerPrompt(promptFile));
@@ -1023,10 +1020,7 @@ async function run(now, argv, overrides) {
       : 'Carrying on with ' + (record.project || path.basename(record.cwd)) + ' where the limit stopped it.'
   );
   const runs = [];
-  // The two start-up questions, answered again right before the launch in
-
-  // case anything reset them since arming.
-
+  // Startup trust stays with the user; the relay never writes its answers.
   if (record.host !== 'codex') {
 
     if (record.launchCwd) {
@@ -1035,17 +1029,9 @@ async function run(now, argv, overrides) {
       } catch (err) {
       }
     }
-    try {
-      const cj = relay.claudeJsonFile();
-      if (fs.existsSync(cj)) fs.copyFileSync(cj, cj + '.bak-usage-limits-wake');
-    } catch (err) {
-    }
     const pre = relay.preflightPrompts(record.launchCwd || record.cwd, config);
-
-    if (pre.ok && pre.changes.length) relay.note('wake ' + record.id + ': pre-answered ' + pre.changes.join(', '), now);
-
-    else if (!pre.ok) relay.note('wake ' + record.id + ': could not pre-answer the start-up questions: ' + pre.error, now);
-
+    if (pre.ok && pre.pending.length) relay.note('wake ' + record.id + ': user approval required: ' + pre.pending.join(', '), now);
+    else if (!pre.ok) relay.note('wake ' + record.id + ': could not inspect the start-up questions: ' + pre.error, now);
   }
 
   const delivered = record.host === host.CODEX

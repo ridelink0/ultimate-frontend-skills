@@ -40,6 +40,11 @@ function readingFile(codexHome) {
   return path.join(codexHome || configDir(), 'usage-limits-reading.json');
 }
 
+function accountUuid(codexHome) {
+  if (codexHome) return null;
+  try { return require('./usage.js').accountUuid(); } catch (err) { return null; }
+}
+
 function read(codexHome) {
   try {
     const parsed = JSON.parse(fs.readFileSync(readingFile(codexHome), 'utf8'));
@@ -82,6 +87,7 @@ function record(binding, now, codexHome) {
     const previous = all[binding.key];
     const next = {
       at,
+      accountUuid: accountUuid(codexHome),
       percentUsed: binding.percentUsed,
       pointsSinceSnapshot: binding.pointsSinceSnapshot || 0,
       adjusted: Boolean(binding.adjusted),
@@ -118,6 +124,8 @@ function record(binding, now, codexHome) {
 function correctedFor(key, now, snapshotAt, codexHome) {
   const entry = read(codexHome)[key];
   if (!entry || !Number.isFinite(entry.at)) return null;
+  const login = accountUuid(codexHome);
+  if (login && entry.accountUuid !== login) return null;
   const at = Number.isFinite(now) ? now : Date.now();
   if (at - entry.at > FRESH_MS) return null;
   if (Number.isFinite(snapshotAt) && entry.at < snapshotAt) return null;

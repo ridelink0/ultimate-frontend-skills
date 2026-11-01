@@ -156,7 +156,8 @@ async function snapshot(options) {
     collected = usage.collect(now);
   }
 
-  const slots = onCodex ? {} : feed.readFeed();
+  const login = onCodex ? null : accountUuid();
+  const slots = onCodex ? {} : Object.fromEntries(Object.entries(feed.readFeed()).filter(([, slot]) => !login || slot.accountUuid === login));
   // Stay with the session already being described, so two windows on the same
   // model at different efforts do not make the header flip back and forth.
   const marks = onCodex ? {} : activity.read();
@@ -222,6 +223,7 @@ async function snapshot(options) {
     env,
   });
   built.now = now;
+  built.tokens = slot ? slot.tokens || null : null;
   built.sessionId = described || (slot && slot.sessionId) || null;
   built.host = onCodex ? 'codex' : 'claude';
   built.title = onCodex ? 'Codex usage' : TITLE;
@@ -604,6 +606,7 @@ function render(built, options) {
   }
 
   const footer = [];
+  for (const line of require('./tokens.js').lines(built.tokens)) footer.push(line);
   if (!list.length && built.sessions > 1) footer.push(bars.dim(built.sessions + ' sessions sharing this budget', mode));
   if (built.note) {
     const colour = noteColour(built);

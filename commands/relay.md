@@ -25,18 +25,17 @@ The rest:
   This is the default and it starts nothing by itself.
 - `mode resume` - at the wake, run the CLI itself in a window you can see,
   with Remote Control on, so it is also on claude.ai/code and the phone. What
-  it runs is `fresh`'s choice (below). Say `permission acceptEdits` (or
-  whichever mode you want) as well: neither a resume nor a new session inherits
-  the session's permission mode, so without one it will sit waiting for an
-  approval nobody is there to give. `show off` makes it a headless `claude -p`
+  it runs is `fresh`'s choice (below). Native user permissions apply. The
+  plugin never grants folder trust or chooses an approval mode. Interactive
+  runs can ask the user; headless runs deny unanswerable approvals. `show off` makes it a headless `claude -p`
   run instead, the prompt on stdin, with no window and no Remote Control.
 - `fresh off` / `fresh on` - which conversation `mode resume` continues in.
   Off, the default: the **same** conversation, `claude --resume <id>`, named
   `usage-limits relay <project>` on Remote Control, and its first prompt points
   at the hand-off file. On: a **new** conversation, `claude` in the project
   directory with the whole hand-off as its first prompt, inline, named
-  `usage-limits relay <project> (new session)`, with the same permission mode
-  and model - for a session that has grown long, so the next window starts
+  `usage-limits relay <project> (new session)`, with native user permissions
+  and the selected model - for a session that has grown long, so the next window starts
   clean instead of carrying all of it. The old conversation is left as it was.
   On Windows the inline hand-off needs the native `claude.exe`; with only the
   npm `claude.cmd` shim the first prompt points at the file instead, and so it

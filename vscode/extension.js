@@ -97,6 +97,7 @@ function prepare(built, clock) {
   if (built.fetch === false) freshness += ' · network off';
   return {
     rows,
+    tokenLines: built.tokens ? require('./lib/tokens.js').lines(built.tokens) : [],
     modelLabel: built.modelLabel,
     effort: built.effort,
     working: Boolean(built.working),
@@ -199,6 +200,7 @@ function html(webview, nonce) {
     '    const w = r.percent == null ? 0 : Math.max(r.percent > 0 ? 2 : 0, Math.min(100, r.percent));',
     '    h += `<div class="row"><h4>${esc(r.title)}</h4><div class="bar"><div class="track"><div class="fill" style="width:${w}%;background:${r.colour}"></div></div><span class="pct" style="${r.level === "fill" ? "" : "color:" + r.colour}">${esc(r.percentText)}</span></div>${r.sub ? `<div class="sub">${esc(r.sub)}</div>` : ""}</div>`;',
     '  }',
+    '  for (const line of v.tokenLines || []) h += `<div class="sub">${esc(line)}</div>`;',
     '  if (v.codex) {',
     '    h += `<div class="codex"><div class="ctitle"><span>${esc(v.codex.title)}</span>${v.codex.plan ? `<span class="where">${esc(v.codex.plan)}</span>` : ""}</div>`;',
     '    for (const r of v.codex.rows) {',
@@ -247,6 +249,7 @@ function activate(context) {
   context.subscriptions.push(item);
 
   const state = { views: [], last: null, prepared: null, timer: null, fetching: false, lastFetchAt: 0 };
+  let refreshSequence = 0;
 
   function config() {
     return vscode.workspace.getConfiguration('claudeUsageLimits');
@@ -314,6 +317,7 @@ function activate(context) {
     const doFetch = Boolean(fetchNow) && network;
     if (doFetch && state.fetching) return;
     if (doFetch) state.fetching = true;
+    const sequence = ++refreshSequence;
     try {
       const built = await panel.snapshot({
         fetch: doFetch,
@@ -323,6 +327,7 @@ function activate(context) {
         // efforts do not flip the header back and forth.
         sessionId: state.last ? state.last.sessionId : null,
       });
+      if (sequence !== refreshSequence) return;
       state.last = built;
       state.prepared = prepare(built, clock());
       updateStatusBar(built, state.prepared);

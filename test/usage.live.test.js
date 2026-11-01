@@ -121,7 +121,7 @@ test('preferLive is the whole rule, in one place', () => {
   assert.strictEqual(usage.preferLive({ fetchedAtMs: NOW + 1 }, fresh, 'acc', NOW), false);
   assert.strictEqual(usage.preferLive(null, null, 'acc', NOW), false);
   assert.strictEqual(usage.preferLive(null, { fetchedAtMs: NOW }, 'acc', NOW), false, 'no utilization');
-  // An account we cannot name on either side is not a mismatch.
-  assert.strictEqual(usage.preferLive(null, { fetchedAtMs: NOW, utilization: {} , accountUuid: null }, 'acc', NOW), true);
+  // An unattributed reading cannot be assigned to a known current account.
+  assert.strictEqual(usage.preferLive(null, { fetchedAtMs: NOW, utilization: {} , accountUuid: null }, 'acc', NOW), false);
   assert.strictEqual(usage.preferLive(null, { fetchedAtMs: NOW, utilization: {}, accountUuid: 'x' }, null, NOW), true);
 });

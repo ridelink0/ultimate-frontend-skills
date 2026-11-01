@@ -38,10 +38,10 @@ test('the visible run is an interactive session: no -p, Remote Control on, the p
   const args = wake.visibleArgs(record, { permissionMode: 'bypassPermissions', model: 'claude-opus-5' }, 'C:\\cfg\\relay-wake-sess-1234.md');
   assert.ok(!args.includes('-p'), 'an interactive session, not a print run');
   assert.ok(!args.includes('--permission-prompts'), 'that flag belongs to the headless run');
-  assert.deepStrictEqual(args.slice(0, 6), ['--resume', 'sess-1234', '--permission-mode', 'bypassPermissions', '--model', 'claude-opus-5']);
-  assert.strictEqual(args[6], '--remote-control');
-  assert.strictEqual(args[7], 'usage-limits relay proj', 'named, so the optional value cannot swallow the prompt');
-  const prompt = args[8];
+  assert.deepStrictEqual(args.slice(0, 4), ['--resume', 'sess-1234', '--model', 'claude-opus-5']);
+  assert.strictEqual(args[4], '--remote-control');
+  assert.strictEqual(args[5], 'usage-limits relay proj', 'named, so the optional value cannot swallow the prompt');
+  const prompt = args[6];
   assert.ok(prompt.includes('C:\\cfg\\relay-wake-sess-1234.md'), 'the prompt names the file');
   assert.ok(prompt.length < 600, 'far under the 8,191-character argv limit');
   assert.ok(!/"/.test(prompt), 'no quotes: it goes through cmd and then argv');
@@ -115,5 +115,5 @@ test('a window that dies at once reports the exit code; one that keeps running i
 
 test('relay show off keeps the headless run exactly as it was', () => {
   const args = wake.claudeArgs({ id: 'sess-1234', cwd: '/w' }, 'x', { show: false, permissionMode: 'acceptEdits' }, false);
-  assert.deepStrictEqual(args, ['--resume', 'sess-1234', '-p', '--permission-mode', 'acceptEdits', '--permission-prompts', 'none']);
+  assert.deepStrictEqual(args, ['--resume', 'sess-1234', '-p', '--permission-prompts', 'none']);
 });

@@ -5,6 +5,21 @@ description: Check how much usage limit is left in this agent (Claude Code or Co
 
 # usage-limits
 
+Before substantial work, compare an estimate for the entire request, including
+verification, with the binding window and the session's share of it. Say
+`fits` only when the measured range covers that estimate. If the estimate or
+coverage is unknown, or it exceeds the window, say exactly `it may not fit`.
+Then stop repeating budget commentary; save work at clean boundaries. Never
+use a percentage alone as proof that a large request fits. When the allowance
+is exhausted, stop normal narration and continuation claims; keep only any
+required saved handoff. `--forecast N` checks the same distinction.
+
+The panel's Input and Output values describe the latest response, not the
+subscription price or a dollar balance. Input includes cache reads and writes;
+the cache breakdown is shown separately. A question mark is unknown, and zero
+is a reported zero. OpenAI cached input is a subset of its input total, and
+reasoning output is a subset of output: never add either twice.
+
 Running out of limit halfway through a job is a scheduling failure, not bad
 luck. The numbers are on disk before the work starts. Read them, size the job
 against them, and either commit to finishing or cut the job down until it fits.
@@ -684,10 +699,10 @@ it. It is delivered as a prompt, so an instruction beats a summary. If nothing
 is written, the relay falls back to the outstanding todo list, which is worse.
 
 More than one session can be armed at once; each wakes on its own task, and
-cancel takes down only this session's unless --all is given. Arming also
-answers the two start-up questions (folder trust, bypass permissions) in
-.claude.json for the folder it will resume in, so the window does not stop at
-a prompt; doctor says whether they are answered.
+cancel takes down only this session's unless --all is given. Arming never
+grants folder trust or approves actions. `relay preflight [cwd]` only reads
+existing trust and names prompts the user must answer directly in Claude Code.
+The relay does not select permission modes; legacy saved modes are ignored.
 
 **It arms at the end of a reply, not in the middle of one.** Crossing the
 threshold no longer schedules anything by itself: the relay waits for the reply
@@ -710,7 +725,7 @@ window, an invalid key or a missing CLI does not, because retrying those would
 waste the window and saying "retrying" would be a lie.
 
 Run `relay doctor` before trusting it with anything. It checks the things that
-fail silently hours later - a CLI that moved, a permission mode nobody set, a
+fail silently hours later - a CLI that moved, unanswered native trust, a
 machine whose power plan forbids wake timers, a scheduled task this account
 cannot register, no continuation written, no network - and says which would
 bite. Every resumed run's full output is kept: `relay log --run`.
@@ -751,9 +766,9 @@ them, and do not promise behaviour it does not have:
   macOS and Linux open the same window in Terminal (unverified there). A saved
   continuation counts as work to carry, so a session with a note but no todo
   list still arms; and a wake that never reports back is reaped as "lost".
-- In `resume` mode it runs the CLI itself. A headless resume does **not**
-  inherit the session's permission mode, so unless one was set the resumed run
-  will sit waiting for an approval nobody is there to give.
+- In `resume` mode it runs the CLI itself under native user permissions.
+  Interactive runs can ask the user; headless runs deny requests that need
+  approval. Never configure permissions or trust on the user's behalf.
 - Claude Code's own `autoContinueAtUsageLimit` is better wherever it applies,
   because the process never dies. It does not apply to `-p` runs, background
   sessions, or a terminal that has been closed.
@@ -933,7 +948,7 @@ stop.
 | `scripts/live.js` | The usage reading itself, taken the way Claude Code takes it for `/usage`, kept in `usage-limits-live.json` where `collect()` prefers it when newer than the cache. |
 | `scripts/drift.js` | How wrong the reading was: each correction written down against the one it replaced. Run it with no arguments for the median and worst gap measured so far, `--json` for the fields. Answer "how far behind does this plugin actually run" from here rather than from memory. |
 | `scripts/view.js`, `scripts/bars.js`, `scripts/activity.js` | The display model, the drawing in Claude's colours, and the working/idle marks the hooks leave for the panel. Not meant to be called by hand. |
-| `scripts/relay.js` | The relay: `status`, `on`/`off`, `at N`, `grace N`, `mode notify\|resume`, `permission MODE`, `thinking off\|resume\|always`, `armon threshold\|completion`, `backstop N`, `show on\|off`, `fresh on\|off`, `onfailure rearm\|stop`, `rearms N`, `offline N`, `doctor`, `note "<text>"`, `cancel`, `log [--run]`. |
+| `scripts/relay.js` | The relay: `status`, `on`/`off`, `at N`, `grace N`, `mode notify\|resume`, `thinking off\|resume\|always`, `armon threshold\|completion`, `backstop N`, `show on\|off`, `fresh on\|off`, `onfailure rearm\|stop`, `rearms N`, `offline N`, `doctor`, `note "<text>"`, `cancel`, `log [--run]`. |
 | `scripts/net.js` | Can this machine reach the API, and was a failed run the network's fault. Three probes, TLS-interception detection, and the backoff the offline retries use. |
 | `scripts/wake.js` | What the scheduler runs after the reset: re-checks the meter, then notifies or resumes. Never called by hand. |
 | `scripts/voice.js` | The local writing profile: `show`, `card`, `set "<instruction>"`, `clear`, `off`/`on`, `forget`. |

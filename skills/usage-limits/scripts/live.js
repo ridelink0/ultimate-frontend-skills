@@ -315,7 +315,11 @@ function describe(outcome) {
   }
 }
 
-function readLive() {
+function sameAccount(snapshot, accountUuid) {
+  return Boolean(snapshot) && (!accountUuid || snapshot.accountUuid === accountUuid);
+}
+
+function readLive(options) {
   let parsed;
   try {
     parsed = JSON.parse(fs.readFileSync(liveFile(), 'utf8'));
@@ -325,6 +329,7 @@ function readLive() {
   if (!parsed || typeof parsed !== 'object') return null;
   if (!Number.isFinite(parsed.fetchedAtMs)) return null;
   if (!parsed.utilization || typeof parsed.utilization !== 'object') return null;
+  if (!sameAccount(parsed, options && options.accountUuid)) return null;
   return parsed;
 }
 
@@ -349,33 +354,40 @@ function fetchDisabled(env) {
 async function refresh(options) {
   const opts = options || {};
   const env = opts.env || process.env;
+  const previous = () => readLive({ accountUuid: opts.accountUuid });
   if (opts.fetch === false || fetchDisabled(env)) {
-    return { outcome: bad('disabled', null, null, 'network use is off'), snapshot: readLive() };
+    return { outcome: bad('disabled', null, null, 'network use is off'), snapshot: previous() };
   }
-  const creds = readToken({ file: opts.credentialsFile, platform: opts.platform, exec: opts.exec });
+  const creds = readToken({ file: opts.credentialsFile, platform: opts.platform, exec: opts.exec, cache: false });
   if (!creds.token) {
     return {
       outcome: bad('no_credentials', null, null, creds.reason === 'unreadable' ? 'the login file could not be read' : 'no Claude login found'),
-      snapshot: readLive(),
+      snapshot: previous(),
     };
   }
   // A token past its expiry gets a 401 and nothing else. Claude Code renews it
   // on its own next call, so do not send it, and say what is being waited for.
   if (Number.isFinite(creds.expiresAt) && creds.expiresAt < (Number.isFinite(opts.now) ? opts.now : Date.now())) {
-    return { outcome: bad('expired', null, null, 'the login has expired; Claude Code renews it on its next call'), snapshot: readLive() };
+    return { outcome: bad('expired', null, null, 'the login has expired; Claude Code renews it on its next call'), snapshot: previous() };
   }
   const outcome = await fetchUsage({
     token: creds.token,
     url: allowedUrl(opts.url || env.USAGE_LIMITS_USAGE_URL) || USAGE_URL,
     timeoutMs: opts.timeoutMs,
   });
-  if (!outcome.ok) return { outcome, snapshot: readLive() };
+  // A sign-in can change while the request is in flight. An answer for the
+  // old login must never overwrite the new account's reading.
+  const after = readToken({ file: opts.credentialsFile, platform: opts.platform, exec: opts.exec, cache: false });
+  if (after.token !== creds.token) return { outcome: bad('account_changed', null, null, 'login changed while reading usage'), snapshot: null };
+  if (!outcome.ok) return { outcome, snapshot: previous() };
   const snapshot = {
     fetchedAtMs: Number.isFinite(opts.now) ? opts.now : outcome.fetchedAtMs,
     utilization: outcome.utilization,
     accountUuid: opts.accountUuid || null,
     source: 'api',
   };
+  const newer = previous();
+  if (newer && newer.fetchedAtMs > snapshot.fetchedAtMs) return { outcome, snapshot: newer };
   writeLive(snapshot);
   return { outcome, snapshot };
 }
@@ -413,16 +425,19 @@ async function refreshIfStale(options) {
   const env = opts.env || process.env;
   const now = Number.isFinite(opts.now) ? opts.now : Date.now();
   const maxAgeMs = Number.isFinite(opts.maxAgeMs) ? opts.maxAgeMs : 3 * MINUTE;
-  const current = readLive();
+  const current = readLive({ accountUuid: opts.accountUuid });
+  const stored = readLive();
+  const changedAccount = Boolean(opts.accountUuid && stored && !sameAccount(stored, opts.accountUuid));
   if (opts.fetch === false || fetchDisabled(env)) return { outcome: null, snapshot: current, skipped: 'disabled' };
 
   const newestAt = Math.max(
     current ? current.fetchedAtMs : 0,
-    Number.isFinite(opts.cacheFetchedAtMs) ? opts.cacheFetchedAtMs : 0
+    !changedAccount && Number.isFinite(opts.cacheFetchedAtMs) ? opts.cacheFetchedAtMs : 0
   );
   if (newestAt > 0 && now - newestAt < maxAgeMs) return { outcome: null, snapshot: current, skipped: 'fresh' };
 
-  const attempt = readAttempt();
+  const heldAttempt = readAttempt();
+  const attempt = heldAttempt && (!opts.accountUuid || heldAttempt.accountUuid === opts.accountUuid) ? heldAttempt : null;
   // A record from a clock that was ahead would hold the backoff until the
   // wall clock caught up with it; a minute of skew is all that is honoured.
   const sinceAttempt = attempt ? now - attempt.attemptedAtMs : 0;
@@ -434,7 +449,7 @@ async function refreshIfStale(options) {
   // same second (parallel agents, several windows) skip rather than each
   // sending its own request and each waiting out its own timeout.
   const timeoutMs = Number.isFinite(opts.timeoutMs) ? opts.timeoutMs : DEFAULT_TIMEOUT_MS;
-  writeAttempt({ attemptedAtMs: now, delayMs: timeoutMs, kind: 'inflight' });
+  writeAttempt({ attemptedAtMs: now, delayMs: timeoutMs, kind: 'inflight', accountUuid: opts.accountUuid || null });
 
   const result = await refresh({
     now,
@@ -444,13 +459,15 @@ async function refreshIfStale(options) {
     url: opts.url,
     credentialsFile: opts.credentialsFile,
   });
-  writeAttempt({
+  // Do not let an old login's late response impose backoff on the new one.
+  if (result.outcome.kind !== 'account_changed') writeAttempt({
     attemptedAtMs: now,
     delayMs: nextDelayMs(result.outcome, attempt && attempt.kind !== 'inflight' ? attempt.delayMs : 0, {
       baseMs: maxAgeMs,
       maxMs: 10 * MINUTE,
     }),
     kind: result.outcome.ok ? 'ok' : result.outcome.kind,
+    accountUuid: opts.accountUuid || null,
   });
   return { outcome: result.outcome, snapshot: result.snapshot, skipped: null };
 }
@@ -472,6 +489,7 @@ module.exports = {
   nextDelayMs,
   describe,
   readLive,
+  sameAccount,
   writeLive,
   fetchDisabled,
   refresh,
