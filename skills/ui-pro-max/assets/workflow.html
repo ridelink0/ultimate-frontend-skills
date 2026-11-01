@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Workflow primitives - mock data</title><style>
+:root{font-family:system-ui;color:#242628;background:#f4f5f6}body{margin:0;padding:clamp(12px,4vw,48px)}main{max-width:64rem;margin:auto}button,input{font:inherit;padding:.7rem}button{cursor:pointer}button:focus-visible,input:focus-visible{outline:3px solid #2861a7;outline-offset:3px}.toolbar{display:flex;gap:1rem;flex-wrap:wrap;align-items:end}label{display:grid;gap:.4rem}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:1rem .5rem;border-bottom:1px solid #909599;overflow-wrap:anywhere}.scroll{overflow:auto}dialog{max-width:min(30rem,90vw);border:1px solid #909599}form{display:grid;gap:1rem}#status{min-height:1.5em}
+</style></head><body><main><h1>Workflow primitives</h1><p>Mock data for interaction testing. Changes stay in this page.</p>
+<div class="toolbar"><label>Find task<input id="filter" type="search"></label><button id="new" type="button">New task</button></div>
+<p id="status" role="status">2 mock tasks</p><div class="scroll"><table><caption>Mock task queue</caption><thead><tr><th scope="col">Task</th><th scope="col">State</th></tr></thead><tbody id="rows"></tbody></table></div>
+<dialog id="dialog" aria-labelledby="dialog-title"><form id="form"><h2 id="dialog-title">Create mock task</h2><label>Task name<input id="name" required maxlength="120"></label><button type="submit">Create task</button><button id="cancel" type="button">Cancel</button></form></dialog>
+</main><script type="module">
+const tasks=[{name:'Review source',state:'Ready'},{name:'Verify core flow',state:'Waiting'}];
+const filter=document.querySelector('#filter'),rows=document.querySelector('#rows'),status=document.querySelector('#status'),dialog=document.querySelector('#dialog'),input=document.querySelector('#name'),form=document.querySelector('#form');
+function render(){const query=filter.value.toLocaleLowerCase(),items=tasks.filter(task=>task.name.toLocaleLowerCase().includes(query));rows.replaceChildren();for(const task of items){const row=document.createElement('tr');for(const text of [task.name,task.state]){const cell=document.createElement('td');cell.textContent=text;row.append(cell)}rows.append(row)}status.textContent=items.length?items.length+' mock task'+(items.length===1?'':'s'):'No matching tasks.';}
+filter.addEventListener('input',render);document.querySelector('#new').addEventListener('click',()=>{form.reset();dialog.showModal();input.focus()});document.querySelector('#cancel').addEventListener('click',()=>dialog.close());
+form.addEventListener('submit',event=>{event.preventDefault();const name=input.value.trim();if(!name){input.setCustomValidity('Enter a task name.');input.reportValidity();return}tasks.push({name,state:'Ready'});filter.value='';dialog.close();render()});input.addEventListener('input',()=>input.setCustomValidity(''));render();
+</script></body></html>

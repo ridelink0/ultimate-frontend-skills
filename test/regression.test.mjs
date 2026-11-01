@@ -111,7 +111,7 @@ test('packs: a plugin enabled in the Codex config counts as installed, and a mis
     const text = lines.join('\n').replace(/^ +/gm, ''); // the printer indents the block
     assert.match(text, /\[marketplaces\.y\]\nsource_type = "git"\nsource = "https:\/\/github\.com\/x\/y\.git"/);
     assert.match(text, /\[plugins\."y@y"\]\nenabled = true/);
-    assert.match(text, /npx -y skills@latest add a\/b --all -y/);
+    assert.match(text, /npx -y skills@latest add a\/b --skill [\w-]+ --global -y/);
     assert.doesNotMatch(text, /\$ claude plugin/, 'a Codex host gets TOML, not a claude command');
 
     // The official marketplace has no owner/repo id; its source is the repo credits.mjs names.

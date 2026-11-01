@@ -1,5 +1,14 @@
 # Skill packs on the bench
 
+The 2026-11-01 additions and exact source/license evidence are in
+`../data/integrations-2026-11-01.json`. The ten entries cover UI UX Pro Max,
+Anthropic webapp testing, Expo, Trail of Bits, Remotion, Supabase, Vue, Vite/Vitest,
+frontend state and Stitch handoff. They are optional, explicitly selected
+source integrations. Upstream build/host certification is recorded separately;
+source availability alone is not a functional claim. Do not auto-disable an
+overlapping plugin or overwrite user permission settings. Choose one owner for
+each domain, and install only the named skills rather than a whole repository.
+
 Third-party skills the user may have installed through the open skills
 ecosystem (`npx skills add <owner/repo>`, the `skills` CLI by Vercel Labs,
 v1.5.26 at the time of writing). None of them ship inside this plugin. When one

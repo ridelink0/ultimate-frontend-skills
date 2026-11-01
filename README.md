@@ -5,6 +5,45 @@
 **UFS for Claude.** Build, measure, debug and secure cinematic websites from Claude Code or Codex. Plugin id `ultimate-frontend-skills`; the old `ultimate-website-skills` and `cinematic-web-design` install names redirect on GitHub but the skill and commands now live under the new id.
 A pinned art direction for websites, plus the code that produces it.
 
+## Release hardening and workflow skills
+
+UFS now includes `terminal-ui`, `sound-design`, `claude-dashboards`,
+`claude-motion`, `ui-pro-max`, `remotion-video`, `deep-research` and `link-preview`.
+Their source examples cover terminal output, opt-in synthesized audio, a mock
+workflow table/dialog and per-page social cards. Existing product identity and
+real workflow behavior take precedence over house defaults.
+
+```bash
+node scripts/terminal-ui.mjs
+node scripts/scene-budget.mjs measurements.json
+node scripts/link-preview.mjs dist https://example.com/
+node scripts/link-preview.mjs dist https://example.com/ --check
+npm run check:distribution
+```
+
+The distribution is readable source, with no install lifecycle download. The
+gate checks the explicit package payload; local checks do not certify the
+directory portal or a live deployment. All 454 reference records are retained
+in bounded JSON parts with a small awards manifest. Offline packs and privacy
+documentation now ship in the npm payload.
+
+Ten additional source integrations are downloaded and pinned in
+[`integrations-2026-11-01.json`](skills/ultimate-frontend-skills/data/integrations-2026-11-01.json):
+UI UX Pro Max, Anthropic webapp testing, Expo, Trail of Bits static analysis,
+Remotion, Supabase, Vue, Anthony Fu's Vite/Vitest skills, Seth Hobson's frontend
+plugin, and Google Stitch skills. Each entry records its source commit, license,
+domain and qualification. These are ten source-qualified integrations; their
+upstream clean builds and native host operations have not all been run.
+Use `node scripts/webdesign.mjs packs --dry-run --only <id>` to inspect a chosen
+install. Skill installs select the named skills, rather than every skill in a
+repository. No pack is installed during UFS installation, no overlapping plugin
+is silently disabled, and no tool permission is auto-approved.
+
+Remotion has its own runtime licensing; its inspected skill snapshot has no root
+license, so it is linked rather than vendored. Claude Dashboards and Claude
+Motion are first-party artifact products, distinct from community libraries.
+Their skills check access and do not duplicate Claude Design setup.
+
 Coding agents converge on the same page: Inter everywhere, an indigo-to-pink
 gradient, three feature cards with icon circles, everything centred, 16px radius
 on everything, and copy about unleashing your potential. It is recognisable
@@ -528,7 +567,7 @@ unlabelled form controls, more than one `<h1>`, skipped heading levels, and
 a missing grain layer, no negative letter-spacing, and no display line-height
 under 1.
 
-Zero Node dependencies. Node 18+. `cut` needs Python with `rembg[cpu]`.
+Zero Node dependencies. Node 22+. `cut` needs Python with `rembg[cpu]`.
 
 ## Why it looks the way it does
 
