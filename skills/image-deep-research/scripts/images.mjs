@@ -29,6 +29,7 @@ import { join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { parseArgs, int } from './args.mjs';
+import { checkUrl, publicFetch, readLimited } from './network.mjs';
 
 /* The Art Institute of Chicago's image server answers 403 to any user agent
    that carries a URL (measured 2026-09-25: "image-deep-research/1.0" gets the
@@ -47,7 +48,7 @@ export function commercialOk(licence) {
   const l = String(licence || '').toLowerCase();
   if (!l) return false;
   if (/\b(nc|nd)\b|noncommercial|non-commercial|noderiv|no-deriv/.test(l)) return false;
-  return /cc0|public domain|pdm|^pd\b|cc[ -]by|^by\b|^by-sa\b/.test(l);
+  return /^(?:cc0(?:\s+\((?:public domain|met open access)\))?|public domain|pdm|pd|(?:cc[ -])?by(?:-sa)?(?:\s+\d(?:\.\d)?)?)$/.test(l);
 }
 
 export function parseOpenverse(json) {
@@ -88,7 +89,7 @@ export function parseCommons(json) {
 
 export function parseAic(json) {
   const base = (json.config && json.config.iiif_url) || 'https://www.artic.edu/iiif/2';
-  return (json.data || []).filter((d) => d.image_id && d.is_public_domain).map((d) => ({
+  return (json.data || []).filter((d) => d.image_id && d.is_public_domain === true).map((d) => ({
     source: 'aic',
     title: d.title || '',
     creator: String(d.artist_display || '').split('\n')[0],
@@ -102,7 +103,7 @@ export function parseAic(json) {
 }
 
 export function parseMetObject(o) {
-  if (!o || !o.isPublicDomain || !o.primaryImageSmall) return null;
+  if (!o || o.isPublicDomain !== true || !o.primaryImageSmall) return null;
   return {
     source: 'met',
     title: o.title || '',
@@ -118,9 +119,9 @@ export function parseMetObject(o) {
 }
 
 async function getJson(url, headers = {}, ms = 20000) {
-  const r = await fetch(url, { headers: { 'user-agent': UA, accept: 'application/json', ...headers }, signal: AbortSignal.timeout(ms) });
-  if (!r.ok) throw new Error(`${new URL(url).host} answered ${r.status}`);
-  return r.json();
+  const r = await publicFetch(url, { headers: { 'user-agent': UA, accept: 'application/json', ...headers }, signal: AbortSignal.timeout(ms) });
+  if (!r.ok) { await r.body?.cancel(); throw new Error(`${new URL(url).host} answered ${r.status}`); }
+  return JSON.parse((await readLimited(r, 2 * 1024 * 1024)).toString('utf8'));
 }
 
 export const SEARCH = {
@@ -156,13 +157,15 @@ export const SEARCH = {
 /* Fetches the URL the way a page would load it. HEAD first; a server that
    refuses HEAD (405, 403, 416 and friends) gets a one-byte ranged GET. The
    result counts only if the answer is 2xx and says it is an image. */
-export async function verifyImage(url, { fetchImpl = fetch, ms = 15000 } = {}) {
+export async function verifyImage(url, { fetchImpl = publicFetch, ms = 15000 } = {}) {
+  try { checkUrl(url); } catch (e) { return { ok: false, status: 0, type: '', error: e.message }; }
   const tryOnce = async (method) => {
     const headers = { 'user-agent': UA };
     if (method === 'GET') headers.range = 'bytes=0-0';
     const r = await fetchImpl(url, { method, headers, redirect: 'follow', signal: AbortSignal.timeout(ms) });
     try { if (r.body && r.body.cancel) await r.body.cancel(); } catch {}
-    return { status: r.status, type: (r.headers.get('content-type') || '').split(';')[0].trim() };
+    return { status: r.status, type: (r.headers.get('content-type') || '').split(';')[0].trim().toLowerCase(),
+      url: r.url || url, checkedAt: new Date().toISOString(), evidence: 'response headers only; decode checked when tiled' };
   };
   let res;
   try {
@@ -171,7 +174,31 @@ export async function verifyImage(url, { fetchImpl = fetch, ms = 15000 } = {}) {
   } catch (e) {
     try { res = await tryOnce('GET'); } catch (e2) { return { ok: false, status: 0, type: '', error: (e2 && e2.message) || String(e2) }; }
   }
-  return { ok: res.status >= 200 && res.status < 300 && res.type.startsWith('image/'), ...res };
+  return { ok: res.status >= 200 && res.status < 300 && /^image\/(jpeg|png|webp|gif)$/.test(res.type), ...res };
+}
+
+export const MAX_IMAGE_BYTES = 20 * 1024 * 1024;
+export function rasterType(bytes) {
+  if (bytes.length >= 8 && bytes.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))) return { type: 'image/png', ext: 'png' };
+  if (bytes.length >= 3 && bytes[0] === 255 && bytes[1] === 216 && bytes[2] === 255) return { type: 'image/jpeg', ext: 'jpg' };
+  if (/^GIF8[79]a/.test(bytes.subarray(0, 6).toString('ascii'))) return { type: 'image/gif', ext: 'gif' };
+  if (bytes.length >= 12 && bytes.subarray(0, 4).toString('ascii') === 'RIFF' && bytes.subarray(8, 12).toString('ascii') === 'WEBP') return { type: 'image/webp', ext: 'webp' };
+  return null;
+}
+
+export async function downloadImage(url, { fetchImpl = publicFetch, maxBytes = MAX_IMAGE_BYTES, ms = 30000 } = {}) {
+  checkUrl(url);
+  const response = await fetchImpl(url, { headers: { 'user-agent': UA }, signal: AbortSignal.timeout(ms) });
+  if (!response.ok) { await response.body?.cancel(); throw new Error('HTTP ' + response.status); }
+  const declared = (response.headers.get('content-type') || '').split(';')[0].trim().toLowerCase();
+  if (!/^image\/(jpeg|png|gif|webp)$/.test(declared)) {
+    await response.body?.cancel();
+    throw new Error('unsupported raster image content type: ' + declared);
+  }
+  const bytes = await readLimited(response, maxBytes);
+  const actual = rasterType(bytes);
+  if (!actual || actual.type !== declared) throw new Error('image bytes do not match the declared raster format');
+  return { bytes, ext: actual.ext, url: response.url || url };
 }
 
 async function mapLimit(items, limit, fn) {
@@ -223,6 +250,7 @@ export function formatTable(res) {
     lines.push(`  ${r.verified.ok ? nn(r.n) : '--'} ${mark} [${r.source}] ${r.title.slice(0, 70)}${r.creator ? ' - ' + r.creator.slice(0, 40) : ''}`);
     lines.push(`       ${r.licence || 'licence not stated'}  ${r.url}`);
     if (r.page) lines.push(`       page ${r.page}`);
+    if (r.downloadError) lines.push(`       download failed: ${r.downloadError}`);
   }
   return lines.join('\n');
 }
@@ -261,6 +289,8 @@ export function formatCompact(res, { out, resultsPath = join(out, 'results.json'
     lines.push(`sheet ${s.file} ${s.w}x${s.h} ${s.tokens} tok${missing.length ? ` (${missing.join(',')} did not load)` : ''}`);
   }
   if (res.sheetError) lines.push('sheet none: ' + squeeze(res.sheetError.split('\n')[0], 100));
+  const downloadsFailed = good.filter((r) => r.downloadError).length;
+  if (downloadsFailed) lines.push(`download failed ${downloadsFailed} (see results.json)`);
   const failed = res.results.length - good.length;
   if (failed) lines.push(`failed ${failed} (see results.json)`);
   if (good.length) lines.push(`details: node images.mjs --pick ${good.slice(0, 2).map((r) => r.n).join(',')} --results ${shellPath(resultsPath)}`);
@@ -317,26 +347,31 @@ async function main() {
   const res = await searchImages(q, { sources, n, commercial: !!flags.commercial });
   const good = res.results.filter((r) => r.verified.ok);
 
-  if (flags.download && good.length) {
+  if ((flags.download || flags.sheet || compact) && good.length) {
     const dir = join(out, 'images');
     mkdirSync(dir, { recursive: true });
     await mapLimit(good, 4, async (r) => {
       try {
-        const resp = await fetch(r.url, { headers: { 'user-agent': UA }, signal: AbortSignal.timeout(30000) });
-        if (!resp.ok) throw new Error('HTTP ' + resp.status);
-        const ext = (resp.headers.get('content-type') || '').includes('png') ? 'png' : (resp.headers.get('content-type') || '').includes('webp') ? 'webp' : 'jpg';
-        r.file = join(dir, `${nn(r.n)}-${r.source}.${ext}`);
-        writeFileSync(r.file, Buffer.from(await resp.arrayBuffer()));
+        const image = await downloadImage(r.url);
+        const file = join(dir, `${nn(r.n)}-${r.source}.${image.ext}`);
+        writeFileSync(file, image.bytes);
+        r.file = file;
+        r.downloaded = { bytes: image.bytes.length, url: image.url, checkedAt: new Date().toISOString() };
       } catch (e) { r.downloadError = (e && e.message) || String(e); }
     });
   }
 
   if ((flags.sheet || compact) && good.length) {
     try {
+      if (!good.some((r) => r.file)) throw new Error('no raster files downloaded; see downloadError in results.json');
       const { withBrowser } = await import('./browser.mjs');
       const { renderSheets } = await import('./sheet.mjs');
       res.sheets = await withBrowser((session) => renderSheets(session,
-        good.map((r) => ({ n: r.n, src: r.file || r.url, label: `[${r.source}] ${r.licence} ${r.title}` })), { out, prefix: 'moodboard', fit: 'contain', compact }));
+        good.filter((r) => r.file).map((r) => ({ n: r.n, src: r.file, label: `[${r.source}] ${r.licence} ${r.title}` })), { out, prefix: 'moodboard', fit: 'contain', compact }));
+      for (const sheet of res.sheets) for (const tile of sheet.tiles) {
+        const result = good.find((r) => r.n === tile.n);
+        if (result) result.decoded = tile.loaded;
+      }
     } catch (e) { res.sheetError = (e && e.message) || String(e); }
   }
 
@@ -352,7 +387,7 @@ async function main() {
     if (res.sheetError) console.log('  no moodboard: ' + res.sheetError.split('\n')[0]);
     console.log('  results: ' + join(out, 'results.json'));
   }
-  if (!good.length) process.exitCode = 1;
+  if (!good.length || ((flags.sheet || compact) && !(res.sheets || []).some((s) => s.tiles.some((t) => t.loaded)))) process.exitCode = 1;
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main();

@@ -21,6 +21,11 @@ h1{font-family:Georgia,serif;font-size:64px;font-weight:400;margin:0;padding:40p
 p{margin:0 40px 40px}</style><h1>A reference heading</h1>${paras}`,
   '/wall': '<!doctype html><title>Just a moment</title><p>Checking your browser.</p>',
   '/oklch': `<!doctype html><meta charset="utf-8"><style>html,body{margin:0;background:oklch(0.3 0.05 250);color:oklch(0.95 0.02 85)}</style>${paras}`,
+  '/hidden': `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Visible evidence</title>
+    <style>body{margin:0;background:#203040;color:#f0e0d0}h1{font:40px Georgia}p{margin:0;padding:40px;height:150px}
+    @media(prefers-reduced-motion:reduce){body{background:#304020}}</style>
+    <section style="opacity:0;position:absolute;width:1px;height:1px;overflow:hidden"><h1 style="font-size:200px">Invisible title</h1><p>Verify you are human</p><canvas></canvas></section>
+    <main><h1>Visible heading</h1>${paras}</main>`,
 };
 
 /* A small RGB PNG, so a sheet has real pictures to tile: a diagonal
@@ -122,6 +127,26 @@ test('renderSheets reports a tile that failed to load instead of leaving it grey
     assert.deepEqual(sheets[0].tiles.map((t) => t.loaded), [true, false]);
     assert.equal(jpegSize(readFileSync(sheets[0].file)).w, 2 * CELL_W + 3 * 6);
   } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test('study excludes hidden ancestors and records responsive reduced-motion evidence for every shot', { skip: noBrowser && 'no browser' }, async () => {
+  const report = await study([`${base}/hidden`], { out: join(out, 'evidence'), width: 390, wait: 100, reducedMotion: true });
+  const site = report.sites[0];
+  assert.equal(site.status, 'ok', site.note);
+  assert.equal(site.probe.type.heading.text, 'Visible heading');
+  assert.equal(site.probe.type.heading.size, '40px');
+  assert.equal(site.probe.canvases, 0);
+  assert.doesNotMatch(site.probe.text, /Verify you are human|Invisible title/);
+  assert.equal(report.reducedMotion, true);
+  assert.match(report.evidence, /still captures only/);
+  for (const shot of site.shots) {
+    assert.equal(shot.probe.viewport.width, 390);
+    assert.equal(shot.probe.viewport.scroll, shot.reached);
+    assert.equal(shot.probe.reducedMotion, true);
+    assert.equal(shot.probe.grounds[0].color, '#304020');
+    assert.ok(Number.isFinite(Date.parse(shot.capturedAt)));
+    assert.match(shot.probe.measurementMethod, /not pixel sampling/);
+  }
 });
 
 // Every name the browser leaves in the temp directory is a leak, whoever named

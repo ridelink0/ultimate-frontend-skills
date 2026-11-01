@@ -1,6 +1,6 @@
 {
   "name": "image-deep-research",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Image deep research for Claude Code and Codex: find licensed reference images with every URL verified, render real websites into contact sheets, measure their palette and typefaces, and build moodboards.",
   "keywords": [
     "claude",
@@ -40,7 +40,8 @@
     ".claude-plugin/",
     ".codex-plugin/",
     "LICENSE",
-    "README.md"
+    "README.md",
+    "PRIVACY.md"
   ],
   "scripts": {
     "test": "node --test --test-concurrency=1 test/*.test.mjs",

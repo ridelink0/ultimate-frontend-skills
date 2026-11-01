@@ -53,11 +53,12 @@ node "${CLAUDE_SKILL_DIR}/scripts/study.mjs" --list editorial
 ```
 
 Each site is rendered in a headless browser at the top and one screen down
-(`--scroll 0,900`, `--width 390` for a phone read), tiled into contact sheets
-eight to a sheet, and measured: the ground colours by painted area, the text
+(`--scroll 0,900`, `--width 390` for phones, `--reduced-motion` for comparison), tiled into contact sheets
+eight to a sheet, and measured: ground colours by element area (overlaps can count twice), text
 colours by amount of text, and the heading and body typefaces as the browser
 computed them. The measurements print per site and land in `report.json`
 beside the sheets. Curated lists: `editorial`, `object`, `cinema`, `product`.
+Shots record viewport, scroll, time and motion preference; stills do not prove motion.
 
 Two things it cannot see, and it says so rather than guessing: a page that
 answers with a bot challenge or Access Denied, or renders next to nothing (a
@@ -82,6 +83,7 @@ licences that allow commercial use and changes (it drops NC and ND). `--sheet`
 tiles the verified images into a numbered moodboard; `--download` saves them.
 Results, with title, creator, licence, licence URL and source page, go to
 `results.json`.
+URL checks cover headers, not rights. Sheets cache bounded rasters; read source licences.
 
 Unsplash and Pexels need a free key for their APIs; with one, their CDN URLs
 can be used directly. Check them the same way: an image URL is not a result

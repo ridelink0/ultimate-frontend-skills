@@ -44,7 +44,7 @@ and changes; `--sheet` tiles the verified images into a numbered moodboard;
 **Real websites, rendered.** `study.mjs` loads each site in headless Chrome,
 Edge or Chromium, screenshots the top and one screen down, and tiles the shots
 eight to a contact sheet. It measures what the browser computed: the ground
-colours by painted area, the text colours by amount of text, and the heading
+colours by element-rectangle area (overlaps can count twice), text colours by amount of text, and heading
 and body typefaces with size, weight and line height. A page that answers
 with a bot challenge or Access Denied, or renders next to nothing (a
 preloader), is reported as a wall with the reason and kept off the sheet
@@ -126,6 +126,7 @@ The scripts also run on their own:
 node skills/image-deep-research/scripts/images.mjs "cypress trees" --sheet --commercial
 node skills/image-deep-research/scripts/study.mjs https://stripe.com https://linear.app
 node skills/image-deep-research/scripts/study.mjs --list editorial --width 390
+node skills/image-deep-research/scripts/study.mjs https://example.com --width 390 --reduced-motion
 ```
 
 Output goes to a temporary folder that is printed at the end (`--out <dir>`
@@ -157,6 +158,32 @@ node skills/image-deep-research/scripts/study.mjs --list product --compact
 ```
 
 ## What it cannot do
+
+### Evidence and safe downloads in 1.2.0
+
+Each screenshot keeps its own computed-style probe, actual viewport, reached
+scroll position, capture time and reduced-motion preference. Hidden ancestors
+are excluded when choosing text, heading, images and canvases. Requested phone
+width and actual layout width can differ on a page without a viewport tag;
+the report records the actual width. A still image does not establish motion
+quality, and element rectangles are not a pixel-level palette measurement.
+
+An image URL check establishes HTTP status and a supported raster Content-Type;
+it does not verify the licence or decode the pixels. Downloads and moodboards
+also check raster file signatures, cap each image at 20 MiB, and save PNG,
+JPEG, GIF or WebP bytes before the sheet browser opens them. Private and
+special-use IPs, credential-bearing URLs and redirects into private networks
+are blocked for collection/API requests; DNS answers are checked and pinned to
+the socket. API JSON is capped at 2 MiB. Sheets use these local files, retaining
+tile numbers when a later download fails. The browser separately reports
+whether each local raster actually decoded.
+
+The study browser intentionally visits the URLs the user selected, including
+local development URLs. It is a fresh profile, not a network sandbox. Do not
+give it untrusted internal targets. No dependencies, binary payloads or
+install-time downloads were added to the plugin.
+
+### Limits
 
 It cannot see behind a bot wall or a login, and a WebGL site may screenshot as
 its preloader; it says so instead of guessing. Unsplash and Pexels need a free

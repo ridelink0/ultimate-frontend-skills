@@ -1,6 +1,6 @@
 {
   "name": "image-deep-research",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Image deep research for Claude Code and Codex: find reference images on open, licensed collections (Openverse, Wikimedia Commons, Art Institute of Chicago, the Met) with every URL verified and every licence kept, render real websites into screenshot contact sheets, measure a live site's palette and typefaces, and build moodboards - visual research for design references, styles, palettes, typefaces, materials and competitors.",
   "author": {
     "name": "Gev",

@@ -30,7 +30,9 @@ requests it receives.
 ## What stays on your machine
 
 Contact sheets, moodboards, downloaded images and reports are written to the
-folder you point the scripts at. The plugin reads two environment variables,
+folder you point the scripts at. Moodboards cache bounded image files there
+before rendering so their browser loads local images. Reports retain source
+URLs, checked redirect URLs and capture timestamps. The plugin reads two environment variables,
 `IDR_BROWSER` and `ATELIER_BROWSER`, only to find a browser executable, plus
 the standard program-folder variables for the same purpose. It reads no
 credential.
