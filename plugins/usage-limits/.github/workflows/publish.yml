@@ -1,0 +1,78 @@
+name: publish
+
+# Cutting a release is: npm version <patch|minor|major>, then push the tag.
+# This takes it from there.
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      # Lets npm verify this workflow through OIDC, so no publish token has to
+      # be stored anywhere. The trusted publisher is configured once at
+      # npmjs.com -> claude-usage-limits -> Settings -> Trusted publisher, and
+      # it has to name this repository and this file, publish.yml.
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          # Trusted publishing wants Node 22.14 or newer and npm 11.5.1 or
+          # newer, which is why this is pinned well ahead of what the package
+          # itself supports.
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+          package-manager-cache: false
+
+      - name: Update npm
+        run: npm install -g npm@latest
+
+      # A publish that fails auth comes back as a 404 rather than a 403, so
+      # without this it is hard to tell "npm refused us" from "npm never saw a
+      # credential".
+      - name: Diagnostics
+        run: |
+          echo "node $(node -v)"
+          echo "npm  $(npm -v)"
+          if [ -n "${ACTIONS_ID_TOKEN_REQUEST_URL:-}" ]; then
+            echo "OIDC: request URL present"
+          else
+            echo "OIDC: NO request URL, id-token permission is not in effect"
+          fi
+          echo "auth lines in project .npmrc: $(grep -c '_authToken' .npmrc 2>/dev/null || echo 0)"
+          echo "auth lines in home .npmrc: $(grep -c '_authToken' "$HOME/.npmrc" 2>/dev/null || echo 0)"
+
+      - name: Run tests
+        run: node --test
+
+      - name: Fail if the tag does not match package.json
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          PKG="$(node -p "require('./package.json').version")"
+          if [ "$TAG" != "$PKG" ]; then
+            echo "tag $TAG does not match package.json $PKG"
+            exit 1
+          fi
+
+      # Re-running a release, or tagging a version that was published by hand,
+      # should be a no-op rather than a red build.
+      - name: Skip if this version is already on npm
+        id: existing
+        run: |
+          VERSION="$(node -p "require('./package.json').version")"
+          if npm view "claude-usage-limits@$VERSION" version >/dev/null 2>&1; then
+            echo "published=true" >> "$GITHUB_OUTPUT"
+            echo "$VERSION is already on npm, nothing to publish"
+          else
+            echo "published=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish
+        if: steps.existing.outputs.published == 'false'
+        run: npm publish --access public --loglevel verbose

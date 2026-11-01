@@ -1,0 +1,48 @@
+{
+  "name": "claude-usage-limits",
+  "version": "1.43.2",
+  "description": "Puts your remaining Claude Code usage limit into Claude's context before every prompt, so it opens with what fits in the budget instead of starting work that gets cut off. Reports headroom as turns rather than percentages, prices a job before you start it, and detects your plan tier.",
+  "keywords": [
+    "claude",
+    "claude-code",
+    "usage",
+    "limits",
+    "rate-limit",
+    "tokens",
+    "cost",
+    "budget",
+    "statusline",
+    "cli"
+  ],
+  "homepage": "https://github.com/ridelink0/claude-code-usage-limits",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ridelink0/claude-code-usage-limits.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ridelink0/claude-code-usage-limits/issues"
+  },
+  "license": "MIT",
+  "author": "Ridelink (https://github.com/ridelink0)",
+  "bin": {
+    "claude-usage-limits": "bin/cli.js"
+  },
+  "files": [
+    "bin/",
+    "skills/",
+    "commands/",
+    "hooks/",
+    "agents/",
+    ".claude-plugin/",
+    ".codex-plugin/"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test",
+    "usage": "node bin/cli.js",
+    "version": "node tools/sync-version.js && git add .claude-plugin/plugin.json .codex-plugin/plugin.json vscode/package.json"
+  },
+  "type": "commonjs"
+}

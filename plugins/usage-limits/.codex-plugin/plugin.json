@@ -1,0 +1,40 @@
+{
+  "name": "usage-limits",
+  "version": "1.43.2",
+  "description": "Reports how much of your Codex usage limit is left as turns of work rather than a percentage, prices a job before you start it, and counts the other agents sharing the same budget.",
+  "author": {
+    "name": "Ridelink",
+    "url": "https://github.com/ridelink0"
+  },
+  "homepage": "https://github.com/ridelink0/claude-code-usage-limits",
+  "repository": "https://github.com/ridelink0/claude-code-usage-limits",
+  "license": "MIT",
+  "keywords": [
+    "usage",
+    "limits",
+    "quota",
+    "rate-limit",
+    "budget",
+    "cost",
+    "planning",
+    "effort"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Usage Limits",
+    "shortDescription": "How much usage limit is left, in turns of work",
+    "longDescription": "Reads the usage figures Codex already writes to disk and turns them into something you can plan with: which window binds, how many turns of work is left in it, and whether the job in front of you fits before the reset. Prices a job before you start it, notices when several agents are sharing one budget, and says what to land and what to leave when the limit is close. Everything is read locally; nothing is uploaded and no credentials are read.",
+    "developerName": "Ridelink",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Read"
+    ],
+    "websiteURL": "https://github.com/ridelink0/claude-code-usage-limits",
+    "defaultPrompt": [
+      "How much usage do I have left?",
+      "Will this job fit before my limit resets?",
+      "Finish this using as little usage as possible"
+    ],
+    "brandColor": "#0C0A03"
+  }
+}

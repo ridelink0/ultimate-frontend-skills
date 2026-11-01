@@ -1,0 +1,39 @@
+name: test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    # This reads home directories and joins paths, so the platform matters
+    # more than it would for a pure library.
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node: ['18', '20', '22']
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Run tests
+        run: node --test
+
+      - name: Check the CLI starts
+        run: node bin/cli.js --version
+
+      # The publish workflow installs the newest npm, and npm has already
+      # changed the shape of `npm pack --json` once. Catch that here, on one
+      # job, rather than discovering it when a release fails.
+      - name: Check the pack tests against the newest npm
+        if: matrix.os == 'ubuntu-latest' && matrix.node == '22'
+        run: node --test test/package.test.js
+        env:
+          USAGE_LIMITS_NPM: npx -y npm@latest

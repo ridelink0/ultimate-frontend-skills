@@ -1,0 +1,95 @@
+{
+  "name": "claude-usage-limits",
+  "displayName": "Claude Usage Limits",
+  "description": "Your Claude Code session, weekly and per-model limits as live bars in a view beside the Claude Code chat, drawn in Claude's own colours from Claude's own numbers.",
+  "version": "1.43.2",
+  "publisher": "ridelink",
+  "license": "MIT",
+  "icon": "media/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ridelink0/claude-code-usage-limits"
+  },
+  "homepage": "https://github.com/ridelink0/claude-code-usage-limits",
+  "bugs": {
+    "url": "https://github.com/ridelink0/claude-code-usage-limits/issues"
+  },
+  "engines": {
+    "vscode": "^1.106.0"
+  },
+  "categories": [
+    "Other",
+    "Visualization"
+  ],
+  "keywords": [
+    "claude",
+    "claude code",
+    "usage",
+    "rate limit",
+    "sidebar"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "secondarySidebar": [
+        {
+          "id": "claude-usage-limits",
+          "title": "Claude usage",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "claude-usage-limits": [
+        {
+          "type": "webview",
+          "id": "claudeUsageLimits.panel",
+          "name": "Claude usage"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "claudeUsageLimits.refresh",
+        "title": "Claude Usage Limits: Take a fresh reading"
+      },
+      {
+        "command": "claudeUsageLimits.show",
+        "title": "Claude Usage Limits: Show the panel"
+      }
+    ],
+    "configuration": {
+      "title": "Claude Usage Limits",
+      "properties": {
+        "claudeUsageLimits.fetch": {
+          "type": "boolean",
+          "default": true,
+          "description": "Take live readings with the same call Claude Code makes for /usage, using the login Claude Code already holds. Off shows the reading already on disk."
+        },
+        "claudeUsageLimits.pollSeconds": {
+          "type": "number",
+          "default": 60,
+          "minimum": 15,
+          "description": "Seconds between readings from the usage endpoint."
+        },
+        "claudeUsageLimits.showOnStartup": {
+          "type": "boolean",
+          "default": true,
+          "description": "Open the panel in the right sidebar when VS Code starts."
+        },
+        "claudeUsageLimits.statusBar": {
+          "type": "boolean",
+          "default": false,
+          "description": "Also show the percentages in the status bar at the bottom. Off by default: the panel beside the chat is the one place."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "node build.js",
+    "package": "node build.js && npx --yes @vscode/vsce package --no-dependencies"
+  }
+}

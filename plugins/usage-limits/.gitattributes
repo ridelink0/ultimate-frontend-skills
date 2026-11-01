@@ -1,0 +1,9 @@
+# Keep line endings LF everywhere, including on Windows checkouts.
+#
+# bin/cli.js is the reason this matters rather than being a style preference:
+# a CR at the end of its shebang produces "#!/usr/bin/env node\r", and a
+# package published from such a checkout fails to exec on Linux and macOS
+# while working fine on the machine that published it.
+* text=auto eol=lf
+
+bin/cli.js text eol=lf

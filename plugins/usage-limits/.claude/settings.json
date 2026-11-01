@@ -1,0 +1,30 @@
+{
+  "$comment": [
+    "Committed on purpose. This is what makes the plugin available, and current, in any",
+    "session opened on this repository - including cloud and web sessions, which never see",
+    "~/.claude and so cannot inherit anything installed on a laptop.",
+    "",
+    "Claude Code reads extraKnownMarketplaces from every settings source and installs the",
+    "enabled plugins at session start, so a cloud session always gets the newest commit.",
+    "",
+    "autoUpdate is the per-MARKETPLACE switch. It defaults to true only for claude.ai-hosted",
+    "marketplaces and a hard-coded allowlist of official Anthropic ones; every third-party",
+    "GitHub marketplace, this one included, defaults to OFF. With it on, Claude Code refreshes",
+    "the marketplace and updates its installed plugins in the background shortly after a",
+    "session starts, then offers /reload-plugins.",
+    "",
+    "Copy this block into any other project's .claude/settings.json to get the same there."
+  ],
+  "extraKnownMarketplaces": {
+    "usage-limits": {
+      "source": {
+        "source": "github",
+        "repo": "ridelink0/claude-code-usage-limits"
+      },
+      "autoUpdate": true
+    }
+  },
+  "enabledPlugins": {
+    "usage-limits@usage-limits": true
+  }
+}
