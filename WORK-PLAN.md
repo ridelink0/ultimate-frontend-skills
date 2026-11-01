@@ -2,6 +2,12 @@
 
 Status: active, 2026-11-01. No completion or directory clearance claimed.
 
+Latest steering: at least TEN newly added integrations, including Remotion as a UFS video skill/plugin. Also ship link-preview and deep-research skills; connect link-preview work to image research. Separate image-origin provenance from visual quality: appearance cannot establish AI origin.
+
+Verified parent work: baseline UFS fast suite 191 passed, 69 browser checks explicitly skipped, zero failures. Suite integrity fixture checks pass 4/4 including image hash drift, duplicates/version drift, traversal/extra payloads and directory junction escape. Edge is available for full headless checks. Parent commits 3b30c89 and b057d96 save the suite checker and cross-platform CI; real combined suite validation awaits imports.
+
+Live shared allowance reached 79% used; agents have been asked for tested scoped commits before integration. Do not call any unfinished skill, upstream qualification, full-browser sweep or directory submission complete.
+
 ## Scope and ownership
 
 - Canonical destination: ridelink0/ultimate-frontend-skills, preserving UFS at root.
