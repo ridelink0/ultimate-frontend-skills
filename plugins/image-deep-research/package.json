@@ -1,0 +1,52 @@
+{
+  "name": "image-deep-research",
+  "version": "1.2.0",
+  "description": "Image deep research for Claude Code and Codex: find licensed reference images with every URL verified, render real websites into contact sheets, measure their palette and typefaces, and build moodboards.",
+  "keywords": [
+    "claude",
+    "claude-code",
+    "claude-plugin",
+    "claude-skills",
+    "codex",
+    "image-research",
+    "deep-research",
+    "visual-research",
+    "moodboard",
+    "reference-images",
+    "design-references",
+    "screenshots",
+    "contact-sheet",
+    "openverse",
+    "wikimedia-commons",
+    "public-domain",
+    "creative-commons",
+    "ai-agent"
+  ],
+  "homepage": "https://github.com/ridelink0/image-deep-research",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ridelink0/image-deep-research.git"
+  },
+  "bugs": "https://github.com/ridelink0/image-deep-research/issues",
+  "license": "MIT",
+  "author": "Gev (https://github.com/ridelink0)",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "files": [
+    "skills/",
+    "commands/",
+    ".claude-plugin/",
+    ".codex-plugin/",
+    "LICENSE",
+    "README.md",
+    "PRIVACY.md"
+  ],
+  "scripts": {
+    "test": "node --test --test-concurrency=1 test/*.test.mjs",
+    "test:live": "node --test test/live/*.mjs",
+    "study": "node skills/image-deep-research/scripts/study.mjs",
+    "images": "node skills/image-deep-research/scripts/images.mjs"
+  }
+}

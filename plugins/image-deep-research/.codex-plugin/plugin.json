@@ -1,0 +1,53 @@
+{
+  "name": "image-deep-research",
+  "version": "1.2.0",
+  "description": "Image deep research for Claude Code and Codex: find reference images on open, licensed collections (Openverse, Wikimedia Commons, Art Institute of Chicago, the Met) with every URL verified and every licence kept, render real websites into screenshot contact sheets, measure a live site's palette and typefaces, and build moodboards - visual research for design references, styles, palettes, typefaces, materials and competitors.",
+  "author": {
+    "name": "Gev",
+    "url": "https://github.com/ridelink0"
+  },
+  "homepage": "https://github.com/ridelink0/image-deep-research",
+  "repository": "https://github.com/ridelink0/image-deep-research",
+  "license": "MIT",
+  "keywords": [
+    "image research",
+    "deep research",
+    "image deep research",
+    "visual research",
+    "reference images",
+    "design references",
+    "moodboard",
+    "mood board",
+    "contact sheet",
+    "screenshots",
+    "website screenshots",
+    "image search",
+    "openverse",
+    "wikimedia commons",
+    "public domain images",
+    "creative commons",
+    "color palette",
+    "typography",
+    "competitor research",
+    "inspiration"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Image Deep Research",
+    "shortDescription": "Find, verify and read reference images and real websites",
+    "longDescription": "Answers design questions by looking. Searches Openverse, Wikimedia Commons, the Art Institute of Chicago and the Met with no keys, checks that every URL really serves an image, keeps the licence and creator beside each one, and tiles them into a numbered moodboard. Renders real websites in a headless browser into contact sheets and measures their ground colours, text colours and typefaces as computed.",
+    "developerName": "Gev",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/ridelink0/image-deep-research",
+    "defaultPrompt": [
+      "Find public-domain reference images of brutalist concrete interiors",
+      "Render these five competitor sites and tell me what their first screens do",
+      "Build a moodboard for a warm, editorial coffee brand"
+    ],
+    "brandColor": "#16140f"
+  }
+}

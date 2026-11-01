@@ -1,0 +1,38 @@
+{
+  "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
+  "name": "image-deep-research",
+  "version": "1.2.0",
+  "description": "Image deep research for Claude Code and Codex: find reference images on open, licensed collections (Openverse, Wikimedia Commons, Art Institute of Chicago, the Met) with every URL verified and every licence kept, render real websites into screenshot contact sheets, measure a live site's palette and typefaces, and build moodboards - visual research for design references, styles, palettes, typefaces, materials and competitors.",
+  "author": {
+    "name": "Gev",
+    "url": "https://github.com/ridelink0"
+  },
+  "homepage": "https://github.com/ridelink0/image-deep-research",
+  "repository": "https://github.com/ridelink0/image-deep-research",
+  "documentationUrl": "https://github.com/ridelink0/image-deep-research#readme",
+  "supportUrl": "https://github.com/ridelink0/image-deep-research/issues",
+  "privacyPolicyUrl": "https://github.com/ridelink0/image-deep-research/blob/main/PRIVACY.md",
+  "license": "MIT",
+  "keywords": [
+    "image research",
+    "deep research",
+    "image deep research",
+    "visual research",
+    "reference images",
+    "design references",
+    "moodboard",
+    "mood board",
+    "contact sheet",
+    "screenshots",
+    "website screenshots",
+    "image search",
+    "openverse",
+    "wikimedia commons",
+    "public domain images",
+    "creative commons",
+    "color palette",
+    "typography",
+    "competitor research",
+    "inspiration"
+  ]
+}
