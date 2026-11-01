@@ -2,6 +2,12 @@
 
 Status: active, 2026-11-01. No completion or directory clearance claimed.
 
+## November 1 13:20 Chicago priority gate
+
+Gev edited the saved automation to require restarting 'Fix Atlias app and settings' and waiting for that chat to finish BEFORE resuming plugin implementation. Thread01a192da-c822-7e91-83df-f0016b74c5c3 on host local was found in systemError after the prior usage cutoff. It was resumed through send_message_to_thread and a compact wait_threads snapshot confirmed ACTIVE, turn01a1988e-14c2-7421-b311-8f67943b567e. Its old UFS waiting hold is explicitly lifted to avoid a circular wait. Gev's side-chat appearance, terminal bugs, app/terminal sync, realistic code-protection research and tested friend-repository release requests were delivered once. Do not resend each poll. Do not take over its files.
+
+Live allowance at this wake: five-hour0% used, estimated231 turns; weekly41%. Plugin worktrees were inspected and remain clean. No plugin implementation resumed because of the priority gate. Use compact wait_threads snapshots for the Atlias chat; last cursor c0328158-b577-402a-8e8a-0b8420260d51:1. Active/idle/blocked is not completion; read its final/handoff before lifting this gate. The continuation heartbeat now checks every30minutes while this dependency is active. Its prompt carries the current TEN-integration scope. Existing unrelated daily21:20 schedule remains untouched.
+
 Latest steering: at least TEN newly added integrations, including Remotion as a UFS video skill/plugin. Also ship link-preview and deep-research skills; connect link-preview work to image research. Separate image-origin provenance from visual quality: appearance cannot establish AI origin.
 
 Verified parent work: baseline UFS fast suite 191 passed, 69 browser checks explicitly skipped, zero failures. Suite integrity fixture checks pass 4/4 including image hash drift, duplicates/version drift, traversal/extra payloads and directory junction escape. Edge is available for full headless checks. Parent commits 3b30c89 and b057d96 save the suite checker and cross-platform CI; real combined suite validation awaits imports.
