@@ -1,17 +1,18 @@
 {
   "note": "Written by scripts/sync-image-research.mjs. Do not edit by hand, and do not edit skills/image-deep-research/ by hand: change it upstream, release, then sync.",
   "upstream": "https://github.com/ridelink0/image-deep-research.git",
-  "version": "1.1.0",
-  "tag": "v1.1.0",
-  "commit": "1dbe2cb73f29ccb448bd2a3fe4e43a05538fea3d",
+  "version": "1.2.0",
+  "tag": "v1.2.0",
+  "commit": "88c9f7ad0500edec0eec911185bd3a9f57c256de",
   "dirty": false,
-  "tree": "8395bbf6b19be315a23e7c76aa02eb005a479606875f19955f7295ee88e291b9",
+  "tree": "38575e8dd736e1a64fe37bb27162531b43ccb4bf3149ad98e479c1b6f37c0dbd",
   "files": {
-    "SKILL.md": "cd5bf8b36f643933a96e8f1c18d182a92a3500d546c80170d0b2bd5349ee6080",
+    "SKILL.md": "6af376295009622598b12d1952b5996c611e6a5288e7e2705b6cf807443dfd22",
     "scripts/args.mjs": "74899015eda8b3f461b230591e8431c242e415bb420858f2f188f9f68fd0ac2e",
     "scripts/browser.mjs": "f3c37205a4a79921aff2070cbe4f1e698ab7de616ad07ddfba1d7ec63ec53550",
-    "scripts/images.mjs": "d14407743b2c6c07e13667db9d15c7819216214b24ff5aef4a0520dd83472b35",
+    "scripts/images.mjs": "ba0400da1e8ebab8230237586947a1961977cb45cc0acddae8a834f09876a289",
+    "scripts/network.mjs": "762516a616e342c41645039184a4cc7b63eceadfb872f85a478811925de60d96",
     "scripts/sheet.mjs": "0b19d6b0166c08df9727f26dfa11555aa16741f74d8cb3284e7cd51fa3f95e2e",
-    "scripts/study.mjs": "363f6ac9162c3f89e36ac05d123709114b7da457c23407c878920722034e55cb"
+    "scripts/study.mjs": "716f05ac441f36005d9be449b8d5d03789e7545fef111c6dd260fbd000a0e226"
   }
 }

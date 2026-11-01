@@ -87,12 +87,20 @@ export const PROBE = `(() => {
   const W = innerWidth, H = Math.max(innerHeight, document.documentElement.scrollHeight);
   const grounds = new Map(), inks = new Map();
   const add = (m, k, v) => { if (k) m.set(k, (m.get(k) || 0) + v); };
+  const visible = (el) => {
+    for (let p = el; p; p = p.parentElement) {
+      const cs = getComputedStyle(p);
+      if (cs.display === 'none' || cs.visibility === 'hidden' || cs.visibility === 'collapse' || +cs.opacity === 0) return false;
+    }
+    return el.getClientRects().length > 0;
+  };
   let textElements = 0;
+  const visibleText = [];
   const all = document.querySelectorAll('body, body *');
   for (let i = 0; i < all.length && i < 6000; i++) {
     const el = all[i];
     const cs = getComputedStyle(el);
-    if (cs.display === 'none' || cs.visibility === 'hidden' || +cs.opacity === 0) continue;
+    if (!visible(el)) continue;
     const r = el.getBoundingClientRect();
     const w = Math.max(0, Math.min(r.right, W) - Math.max(r.left, 0));
     const h = Math.max(0, Math.min(r.bottom + scrollY, H) - Math.max(r.top + scrollY, 0));
@@ -100,33 +108,38 @@ export const PROBE = `(() => {
     add(grounds, hex(cs.backgroundColor), w * h);
     let own = 0;
     for (const n of el.childNodes) if (n.nodeType === 3) own += n.textContent.trim().length;
-    if (own) { textElements++; add(inks, hex(cs.color), own); }
+    if (own) { textElements++; add(inks, hex(cs.color), own);
+      visibleText.push([...el.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent).join(' ')); }
   }
   const htmlBg = hex(getComputedStyle(document.documentElement).backgroundColor);
   const bodyBg = hex(getComputedStyle(document.body).backgroundColor);
   if (!grounds.size) add(grounds, bodyBg || htmlBg || '#ffffff', W * H);
   const top = (m, n) => { const t = [...m.values()].reduce((a, b) => a + b, 0) || 1;
     return [...m.entries()].sort((a, b) => b[1] - a[1]).slice(0, n).map(([c, v]) => ({ color: c, share: Math.round(v / t * 1000) / 10 })); };
-  const face = (sel) => { const el = document.querySelector(sel); if (!el) return null;
+  const face = (sel) => { const el = [...document.querySelectorAll(sel)].find(visible); if (!el) return null;
     const cs = getComputedStyle(el);
     return { selector: sel, family: cs.fontFamily, size: cs.fontSize, weight: cs.fontWeight, lineHeight: cs.lineHeight, letterSpacing: cs.letterSpacing,
       text: (el.textContent || '').trim().replace(/\\s+/g, ' ').slice(0, 80) }; };
   return JSON.stringify({
     title: document.title, textElements, height: document.documentElement.scrollHeight,
+    viewport: { width: innerWidth, height: innerHeight, scroll: Math.round(scrollY), devicePixelRatio },
+    reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches,
+    measurementMethod: 'computed element rectangles and own text; overlapping backgrounds can be counted more than once; not pixel sampling',
     grounds: top(grounds, 6), inks: top(inks, 4),
     type: { heading: face('h1') || face('h2'), body: face('main p') || face('p') },
-    canvases: document.querySelectorAll('canvas').length,
-    images: [...document.images].filter((im) => { const r = im.getBoundingClientRect(); return im.naturalWidth > 0 && r.width >= 120 && r.height >= 80; }).length,
-    frames: [...document.querySelectorAll('iframe')].map((f) => f.src).filter(Boolean).slice(0, 10),
-    text: (document.body.innerText || '').replace(/\\s+/g, ' ').slice(0, 1500),
+    canvases: [...document.querySelectorAll('canvas')].filter(visible).length,
+    images: [...document.images].filter((im) => { const r = im.getBoundingClientRect(); return visible(im) && im.naturalWidth > 0 && r.width >= 120 && r.height >= 80; }).length,
+    frames: [...document.querySelectorAll('iframe')].filter(visible).map((f) => f.src).filter(Boolean).slice(0, 10),
+    text: visibleText.join(' ').replace(/\\s+/g, ' ').slice(0, 1500),
   });
 })()`;
 
 export const slugFor = (i) => 's' + String(i + 1).padStart(2, '0');
 
-export async function study(urls, { out, scrolls = [0, 900], width = 1440, wait = 3500, compact = false, log = () => {} } = {}) {
+export async function study(urls, { out, scrolls = [0, 900], width = 1440, wait = 3500, compact = false, reducedMotion = false, log = () => {} } = {}) {
   mkdirSync(out, { recursive: true });
   return withBrowser(async (session) => {
+    await session.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: reducedMotion ? 'reduce' : 'no-preference' }] });
     const sites = [];
     for (const [i, url] of urls.entries()) {
       const dir = join(out, slugFor(i));
@@ -147,7 +160,8 @@ export async function study(urls, { out, scrolls = [0, 900], width = 1440, wait 
           const actual = await session.evaluate('Math.round(scrollY)');
           const file = join(dir, y ? `y${y}.png` : 'top.png');
           writeFileSync(file, await screenshot(session));
-          site.shots.push({ file, scroll: y, reached: actual });
+          const probe = JSON.parse(await session.evaluate(PROBE));
+          site.shots.push({ file, scroll: y, reached: actual, capturedAt: new Date().toISOString(), probe });
         }
       } catch (e) {
         site.status = 'failed';
@@ -160,7 +174,7 @@ export async function study(urls, { out, scrolls = [0, 900], width = 1440, wait 
       .flatMap((s) => s.shots.map((sh) => ({ src: sh.file, label: `${slugFor(sites.indexOf(s))} ${sh.scroll ? 'y' + sh.scroll : 'top'}  ${s.url.replace(/^https?:\/\/(www\.)?/, '')}`,
         ...(compact && { badge: slugFor(sites.indexOf(s)) + (sh.scroll ? ' y' + sh.scroll : '') }) })));
     const sheets = tiles.length ? await renderSheets(session, tiles, { out, prefix: 'sheet', fit: 'cover', compact }) : [];
-    const report = { out, width, scrolls, sites, sheets };
+    const report = { out, width, scrolls, reducedMotion, evidence: 'still captures only; motion quality and hidden content remain unverified', sites, sheets };
     writeFileSync(join(out, 'report.json'), JSON.stringify(report, null, 2));
     return report;
   });
@@ -205,7 +219,7 @@ export function formatSiteCompact(s, i) {
 
 async function main() {
   let a;
-  try { a = parseArgs(process.argv.slice(2), { switches: ['json', 'compact'] }); } catch (e) { console.error('study: ' + e.message); process.exit(2); }
+  try { a = parseArgs(process.argv.slice(2), { switches: ['json', 'compact', 'reduced-motion'] }); } catch (e) { console.error('study: ' + e.message); process.exit(2); }
   const { positional, flags } = a;
   let urls = positional.filter((u) => /^https?:\/\//i.test(u));
   const bad = positional.filter((u) => !/^https?:\/\//i.test(u));
@@ -230,13 +244,14 @@ async function main() {
   const log = flags.json ? () => {} : compact ? (s, i) => console.log(formatSiteCompact(s, i)) : (s) => console.log(formatSite(s));
   let report;
   try {
-    report = await study(urls, { out, scrolls, width, wait, compact, log });
+    report = await study(urls, { out, scrolls, width, wait, compact, reducedMotion: !!flags['reduced-motion'], log });
   } catch (e) {
     console.error('study: ' + ((e && e.message) || e));
     process.exit(e && e.code === 'no-browser' ? 3 : 1);
   }
-  if (flags.json) { console.log(JSON.stringify(report, null, 2)); return; }
   const ok = report.sites.filter((s) => s.status === 'ok').length;
+  if (!ok) process.exitCode = 1;
+  if (flags.json) { console.log(JSON.stringify(report, null, 2)); return; }
   if (compact) {
     console.log(`study ${urls.length} site(s), ${ok} rendered -> ${out}`);
     for (const s of report.sheets) console.log(`sheet ${s.file} ${s.w}x${s.h} ${s.tokens} tok`);
