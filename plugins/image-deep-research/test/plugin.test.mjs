@@ -60,7 +60,10 @@ test('the three manifests agree on name, version, author and repository', () => 
   assert.equal(codex.author.name, 'Gev');
   assert.equal(market.owner.name, 'Gev');
   assert.equal(market.plugins[0].source, './');
-  assert.equal(plugin.repository, 'https://github.com/ridelink0/image-deep-research');
+  assert.equal(plugin.repository, 'https://github.com/ridelink0/ultimate-frontend-skills');
+  assert.equal(codex.repository, plugin.repository);
+  assert.equal(pkg.repository.url.replace(/^git\+/, '').replace(/\.git$/, ''), plugin.repository);
+  assert.equal(pkg.repository.directory, 'plugins/image-deep-research');
   assert.equal(codex.skills, './skills/');
   assert.equal(plugin.license, 'MIT');
   assert.ok(existsSync(join(root, 'LICENSE')));

@@ -14,16 +14,17 @@
     "statusline",
     "cli"
   ],
-  "homepage": "https://github.com/ridelink0/claude-code-usage-limits",
+  "homepage": "https://github.com/ridelink0/ultimate-frontend-skills/tree/master/plugins/usage-limits",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ridelink0/claude-code-usage-limits.git"
+    "url": "git+https://github.com/ridelink0/ultimate-frontend-skills.git",
+    "directory": "plugins/usage-limits"
   },
   "bugs": {
-    "url": "https://github.com/ridelink0/claude-code-usage-limits/issues"
+    "url": "https://github.com/ridelink0/ultimate-frontend-skills/issues"
   },
   "license": "MIT",
-  "author": "Ridelink (https://github.com/ridelink0)",
+  "author": "Gev (https://github.com/ridelink0)",
   "bin": {
     "claude-usage-limits": "bin/cli.js"
   },

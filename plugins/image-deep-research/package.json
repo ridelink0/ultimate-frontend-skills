@@ -22,12 +22,15 @@
     "creative-commons",
     "ai-agent"
   ],
-  "homepage": "https://github.com/ridelink0/image-deep-research",
+  "homepage": "https://github.com/ridelink0/ultimate-frontend-skills/tree/master/plugins/image-deep-research",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ridelink0/image-deep-research.git"
+    "url": "git+https://github.com/ridelink0/ultimate-frontend-skills.git",
+    "directory": "plugins/image-deep-research"
   },
-  "bugs": "https://github.com/ridelink0/image-deep-research/issues",
+  "bugs": {
+    "url": "https://github.com/ridelink0/ultimate-frontend-skills/issues"
+  },
   "license": "MIT",
   "author": "Gev (https://github.com/ridelink0)",
   "type": "module",
