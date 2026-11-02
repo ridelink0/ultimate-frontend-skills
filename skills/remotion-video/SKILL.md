@@ -27,3 +27,6 @@ and use before installing or rendering. Do not label Remotion universally free.
 
 The original UFS video CLI remains available for existing scene files; this
 skill adds a distinct Remotion route, not a silent runtime substitution.
+
+An original, rendered reference ships in [assets/example/README.md](assets/example/README.md).
+Copy the example outside the plugin before installing its optional dependencies.

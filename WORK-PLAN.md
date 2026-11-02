@@ -2,6 +2,14 @@
 
 Status: active, 2026-11-01. No completion or directory clearance claimed.
 
+## November 2 final local qualification
+
+Saved full UFS run completed278/278 with zero skips/failures (suite-full-release.tap). After the final integration/Remotion commit, delta tests passed32/32 with zero skips. Independent tools/qualify-link-preview.mjs controls passed and caught both planted regressions: original clipped-font fitting and disabled raster validation; receipt link-preview-planted.json. The Remotion skill now links its original example. Research report and implementation prompt have verified November2 addenda.
+
+Final actual npm archive:392files,1445002bytes packed,4758950unpacked, SHA256ffe77e6671866058f537128e3c3048a8e2aeeec9b2a823d8bae2e70ade0bf6a0. All392 archived file hashes match current working-tree source, no opaque/symlink/lifecycle/fixture payloads, zero audit errors/warnings, three catalog paths/version sets resolve and native extracted catalog validation passes. Receipt directory D:/plugin-work-1101/qualification-canonical-final. This was honestly captured from the working tree before committing the final documentation-only link and dev-only adversarial tool.
+
+GitHub push/PR/final-SHA CI/merge/release are next, followed by portal validation/resubmission. Hidden in-app browser creation failed with 'failed to write kernel assets: system cannot find path'. A native Windows fallback cannot satisfy Gev's separate-virtual-desktop rule according to installed Computer Use documentation. Do not bypass the desktop rule or claim portal submission. Retry the supported browser once after reset; if unavailable retain concrete submission artifacts and identify the access requirement.
+
 ## November 1 evening verified release checkpoint
 
 The Atlias priority gate is LIFTED. Its final handoff says0.5.2 installed and published, original app scope complete; no app work remains. Do not restart/wait on that chat for unrelated future changes.
