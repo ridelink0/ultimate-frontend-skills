@@ -1,0 +1,84 @@
+name: Consolidated plugin checks
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  suite-integrity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/suite-check.mjs
+      - run: node --test test/suite.test.mjs
+  usage-limits:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node: [18, 22]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: plugins/usage-limits
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - run: node --test
+      - run: node bin/cli.js --version
+  image-research:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: plugins/image-deep-research
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: browser-actions/setup-chrome@v1
+        id: chrome
+        with:
+          chrome-version: stable
+      # Channel installs cache Contents/ without the .app parent on macOS.
+      # Copy a real bundle so its canonical path retains .app, then launch
+      # the executable declared by its original Info.plist.
+      # https://github.com/browser-actions/setup-chrome/issues/658
+      - name: Restore macOS Chrome app bundle
+        id: mac-chrome
+        if: runner.os == 'macOS'
+        shell: bash
+        env:
+          CHROME_PATH: ${{ steps.chrome.outputs.chrome-path }}
+        run: |
+          set -euo pipefail
+          source_root=$(cd "$(dirname "$CHROME_PATH")/../.." && pwd -P)
+          bundle_parent=$(mktemp -d "$RUNNER_TEMP/idr-chrome.XXXXXX")
+          bundle="$bundle_parent/Google Chrome.app"
+          /usr/bin/ditto "$source_root" "$bundle"
+          executable=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$bundle/Contents/Info.plist")
+          browser="$bundle/Contents/MacOS/$executable"
+          test -x "$browser"
+          "$browser" --version
+          echo "path=$browser" >> "$GITHUB_OUTPUT"
+      - name: Allow Chrome sandbox on Linux
+        if: runner.os == 'Linux'
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+      - name: Test image research with a real browser
+        shell: bash
+        env:
+          IDR_BROWSER: ${{ runner.os == 'macOS' && steps.mac-chrome.outputs.path || steps.chrome.outputs.chrome-path }}
+        run: |
+          set -o pipefail
+          node --test --test-concurrency=1 test/*.test.mjs | tee image-tests.tap
+          if grep -qE '^# (skipped|cancelled) [1-9]' image-tests.tap; then
+            echo 'Image research tests were skipped or cancelled.' >&2
+            exit 1
+          fi

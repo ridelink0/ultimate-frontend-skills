@@ -1,6 +1,6 @@
 {
   "name": "ultimate-frontend-skills",
-  "version": "6.9.0",
+  "version": "6.10.0",
   "description": "Ultimate Frontend Skills (UFS) for Claude Code and Codex. One route from brief to shipped page: a corpus of award-winning reference sites to decide against, WebGL gradients, real three-plane parallax, procedural and Blender-modelled three.js exploded views, CC0 PBR materials and HDRI lighting, scroll choreography, and an audit that fails the usual AI-generated tells.",
   "keywords": [
     "claude",
@@ -35,7 +35,7 @@
   "author": "Gev (https://github.com/ridelink0)",
   "type": "module",
   "engines": {
-    "node": ">=18"
+    "node": ">=22"
   },
   "bin": {
     "ultimate-frontend-skills": "scripts/install.mjs",
@@ -46,21 +46,45 @@
     "skills/",
     "commands/",
     "hooks/",
+    "packs/",
     ".claude-plugin/",
     ".codex-plugin/",
     "image-deep-research.lock.json",
     "AGENTS.md",
     "LICENSE",
+    "PRIVACY.md",
     "README.md",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "plugins/usage-limits/bin/",
+    "plugins/usage-limits/skills/",
+    "plugins/usage-limits/commands/",
+    "plugins/usage-limits/hooks/",
+    "plugins/usage-limits/agents/",
+    "plugins/usage-limits/.claude-plugin/",
+    "plugins/usage-limits/.codex-plugin/",
+    "plugins/usage-limits/PRIVACY.md",
+    "plugins/usage-limits/package.json",
+    "plugins/usage-limits/README.md",
+    "plugins/usage-limits/LICENSE",
+    "plugins/image-deep-research/skills/",
+    "plugins/image-deep-research/commands/",
+    "plugins/image-deep-research/.claude-plugin/",
+    "plugins/image-deep-research/.codex-plugin/",
+    "plugins/image-deep-research/LICENSE",
+    "plugins/image-deep-research/README.md",
+    "plugins/image-deep-research/PRIVACY.md",
+    "plugins/image-deep-research/package.json"
   ],
   "scripts": {
     "test": "node --test --test-concurrency=1 test/*.test.mjs",
     "test:fast": "node test/run-fast.mjs",
+    "check:distribution": "node scripts/distribution.mjs",
     "audit": "node scripts/webdesign.mjs audit",
     "verify": "node scripts/webdesign.mjs verify",
     "awards": "node scripts/webdesign.mjs awards",
     "bench": "node scripts/webdesign.mjs tools",
-    "corpus": "node scripts/webdesign.mjs awards --build"
+    "corpus": "node scripts/webdesign.mjs awards --build",
+    "check:suite": "node scripts/suite-check.mjs",
+    "test:suite": "node scripts/suite-check.mjs --test"
   }
 }

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Usage Limits"
+  short_description: "How much usage limit is left, in turns of work"
+  default_prompt: "Use Usage Limits before starting anything long, when the limit is getting close, when asked how much usage is left or whether a job fits before the reset, and when asked to work cheaply or stretch what is left."

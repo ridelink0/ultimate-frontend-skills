@@ -1,0 +1,733 @@
+{
+  "schema": 1,
+  "generatedAt": "2026-11-02T01:38:41.231Z",
+  "skillsCliVersion": "1.7.4",
+  "host": "Windows; Claude Code plugin CLI; Vercel skills CLI",
+  "profileIsolation": [
+    "HOME",
+    "USERPROFILE",
+    "CLAUDE_CONFIG_DIR",
+    "CODEX_HOME",
+    "APPDATA",
+    "LOCALAPPDATA"
+  ],
+  "results": [
+    {
+      "id": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "pin": "3a13158ff1f32156cbe144108de48eda2ecaed9a",
+      "license": "MIT",
+      "level": "isolated-install-discovery",
+      "source": {
+        "commit": "3a13158ff1f32156cbe144108de48eda2ecaed9a",
+        "clean": true,
+        "pluginPath": ".",
+        "selected": [
+          {
+            "name": "ui-ux-pro-max",
+            "path": ".claude/skills/ui-ux-pro-max/SKILL.md",
+            "sha256": "88aadd21220542083a455e373bd162ffe7843266a71f06f4d837bb3b34f9c9c7"
+          }
+        ]
+      },
+      "commands": [
+        {
+          "command": [
+            "claude.exe",
+            "plugin",
+            "validate",
+            "D:\\plugin-work-1101\\upstream\\nextlevelbuilder-ui-ux-pro-max-skill"
+          ],
+          "exit": 0
+        },
+        {
+          "command": [
+            "claude.exe",
+            "plugin",
+            "marketplace",
+            "add",
+            "D:\\plugin-work-1101\\upstream\\nextlevelbuilder-ui-ux-pro-max-skill",
+            "--json"
+          ],
+          "exit": 0
+        },
+        {
+          "command": [
+            "claude.exe",
+            "plugin",
+            "install",
+            "ui-ux-pro-max@ui-ux-pro-max-skill",
+            "--scope",
+            "user",
+            "--json"
+          ],
+          "exit": 0
+        },
+        {
+          "command": [
+            "claude.exe",
+            "plugin",
+            "list",
+            "--json"
+          ],
+          "exit": 0
+        }
+      ],
+      "installed": [
+        {
+          "name": "ui-ux-pro-max",
+          "sha256": "88aadd21220542083a455e373bd162ffe7843266a71f06f4d837bb3b34f9c9c7"
+        }
+      ],
+      "coreFlow": "Selected instructions installed through the native host installer, listed, and matched byte-for-byte to the pinned source.",
+      "unverified": [
+        "No model inference, framework-wide suite, production backend or remote service action is exercised."
+      ]
+    },
+    {
+      "id": "anthropics/skills",
+      "pin": "ca45fc496a3436251f191354091d557da31c15b5",
+      "license": "Apache-2.0",
+      "level": "isolated-install-discovery",
+      "source": {
+        "commit": "ca45fc496a3436251f191354091d557da31c15b5",
+        "clean": true,
+        "pluginPath": ".",
+        "selected": [
+          {
+            "name": "webapp-testing",
+            "path": "skills/webapp-testing/SKILL.md",
+            "sha256": "8bc27790f6e6dfc2bfa6692326d4518baacf6a31dcc646d963c729adad2f7e34"
+          }
+        ]
+      },
+      "commands": [
+        {
+          "command": [
+            "node.exe",
+            "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npx-cli.js",
+            "--yes",
+            "skills@1.7.4",
+            "add",
+            "D:\\plugin-work-1101\\upstream\\anthropics-skills",
+            "--skill",
+            "webapp-testing",
+            "--agent",
+            "claude-code",
+            "--copy",
+            "--yes",
+            "--json"
+          ],
+          "exit": 0
+        },
+        {
+          "command": [
+            "node.exe",
+            "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npx-cli.js",
+            "--yes",
+            "skills@1.7.4",
+            "list",
+            "--agent",
+            "claude-code",
+            "--json"
+          ],
+          "exit": 0
+        }
+      ],
+      "installed": [
+        {
+          "name": "webapp-testing",
+          "sha256": "8bc27790f6e6dfc2bfa6692326d4518baacf6a31dcc646d963c729adad2f7e34"
+        }
+      ],
+      "coreFlow": "Selected instructions installed through the native host installer, listed, and matched byte-for-byte to the pinned source.",
+      "unverified": [
+        "No model inference, framework-wide suite, production backend or remote service action is exercised."
+      ]
+    },
+    {
+      "id": "expo/skills",
+      "pin": "05754e71d02abe0d2d7a2fb5259ccac41f5ea59c",
+      "license": "MIT",
+      "level": "isolated-install-discovery",
+      "source": {
+        "commit": "05754e71d02abe0d2d7a2fb5259ccac41f5ea59c",
+        "clean": true,
+        "pluginPath": "plugins/expo",
+        "selected": [
+          {
+            "name": "expo-animation",
+            "path": "plugins/expo/skills/expo-animation/SKILL.md",
+            "sha256": "24575736846fb6c1501414855fd3da52f231eddfedbcbd54c3f3f4bb435f11ef"
+          },
+          {
+            "name": "expo-native-ui",
+            "path": "plugins/expo/skills/expo-native-ui/SKILL.md",
+            "sha256": "83903d7a0a9aa32e1130283456f97b3e71f4083b372adfa7e025aa126f360a81"
+          }
+        ]
+      },
+      "commands": [
+        {
+          "command": [
+            "claude.exe",
+            "plugin",
+            "validate",
+            "D:\\plugin-work-1101\\upstream\\expo-skills"
+          ],
+          "exit": 0
+        },
+        {
+          "command": [
+            "claude.exe",
+            "plugin",
+            "marketplace",
+            "add",
+            "D:\\plugin-work-1101\\upstream\\expo-skills",
+            "--json"
+          ],
+          "exit": 0
+        },
+        {
+          "command": [
+            "claude.exe",
+            "plugin",
+            "install",
+            "expo@expo-plugins",
+            "--scope",
+            "user",
+            "--json"
+          ],
+          "exit": 0
+        },
+        {
+          "command": [
+            "claude.exe",
+            "plugin",
+            "list",
+            "--json"
+          ],
+          "exit": 0
+        }
+      ],
+      "installed": [
+        {
+          "name": "expo-animation",
+          "sha256": "24575736846fb6c1501414855fd3da52f231eddfedbcbd54c3f3f4bb435f11ef"
+        },
+        {
+          "name": "expo-native-ui",
+          "sha256": "83903d7a0a9aa32e1130283456f97b3e71f4083b372adfa7e025aa126f360a81"
+        }
+      ],
+      "coreFlow": "Selected instructions installed through the native host installer, listed, and matched byte-for-byte to the pinned source.",
+      "unverified": [
+        "No model inference, framework-wide suite, production backend or remote service action is exercised."
+      ]
+    },
+    {
+      "id": "trailofbits/skills",
+      "pin": "2be6433b39e009cd2b6fd3be1895f6b1faa5af9a",
+      "license": "CC-BY-SA-4.0",
+      "level": "isolated-install-discovery",
+      "source": {
+        "commit": "2be6433b39e009cd2b6fd3be1895f6b1faa5af9a",
+        "clean": true,
+        "pluginPath": "plugins/static-analysis",
+        "selected": [
+          {
+            "name": "semgrep",
+            "path": "plugins/static-analysis/skills/semgrep/SKILL.md",
+            "sha256": "578a7374820a448d033017769ba1ae1c7525ccd25c1557d3df86f333335d4e04"
+          },
+          {
+            "name": "codeql",
+            "path": "plugins/static-analysis/skills/codeql/SKILL.md",
+            "sha256": "611ea72990bc27c93bdf30a51117bbe50054749e67689f2a54cb25ae493ff4d5"
+          },
+          {
+            "name": "sarif-parsing",
+            "path": "plugins/static-analysis/skills/sarif-parsing/SKILL.md",
+            "sha256": "58dbe99453da3ca441d71b981558c2be1b4582d6670f3562e739f33285afc30f"
+          }
+        ]
+      },
+      "commands": [
+        {
+          "command": [
+            "claude.exe",
+            "plugin",
+            "validate",
+            "D:\\plugin-work-1101\\upstream\\trailofbits-skills"
+          ],
+          "exit": 0
+        },
+        {
+          "command": [
+            "claude.exe",
+            "plugin",
+            "marketplace",
+            "add",
+            "D:\\plugin-work-1101\\upstream\\trailofbits-skills",
+            "--json"
+          ],
+          "exit": 0
+        },
+        {
+          "command": [
+            "claude.exe",
+            "plugin",
+            "install",
+            "static-analysis@trailofbits",
+            "--scope",
+            "user",
+            "--json"
+          ],
+          "exit": 0
+        },
+        {
+          "command": [
+            "claude.exe",
+            "plugin",
+            "list",
+            "--json"
+          ],
+          "exit": 0
+        }
+      ],
+      "installed": [
+        {
+          "name": "semgrep",
+          "sha256": "578a7374820a448d033017769ba1ae1c7525ccd25c1557d3df86f333335d4e04"
+        },
+        {
+          "name": "codeql",
+          "sha256": "611ea72990bc27c93bdf30a51117bbe50054749e67689f2a54cb25ae493ff4d5"
+        },
+        {
+          "name": "sarif-parsing",
+          "sha256": "58dbe99453da3ca441d71b981558c2be1b4582d6670f3562e739f33285afc30f"
+        }
+      ],
+      "coreFlow": "Selected instructions installed through the native host installer, listed, and matched byte-for-byte to the pinned source.",
+      "unverified": [
+        "No model inference, framework-wide suite, production backend or remote service action is exercised."
+      ]
+    },
+    {
+      "id": "remotion-dev/skills",
+      "pin": "30d4553ecd46fbc5212fd0ff006ae43af522158b",
+      "license": null,
+      "level": "isolated-install-discovery",
+      "source": {
+        "commit": "30d4553ecd46fbc5212fd0ff006ae43af522158b",
+        "clean": true,
+        "pluginPath": ".",
+        "selected": [
+          {
+            "name": "remotion-best-practices",
+            "path": "skills/remotion-best-practices/SKILL.md",
+            "sha256": "ce02f5a6e9b641fc7e8313c0c1b9c1c62c000d8ab9d2aefa5e98eae736843640"
+          },
+          {
+            "name": "remotion-render",
+            "path": "skills/remotion-render/SKILL.md",
+            "sha256": "04a7064f52803a331277cd4801a6ff6bf05b89f7cb599e03c689ad529b2dd75a"
+          },
+          {
+            "name": "remotion-markup",
+            "path": "skills/remotion-markup/SKILL.md",
+            "sha256": "824c5890032059639e9eb5d2e3c5569aca8e0738c0640586225878b58f0a0097"
+          }
+        ]
+      },
+      "commands": [
+        {
+          "command": [
+            "node.exe",
+            "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npx-cli.js",
+            "--yes",
+            "skills@1.7.4",
+            "add",
+            "D:\\plugin-work-1101\\upstream\\remotion-dev-skills",
+            "--skill",
+            "remotion-best-practices",
+            "remotion-render",
+            "remotion-markup",
+            "--agent",
+            "claude-code",
+            "--copy",
+            "--yes",
+            "--json"
+          ],
+          "exit": 0
+        },
+        {
+          "command": [
+            "node.exe",
+            "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npx-cli.js",
+            "--yes",
+            "skills@1.7.4",
+            "list",
+            "--agent",
+            "claude-code",
+            "--json"
+          ],
+          "exit": 0
+        }
+      ],
+      "installed": [
+        {
+          "name": "remotion-best-practices",
+          "sha256": "ce02f5a6e9b641fc7e8313c0c1b9c1c62c000d8ab9d2aefa5e98eae736843640"
+        },
+        {
+          "name": "remotion-render",
+          "sha256": "04a7064f52803a331277cd4801a6ff6bf05b89f7cb599e03c689ad529b2dd75a"
+        },
+        {
+          "name": "remotion-markup",
+          "sha256": "824c5890032059639e9eb5d2e3c5569aca8e0738c0640586225878b58f0a0097"
+        }
+      ],
+      "coreFlow": "Selected instructions installed through the native host installer, listed, and matched byte-for-byte to the pinned source.",
+      "unverified": [
+        "No model inference, framework-wide suite, production backend or remote service action is exercised."
+      ]
+    },
+    {
+      "id": "supabase/agent-skills",
+      "pin": "c9be0e931b7930f7d02126d04774d904c381e7d7",
+      "license": "MIT",
+      "level": "isolated-install-discovery",
+      "source": {
+        "commit": "c9be0e931b7930f7d02126d04774d904c381e7d7",
+        "clean": true,
+        "pluginPath": ".",
+        "selected": [
+          {
+            "name": "supabase-postgres-best-practices",
+            "path": "skills/supabase-postgres-best-practices/SKILL.md",
+            "sha256": "4d7d1bd60f2ad7fd0d510269279519059dcc630d832f4c241d90735244c70525"
+          }
+        ]
+      },
+      "commands": [
+        {
+          "command": [
+            "node.exe",
+            "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npx-cli.js",
+            "--yes",
+            "skills@1.7.4",
+            "add",
+            "D:\\plugin-work-1101\\upstream\\supabase-agent-skills",
+            "--skill",
+            "supabase-postgres-best-practices",
+            "--agent",
+            "claude-code",
+            "--copy",
+            "--yes",
+            "--json"
+          ],
+          "exit": 0
+        },
+        {
+          "command": [
+            "node.exe",
+            "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npx-cli.js",
+            "--yes",
+            "skills@1.7.4",
+            "list",
+            "--agent",
+            "claude-code",
+            "--json"
+          ],
+          "exit": 0
+        }
+      ],
+      "installed": [
+        {
+          "name": "supabase-postgres-best-practices",
+          "sha256": "4d7d1bd60f2ad7fd0d510269279519059dcc630d832f4c241d90735244c70525"
+        }
+      ],
+      "coreFlow": "Selected instructions installed through the native host installer, listed, and matched byte-for-byte to the pinned source.",
+      "unverified": [
+        "No model inference, framework-wide suite, production backend or remote service action is exercised."
+      ]
+    },
+    {
+      "id": "vuejs-ai/skills",
+      "pin": "198f0cd8f7f9c0a3d9b566ccc16de6677519ee78",
+      "license": "MIT",
+      "level": "isolated-install-discovery",
+      "source": {
+        "commit": "198f0cd8f7f9c0a3d9b566ccc16de6677519ee78",
+        "clean": true,
+        "pluginPath": ".",
+        "selected": [
+          {
+            "name": "vue-best-practices",
+            "path": "skills/vue-best-practices/SKILL.md",
+            "sha256": "9f885a3e47cb3f13ad4a3c819360585b2c33d651eefd50706f1d13df3097739a"
+          },
+          {
+            "name": "vue-debug-guides",
+            "path": "skills/vue-debug-guides/SKILL.md",
+            "sha256": "dd700a6d7a7a915fc981dc7b7fede24770478241dc21c1fe4969918962e88859"
+          }
+        ]
+      },
+      "commands": [
+        {
+          "command": [
+            "node.exe",
+            "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npx-cli.js",
+            "--yes",
+            "skills@1.7.4",
+            "add",
+            "D:\\plugin-work-1101\\upstream\\vuejs-ai-skills",
+            "--skill",
+            "vue-best-practices",
+            "vue-debug-guides",
+            "--agent",
+            "claude-code",
+            "--copy",
+            "--yes",
+            "--json"
+          ],
+          "exit": 0
+        },
+        {
+          "command": [
+            "node.exe",
+            "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npx-cli.js",
+            "--yes",
+            "skills@1.7.4",
+            "list",
+            "--agent",
+            "claude-code",
+            "--json"
+          ],
+          "exit": 0
+        }
+      ],
+      "installed": [
+        {
+          "name": "vue-best-practices",
+          "sha256": "9f885a3e47cb3f13ad4a3c819360585b2c33d651eefd50706f1d13df3097739a"
+        },
+        {
+          "name": "vue-debug-guides",
+          "sha256": "dd700a6d7a7a915fc981dc7b7fede24770478241dc21c1fe4969918962e88859"
+        }
+      ],
+      "coreFlow": "Selected instructions installed through the native host installer, listed, and matched byte-for-byte to the pinned source.",
+      "unverified": [
+        "No model inference, framework-wide suite, production backend or remote service action is exercised."
+      ]
+    },
+    {
+      "id": "antfu/skills",
+      "pin": "7de210b51c8d48cc405a4eac3e17cbb1396c653b",
+      "license": "MIT",
+      "level": "isolated-install-discovery",
+      "source": {
+        "commit": "7de210b51c8d48cc405a4eac3e17cbb1396c653b",
+        "clean": true,
+        "pluginPath": ".",
+        "selected": [
+          {
+            "name": "vite",
+            "path": "skills/vite/SKILL.md",
+            "sha256": "003714bcd9cf1c111d6c4cb808942569d155c0452a459ab4299d9a480d2fe965"
+          },
+          {
+            "name": "vitest",
+            "path": "skills/vitest/SKILL.md",
+            "sha256": "7201b5584b59242741e49ecf40a1c82342836b262f94828229c3cc8af983f5ec"
+          }
+        ]
+      },
+      "commands": [
+        {
+          "command": [
+            "node.exe",
+            "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npx-cli.js",
+            "--yes",
+            "skills@1.7.4",
+            "add",
+            "D:\\plugin-work-1101\\upstream\\antfu-skills",
+            "--skill",
+            "vite",
+            "vitest",
+            "--agent",
+            "claude-code",
+            "--copy",
+            "--yes",
+            "--json"
+          ],
+          "exit": 0
+        },
+        {
+          "command": [
+            "node.exe",
+            "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npx-cli.js",
+            "--yes",
+            "skills@1.7.4",
+            "list",
+            "--agent",
+            "claude-code",
+            "--json"
+          ],
+          "exit": 0
+        }
+      ],
+      "installed": [
+        {
+          "name": "vite",
+          "sha256": "003714bcd9cf1c111d6c4cb808942569d155c0452a459ab4299d9a480d2fe965"
+        },
+        {
+          "name": "vitest",
+          "sha256": "7201b5584b59242741e49ecf40a1c82342836b262f94828229c3cc8af983f5ec"
+        }
+      ],
+      "coreFlow": "Selected instructions installed through the native host installer, listed, and matched byte-for-byte to the pinned source.",
+      "unverified": [
+        "No model inference, framework-wide suite, production backend or remote service action is exercised."
+      ]
+    },
+    {
+      "id": "wshobson/agents",
+      "pin": "7e2fb559cf4b824b27f1fec49fe88f7511066d26",
+      "license": "MIT",
+      "level": "isolated-install-discovery",
+      "source": {
+        "commit": "7e2fb559cf4b824b27f1fec49fe88f7511066d26",
+        "clean": true,
+        "pluginPath": "plugins/frontend-mobile-development",
+        "selected": [
+          {
+            "name": "react-state-management",
+            "path": "plugins/frontend-mobile-development/skills/react-state-management/SKILL.md",
+            "sha256": "2f0257ea3e087c73230385755ae807fea46ead7dc83c19455810176f8c820182"
+          }
+        ]
+      },
+      "commands": [
+        {
+          "command": [
+            "claude.exe",
+            "plugin",
+            "validate",
+            "D:\\plugin-work-1101\\upstream\\wshobson-agents"
+          ],
+          "exit": 0
+        },
+        {
+          "command": [
+            "claude.exe",
+            "plugin",
+            "marketplace",
+            "add",
+            "D:\\plugin-work-1101\\upstream\\wshobson-agents",
+            "--json"
+          ],
+          "exit": 0
+        },
+        {
+          "command": [
+            "claude.exe",
+            "plugin",
+            "install",
+            "frontend-mobile-development@claude-code-workflows",
+            "--scope",
+            "user",
+            "--json"
+          ],
+          "exit": 0
+        },
+        {
+          "command": [
+            "claude.exe",
+            "plugin",
+            "list",
+            "--json"
+          ],
+          "exit": 0
+        }
+      ],
+      "installed": [
+        {
+          "name": "react-state-management",
+          "sha256": "2f0257ea3e087c73230385755ae807fea46ead7dc83c19455810176f8c820182"
+        }
+      ],
+      "coreFlow": "Selected instructions installed through the native host installer, listed, and matched byte-for-byte to the pinned source.",
+      "unverified": [
+        "No model inference, framework-wide suite, production backend or remote service action is exercised."
+      ]
+    },
+    {
+      "id": "google-labs-code/stitch-skills",
+      "pin": "0337446dadde6f8c94210444e2aa9d546126480f",
+      "license": "Apache-2.0",
+      "level": "isolated-install-discovery",
+      "source": {
+        "commit": "0337446dadde6f8c94210444e2aa9d546126480f",
+        "clean": true,
+        "pluginPath": ".",
+        "selected": [
+          {
+            "name": "react-vite-dashboard",
+            "path": "plugins/stitch-build/skills/react-vite-dashboard/SKILL.md",
+            "sha256": "136e05587c76633e6033817b1b3c9e50a8e11765aa9f82df32b991f550a78a51"
+          }
+        ]
+      },
+      "commands": [
+        {
+          "command": [
+            "node.exe",
+            "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npx-cli.js",
+            "--yes",
+            "skills@1.7.4",
+            "add",
+            "D:\\plugin-work-1101\\upstream\\google-labs-code-stitch-skills",
+            "--skill",
+            "react-vite-dashboard",
+            "--agent",
+            "claude-code",
+            "--copy",
+            "--yes",
+            "--json"
+          ],
+          "exit": 0
+        },
+        {
+          "command": [
+            "node.exe",
+            "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npx-cli.js",
+            "--yes",
+            "skills@1.7.4",
+            "list",
+            "--agent",
+            "claude-code",
+            "--json"
+          ],
+          "exit": 0
+        }
+      ],
+      "installed": [
+        {
+          "name": "react-vite-dashboard",
+          "sha256": "136e05587c76633e6033817b1b3c9e50a8e11765aa9f82df32b991f550a78a51"
+        }
+      ],
+      "coreFlow": "Selected instructions installed through the native host installer, listed, and matched byte-for-byte to the pinned source.",
+      "unverified": [
+        "No model inference, framework-wide suite, production backend or remote service action is exercised."
+      ]
+    }
+  ]
+}

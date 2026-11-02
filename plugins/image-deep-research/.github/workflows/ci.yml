@@ -1,0 +1,53 @@
+name: Plugin checks
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # The browser tests skip when no Chrome, Edge or Chromium is found, and a
+      # skipped test counts as a pass. Install one, point the scripts at it, and
+      # fail the job below if anything skipped anyway.
+      - uses: browser-actions/setup-chrome@v1
+        id: setup-chrome
+        with:
+          chrome-version: stable
+      # Ubuntu 24.04's AppArmor profile denies the unprivileged user namespaces
+      # Chrome's sandbox is built on; without this the browser exits before it
+      # opens a debugging port. Relaxing it beats running with --no-sandbox.
+      - name: allow the Chrome sandbox on ubuntu
+        if: runner.os == 'Linux'
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+      - name: fail fast if no browser is resolvable
+        shell: bash
+        env:
+          IDR_BROWSER: ${{ steps.setup-chrome.outputs.chrome-path }}
+        run: |
+          node -e "
+            import('./skills/image-deep-research/scripts/browser.mjs').then(({ findBrowser }) => {
+              const bin = findBrowser();
+              if (!bin) { console.error('no browser found - the browser tests would skip'); process.exit(1); }
+              console.log('browser for the test run:', bin);
+            });
+          "
+      - name: node --test (nothing may skip)
+        shell: bash
+        env:
+          IDR_BROWSER: ${{ steps.setup-chrome.outputs.chrome-path }}
+        run: |
+          set -o pipefail
+          node --test --test-concurrency=1 --test-reporter=tap --test-reporter-destination=stdout test/*.test.mjs | tee test-output.tap
+          if grep -qE '^# (skipped|cancelled|todo) [1-9]' test-output.tap; then
+            echo "tests did not actually run:" >&2
+            grep -E '# (SKIP|TODO)|^not ok' test-output.tap >&2 || true
+            exit 1
+          fi

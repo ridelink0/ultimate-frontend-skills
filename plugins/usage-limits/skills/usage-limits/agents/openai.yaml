@@ -1,0 +1,4 @@
+interface:
+  display_name: "Usage Limits"
+  short_description: "Read the remaining usage limit and size the work to fit inside it"
+  default_prompt: "Use $usage-limits whenever the size of a job matters against the budget: before starting anything long, when asked how much usage is left, whether the work fits before the reset, when to stop, or how to finish using less. Run it once at the start of a piece of work rather than on every reply."
