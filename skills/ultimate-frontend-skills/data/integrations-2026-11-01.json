@@ -13,8 +13,9 @@
     "sha": "3a13158ff1f32156cbe144108de48eda2ecaed9a",
     "added": "2026-11-01",
     "source": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill/tree/3a13158ff1f32156cbe144108de48eda2ecaed9a",
-    "qualification": "Source downloaded; selected skill or plugin paths inspected. Upstream clean install, build and host flow not certified.",
-    "marketplace": "nextlevelbuilder/ui-ux-pro-max-skill"
+    "qualification": "Passed isolated Windows native install, list/discovery and selected instruction SHA256 match. Upstream framework suites, model execution and remote service operations are not certified.",
+    "marketplace": "nextlevelbuilder/ui-ux-pro-max-skill",
+    "qualificationEvidence": "integration-qualification-2026-11-01.json"
   },
   {
     "id": "anthropics/skills",
@@ -28,7 +29,8 @@
     "sha": "ca45fc496a3436251f191354091d557da31c15b5",
     "added": "2026-11-01",
     "source": "https://github.com/anthropics/skills/tree/ca45fc496a3436251f191354091d557da31c15b5",
-    "qualification": "Source downloaded; selected skill or plugin paths inspected. Upstream clean install, build and host flow not certified."
+    "qualification": "Passed isolated Windows native install, list/discovery and selected instruction SHA256 match. Upstream framework suites, model execution and remote service operations are not certified.",
+    "qualificationEvidence": "integration-qualification-2026-11-01.json"
   },
   {
     "id": "expo/skills",
@@ -45,8 +47,9 @@
     "sha": "05754e71d02abe0d2d7a2fb5259ccac41f5ea59c",
     "added": "2026-11-01",
     "source": "https://github.com/expo/skills/tree/05754e71d02abe0d2d7a2fb5259ccac41f5ea59c",
-    "qualification": "Source downloaded; selected skill or plugin paths inspected. Upstream clean install, build and host flow not certified.",
-    "marketplace": "expo/skills"
+    "qualification": "Passed isolated Windows native install, list/discovery and selected instruction SHA256 match. Upstream framework suites, model execution and remote service operations are not certified.",
+    "marketplace": "expo/skills",
+    "qualificationEvidence": "integration-qualification-2026-11-01.json"
   },
   {
     "id": "trailofbits/skills",
@@ -64,8 +67,9 @@
     "sha": "2be6433b39e009cd2b6fd3be1895f6b1faa5af9a",
     "added": "2026-11-01",
     "source": "https://github.com/trailofbits/skills/tree/2be6433b39e009cd2b6fd3be1895f6b1faa5af9a",
-    "qualification": "Source downloaded; selected skill or plugin paths inspected. Upstream clean install, build and host flow not certified.",
-    "marketplace": "trailofbits/skills"
+    "qualification": "Passed isolated Windows native install, list/discovery and selected instruction SHA256 match. Upstream framework suites, model execution and remote service operations are not certified.",
+    "marketplace": "trailofbits/skills",
+    "qualificationEvidence": "integration-qualification-2026-11-01.json"
   },
   {
     "id": "remotion-dev/skills",
@@ -81,7 +85,8 @@
     "sha": "30d4553ecd46fbc5212fd0ff006ae43af522158b",
     "added": "2026-11-01",
     "source": "https://github.com/remotion-dev/skills/tree/30d4553ecd46fbc5212fd0ff006ae43af522158b",
-    "qualification": "Source downloaded; selected skill or plugin paths inspected. Upstream clean install, build and host flow not certified."
+    "qualification": "Passed isolated Windows native install, list/discovery and selected instruction SHA256 match. Upstream framework suites, model execution and remote service operations are not certified.",
+    "qualificationEvidence": "integration-qualification-2026-11-01.json"
   },
   {
     "id": "supabase/agent-skills",
@@ -95,7 +100,8 @@
     "sha": "c9be0e931b7930f7d02126d04774d904c381e7d7",
     "added": "2026-11-01",
     "source": "https://github.com/supabase/agent-skills/tree/c9be0e931b7930f7d02126d04774d904c381e7d7",
-    "qualification": "Source downloaded; selected skill or plugin paths inspected. Upstream clean install, build and host flow not certified."
+    "qualification": "Passed isolated Windows native install, list/discovery and selected instruction SHA256 match. Upstream framework suites, model execution and remote service operations are not certified.",
+    "qualificationEvidence": "integration-qualification-2026-11-01.json"
   },
   {
     "id": "vuejs-ai/skills",
@@ -110,7 +116,8 @@
     "sha": "198f0cd8f7f9c0a3d9b566ccc16de6677519ee78",
     "added": "2026-11-01",
     "source": "https://github.com/vuejs-ai/skills/tree/198f0cd8f7f9c0a3d9b566ccc16de6677519ee78",
-    "qualification": "Source downloaded; selected skill or plugin paths inspected. Upstream clean install, build and host flow not certified."
+    "qualification": "Passed isolated Windows native install, list/discovery and selected instruction SHA256 match. Upstream framework suites, model execution and remote service operations are not certified.",
+    "qualificationEvidence": "integration-qualification-2026-11-01.json"
   },
   {
     "id": "antfu/skills",
@@ -125,7 +132,8 @@
     "sha": "7de210b51c8d48cc405a4eac3e17cbb1396c653b",
     "added": "2026-11-01",
     "source": "https://github.com/antfu/skills/tree/7de210b51c8d48cc405a4eac3e17cbb1396c653b",
-    "qualification": "Source downloaded; selected skill or plugin paths inspected. Upstream clean install, build and host flow not certified."
+    "qualification": "Passed isolated Windows native install, list/discovery and selected instruction SHA256 match. Upstream framework suites, model execution and remote service operations are not certified.",
+    "qualificationEvidence": "integration-qualification-2026-11-01.json"
   },
   {
     "id": "wshobson/agents",
@@ -141,22 +149,23 @@
     "sha": "7e2fb559cf4b824b27f1fec49fe88f7511066d26",
     "added": "2026-11-01",
     "source": "https://github.com/wshobson/agents/tree/7e2fb559cf4b824b27f1fec49fe88f7511066d26",
-    "qualification": "Source downloaded; selected skill or plugin paths inspected. Upstream clean install, build and host flow not certified.",
-    "marketplace": "wshobson/agents"
+    "qualification": "Passed isolated Windows native install, list/discovery and selected instruction SHA256 match. Upstream framework suites, model execution and remote service operations are not certified.",
+    "marketplace": "wshobson/agents",
+    "qualificationEvidence": "integration-qualification-2026-11-01.json"
   },
   {
     "id": "google-labs-code/stitch-skills",
     "kind": "skills",
     "skills": [
-      "react-components",
       "react-vite-dashboard"
     ],
     "licence": "Apache-2.0",
     "owns": "Stitch-to-component handoff and dashboard implementation.",
-    "why": "Use supplied designs with existing account tools. No enrollment, remote publication or implicit provider switch.",
+    "why": "Use supplied designs with existing account tools. No enrollment, remote publication or implicit provider switch. The namespaced react-components skill is excluded from the portable selection; its frontmatter name differs from its folder.",
     "sha": "0337446dadde6f8c94210444e2aa9d546126480f",
     "added": "2026-11-01",
     "source": "https://github.com/google-labs-code/stitch-skills/tree/0337446dadde6f8c94210444e2aa9d546126480f",
-    "qualification": "Source downloaded; selected skill or plugin paths inspected. Upstream clean install, build and host flow not certified."
+    "qualification": "Passed isolated Windows native install, list/discovery and selected instruction SHA256 match. Upstream framework suites, model execution and remote service operations are not certified.",
+    "qualificationEvidence": "integration-qualification-2026-11-01.json"
   }
 ]

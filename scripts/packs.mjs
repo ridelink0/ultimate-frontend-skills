@@ -152,16 +152,23 @@ export function commandsFor(pack, { project = false } = {}) {
   return cmds;
 }
 
-function run(cmd, args, dry, log = console.log) {
+export function runPackCommand(cmd, args, { dry = false, log = console.log, platform = process.platform, execPath = process.execPath, exists = existsSync, spawn = spawnSync, claude = null } = {}) {
   log('  $ ' + cmd + ' ' + args.join(' '));
   if (dry) return { ok: true, dry: true };
-  // npx and claude are .cmd shims on Windows and need a shell to launch; the
-  // arguments stay an array, so nothing the user typed is ever interpolated.
-  const shim = process.platform === 'win32' && (cmd === 'npx' || cmd === 'claude');
-  const res = spawnSync(shim ? cmd + '.cmd' : cmd, args, {
+  let file = cmd, argv = args;
+  if (cmd === 'claude') {
+    const cli = claude || findClaude();
+    if (!cli) return { ok: false, error: 'Claude executable is unavailable' };
+    file = cli.file; argv = [...cli.prefix, ...args];
+  } else if (cmd === 'npx' && platform === 'win32') {
+    const cli = join(dirname(execPath), 'node_modules', 'npm', 'bin', 'npx-cli.js');
+    if (!exists(cli)) return { ok: false, error: 'native npm npx-cli.js is unavailable beside Node; shell shims are not executed' };
+    file = execPath; argv = [cli, ...args];
+  }
+  const res = spawn(file, argv, {
     stdio: 'inherit',
     windowsHide: true,
-    shell: shim,
+    shell: false,
     timeout: 5 * 60 * 1000,
   });
   return { ok: res.status === 0, status: res.status, error: res.error && res.error.message };
@@ -209,7 +216,7 @@ export function install({ cwd = process.cwd(), only = null, dry = false, upstrea
       continue;
     }
     for (const [cmd, args] of cmds) {
-      const r = run(cmd, args, dry, log);
+      const r = runPackCommand(cmd, args, { dry, log });
       if (!r.ok) { ok = false; log('  failed' + (r.error ? ': ' + r.error : ' (exit ' + r.status + ')')); break; }
     }
     report.push({ id: pack.id, action: dry ? 'would install' : ok ? 'installed' : 'failed', ok });
