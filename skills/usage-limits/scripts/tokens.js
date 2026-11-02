@@ -12,12 +12,13 @@ function fromUsage(raw, provider) {
   const creation = u.cache_creation || {};
   const short = count(creation.ephemeral_5m_input_tokens);
   const long = count(creation.ephemeral_1h_input_tokens);
-  const cacheWrite = count(u.cache_creation_input_tokens) ?? (short !== null && long !== null ? short + long : null);
+  const cacheWrite = count(provider === 'openai' ? u.cache_write_input_tokens : u.cache_creation_input_tokens)
+    ?? (short !== null && long !== null ? short + long : null);
   const totalInput = provider === 'openai' ? input
     : input !== null && cacheRead !== null && cacheWrite !== null ? input + cacheRead + cacheWrite : null;
   return { input: totalInput, output, uncachedInput: provider === 'openai'
     ? input !== null && cacheRead !== null && cacheRead <= input ? input - cacheRead : null : input,
-    cacheRead, cacheWrite, reasoning: count(u.reasoning_output_tokens ?? u.output_tokens_details?.reasoning_tokens ?? u.completion_tokens_details?.reasoning_tokens) };
+    cacheRead, cacheWrite, reasoning: count(u.reasoning_output_tokens ?? u.output_tokens_details?.reasoning_tokens ?? u.output_tokens_details?.thinking_tokens ?? u.completion_tokens_details?.reasoning_tokens) };
 }
 function fromStatusLine(input) {
   const context = input && input.context_window;

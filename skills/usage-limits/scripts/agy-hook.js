@@ -36,9 +36,10 @@ const ceiling = require('./ceiling.js');
 // brief.js is loaded only on PreInvocation: PreToolUse runs before tool calls
 // and must stay a few small requires, not the whole brief.
 
-// PreToolUse must always name a decision. Antigravity reads an answer with no
-// decision as a refusal, so the old bare {} blocked every tool it ran on.
-const ALLOW = { decision: 'allow' };
+// A required decision must not become an automatic grant. Antigravity's
+// documented `ask` retains the user's normal prompt and existing grants;
+// `allow` would authorize the call on the plugin's own authority.
+const ASK = { decision: 'ask' };
 
 const EVENTS = ['PreInvocation', 'PostInvocation', 'PreToolUse', 'PostToolUse', 'Stop'];
 
@@ -121,14 +122,14 @@ async function run(now, input, argv) {
   usage.setHost(host.GEMINI);
   const sessionId = input && input.conversationId ? String(input.conversationId) : null;
   const budget = mode.forSession({ sessionId });
-  if (budget.policy.briefStyle === 'none') return event === 'PreToolUse' ? ALLOW : {};
+  if (budget.policy.briefStyle === 'none') return event === 'PreToolUse' ? ASK : {};
 
   if (event === 'PreToolUse') {
     const tool = toolNameOf(input);
-    if (!ceiling.isMultiplier(tool)) return ALLOW;
+    if (!ceiling.isMultiplier(tool)) return ASK;
     const at = ceiling.assess(Object.assign({ state: budget.state, env: process.env, sessionId }, reading(percentNow(now))));
     const call = ceiling.verdict(at, tool);
-    if (call.decision !== 'deny') return ALLOW;
+    if (call.decision !== 'deny') return ASK;
     return { decision: 'deny', reason: call.reason };
   }
 
@@ -172,10 +173,10 @@ function main(argv) {
       },
       () => {
         // Hooks block the agent loop here, so a failure has to be silent and
-        // well formed rather than loud - and on PreToolUse, well formed means
-        // an explicit allow, never a bare {} that reads as a refusal.
+        // well formed rather than loud. A failed permission hook must leave
+        // approval with the user, never grant it automatically.
         const pre = args.join(' ').includes('--event PreToolUse');
-        process.stdout.write(JSON.stringify(pre ? ALLOW : {}) + '\n');
+        process.stdout.write(JSON.stringify(pre ? ASK : {}) + '\n');
         process.exit(0);
       }
     );
@@ -183,4 +184,4 @@ function main(argv) {
 
 if (require.main === module) main(process.argv.slice(2));
 
-module.exports = { EVENTS, ALLOW, eventFrom, toolNameOf, percentNow, run, main };
+module.exports = { EVENTS, ASK, eventFrom, toolNameOf, percentNow, run, main };

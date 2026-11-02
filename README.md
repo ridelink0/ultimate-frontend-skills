@@ -8,6 +8,10 @@ narration. The panel and VS Code view show latest-response Input and Output
 with separate cache counters; unknown fields display `?` rather than zero.
 Account-scoped readings, refresh backoff and UI caches are invalidated on an
 account switch, and late answers from an old login are discarded.
+Learned estimates are account-stamped too. Once a switch is observed, spend
+before that boundary is excluded from the new account's estimates. Unattributed
+history cannot establish cross-account usage. Source checkouts do not register
+or enable a remote plugin automatically; install the selected plugin explicitly.
 
 [![npm](https://img.shields.io/npm/v/claude-usage-limits)](https://www.npmjs.com/package/claude-usage-limits)
 

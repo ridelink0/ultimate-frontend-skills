@@ -20,6 +20,12 @@ the cache breakdown is shown separately. A question mark is unknown, and zero
 is a reported zero. OpenAI cached input is a subset of its input total, and
 reasoning output is a subset of output: never add either twice.
 
+On an observed account switch, old learned estimates and transcript spend
+before the switch boundary are excluded, even if the plan tier is unchanged.
+This boundary is an observation, not proof of which account created every old
+transcript. Antigravity's adapter requests native user permission unless a
+budget ceiling denies the call; it never returns an automatic approval.
+
 Running out of limit halfway through a job is a scheduling failure, not bad
 luck. The numbers are on disk before the work starts. Read them, size the job
 against them, and either commit to finishing or cut the job down until it fits.
