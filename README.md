@@ -1,5 +1,10 @@
 # Ultimate Frontend Skills
 
+This is also the canonical source repository for Usage Limits and standalone
+image deep research. The marketplace keeps them independently selectable;
+UFS already includes image research. See [suite installation and qualification](docs/PLUGIN-SUITE.md)
+for source locations, package contents, licenses and release checks.
+
 ![Before: a hand-drawn scribble of a page. After: the Fable 5.1 launch page, sky, moon, serif title and dot-leader index.](docs/img/ultimate-frontend-skills.png)
 
 **UFS for Claude.** Build, measure, debug and secure cinematic websites from Claude Code or Codex. Plugin id `ultimate-frontend-skills`; the old `ultimate-website-skills` and `cinematic-web-design` install names redirect on GitHub but the skill and commands now live under the new id.

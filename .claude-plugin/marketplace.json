@@ -26,7 +26,7 @@
       },
       "source": "./plugins/usage-limits",
       "homepage": "https://github.com/ridelink0/ultimate-frontend-skills/tree/master/plugins/usage-limits",
-      "version": "1.43.2"
+      "version": "1.44.0"
     },
     {
       "name": "image-deep-research",

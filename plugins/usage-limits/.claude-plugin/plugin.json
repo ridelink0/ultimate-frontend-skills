@@ -1,7 +1,7 @@
 {
   "name": "usage-limits",
   "displayName": "Usage Limits",
-  "version": "1.43.2",
+  "version": "1.44.0",
   "description": "Puts your remaining Claude Code usage limit into Claude's context before every prompt, so it opens with what fits in the budget instead of starting work that gets cut off. Reports headroom as turns rather than percentages, prices a job before you start it, and detects your plan tier.",
   "author": {
     "name": "Gev",

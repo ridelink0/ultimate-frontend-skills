@@ -2,6 +2,14 @@
 
 Releases before 6.5.0 are recorded in their tag commits (`git log v6.4.2`) and on the GitHub releases page.
 
+## 6.10.0 - 2026-11-01
+
+- Consolidate UFS, Usage Limits and standalone image research sources with retained histories and separately selected manifests.
+- Ship readable source, offline packs and privacy policies; remove Python bytecode, shard the full reference corpus and require Node 22 for UFS.
+- Add ten pinned optional integrations, terminal and sound examples, dashboard/motion/workflow skills, Remotion, deep research and link previews.
+- Generate and validate per-page PNG previews with canonical metadata, font-safe title fitting, content-derived image URLs and confined output paths.
+- Include Usage Limits permission, account-boundary and token-display fixes, and image-research network, rights and capture-evidence fixes. Directory approval remains a separate review step.
+
 ## 6.9.0 - 2026-09-29
 
 Built from the 2026-09-29 expansion plan. Item 1: the render check runs in a cloud container, and a failure that belongs to the machine is reported as env instead of as the page's error. Item 2: the rendered tells, measured as a vector, and the data made honest about what the chassis ships.

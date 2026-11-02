@@ -2,7 +2,7 @@
   "name": "claude-usage-limits",
   "displayName": "Claude Usage Limits",
   "description": "Your Claude Code session, weekly and per-model limits as live bars in a view beside the Claude Code chat, drawn in Claude's own colours from Claude's own numbers.",
-  "version": "1.43.2",
+  "version": "1.44.0",
   "publisher": "ridelink",
   "license": "MIT",
   "icon": "media/icon.png",
