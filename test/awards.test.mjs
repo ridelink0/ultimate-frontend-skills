@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, statSync } from 'node:fs';
-import { normaliseRow, applyCheck, buildCorpus, formatAwards, pickReferences, statusVerdict, errorVerdict, CORPUS, queryAwards, tagsOf } from '../scripts/awards.mjs';
+import { normaliseRow, applyCheck, buildCorpus, formatAwards, pickReferences, statusVerdict, errorVerdict, CORPUS, queryAwards, tagsOf, readCorpus } from '../scripts/awards.mjs';
 
 // The corpus had no tests of its own, and three of its bugs shipped: --pick ran
 // unfiltered, a rebuild resurrected dead URLs as verified, and the merge dropped
@@ -134,7 +134,7 @@ test('building twice gives the same corpus, whatever a check followed in between
 });
 
 test('the shipped corpus is what the chunks build, and carries no stamp from a test run', () => {
-  const merged = JSON.parse(readFileSync(CORPUS, 'utf8'));
+  const merged = readCorpus();
   const before = statSync(CORPUS).mtimeMs;
   // The same merge `awards --build` runs, in memory. Ids, not URLs: the check
   // follows redirects into the merged file, so a URL legitimately drifts from

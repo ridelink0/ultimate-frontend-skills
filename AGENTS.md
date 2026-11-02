@@ -76,7 +76,7 @@ hooks/                          UserPromptSubmit nudge
 
 Constraints:
 
-- **Zero dependencies.** Node 18+, built-ins only. There is a `package.json`,
+- **Zero dependencies.** Node 22+, built-ins only. There is a `package.json`,
   but it carries metadata, `bin` entries and script aliases only - do not add a
   dependency block to it. `type: module` is set, which is why every runnable
   file here is `.mjs` or `.cjs` rather than `.js`.

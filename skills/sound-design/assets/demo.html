@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Opt-in sound reference</title><main><h1>Opt-in sound reference</h1>
+<p>Original synthesized demonstration cues. Sound starts off.</p>
+<button id="toggle" type="button" aria-pressed="false">Enable sound</button>
+<button id="complete" type="button">Complete example task</button>
+<p id="status" role="status">Sound off. No task completed.</p></main>
+<script type="module">
+import {createSoundFeedback} from './feedback.mjs';
+const audio=createSoundFeedback(),toggle=document.querySelector('#toggle'),status=document.querySelector('#status');
+toggle.addEventListener('click',async()=>{if(audio.enabled)audio.mute();else await audio.enable();toggle.setAttribute('aria-pressed',String(audio.enabled));toggle.textContent=audio.enabled?'Mute sound':'Enable sound';status.textContent=audio.enabled?'Sound on.':'Sound off.';});
+document.querySelector('#complete').addEventListener('click',()=>{status.textContent='Example task complete.';audio.play();});
+addEventListener('pagehide',()=>audio.dispose());
+</script></html>

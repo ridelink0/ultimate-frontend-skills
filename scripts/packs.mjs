@@ -137,12 +137,12 @@ export function codexToml(pack) {
 
 /* --------------------------------------------------------------- install -- */
 
-function commandsFor(pack) {
+export function commandsFor(pack, { project = false } = {}) {
   if (pack.kind === 'skills') {
     // --all: every skill in the repo, every detected agent, no prompts. The
     // trailing -y answers the scope prompt: project-level inside a project,
     // global otherwise. Run it from a project to install for that project.
-    return [['npx', ['-y', 'skills@latest', 'add', pack.id, '--all', '-y']]];
+    return [['npx', ['-y', 'skills@latest', 'add', pack.id, '--skill', ...pack.skills, ...(project ? [] : ['--global']), '-y']]];
   }
   const cmds = [];
   if (pack.marketplace && pack.marketplace !== 'claude-plugins-official') {
@@ -195,7 +195,7 @@ export function install({ cwd = process.cwd(), only = null, dry = false, upstrea
     // A binary that is not here is never spawned. On a Codex host with no
     // claude CLI the plugin installs through config.toml, so that block is
     // what gets printed; otherwise the exact commands, for the user to run.
-    const cmds = commandsFor(pack);
+    const cmds = commandsFor(pack, { project });
     const missing = pack.kind === 'plugin' ? (here.claude ? null : 'claude') : (here.npx ? null : 'npx');
     if (missing) {
       if (missing === 'claude' && here.codex) {

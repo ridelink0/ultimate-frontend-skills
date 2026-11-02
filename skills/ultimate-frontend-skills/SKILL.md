@@ -67,6 +67,12 @@ to install something mid-build (`references/plugins.md`).
 | Surface | Read |
 |---|---|
 | A website | this file, then `references/pipeline.md` |
+| A complex workflow site | `references/workflows.md`, then the `ui-pro-max` skill |
+| A terminal interface | the `terminal-ui` skill |
+| UI sound | the `sound-design` skill; sound starts off |
+| Dashboard or animation artifacts | `claude-dashboards` or `claude-motion`; verify native access |
+| Code-authored video | the `remotion-video` skill for the Remotion route |
+| Research or social cards | `deep-research`, `image-deep-research`, then `link-preview` |
 | An app (mobile, desktop, PWA, Expo) | `references/apps.md`: the first screen is a task; navigation before palette; empty, loading and error states first; platform conventions outrank the house style |
 | A game's site or start screen | `references/games.md`: in-world UI, exact controls, real numbers; the eyebrow-headline-two-buttons stack is the tell |
 | The game itself | `references/games.md`, then `references/three.md`: green checks are the floor; run the play pass with the controls in your hands |

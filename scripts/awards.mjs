@@ -14,7 +14,7 @@
 
    No dependencies. Node 18+. */
 
-import { readFileSync, writeFileSync, existsSync, readdirSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, readdirSync, mkdirSync, rmSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -31,12 +31,47 @@ export function loadCorpus() {
   if (cache) return cache;
   if (!existsSync(CORPUS)) return (cache = []);
   try {
-    const parsed = JSON.parse(readFileSync(CORPUS, 'utf8'));
-    cache = Array.isArray(parsed) ? parsed : Array.isArray(parsed.sites) ? parsed.sites : [];
+    cache = readCorpus(CORPUS);
   } catch {
     cache = [];
   }
   return cache;
+}
+
+// Keep every reference readable by directory reviewers. Legacy array files
+// remain readable; new writes use bounded JSON parts and a small manifest.
+export function readCorpus(file = CORPUS) {
+  const parsed = JSON.parse(readFileSync(file, 'utf8'));
+  if (Array.isArray(parsed)) return parsed;
+  if (Array.isArray(parsed.sites)) return parsed.sites;
+  if (parsed.format !== 'ufs-awards-parts-v1' || !Array.isArray(parsed.parts)) throw new Error('invalid awards manifest');
+  const sites = parsed.parts.flatMap(part => {
+    if (typeof part !== 'string' || !/^awards-merged\/part-\d+\.json$/.test(part)) throw new Error('invalid awards part path');
+    const rows = JSON.parse(readFileSync(join(dirname(file), part), 'utf8'));
+    if (!Array.isArray(rows)) throw new Error('awards part must be an array');
+    return rows;
+  });
+  if (sites.length !== parsed.count) throw new Error('awards manifest count mismatch');
+  return sites;
+}
+export function writeCorpus(sites, file = CORPUS) {
+  const dir = join(dirname(file), 'awards-merged');
+  mkdirSync(dir, { recursive: true });
+  const groups = []; let group = [], size = 3;
+  for (const row of sites) {
+    const bytes = Buffer.byteLength(JSON.stringify(row, null, 1)) + 3;
+    if (bytes > 192 * 1024) throw new Error('one awards reference exceeds the source review limit');
+    if (group.length && size + bytes > 192 * 1024) { groups.push(group); group = []; size = 3; }
+    group.push(row); size += bytes;
+  }
+  if (group.length) groups.push(group);
+  const parts = groups.map((rows, i) => {
+    const name = 'part-' + String(i + 1).padStart(2, '0') + '.json';
+    writeFileSync(join(dir, name), JSON.stringify(rows, null, 1) + '\n');
+    return 'awards-merged/' + name;
+  });
+  writeFileSync(file, JSON.stringify({ format: 'ufs-awards-parts-v1', count: sites.length, parts }, null, 2) + '\n');
+  for (const name of readdirSync(dir)) if (/^part-\d+\.json$/.test(name) && !parts.includes('awards-merged/' + name)) rmSync(join(dir, name));
 }
 
 /* The corpus ships merged, but it is harvested in chunks and a chunk may be
@@ -114,7 +149,7 @@ export function buildCorpus(options = {}) {
   report.entries = all.length;
   if (!write) return { ...report, rows: all };
   mkdirSync(DATA_DIR, { recursive: true });
-  writeFileSync(CORPUS, JSON.stringify(all, null, 1) + '\n');
+  writeCorpus(all);
   cache = all;
   return report;
 }
@@ -603,7 +638,7 @@ export function applyCheck(report, options = {}) {
     entry.checked = report.stampedAt || null;
     changed++;
   }
-  if (changed && !inMemory) writeFileSync(CORPUS, JSON.stringify(all, null, 1) + '\n');
+  if (changed && !inMemory) writeCorpus(all);
   return changed;
 }
 
