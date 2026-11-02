@@ -54,7 +54,7 @@ will be:
   `claude` in the original directory, with the whole hand-off (this work, and
   the relay's thinking, voice and bug-check lines) as its first prompt, Remote
   Control on under the name `usage-limits relay <project> (new session)`, and
-  the relay's `permission` mode and `model`. It needs no session id. On Windows
+  native user permissions and the relay's selected `model`. It needs no session id. On Windows
   the hand-off goes inline only through the native `claude.exe`; with only the
   npm `claude.cmd` shim, the first prompt points at the hand-off file instead,
   because cmd.exe cuts an argument at its first line break. It does the same

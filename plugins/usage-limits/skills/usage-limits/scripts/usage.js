@@ -1944,12 +1944,15 @@ function modelSamples(headroom, previous) {
 // `subscriptionCreatedAt` is the original signup, not the upgrade. So the plan
 // is stamped onto the calibration instead, and a stamp that no longer matches
 // is itself the proof that it moved.
-function calibrationForPlan(all, planId) {
+function calibrationForPlan(all, planId, login) {
   const kept = {};
   let dropped = false;
   for (const key of Object.keys(all || {})) {
     const entry = all[key];
     if (!entry || typeof entry !== 'object') continue;
+    // Two accounts can have the same tier but different recorded spend.
+    // Missing identity is unknown, not evidence it belongs to this login.
+    if (login && entry.accountUuid !== login) continue;
     // A stamp that no longer matches is proof the plan moved, and worth saying
     // so: the reading on disk was measured against the other allowance too.
     if (entry.plan && planId && entry.plan !== planId) {
@@ -1969,11 +1972,11 @@ function calibrationForPlan(all, planId) {
   return { learned: kept, planChanged: dropped };
 }
 
-function stampPlan(all, planId) {
-  if (!planId) return all;
+function stampPlan(all, planId, login) {
+  if (!planId && !login) return all;
   const stamped = {};
   for (const key of Object.keys(all || {})) {
-    stamped[key] = Object.assign({}, all[key], { plan: planId });
+    stamped[key] = Object.assign({}, all[key], planId ? { plan: planId } : {}, login ? { accountUuid: login } : {});
   }
   return stamped;
 }
@@ -2924,6 +2927,20 @@ function accountUuid() {
     : null;
 }
 
+// Record only the last observed account and its boundary. Transcripts do not
+// reliably identify their login, so spend before an observed switch cannot
+// price or correct the new account's allowance.
+function accountScope(login, now) {
+  const at = Number.isFinite(now) ? now : Date.now();
+  if (!login) return { accountUuid: null, since: 0 };
+  const file = path.join(configDir(), 'usage-limits-account.json');
+  const held = readJson(file);
+  if (held && held.accountUuid === login && Number.isFinite(held.since)) return held;
+  const next = { accountUuid: login, since: held && held.accountUuid ? at : 0 };
+  try { writeJsonAtomic(file, next); } catch (err) { /* A failed write never grants access to old spend. */ }
+  return next;
+}
+
 // Per window key, the percentage each account source reports and which one
 // the report is using: { five_hour: { cache: 14, live: 20, used: 'live' } }.
 // Null unless both sources have the window.
@@ -2945,6 +2962,7 @@ function collectClaude(now) {
   const account = readJson(accountFile()) || {};
   const settings = readJson(path.join(configDir(), 'settings.json')) || {};
   const oauth = account.oauthAccount || {};
+  const scope = accountScope(oauth.accountUuid, now);
   const heldCache = account.cachedUsageUtilization || null;
   const cache = oauth.accountUuid && heldCache && heldCache.accountUuid && heldCache.accountUuid !== oauth.accountUuid ? null : heldCache;
   // The panel and the status line take the same reading Claude Code takes for
@@ -2965,6 +2983,8 @@ function collectClaude(now) {
   return {
     now,
     host: host.CLAUDE,
+    accountUuid: scope.accountUuid,
+    accountingSince: scope.since,
     money: true,
     accountFile: accountFile(),
     plan: plan.label,
@@ -3272,8 +3292,10 @@ async function report(now, options) {
   const scanPartial = Boolean(all && all.partial);
   // A refused request is a record of the limit, not a turn against it, so it is
   // kept apart from everything that measures spend or pace.
-  const rejections = lastRejections(all);
-  const events = all.filter((event) => !event.rejected);
+  const visible = Number.isFinite(base.accountingSince) && base.accountingSince > 0
+    ? all.filter((event) => event.at >= base.accountingSince) : all;
+  const rejections = lastRejections(visible);
+  const events = visible.filter((event) => !event.rejected);
 
   // Codex carries the meter inside the same records as the turns, so the full
   // scan can find a newer reading than the quick one collect() does. Reuse it
@@ -3290,7 +3312,7 @@ async function report(now, options) {
   // Anything learned on a different plan is void, and its absence is what makes
   // the report say so rather than quietly pricing this plan with the last one's
   // numbers.
-  const calibrated = calibrationForPlan(onDisk, base.planId);
+  const calibrated = calibrationForPlan(onDisk, base.planId, base.accountUuid);
   const learned = Object.assign({}, calibrated.learned);
 
   // Codex logs the meter next to every request, so the price of a point can be
@@ -3334,7 +3356,7 @@ async function report(now, options) {
   // What the room left buys in turns of each model, and the record that lets a
   // later session answer that for a model it has not run yet. Scoped to a week
   // because every window a family draws on here is a weekly one.
-  const remembered = calibrationForPlan(readModelRecord(), base.planId).learned;
+  const remembered = calibrationForPlan(readModelRecord(), base.planId, base.accountUuid).learned;
   const headroom = modelHeadroom(
     windows,
     events.filter((event) => event.at >= now - 7 * DAY),
@@ -3342,7 +3364,7 @@ async function report(now, options) {
     remembered
   );
   const sampled = modelSamples(headroom, remembered);
-  if (sampled.changed) writeModelRecord(stampPlan(sampled.models, base.planId));
+  if (sampled.changed) writeModelRecord(stampPlan(sampled.models, base.planId, base.accountUuid));
 
   // Keep the best sample seen so far, so a thin baseline never has to guess.
   const updated = Object.assign({}, learned);
@@ -3357,7 +3379,7 @@ async function report(now, options) {
   for (const key of Object.keys(updated)) {
     if (updated[key] !== onDisk[key]) changed = true;
   }
-  if (changed) writeCalibration(stampPlan(updated, base.planId));
+  if (changed) writeCalibration(stampPlan(updated, base.planId, base.accountUuid));
 
   const recentEvents = events.filter((event) => event.at >= now - HOUR);
   const recent = totals(recentEvents);
@@ -4410,6 +4432,7 @@ module.exports = {
   collectClaude,
   preferLive,
   accountUuid,
+  accountScope,
   subagentTranscripts,
   liveAgents,
   AGENT_LIVE_MS,

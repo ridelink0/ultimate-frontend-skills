@@ -65,11 +65,11 @@ function runHook(args, stdin, env) {
   return JSON.parse(result.stdout.trim().split('\n').pop());
 }
 
-test('Antigravity PreToolUse always answers with an explicit decision', () => {
-  // An ordinary tool: allowed, never a bare {} (Antigravity reads that as a refusal).
-  assert.deepEqual(runHook(['--event', 'PreToolUse'], JSON.stringify({ toolCall: { name: 'run_command' } })), { decision: 'allow' });
-  // Unparseable input on PreToolUse still yields an explicit allow.
-  assert.deepEqual(runHook(['--event', 'PreToolUse'], 'not json'), { decision: 'allow' });
+test('Antigravity PreToolUse leaves permission with the user, including malformed and off-mode input', () => {
+  assert.deepEqual(runHook(['--event', 'PreToolUse'], JSON.stringify({ toolCall: { name: 'run_command' } })), { decision: 'ask' });
+  assert.deepEqual(runHook(['--event', 'PreToolUse'], 'not json'), { decision: 'ask' });
+  assert.deepEqual(runHook(['--event', 'PreToolUse'], JSON.stringify({ toolCall: { name: 'invoke_subagent' } })), { decision: 'ask' });
+  assert.deepEqual(runHook(['--event', 'PreToolUse'], JSON.stringify({ toolCall: { name: 'invoke_subagent' } }), { USAGE_LIMITS_MODE: 'off' }), { decision: 'ask' });
 });
 
 test('the Antigravity brief never reports Claude Code usage and says the quota is unreadable', () => {

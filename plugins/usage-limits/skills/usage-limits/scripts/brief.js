@@ -1401,6 +1401,9 @@ function briefText(input) {
   const care = shortStanding
     ? ''
     : ' Quote the binding window; its turns and reset time belong to it alone.';
+  const fitAtWall = parts.pressure === 'tight'
+    ? ' Assess the complete request including verification; say "fits" only with evidence, otherwise say exactly "it may not fit", then stop repeating budget commentary.'
+    : '';
 
   // Finished work closes with what it cost. Not every reply: a progress note
   // mid-task is not the moment, and once the budget is gone nothing further
@@ -1470,11 +1473,11 @@ function briefText(input) {
       (lowPrioritySentence ? ' ' + lowPrioritySentence : '') +
       (cloudSentence ? ' ' + cloudSentence : '') +
       (parts.pressure !== 'roomy' && relaySentences.length ? ' ' + relaySentences.join(' ') : '') +
-      '\n' + instruction + directive
+      '\n' + instruction + fitAtWall + directive
     );
   }
 
-  return sentences.join(' ') + '\n' + instruction + closing + care + directive;
+  return sentences.join(' ') + '\n' + instruction + fitAtWall + closing + care + directive;
 }
 
 // Past this the context is the cost of the session, not a detail of it.
