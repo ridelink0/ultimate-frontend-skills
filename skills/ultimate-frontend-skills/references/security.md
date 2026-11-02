@@ -57,14 +57,17 @@ mechanism: route it through the map or use a static tag. Font CSS from a
 font service is generated per user agent and cannot carry a stable hash, so
 it is exempt from the integrity rule and covered by the next point instead.
 
-**Fonts and trackers.** Loading fonts from Google's servers sends every
-visitor's IP address to Google before the page paints; the Munich Regional
-Court ruled in January 2022 that this needs a legal basis the page does not
-have. Self-host the woff2 files, or use a same-origin mirror. Any analytics or
-pixel id obliges a notice, and Google tags shown to EEA visitors need Consent
-Mode v2 signals wired to a real consent banner or Google collects nothing.
-Cookieless analytics (Plausible, Fathom, Simple Analytics) avoid the banner
-entirely.
+**Fonts and trackers.** Third-party requests can disclose visitor network
+data. Prefer self-hosted fonts where licensed, and document recipients,
+purposes, retention and the applicable lawful basis. "Cookieless" alone does
+not establish a consent exemption: assess device access, tracking and
+configuration for each jurisdiction. [CNIL's audience-measurement exemption is narrow](https://www.cnil.fr/fr/cookies-et-autres-traceurs/regles/cookies/FAQ)
+and does not remove applicable GDPR duties or user rights. Block non-exempt
+tracking until required consent; provide withdrawal and verify network
+behavior after refusal. [Google Consent Mode](https://developers.google.com/tag-platform/security/concepts/consent-mode)
+communicates choices; it does not obtain consent. Basic mode can block tags,
+while advanced mode can send cookieless measurements when storage consent is
+denied. These are implementation checks, not a legal certification.
 
 **Client-side patterns.** `innerHTML` or `document.write` fed anything that is
 not a literal is an injection; `postMessage` to `"*"` and a `message` listener

@@ -34,7 +34,8 @@
     "hooks/",
     "agents/",
     ".claude-plugin/",
-    ".codex-plugin/"
+    ".codex-plugin/",
+    "PRIVACY.md"
   ],
   "engines": {
     "node": ">=18"

@@ -18,7 +18,9 @@ test('shipped distribution is readable and contains offline packs and privacy', 
   assert.deepEqual(report.errors, []);
   assert.ok(report.files.some(f => f.path.startsWith('packs/')));
   assert.ok(report.files.some(f => f.path === 'PRIVACY.md'));
-  assert.ok(!report.files.some(f => f.path.startsWith('plugins/')));
+  assert.ok(report.files.some(f => f.path === 'plugins/usage-limits/package.json'));
+  assert.ok(report.files.some(f => f.path === 'plugins/image-deep-research/package.json'));
+  assert.ok(!report.files.some(f => /^plugins\/[^/]+\/(test|docs|tools)\//.test(f.path)), 'development fixtures are not shipped');
 });
 test('distribution rejects disguised executables, invalid UTF8 and lifecycle downloads', () => {
   const dir = mkdtempSync(join(tmpdir(), 'ufs-distribution-'));

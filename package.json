@@ -54,7 +54,26 @@
     "LICENSE",
     "PRIVACY.md",
     "README.md",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "plugins/usage-limits/bin/",
+    "plugins/usage-limits/skills/",
+    "plugins/usage-limits/commands/",
+    "plugins/usage-limits/hooks/",
+    "plugins/usage-limits/agents/",
+    "plugins/usage-limits/.claude-plugin/",
+    "plugins/usage-limits/.codex-plugin/",
+    "plugins/usage-limits/PRIVACY.md",
+    "plugins/usage-limits/package.json",
+    "plugins/usage-limits/README.md",
+    "plugins/usage-limits/LICENSE",
+    "plugins/image-deep-research/skills/",
+    "plugins/image-deep-research/commands/",
+    "plugins/image-deep-research/.claude-plugin/",
+    "plugins/image-deep-research/.codex-plugin/",
+    "plugins/image-deep-research/LICENSE",
+    "plugins/image-deep-research/README.md",
+    "plugins/image-deep-research/PRIVACY.md",
+    "plugins/image-deep-research/package.json"
   ],
   "scripts": {
     "test": "node --test --test-concurrency=1 test/*.test.mjs",
@@ -64,6 +83,8 @@
     "verify": "node scripts/webdesign.mjs verify",
     "awards": "node scripts/webdesign.mjs awards",
     "bench": "node scripts/webdesign.mjs tools",
-    "corpus": "node scripts/webdesign.mjs awards --build"
+    "corpus": "node scripts/webdesign.mjs awards --build",
+    "check:suite": "node scripts/suite-check.mjs",
+    "test:suite": "node scripts/suite-check.mjs --test"
   }
 }

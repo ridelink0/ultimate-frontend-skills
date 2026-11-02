@@ -7,11 +7,11 @@
     "name": "Gev",
     "url": "https://github.com/ridelink0"
   },
-  "homepage": "https://github.com/ridelink0/image-deep-research",
-  "repository": "https://github.com/ridelink0/image-deep-research",
-  "documentationUrl": "https://github.com/ridelink0/image-deep-research#readme",
-  "supportUrl": "https://github.com/ridelink0/image-deep-research/issues",
-  "privacyPolicyUrl": "https://github.com/ridelink0/image-deep-research/blob/main/PRIVACY.md",
+  "homepage": "https://github.com/ridelink0/ultimate-frontend-skills/tree/master/plugins/image-deep-research",
+  "repository": "https://github.com/ridelink0/ultimate-frontend-skills",
+  "documentationUrl": "https://github.com/ridelink0/ultimate-frontend-skills/tree/master/plugins/image-deep-research#readme",
+  "supportUrl": "https://github.com/ridelink0/ultimate-frontend-skills/issues",
+  "privacyPolicyUrl": "https://github.com/ridelink0/ultimate-frontend-skills/blob/master/plugins/image-deep-research/PRIVACY.md",
   "license": "MIT",
   "keywords": [
     "image research",

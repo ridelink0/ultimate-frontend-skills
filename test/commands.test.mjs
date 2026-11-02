@@ -204,7 +204,9 @@ test('every relative link in the shipped markdown resolves to a file that exists
 test('no shipped file names a version of this plugin other than the current one', () => {
   const version = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8')).version;
   const scan = [
-    'README.md', 'AGENTS.md', 'PRIVACY.md', 'package.json', '.claude-plugin/plugin.json', '.claude-plugin/marketplace.json', '.codex-plugin/plugin.json',
+    // The consolidated marketplace also names independently versioned plugins;
+    // suite-check and regression.test validate their own manifest versions.
+    'README.md', 'AGENTS.md', 'PRIVACY.md', 'package.json', '.claude-plugin/plugin.json', '.codex-plugin/plugin.json',
     ...readdirSync(join(ROOT, 'scripts')).filter((f) => f.endsWith('.mjs')).map((f) => 'scripts/' + f),
     ...readdirSync(join(ROOT, 'commands')).map((f) => 'commands/' + f),
     ...readdirSync(join(ROOT, 'skills')).map((s) => 'skills/' + s + '/SKILL.md').filter((f) => existsSync(join(ROOT, f))),
