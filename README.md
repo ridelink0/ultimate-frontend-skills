@@ -1,5 +1,7 @@
 # Better Computer Use
 
+[![M8ven Score](https://m8ven.ai/badge/mcp/ridelink0/claude-computer-use)](https://m8ven.ai/mcp/ridelink0/claude-computer-use?s=readme)
+
 Codex-style computer use for Claude Code, on Windows and macOS — the accessibility-tree way, not screenshots.
 (The macOS host has never been compiled or run on a Mac: see [About the macOS host](#about-the-macos-host).)
 
