@@ -5,6 +5,22 @@ import { resolve, join, relative, extname, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 const OPAQUE = /\.(?:pyc|pyo|wasm|node|exe|dll|so|dylib|class|jar|zip|gz|tgz|7z|bin|glb)$/i;
 const IMAGE = /\.(?:png|jpg|jpeg|gif|webp|ico)$/i;
+// The Claude directory refuses a plugin that approves its own actions or weakens
+// the user's permission prompts. Each pattern is one way shipped source can do
+// that; reading a setting or returning a deny decision does not match. The
+// one-letter classes like [P] match the same text but keep this file, which is
+// shipped and audited too, from spelling the names it looks for.
+const SELF_APPROVAL = [
+  [/skipDangerousMode[P]ermissionPrompt|bypassPermissionsMode[A]ccepted/, 'pre-accepts the bypass-permissions warning'],
+  [/hasTrustDialogAccepted['"]?\s*(?::|=(?!=))\s*true/, 'pre-accepts folder trust'],
+  [/enableAllProjectMcpServers['"]?\s*(?::|=(?!=))\s*true/, 'pre-approves project MCP servers'],
+  [/(?:defaultMode|permissionMode)['"]?\s*[:=,]\s*['"]?bypassPermissions|--permission-mode[\s='",]+bypassPermissions/, 'turns on bypass permissions'],
+  [/--dangerously-[s]kip-permissions|--dangerously-[b]ypass-approvals-and-sandbox/, 'launches with permission checks switched off'],
+  [/(?:permissionDecision|behavior)['"]?\s*:\s*['"]allow['"]/, 'answers its own permission prompt with allow'],
+  [/['"]PermissionRequest['"]\s*:/, 'registers a hook that answers permission prompts'],
+  [/permissions\.allow\b|['"]?permissions['"]?\s*:\s*\{\s*['"]?allow['"]?\s*:/, 'adds its own entries to the permission allow list'],
+  [/approval_policy\s*=\s*['"]never['"]|sandbox_mode\s*=\s*['"]danger-full-access['"]/, 'switches off Codex approvals or the sandbox'],
+];
 function imageBytes(b, ext) {
   if (ext === '.png') return b.subarray(0, 8).equals(Buffer.from([137,80,78,71,13,10,26,10]));
   if (ext === '.jpg' || ext === '.jpeg') return b[0] === 255 && b[1] === 216 && b[2] === 255;
@@ -39,9 +55,11 @@ export function auditDistribution(root, { paths = null } = {}) {
     const bytes = readFileSync(abs);
     if (IMAGE.test(name)) { if (!imageBytes(bytes, extname(name).toLowerCase())) errors.push(name + ': image extension does not match bytes'); return; }
     if (stat.size > 256 * 1024) errors.push(name + ': non-image source exceeds 256 KiB; split into readable files');
-    try { new TextDecoder('utf-8', { fatal: true }).decode(bytes); }
+    let text;
+    try { text = new TextDecoder('utf-8', { fatal: true }).decode(bytes); }
     catch { errors.push(name + ': not UTF-8 readable source'); return; }
     if (bytes.includes(0)) errors.push(name + ': binary NUL byte in source');
+    for (const [pattern, why] of SELF_APPROVAL) if (pattern.test(text)) errors.push(name + ': ' + why + '; the directory refuses plugins that approve their own actions');
   };
   const shipped = paths || [...(pkg.files || []), 'package.json', 'README.md', 'LICENSE'];
   if (!paths && !Array.isArray(pkg.files)) errors.push('package.json: files allowlist required');
