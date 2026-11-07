@@ -868,9 +868,14 @@ first because that is what people ask:
 
 ```
 [usage-limits] this reply: 6 turns, 210k tokens, $0.95. This session: 9 prompts,
-48 turns, 3.1M tokens (2.9M cache read, 61k output), about $12.40, roughly 31
-points of the 5-hour window. Context is now about 130k tokens.
+48 turns, 3.1M tokens (2.9M cache read, 61k output), about $12.40 at API list
+prices, roughly 31 points of the 5-hour window. Context is now about 130k
+tokens.
 ```
+
+The dollar figure is the transcript priced at API list rates, and the line says
+so. On a subscription nobody is billed that amount, so a long session reading
+"about $200" is a measure of its size, not a charge.
 
 It goes to you, not into the context, so it costs the model nothing. It reads
 only the bytes of the transcript written since the previous reply, including
@@ -879,7 +884,7 @@ milliseconds however long the session has run. When the session closes, a
 `SessionEnd` hook prints the closing line:
 
 ```
-[usage-limits] session closed after 1h 42m: 9 prompts, 48 turns, 3.1M tokens, about $12.40.
+[usage-limits] session closed after 1h 42m: 9 prompts, 48 turns, 3.1M tokens, about $12.40 at API list prices.
 ```
 
 Claude is also asked to end finished work with the total in its own words, one

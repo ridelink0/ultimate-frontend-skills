@@ -271,6 +271,11 @@ function money(value) {
   return usage.formatMoney(value);
 }
 
+// The dollar total is the transcript priced at API list rates. On a
+// subscription nobody is billed that amount, so a long session shown as
+// "about $200" reads as a charge unless the line says what the number is.
+const LIST_PRICE = ' at API list prices';
+
 function count(value, noun) {
   const n = value || 0;
   return n + ' ' + noun + (n === 1 ? '' : 's');
@@ -305,7 +310,7 @@ function formatTally(session, delta, options) {
     turnsPhrase(session.turns, session.subagentTurns) + ', ' +
     usage.formatTokens(totalTokens(tokens)) + ' tokens (' +
     usage.formatTokens(tokens.cacheRead || 0) + ' cache read, ' +
-    usage.formatTokens(tokens.output || 0) + ' output), about ' + money(session.cost || 0);
+    usage.formatTokens(tokens.output || 0) + ' output), about ' + money(session.cost || 0) + LIST_PRICE;
   if (Number.isFinite(opts.usdPerPercent) && opts.usdPerPercent > 0) {
     const points = (session.cost || 0) / opts.usdPerPercent;
     if (points >= 1) {
@@ -327,7 +332,7 @@ function formatClosed(session, now) {
   return (
     '[usage-limits] session closed' + (ran ? ' after ' + ran : '') + ': ' +
     count(session.prompts, 'prompt') + ', ' + turnsPhrase(session.turns, session.subagentTurns) + ', ' +
-    usage.formatTokens(totalTokens(session.tokens)) + ' tokens, about ' + money(session.cost || 0) + '.'
+    usage.formatTokens(totalTokens(session.tokens)) + ' tokens, about ' + money(session.cost || 0) + LIST_PRICE + '.'
   );
 }
 

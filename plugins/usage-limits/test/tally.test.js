@@ -260,7 +260,7 @@ test('formatTally leads with what this reply cost, then the session, tokens firs
     label: '5-hour',
   });
   assert.match(text, /^\[usage-limits\] this reply: 6 turns, 210k tokens, \$0\.95\./);
-  assert.match(text, /This session: 9 prompts, 48 turns, 3\.1M tokens \(2\.9M cache read, 61k output\), about \$12\.40/);
+  assert.match(text, /This session: 9 prompts, 48 turns, 3\.1M tokens \(2\.9M cache read, 61k output\), about \$12\.40 at API list prices, roughly/);
   assert.match(text, /roughly 31 points of the 5-hour window/);
   assert.match(text, /Context is now about 130k tokens\./);
   assert.ok(text.indexOf('\n') === -1, 'one line');
@@ -282,7 +282,14 @@ test('formatTally names subagent turns separately', () => {
 
 test('formatClosed says how long the session ran and what it cost', () => {
   const text = tally.formatClosed(sample(), NOW);
-  assert.match(text, /^\[usage-limits\] session closed after 1h 42m: 9 prompts, 48 turns, 3\.1M tokens, about \$12\.40\.$/);
+  assert.match(text, /^\[usage-limits\] session closed after 1h 42m: 9 prompts, 48 turns, 3\.1M tokens, about \$12\.40 at API list prices\.$/);
+});
+
+test('a large session total says it is a list-price figure, not a charge', () => {
+  const big = sample({ cost: 199.6 });
+  assert.match(tally.formatClosed(big, NOW), /, about \$200 at API list prices\.$/);
+  assert.match(tally.formatTally(big, {}, {}), /, about \$200 at API list prices\./);
+  assert.doesNotMatch(tally.formatClosed(big, NOW), /about \$200\.$/);
 });
 
 test('the state file lives beside the other caches and honours CLAUDE_CONFIG_DIR', () => {
