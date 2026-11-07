@@ -877,7 +877,7 @@ The dollar figure is the transcript priced at API list rates, and the line says
 so. On a subscription nobody is billed that amount, so a long session reading
 "about $200" is a measure of its size, not a charge.
 
-It goes to you, not into the context, so it costs the model nothing. It reads
+The line goes to you, not into the context, so it costs the model nothing. It reads
 only the bytes of the transcript written since the previous reply, including
 any subagent transcripts under the session's own folder, so it takes a few
 milliseconds however long the session has run. When the session closes, a
