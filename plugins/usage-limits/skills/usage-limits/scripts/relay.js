@@ -273,39 +273,10 @@ function launchDirFor(cwd) {
   }
   return dir;
 }
-function readSettings() {
-  try {
-    return JSON.parse(fs.readFileSync(settingsFile(), 'utf8').replace(/^\uFEFF/, ''));
-  } catch (err) {
-    return null;
-  }
-}
-function settingIs(key, value) {
-  const parsed = readSettings();
-  return Boolean(parsed) && parsed[key] === value;
-}
-function applySetting(key, value) {
-  const file = settingsFile();
-  let raw = null;
-  let parsed = {};
-  try {
-    raw = fs.readFileSync(file, 'utf8');
-    parsed = JSON.parse(raw.replace(/^\uFEFF/, ''));
-  } catch (err) {
-    if (raw !== null) return { changed: false, error: 'settings.json is not readable JSON; left untouched' };
-  }
-  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return { changed: false, error: 'settings.json is not an object; left untouched' };
-  if (parsed[key] === value) return { changed: false };
-  parsed[key] = value;
-  try {
-    fs.mkdirSync(configDir(), { recursive: true });
-    if (raw !== null) fs.writeFileSync(file + '.bak-usage-limits', raw);
-    fs.writeFileSync(file, JSON.stringify(parsed, null, 2) + '\n');
-  } catch (err) {
-    return { changed: false, error: err.message };
-  }
-  return { changed: true, file };
-}
+// There is deliberately no general settings.json writer here. It once existed
+// to pre-answer the bypass-permissions warning; permission and trust answers
+// belong to the user inside Claude Code. The one key this file changes is
+// alwaysThinkingEnabled, and only through the `relay thinking always` command.
 
 function preflightPrompts(cwd, config, options) {
   const file = claudeJsonFile();
@@ -370,7 +341,10 @@ function settings(state) {
     enabled: bool(env.USAGE_LIMITS_RELAY, bool(stored.enabled, DEFAULTS.enabled)),
     at: Math.min(99, Math.max(10, number(env.USAGE_LIMITS_RELAY_AT, number(stored.at, DEFAULTS.at)))),
     graceMinutes: Math.min(180, Math.max(1, number(env.USAGE_LIMITS_RELAY_GRACE, number(stored.graceMinutes, DEFAULTS.graceMinutes)))),
-    mode: pick(env.USAGE_LIMITS_RELAY_MODE, ['notify', 'resume'], pick(stored.mode, ['notify', 'resume'], DEFAULTS.mode)),
+    // The environment may only turn unattended resume OFF. A project's settings
+    // can set env vars, so letting one say "resume" would start agents the user
+    // never asked for; resume is stored only by the `relay mode resume` command.
+    mode: pick(env.USAGE_LIMITS_RELAY_MODE, ['notify'], pick(stored.mode, ['notify', 'resume'], DEFAULTS.mode)),
     thinking: pick(env.USAGE_LIMITS_RELAY_THINKING, ['off', 'resume', 'always'], pick(stored.thinking, ['off', 'resume', 'always'], DEFAULTS.thinking)),
     // Ignore legacy modes: a plugin must never choose its own approvals.
     permissionMode: null,
@@ -2320,7 +2294,7 @@ if (require.main === module) {
 module.exports = { shellClaude, cloud, cloudHandoff, cloudCommand, cloudWarnings, cloudLaunchMode, cloudCli, launchCloud, gitState, CLOUD_ARG_MAX,
   workWithContinuation, reapLost, schedulerMode, sandboxedHome, hiddenAction, headlessAvailable, HEADLESS_HOST, HIDDEN_HOST, BUGCHECK_LINE,
   taskAction, wakeLauncherFile, wakeLauncherScript, writeWakeLauncher, sweepWakeLaunchers, batchArg, describeSpawn, PS_ROUTE_MS, SCHTASKS_MS,
-  records, armedFor, putRecord, dropRecord, preflightPrompts, claudeJsonFile, projectKeys, isHome, launchDirFor, applySetting, settingIs,
+  records, armedFor, putRecord, dropRecord, preflightPrompts, claudeJsonFile, projectKeys, isHome, launchDirFor,
   DEFAULTS,
   MINUTE,
   main,
