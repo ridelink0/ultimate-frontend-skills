@@ -13,7 +13,15 @@ export function writeReview(results, out, target) {
       '<details><summary>Findings and page state</summary><pre>' + escape(JSON.stringify({ action: r.action, actionErrors: r.actionErrors, visual: r.visual, network: r.network, overlaps: r.overlaps, overflow: r.overflow, broken: r.broken, console: r.console }, null, 2)) + '</pre></details></article>';
   }).join('');
   const html = '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
-    '<title>Website visual review</title><style>body{margin:0;background:#ece9e2;color:#242321;font:16px system-ui}header,main{padding:24px;max-width:1500px;margin:auto}h1{font-size:36px}h2{font-size:16px}main{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:24px}article{background:#faf9f6;padding:16px;min-width:0}img{display:block;width:100%;height:auto}pre{white-space:pre-wrap;overflow-wrap:anywhere}select{font:inherit;padding:8px}article[hidden]{display:none}</style>' +
+    '<title>Website visual review</title><style>' +
+    'body{margin:0;background:#ece9e2;color:#242321;font:16px system-ui}' +
+    'header,main{padding:24px;max-width:1500px;margin:auto}' +
+    'h1{font-size:36px}h2{font-size:16px}' +
+    'main{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:24px}' +
+    'article{background:#faf9f6;padding:16px;min-width:0}' +
+    'img{display:block;width:100%;height:auto}' +
+    'pre{white-space:pre-wrap;overflow-wrap:anywhere}' +
+    'select{font:inherit;padding:8px}article[hidden]{display:none}</style>' +
     '<header><h1>Website visual review</h1><p>' + escape(target) + '</p><p>' + summary.errors + ' errors · ' + summary.warns + ' warnings · ' + results.length + ' captured states</p>' +
     '<p>Inspect the screenshots before accepting the page. Automated checks cannot certify visual quality or reference fidelity.</p><label>Viewport <select id="width"><option value="">All widths</option>' +
     [...new Set(results.map(r => r.width))].map(w => '<option>' + w + '</option>').join('') +
