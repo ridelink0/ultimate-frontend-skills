@@ -9,9 +9,12 @@ import { createRequire } from 'node:module';
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, readdirSync, existsSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const require = createRequire(import.meta.url);
-const root = new URL('../', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1');
+// fileURLToPath, not .pathname: a checkout under a folder with a space or a
+// non-ASCII letter would otherwise reach require() still percent-encoded.
+const root = fileURLToPath(new URL('../', import.meta.url));
 const scripts = join(root, 'plugins/usage-limits/skills/usage-limits/scripts');
 const relay = require(join(scripts, 'relay.js'));
 const wake = require(join(scripts, 'wake.js'));
@@ -91,11 +94,17 @@ test('resumed and fresh launches never weaken permission prompts', () => {
 });
 
 test('no plugin hook answers a permission prompt', () => {
-  const files = ['hooks/hooks.json', 'plugins/usage-limits/hooks/hooks.json', 'plugins/image-deep-research/hooks/hooks.json'];
-  for (const rel of files) {
-    const file = join(root, rel);
-    if (!existsSync(file)) continue;
-    const hooks = JSON.parse(readFileSync(file, 'utf8')).hooks || {};
-    assert.equal('PermissionRequest' in hooks, false, rel);
+  const json = (rel) => JSON.parse(readFileSync(join(root, rel), 'utf8').replace(/^\uFEFF/, ''));
+  // These two must exist: if one moves, this test must not pass by reading nothing.
+  const required = ['hooks/hooks.json', 'plugins/usage-limits/hooks/hooks.json'];
+  for (const rel of required) assert.ok(existsSync(join(root, rel)), rel + ' is where the hooks are expected');
+  const optional = ['plugins/image-deep-research/hooks/hooks.json'].filter((rel) => existsSync(join(root, rel)));
+  const found = [...required, ...optional].map((rel) => [rel, json(rel).hooks || {}]);
+  // A manifest can carry its hooks inline instead of in hooks.json.
+  for (const rel of ['.claude-plugin/plugin.json', 'plugins/usage-limits/.claude-plugin/plugin.json', 'plugins/image-deep-research/.claude-plugin/plugin.json']) {
+    if (!existsSync(join(root, rel))) continue;
+    const inline = json(rel).hooks;
+    if (inline && typeof inline === 'object') found.push([rel, inline.hooks || inline]);
   }
+  for (const [rel, hooks] of found) assert.equal(Object.hasOwn(hooks, 'PermissionRequest'), false, rel);
 });
