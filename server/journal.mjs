@@ -51,7 +51,10 @@ export function matcherFor(pattern) {
   const p = String(pattern || '').trim();
   const m = /^\/(.+)\/([a-z]*)$/i.exec(p);
   if (m) {
-    try { return new RegExp(m[1], m[2].includes('i') ? m[2] : m[2] + 'i'); } catch { /* fall through */ }
+    // g and y make test() resume from lastIndex, and one matcher is tested
+    // against every entry in turn, so they would skip matching entries.
+    const flags = m[2].replace(/[gy]/gi, '');
+    try { return new RegExp(m[1], flags.includes('i') ? flags : flags + 'i'); } catch { /* fall through */ }
   }
   const lower = p.toLowerCase();
   return { test: (s) => String(s).toLowerCase().includes(lower) };

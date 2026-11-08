@@ -30,7 +30,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const { isHandOff, isConsequential, classify, desktopLocked, TIER } = await import('../server/policy.mjs');
 const { probeWarning, probeRows } = await import('../server/render.mjs');
-const { Journal, renderRecap, readJournal, formatEntry } = await import('../server/journal.mjs');
+const { Journal, renderRecap, readJournal, formatEntry, matcherFor } = await import('../server/journal.mjs');
 const { Tasks, validateSteps, HALT_TURN, HALT_ORPHANED, HALT_REVIEW } = await import('../server/tasks.mjs');
 
 console.log('policy');
@@ -136,6 +136,13 @@ await checkAsync('append, note, find, recap, file round trip', async () => {
   assert.equal(back.length, 5);
   assert.ok(back.some((e) => e.kind === 'session' && e.summary === 'sess-1'));
   assert.equal(formatEntry(back[3]).includes('note the invoice total'), true);
+});
+check('a /.../g or /.../y find matches every entry, not every other one', () => {
+  const es = [1, 2, 3, 4].map((k) => ({ t: k * 1000, kind: 'click', summary: 'Save button', hwnd: 100, title: 'Notepad' }));
+  assert.match(renderRecap(es, { find: '/save/g' }), /journal entries matching "\/save\/g": 4/);
+  assert.match(renderRecap(es, { find: '/save/y' }), /journal entries matching "\/save\/y": 4/);
+  const m = matcherFor('/save/gy');
+  assert.equal(es.filter((e) => m.test(formatEntry(e))).length, 4);
 });
 check('renderRecap of an empty journal says so', () => {
   assert.match(renderRecap([], { head: 'h' }), /no actions yet/);
