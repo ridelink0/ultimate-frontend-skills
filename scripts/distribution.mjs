@@ -18,9 +18,10 @@ const MINIFIED_NAME = /[.-]min\.(?:[cm]?js|css)$/i;
 const IMAGE = /\.(?:png|jpg|jpeg|gif|webp|ico)$/i;
 const CODE = /\.(?:[cm]?[jt]sx?|css|html?|svg|py|sh|ps1|cmd|bat)$/i;
 const MANIFEST = /(?:^|\/)(?:hooks|plugin|marketplace|\.?mcp)\.json$/;
-// npm install in a package folder runs these seven, in this order, and a git
-// install runs that same npm install in its clone (npm lib/commands/install.js,
-// pacote lib/git.js), so each one is code run at install time.
+// npm install in a package folder runs these seven, in this order (npm
+// lib/commands/install.js). A git install runs that same npm install in its
+// clone when the clone has a preinstall, install, postinstall, prepack,
+// prepare or build script (pacote lib/git.js). Each is code run at install.
 const LIFECYCLE = ['preinstall', 'install', 'postinstall', 'prepublish', 'preprepare', 'prepare', 'postprepare'];
 const DEPENDENCIES = ['dependencies', 'optionalDependencies', 'peerDependencies', 'bundleDependencies', 'bundledDependencies'];
 // The Claude directory refuses a plugin that approves its own actions or weakens
@@ -104,16 +105,18 @@ function denseLine(text) {
 }
 // Base64 wrapped at 60-76 columns, as encoders and mail write it, escapes the
 // one-run rule above. Sixteen or more such lines in a row, 1000 characters in
-// all, is a payload. A line counts only when it holds a letter and a digit,
-// so a rule of dashes does not, and a run that is all hex in either case (a
-// column of sha256 digests) is not a payload. The url-safe alphabet counts too.
+// all, is a payload. A line counts only when it holds an upper-case letter, a
+// lower-case letter and a digit, as encoder output does, so a rule of dashes
+// and a column of lower-case paths or slugs do not; a run that is all hex in
+// any case (a column of sha256 digests) is not a payload either. The url-safe
+// alphabet counts too.
 const B64_LINE = /^\s*['"`]?([A-Za-z0-9+\/_-]{60,}={0,2})['"`]?\s*[+,]?\s*$/;
 function wrappedBase64(text) {
   let run = 0, chars = 0, start = 0, mixed = false;
   const lines = text.split(/\r?\n/);
   for (let i = 0; i <= lines.length; i++) {
     const m = i < lines.length && B64_LINE.exec(lines[i]);
-    if (m && /[A-Za-z]/.test(m[1]) && /\d/.test(m[1])) {
+    if (m && /[A-Z]/.test(m[1]) && /[a-z]/.test(m[1]) && /\d/.test(m[1])) {
       if (!run) start = i;
       run++; chars += m[1].length; mixed ||= /[^0-9a-f]/i.test(m[1]);
       continue;
@@ -208,7 +211,7 @@ export function auditDistribution(root, { paths = null } = {}) {
     // held to the same rule as a hook command.
     if (SHELL_DOC.test(name)) for (const pattern of INLINE_SHELL) for (const m of text.matchAll(pattern)) {
       const command = m[1].trim();
-      if (LAUNCHER.test(command) || FETCH_AND_RUN.some(([p]) => p.test(command))) errors.push(name + ': runs "' + command.slice(0, 80) + '" in a shell when it is used, which fetches code when the plugin runs');
+      if (LAUNCHER.test(command) || FETCH_AND_RUN.some(([p]) => p.test(command))) errors.push(name + ': runs "' + command.replace(/\s+/g, ' ').slice(0, 80) + '" in a shell when it is used, which fetches code when the plugin runs');
     }
     if (name !== 'package.json' && /(?:^|\/)package\.json$/.test(name)) {
       const doc = parseJson(text);

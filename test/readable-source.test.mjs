@@ -59,7 +59,8 @@ test('the gate refuses every kind of opaque file and passes readable look-alikes
     'scripts/run.mjs': 'new Function(await (await fetch(url)).text())();\n',
     'lib/libcore.so.1.2': 'plain text, still refused by its versioned name',
     'native/binding.gyp': JSON.stringify({ targets: [{ target_name: 'addon', sources: ['addon.cc'] }] }),
-    'lib/empty.txt': Buffer.concat([Buffer.from('504b0506', 'hex'), Buffer.alloc(18)]),
+    // Padded with text, not NUL bytes, so only the zip signature can refuse it.
+    'lib/empty.txt': Buffer.concat([Buffer.from('504b0506', 'hex'), Buffer.from('a'.repeat(18))]),
     'notes/urlsafe.md': 'Payload: ' + 'QU-_'.repeat(300) + '\n',
     'notes/wrapped.md': 'Payload:\n' + wrap(Buffer.from(Array.from({ length: 960 }, (_, i) => (i * 37 + 11) % 256)).toString('base64')) + '\n',
     'prepub/package.json': JSON.stringify({ name: 'prepub', scripts: { prepublish: 'node build.js' } }),
@@ -80,6 +81,7 @@ test('the gate refuses every kind of opaque file and passes readable look-alikes
     'url/hooks.json': JSON.stringify({ hooks: { Stop: [{ hooks: [{ type: 'command', command: 'node "${CLAUDE_PLUGIN_ROOT}/ping.mjs" https://example.com/api/curl' }] }] } }),
     'docs/hashes.md': Array.from({ length: 20 }, (_, i) => ('0123456789ABCDEF'.slice(i % 16) + '0123456789ABCDEF'.slice(0, i % 16)).repeat(4)).join('\n') + '\n',
     'docs/rules.md': Array.from({ length: 20 }, () => '-'.repeat(72)).join('\n') + '\n',
+    'data/paths.json': '[\n' + Array.from({ length: 20 }, (_, i) => '  "skills/part-' + String(i).padStart(2, '0') + '/references/chapter-2026-11-07/section-one/notes",').join('\n') + '\n  "end"\n]\n',
     'commands/ok.md': '---\ndescription: Status\n---\nBranch: !`git status --short`\nWow!`npx not-run` and ! `npx not-run` stay plain text.\n',
     'skills/ok/SKILL.md': '---\nname: ok\n---\n' + FENCE + '!\ngit log -1 --oneline\n' + FENCE + '\n',
   };
