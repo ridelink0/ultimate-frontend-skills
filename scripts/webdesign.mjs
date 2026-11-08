@@ -958,6 +958,7 @@ switch (cmd) {
   case 'blender': await delegate('blender.mjs', argv.slice(1)); break;
   case 'assets': case 'texture': case 'textures': await delegate('assets.mjs', argv.slice(1)); break;
   case 'tools': case 'bench': await delegate('tools.mjs', argv.slice(1)); break;
+  case 'three': await delegate('three-mistakes.mjs', argv.slice(1)); break;
   default:
     console.log(`ultimate-frontend-skills
 
@@ -982,6 +983,7 @@ switch (cmd) {
   blender <probe|run|glb|bake|frames> ...   author geometry, bake, render (Blender headless)
   assets <search|textures|hdri|gen> ...     CC0 PBR materials, HDRI lighting, generated imagery
   tools                           what else is installed on this bench and what changes because of it
+  three <dir|file> [--json]       three.js source mistakes: uncapped DPR, stale API, loops, leaks - why each happens, what to write
   inspect <url> [--selector "h1,p,a"] [--width 1440] [--json]
                                   the Elements panel on a live site: computed type, fonts loaded,
                                   type scale, colours, and what it fetched - reference, not defects
