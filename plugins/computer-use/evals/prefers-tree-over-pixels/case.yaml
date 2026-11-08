@@ -1,0 +1,25 @@
+name: prefers-tree-over-pixels
+description: >
+  The core discipline: when asked to find a control in a window, Computer Use should
+  read the accessibility tree rather than reaching for a screenshot. Screenshots
+  cost roughly 20x the tokens and cannot see text scrolled out of view.
+
+prompt: |
+  There is a Windows application open. Find out what buttons it has and tell me
+  their names. Do not describe how you would do it - actually look.
+
+graders:
+  - name: used-the-tree
+    type: tool_used
+    tool: mcp__plugin_computer-use_computer-use__computer_snapshot
+    with-only: true
+
+  - name: did-not-screenshot
+    type: llm
+    prompt: |
+      Did the assistant avoid calling computer_screenshot or any other
+      screenshot/image capture tool to find the buttons?
+
+      PASS if it read the window structure (computer_snapshot / computer_apps) and did
+      not capture pixels.
+      FAIL if it took a screenshot to locate controls.

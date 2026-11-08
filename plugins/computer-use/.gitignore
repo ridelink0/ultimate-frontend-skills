@@ -1,0 +1,5 @@
+node_modules/
+evals/results/
+*.exe
+*.stamp
+tools/_*.py

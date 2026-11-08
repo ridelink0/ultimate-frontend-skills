@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Computer Use Web Target</title>
+<style>
+  body { font-family: sans-serif; margin: 0; display: flex; }
+  nav { width: 220px; height: 100vh; overflow: auto; border-right: 1px solid #ccc; }
+  nav a { display: block; padding: 2px 8px; }
+  main { flex: 1; padding: 16px; height: 100vh; overflow: auto; }
+  .tall { height: 2400px; }
+</style>
+</head>
+<body>
+<!-- A page shaped like the ones the plugin is used on: a long sidebar of
+     links beside the main content, form controls whose accessibility state
+     updates a beat after the click, a button that is replaced by a new node
+     when the form becomes valid, a button wrapped in a group of the same name,
+     a slow server check, and content far below the fold. -->
+<nav aria-label="Sidebar" id="sidebar"></nav>
+<main id="main">
+  <h1>Web Target</h1>
+  <p id="longtext">This validation message is deliberately much longer than seventy characters, so a cut shows: the end is HERE.</p>
+  <ul><li>A list item that is also far longer than seventy characters, so its name is cut unless the limit is honoured - END</li></ul>
+  <label><input type="checkbox" id="agree"> I agree to the terms</label>
+  <fieldset><legend>Answer</legend>
+    <label><input type="radio" name="yn" value="yes"> Yes</label>
+    <label><input type="radio" name="yn" value="no"> No</label>
+  </fieldset>
+  <button id="exp" aria-expanded="false" aria-controls="panel">More options</button>
+  <div id="panel" hidden>Hidden panel text</div>
+  <p><input id="field" aria-label="Plugin name"></p>
+  <div id="validateWrap"><button id="validate" disabled>Validate</button></div>
+  <div role="group" aria-label="Next"><button id="next">Next</button></div>
+  <div role="group" aria-label="Submit"><button id="submit" disabled>Submit</button></div>
+  <p><label>Colour <select id="colour"><option>Red</option><option>Green</option><option>Blue</option></select></label></p>
+  <p><button id="slow">Start slow check</button></p>
+  <div id="slowOut" aria-live="polite">not started</div>
+  <div id="log" aria-live="polite"></div>
+  <div class="tall"></div>
+  <button id="bottom">Bottom button</button>
+  <p><a href="web-target-2.html" id="go2">Go to page two</a></p>
+</main>
+<script>
+  var nav = document.getElementById('sidebar');
+  for (var i = 1; i <= 40; i++) {
+    var a = document.createElement('a');
+    a.href = '#chat' + i;
+    a.textContent = 'Chat number ' + i;
+    nav.appendChild(a);
+  }
+  function out(s) {
+    var p = document.createElement('p');
+    p.textContent = s;
+    document.getElementById('log').appendChild(p);
+  }
+  // Expansion lands after a short delay, the way a framework batches a state
+  // change: an accessibility read straight after the click still sees the old
+  // state.
+  var exp = document.getElementById('exp');
+  exp.addEventListener('click', function () {
+    setTimeout(function () {
+      var open = exp.getAttribute('aria-expanded') === 'true';
+      exp.setAttribute('aria-expanded', String(!open));
+      document.getElementById('panel').hidden = open;
+    }, 150);
+  });
+  // A React-style re-render: typing makes the form valid and the Validate
+  // button is replaced by a new element, so an index read before the typing
+  // names an element that no longer exists.
+  var field = document.getElementById('field');
+  field.addEventListener('input', function () {
+    var old = document.getElementById('validate');
+    var b = document.createElement('button');
+    b.id = 'validate';
+    b.textContent = 'Validate';
+    b.disabled = !field.value;
+    b.addEventListener('click', function () { out('validated ' + field.value); });
+    old.replaceWith(b);
+  });
+  document.getElementById('next').addEventListener('click', function () { out('next pressed'); });
+  document.getElementById('slow').addEventListener('click', function () {
+    document.getElementById('slowOut').textContent = 'checking';
+    setTimeout(function () { document.getElementById('slowOut').textContent = 'Server validation passed'; }, 7000);
+  });
+  document.getElementById('bottom').addEventListener('click', function () { out('bottom pressed'); });
+</script>
+</body>
+</html>

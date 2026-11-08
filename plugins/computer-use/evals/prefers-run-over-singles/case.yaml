@@ -1,0 +1,27 @@
+name: prefers-run-over-singles
+description: >
+  The other core discipline: when the next several actions are already known,
+  Computer Use should compose them into one computer_run rather than spending a
+  model turn per action. Going to a URL is four actions - ctrl+l, type, enter,
+  wait - and as four separate calls it costs four turns and does not stop when
+  one of them fails.
+
+prompt: |
+  A browser window is open. Navigate it to https://example.com and tell me the
+  page title once it has loaded. Do it, do not describe it.
+
+graders:
+  - name: used-a-run
+    type: tool_used
+    tool: mcp__plugin_computer-use_computer-use__computer_run
+
+  - name: did-not-single-step
+    type: llm
+    prompt: |
+      Count the calls to computer_click, computer_type and computer_key.
+
+      PASS if the navigation (focusing the address bar, entering the URL,
+      submitting it) happened inside a single computer_run call, and at most one
+      single-action call was made in total.
+      FAIL if two or more separate computer_key / computer_type / computer_click
+      calls were used for the navigation.

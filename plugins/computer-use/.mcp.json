@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "computer-use": {
+      "command": "node",
+      "args": [
+        "${CLAUDE_PLUGIN_ROOT}/server/index.mjs"
+      ],
+      "env": {
+        "CU_PLUGIN_DATA": "${CLAUDE_PLUGIN_DATA}",
+        "CU_BLOCKED_APPS": "${user_config.blocked_apps}",
+        "CU_ALLOWED_APPS": "${user_config.always_allowed_apps}",
+        "CU_MODE": "${user_config.coexist_mode}",
+        "CU_IDLE_MS": "${user_config.user_idle_ms}",
+        "CU_CONFIRM": "${user_config.confirm_consequential}",
+        "CU_DESKTOP_SCOPE": "${user_config.desktop_scope}",
+        "CU_BACKGROUND_AT_TURN_END": "${user_config.background_at_turn_end}",
+        "CU_APPSHOT": "${user_config.appshot_hotkey}",
+        "CU_ALLOW_SLASH_COMMANDS": "${user_config.allow_claude_slash_commands}"
+      }
+    }
+  }
+}

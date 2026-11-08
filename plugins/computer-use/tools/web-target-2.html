@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Computer Use Web Target Two</title>
+</head>
+<body>
+<!-- Page two renders its content a moment after it loads, the way a
+     single-page app settles after a navigation: a find straight after the
+     navigation meets a page that has not drawn its controls yet. -->
+<main id="main"><p>loading</p></main>
+<script>
+  setTimeout(function () {
+    var m = document.getElementById('main');
+    m.innerHTML = '';
+    var h = document.createElement('h1');
+    h.textContent = 'Page two';
+    m.appendChild(h);
+    var b = document.createElement('button');
+    b.textContent = 'Page two ready';
+    m.appendChild(b);
+  }, 900);
+</script>
+</body>
+</html>
