@@ -90,6 +90,15 @@ test('commercialOk allows CC0, public domain, BY and BY-SA and refuses NC, ND an
   for (const no of ['CC BY-NC-SA 2.0', 'CC BY-ND 4.0', 'CC BY-NC 3.0', '', 'All rights reserved', 'GFDL']) assert.equal(commercialOk(no), false, no);
 });
 
+test('commercialOk keeps the ported and dashed licence names Commons reports, and still refuses NC and ND in them', () => {
+  for (const ok of ['CC BY-SA 3.0 DE', 'CC BY 3.0 US', 'CC BY-SA 3.0 IGO', 'CC BY-SA 2.0 FR', 'CC BY 2.5 DK', 'CC0 1.0', 'CC-BY-SA-4.0', 'CC-BY-4.0', ' CC  BY-SA 4.0 ']) assert.equal(commercialOk(ok), true, ok);
+  for (const no of ['CC BY-NC-SA 3.0 DE', 'CC BY-ND 2.0 FR', 'CC BY-SA 3.0 NC', 'CC-BY-NC-4.0', 'PD-US', 'CC BY-SA 3.0 migrated', 'CC BY 4.0 plus all rights reserved', 'CC BY-SA 3.0 DEU']) assert.equal(commercialOk(no), false, no);
+  const rows = parseCommons({ query: { pages: { 1: { index: 1, title: 'File:a.jpg', imageinfo: [{ url: 'https://upload.wikimedia.org/a.jpg', mime: 'image/jpeg',
+    extmetadata: { LicenseShortName: { value: 'CC BY-SA 3.0 de' } } }] } } } });
+  assert.equal(rows.length, 1);
+  assert.equal(commercialOk(rows[0].licence), true, 'a ported Commons result survives --commercial');
+});
+
 const fake = (answers) => {
   const calls = [];
   const impl = async (url, init) => {
