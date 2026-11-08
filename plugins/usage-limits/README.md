@@ -874,8 +874,9 @@ now about 130k tokens.
 ```
 
 The dollar figure is the transcript priced at API list rates, and the line says
-so. On a subscription nobody is billed that amount, so a long session reading
-"about $200" is a measure of its size, not a charge.
+so. On a subscription nobody is billed that amount: it is a measure of the
+session's size, not a charge, so it is never hedged as "about" a sum. Input,
+cache write, cache read and output are each named, and add up to the total.
 
 The line goes to you, not into the context, so it costs the model nothing. It reads
 only the bytes of the transcript written since the previous reply, including
@@ -884,7 +885,7 @@ milliseconds however long the session has run. When the session closes, a
 `SessionEnd` hook prints the closing line:
 
 ```
-[usage-limits] session closed after 1h 42m: 9 prompts, 48 turns, 3.1M tokens, about $12.40 at API list prices.
+[usage-limits] session closed after 1h 42m: 9 prompts, 48 turns, 3.1M tokens (5k input, 120k cache write, 2.9M cache read, 61k output), $12.40 at API list prices.
 ```
 
 Claude is also asked to end finished work with the total in its own words, one
