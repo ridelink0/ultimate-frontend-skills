@@ -823,7 +823,10 @@ function statusLineEffort(sessionId) {
   }
   const slot = all && typeof all === 'object' && !Array.isArray(all) ? all[sessionId] : null;
   if (!slot || typeof slot.effort !== 'string' || !slot.effort) return null;
-  return { effort: slot.effort, at: Number.isFinite(slot.at) ? slot.at : 0 };
+  // effortAt is when Claude Code last handed the slot this effort; a slot
+  // written before that field existed falls back to its redraw time.
+  const at = Number.isFinite(slot.effortAt) ? slot.effortAt : Number.isFinite(slot.at) ? slot.at : 0;
+  return { effort: slot.effort, at };
 }
 
 // What this session itself says it is running at: the newer of its status-line

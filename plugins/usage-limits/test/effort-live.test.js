@@ -125,3 +125,16 @@ test('the hook tier line names the live effort, not the setting', () => {
     assert.doesNotMatch(text, /^[^,]*\/xhigh/, 'the running half is not the setting');
   });
 });
+
+test('a slot carrying an old effort forward does not outrank a newer transcript line', () => {
+  withConfig((dir) => {
+    const now = Date.now();
+    writeTranscript(projectTranscript(dir), [['medium', now - 1000]]);
+    fs.writeFileSync(
+      path.join(dir, 'usage-limits-feed.json'),
+      JSON.stringify({ [SESSION]: { at: now, effortAt: now - 120000, effort: 'xhigh' } })
+    );
+    assert.deepStrictEqual(usage.statusLineEffort(SESSION), { effort: 'xhigh', at: now - 120000 });
+    assert.strictEqual(usage.effortNow(SESSION, {}).effort, 'medium');
+  });
+});

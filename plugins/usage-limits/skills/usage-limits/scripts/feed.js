@@ -120,6 +120,10 @@ function slotFrom(input, previous, now) {
     model: typeof model.id === 'string' ? model.id : prior.model || null,
     modelName: typeof model.display_name === 'string' ? model.display_name : prior.modelName || null,
     effort: input.effort && typeof input.effort.level === 'string' ? input.effort.level : prior.effort || null,
+    // When the effort above was last handed over, as distinct from `at`: an
+    // update without one carries the old effort forward, and dating it by this
+    // redraw would let a stale reading outrank a newer transcript line.
+    effortAt: input.effort && typeof input.effort.level === 'string' ? now : Number.isFinite(prior.effortAt) ? prior.effortAt : null,
     rateLimits: hasHeaders ? input.rate_limits : prior.rateLimits || null,
     headersAt: hasHeaders ? now : Number.isFinite(prior.headersAt) ? prior.headersAt : null,
     context: input.context_window ? number(input.context_window.used_percentage) : number(prior.context),
