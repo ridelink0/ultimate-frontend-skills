@@ -143,6 +143,8 @@ check('a /.../g or /.../y find matches every entry, not every other one', () => 
   assert.match(renderRecap(es, { find: '/save/y' }), /journal entries matching "\/save\/y": 4/);
   const m = matcherFor('/save/gy');
   assert.equal(es.filter((e) => m.test(formatEntry(e))).length, 4);
+  const upper = matcherFor('/SAVE/I');
+  assert.equal(es.filter((e) => upper.test(formatEntry(e))).length, 4);
 });
 check('renderRecap of an empty journal says so', () => {
   assert.match(renderRecap([], { head: 'h' }), /no actions yet/);

@@ -53,7 +53,8 @@ export function matcherFor(pattern) {
   if (m) {
     // g and y make test() resume from lastIndex, and one matcher is tested
     // against every entry in turn, so they would skip matching entries.
-    const flags = m[2].replace(/[gy]/gi, '');
+    // The flags are read case-insensitively above, so /x/I must become i too.
+    const flags = m[2].toLowerCase().replace(/[gy]/g, '');
     try { return new RegExp(m[1], flags.includes('i') ? flags : flags + 'i'); } catch { /* fall through */ }
   }
   const lower = p.toLowerCase();
