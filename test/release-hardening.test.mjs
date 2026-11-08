@@ -25,13 +25,14 @@ test('shipped distribution is readable and contains offline packs and privacy', 
 test('distribution rejects disguised executables, invalid UTF8 and lifecycle downloads', () => {
   const dir = mkdtempSync(join(tmpdir(), 'ufs-distribution-'));
   try {
-    writeFileSync(join(dir, 'package.json'), JSON.stringify({ files: ['payload'], scripts: { postinstall: 'fetch-a-binary' } }));
+    writeFileSync(join(dir, 'package.json'), JSON.stringify({ files: ['payload', 'binding.gyp'], scripts: { postinstall: 'fetch-a-binary' } }));
     writeFileSync(join(dir, 'README.md'), 'source'); writeFileSync(join(dir, 'LICENSE'), 'license'); mkdirSync(join(dir, 'payload'));
+    writeFileSync(join(dir, 'binding.gyp'), '{ "targets": [] }\n');
     writeFileSync(join(dir, 'payload', 'hidden.png'), 'MZ executable');
     writeFileSync(join(dir, 'payload', 'invalid.js'), Buffer.from([0xff, 0x00]));
     writeFileSync(join(dir, 'payload', 'native.wasm'), 'source label');
     const r = auditDistribution(dir);
-    for (const word of ['postinstall', 'image extension', 'not UTF-8', 'opaque']) assert.ok(r.errors.some(e => e.includes(word)), word);
+    for (const word of ['postinstall', 'image extension', 'not UTF-8', 'opaque', 'binding.gyp: node-gyp']) assert.ok(r.errors.some(e => e.includes(word)), word);
     assert.ok(auditDistribution(dir, { paths: ['../outside'] }).errors.some(e => e.includes('escapes')));
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });

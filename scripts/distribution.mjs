@@ -6,13 +6,16 @@
 // walks the package.json files allowlist; auditPack() audits the exact list
 // `npm pack --dry-run` reports, so files npm adds or drops are covered too.
 import { readFileSync, readdirSync, lstatSync, realpathSync, existsSync } from 'node:fs';
-import { resolve, join, relative, extname, dirname, isAbsolute } from 'node:path';
+import { resolve, join, relative, extname, dirname, isAbsolute, posix } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 export const PACKAGES = ['.', 'plugins/usage-limits', 'plugins/image-deep-research'];
 const OPAQUE = /\.(?:pyc|pyo|pyd|pyz|whl|egg|wasm|node|exe|dll|so|dylib|a|o|lib|pdb|class|jar|war|aar|apk|ipa|msi|msix|appx|dmg|deb|rpm|vsix|xpi|crx|nupkg|asar|jsc|zip|gz|tgz|tar|bz2|xz|zst|rar|7z|bin|glb|blend|onnx|safetensors|pkl|map)$|\.so\.\d[\d.]*$/i;
-// npm compiles a native addon at install time for a package that holds a
-// binding.gyp, whatever its package.json says (arborist rebuild.js).
+// npm compiles a native addon at install time for a package whose root holds
+// binding.gyp, whatever its package.json says (@npmcli/node-gyp, arborist
+// rebuild.js), and pack and publish add a node-gyp install script for any
+// *.gyp at a package root (@npmcli/package-json normalize.js). A .gyp in a
+// folder that is not a package root is a readable build file nothing runs.
 const GYP = /\.gyp$/i;
 const MINIFIED_NAME = /[.-]min\.(?:[cm]?js|css)$/i;
 const IMAGE = /\.(?:png|jpg|jpeg|gif|webp|ico)$/i;
@@ -188,7 +191,6 @@ export function auditDistribution(root, { paths = null } = {}) {
     if (stat.size > 5 * 1024 * 1024) errors.push(name + ': exceeds 5 MiB');
     if (OPAQUE.test(name)) { errors.push(name + ': opaque executable or archive payload'); return; }
     if (MINIFIED_NAME.test(name)) { errors.push(name + ': minified file; ship the readable source'); return; }
-    if (GYP.test(name)) errors.push(name + ': node-gyp build file; npm compiles a native addon at install time for a package that holds one');
     const bytes = readFileSync(abs);
     const kind = payloadKind(bytes);
     if (kind) { errors.push(name + ': ' + kind + ' bytes; ship readable source'); return; }
@@ -229,6 +231,14 @@ export function auditDistribution(root, { paths = null } = {}) {
   for (const path of shipped) {
     if (typeof path !== 'string' || /[*?\[\]{}!]/.test(path)) { errors.push(String(path) + ': use literal distribution paths'); continue; }
     visit(path);
+  }
+  // A .gyp is a package's build file at the root, or beside a package.json that
+  // ships with it. Checked after the walk, which may reach that package.json later.
+  const shippedNames = new Set(files.map(f => f.path));
+  for (const { path } of files) {
+    if (!GYP.test(path)) continue;
+    const dir = posix.dirname(path);
+    if (dir === '.' || shippedNames.has(dir + '/package.json')) errors.push(path + ': node-gyp build file at a package root; npm compiles a native addon at install time for that package');
   }
   if (files.length > 10000) errors.push('distribution exceeds 10,000 files');
   if (files.length > 512) warnings.push('over 512 files; manual directory review may be required');
