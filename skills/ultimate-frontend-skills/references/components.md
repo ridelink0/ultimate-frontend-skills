@@ -28,8 +28,8 @@ same day. Re-check the licence before copying; licences change.
 
 | Library | Repo | Licence | What it is good for |
 |---|---|---|---|
-| shadcn/ui | github.com/shadcn-ui/ui | MIT | Accessible primitives; blocks `login-01`..`05`, `signup-01`..`05`, `sidebar-01`..`16`, `dashboard-01` |
-| Magic UI | github.com/magicuidesign/magicui | MIT | Motion pieces: text, buttons, backgrounds, marquee, bento grid |
+| shadcn/ui | github.com/shadcn-ui/ui | MIT | Accessible primitives; blocks `login-01`..`05`, `signup-01`..`05`, `sidebar-01`..`16`, `dashboard-01`. Restyle from the page's tokens: unmodified, it is tell W1 (`tells.md`) |
+| Magic UI | github.com/magicuidesign/magicui | MIT | Motion pieces: text, buttons, backgrounds, bento grid. Several are tells as shipped (see each category) |
 | Origin UI (now coss.com ui) | github.com/cosscom/ui | MIT | Plain form controls, inputs, selects, steppers |
 | assistant-ui | github.com/assistant-ui/assistant-ui | MIT | AI chat primitives |
 | Vercel chatbot | github.com/vercel/chatbot | Apache-2.0 | A whole AI chat app: streaming, history, attachments |
@@ -103,10 +103,11 @@ stop, and the focus ring survives the effect.
 ### Testimonials
 
 Already in UFS: `ui.md` ("Testimonials and social proof"), `sections.md`
-("Pull quote"), `copy-tells.md`. Free code to read: Magic UI `marquee`,
-`tweet-card`, `client-tweet-card`, `avatar-circles`. A marquee of quotes pauses
-on hover and focus and under reduced motion, and every quote is reachable
-without waiting for it to scroll past.
+("Pull quote"), `copy-tells.md`. Free code to read: Magic UI
+`tweet-card`, `client-tweet-card`, `avatar-circles`. Quotes sit still, as
+real text with a name and a source. Do not put them in Magic UI `marquee`: an
+auto-scrolling marquee is tell W17 (`tells.md`), and one without a pause
+control is M9 (`motion.md`, a WCAG 2.2.2 failure).
 
 ### Forums
 
@@ -130,6 +131,9 @@ to read: Magic UI `text-animate`, `text-reveal`, `typing-animation`,
 `word-rotate`, `morphing-text`, `hyper-text`, `number-ticker`,
 `animated-gradient-text`, `aurora-text`, `sparkles-text`, `kinetic-text`,
 `spinning-text`, `line-shadow-text`, `highlighter`, `scroll-based-velocity`.
+`number-ticker` counts only a figure with a cited source (M4, `motion.md`);
+`scroll-based-velocity` and `spinning-text` loop, so they need a pause control
+(M9).
 
 Split text is read letter by letter by a screen reader unless the parent
 carries the whole string in `aria-label` and the pieces are `aria-hidden`. One
@@ -165,10 +169,12 @@ and the closing section.
 ### Cards
 
 Already in UFS: `ui.md` ("Cards and lists"), `sections.md` ("Card rail",
-"Glass"). Free code to read: Magic UI `magic-card`, `neon-gradient-card`,
-`border-beam`, `shine-border`, `glare-hover`; Uiverse galaxy cards. One link
-per card, stretched over it; a pointer-tracking glow does nothing on touch, so
-the card must read as a card without it.
+"Glass"). Free code to read: Uiverse galaxy cards; Magic UI `border-beam`,
+`shine-border`, `neon-gradient-card` for how a border animates. One link per
+card, stretched over it; hover changes state, it does not lift the card (M2,
+`motion.md`). Magic UI `magic-card` and `glare-hover` follow the pointer with a
+glow, which is tell M8 (`motion.md`) and does nothing on touch: read them, do
+not ship them as the card's identity.
 
 ### Sign in
 
@@ -196,8 +202,9 @@ app navigation; Magic UI `dock`, `scroll-progress`.
 Already in UFS: `ui.md` ("Dashboards"); charts go to the `dataviz` skill
 (`plugins.md`). Free code to read: shadcn/ui `dashboard-01`, the sidebar
 blocks; Magic UI `animated-circular-progress-bar`, `number-ticker`,
-`animated-list`. Numbers that tick up on load are counted once and stop; a
-number that keeps moving is unreadable.
+`animated-list`. A number ticks up only when it is the user's real data or a
+cited figure (M4, `motion.md`), is counted once and stops; a number that keeps
+moving is unreadable.
 
 ### Pricing
 
