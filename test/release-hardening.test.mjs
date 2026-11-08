@@ -35,6 +35,19 @@ test('distribution rejects disguised executables, invalid UTF8 and lifecycle dow
     assert.ok(auditDistribution(dir, { paths: ['../outside'] }).errors.some(e => e.includes('escapes')));
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
+test('distribution keeps a ..name file and refuses a file reached through a linked folder', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'ufs-inside-'));
+  const outside = mkdtempSync(join(tmpdir(), 'ufs-outside-'));
+  try {
+    writeFileSync(join(dir, 'package.json'), JSON.stringify({ files: [] }));
+    writeFileSync(join(dir, 'README.md'), 'source'); writeFileSync(join(dir, 'LICENSE'), 'license');
+    writeFileSync(join(dir, '..notes.md'), 'plain notes\n');
+    writeFileSync(join(outside, 'secret.md'), 'outside the root\n');
+    symlinkSync(outside, join(dir, 'linked'), 'junction');
+    assert.deepEqual(auditDistribution(dir, { paths: ['..notes.md'] }).errors, []);
+    assert.ok(auditDistribution(dir, { paths: ['linked/secret.md'] }).errors.some(e => e.includes('through a link')));
+  } finally { rmSync(dir, { recursive: true, force: true }); rmSync(outside, { recursive: true, force: true }); }
+});
 test('distribution refuses source that approves its own permissions, and allows reading and denying', () => {
   const dir = mkdtempSync(join(tmpdir(), 'ufs-self-approval-'));
   const granting = {
