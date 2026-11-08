@@ -67,9 +67,14 @@ test('the ship checklist every site reads reaches the SEO, device and consent gu
 const docFiles = [join(S, 'SKILL.md'), ...readdirSync(R).filter((f) => f.endsWith('.md')).map((f) => join(R, f)),
   ...readdirSync(join(root, 'commands')).filter((f) => f.endsWith('.md')).map((f) => join(root, 'commands', f))];
 
-test('every scripts/*.mjs the doctrine tells an agent to run exists', () => {
+// Bare (scripts/x.mjs) or under the plugin root (${CLAUDE_PLUGIN_ROOT}/scripts/x.mjs);
+// a scripts/ folder inside another path (skills/foo/scripts/x.mjs) is not this one.
+const scriptRef = /(?<![\w.-])(?<![\w.-]\/)scripts\/((?:[\w-]+\/)*[\w-]+\.(?:mjs|cjs|py))\b/g;
+
+test('every script under scripts/ the doctrine tells an agent to run exists, bare or under ${CLAUDE_PLUGIN_ROOT}', () => {
+  assert.deepEqual([...'node "${CLAUDE_PLUGIN_ROOT}/scripts/webdesign.mjs" new; skills/image-deep-research/scripts/study.mjs; scripts/cut.py'.matchAll(scriptRef)].map((m) => m[1]), ['webdesign.mjs', 'cut.py']);
   const missing = [];
-  for (const f of docFiles) for (const m of readFileSync(f, 'utf8').matchAll(/(?<![\w/.-])scripts\/([\w-]+\.mjs)/g))
+  for (const f of docFiles) for (const m of readFileSync(f, 'utf8').matchAll(scriptRef))
     if (!existsSync(join(root, 'scripts', m[1]))) missing.push(f.slice(root.length) + ': scripts/' + m[1]);
   assert.deepEqual([...new Set(missing)], []);
 });
