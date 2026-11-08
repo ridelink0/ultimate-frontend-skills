@@ -191,6 +191,7 @@ Read one only when you need it.
 | `references/awards.md` | The corpus, techniques, what jurors score, 2026 case studies |
 | `references/skill-packs.md`, `references/plugins.md` | Other packs and plugins, who owns what |
 | `references/ui.md`, `references/craft.md` | Components and their states; what a senior does unasked |
+| `references/components.md` | Sixteen component categories (hero to pricing, AI chat, forums, shaders) mapped to UFS sections and free, licensed libraries |
 | `references/three.md`, `references/blender.md` | Real-time 3D; when Blender is the answer |
 | `references/image-gen.md`, `references/imagery.md` | Generated and photographic imagery |
 | `references/stack.md` | Which library for which job, pinned versions, the tools by need |
