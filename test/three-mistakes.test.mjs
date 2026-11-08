@@ -73,6 +73,38 @@ test('an HTML page is read through its scripts and keeps its line numbers', () =
   assert.deepEqual(checkSource(html, { html: true }).map((f) => [f.rule, f.line]), [['dpr-uncapped', 5]]);
 });
 
+test('second pass: pause and resume, no-semicolon loops, other namespaces, promise catch, names in strings', () => {
+  const resume = 'let r; try { r = new THREE.WebGLRenderer(); } catch {}\nnew ResizeObserver(f).observe(s);\nfunction animate() { r.render(scene, camera); }\nr.setAnimationLoop(animate);\ndocument.addEventListener("visibilitychange", () => r.setAnimationLoop(document.hidden ? null : animate));\nr.setAnimationLoop(animate);';
+  assert.deepEqual(checkSource(resume).map((f) => f.rule), [], 'a paused and resumed loop is one loop');
+  const asi = 'import * as THREE from "three"\nfunction animate() {\n  renderer.render(scene, camera)\n  requestAnimationFrame(animate)\n}';
+  assert.equal(checkSource(asi).find((f) => f.rule === 'loop-never-pauses')?.line, 4, 'a loop without semicolons still runs forever');
+  const guarded = 'import * as THREE from "three"\nfunction animate() {\n  renderer.render(scene, camera)\n  if (running) requestAnimationFrame(animate)\n}';
+  assert.ok(!checkSource(guarded).some((f) => f.rule === 'loop-never-pauses'), 'an if head still makes it conditional');
+  const ns = 'import * as T from "three"\nconst r = new T.WebGLRenderer();\nfetch(u).catch(() => {});\nfunction tick() { requestAnimationFrame(tick); const m = new T.MeshBasicMaterial(); r.render(s, c); }';
+  const rules = checkSource(ns).map((f) => f.rule);
+  for (const rule of ['no-webgl-fallback', 'gpu-alloc-per-frame', 'no-resize']) assert.ok(rules.includes(rule), rule + ' missed under another namespace or behind a promise catch');
+  const msg = 'import * as THREE from "three"\nconsole.warn("outputEncoding was removed; setPixelRatio(devicePixelRatio) is the old way");';
+  assert.deepEqual(checkSource(msg), [], 'an API name inside a message is not a use of it');
+});
+
+test('skipped files are named, the library is skipped even minified, and a mistyped flag is a usage error', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'ufs-three-skip-'));
+  try {
+    writeFileSync(join(dir, 'three.min.js'), 'const REVISION="170";var THREE={};function a(){new WebGLRenderer()}');
+    const result = checkThree(dir);
+    assert.deepEqual(result.checked, []);
+    assert.deepEqual(result.skipped, [{ file: 'three.min.js', reason: 'the three.js library itself' }]);
+    const run = (args) => spawnSync(process.execPath, [join(root, 'scripts', 'three-mistakes.mjs'), ...args], { encoding: 'utf8' });
+    const none = run([dir]);
+    assert.equal(none.status, 2); assert.match(none.stderr, /Skipped: three\.min\.js/);
+    const json = run([dir, '--json']);
+    assert.equal(json.status, 2); assert.deepEqual(JSON.parse(json.stdout).checked, []);
+    const typo = run([dir, '--jsn']);
+    assert.equal(typo.status, 2); assert.match(typo.stderr, /unknown flag --jsn/);
+    assert.equal(run([dir, dir]).status, 2);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
 test('the shipped three.js scenes pass their own checker', () => {
   for (const file of ['exploded.js', 'sky.js']) {
     const result = checkThree(join(root, 'skills/ultimate-frontend-skills/assets', file));

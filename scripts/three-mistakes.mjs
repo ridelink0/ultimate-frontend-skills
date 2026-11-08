@@ -49,7 +49,9 @@ export const RULES = {
 
 // Comments become spaces (newlines kept, so line numbers hold); strings and
 // regex literals are copied whole so a // inside a URL is not a comment.
-export function stripComments(src) {
+// blankStrings: string and template contents become spaces too, for rules
+// that must not fire on a name mentioned in a message.
+export function stripComments(src, { blankStrings = false } = {}) {
   let out = '', i = 0, prev = '';
   const n = src.length;
   while (i < n) {
@@ -64,9 +66,9 @@ export function stripComments(src) {
     if (c === '"' || c === "'" || c === '`') {
       out += c; i++;
       while (i < n && src[i] !== c) {
-        if (src[i] === '\\') { out += src[i] + (src[i + 1] ?? ''); i += 2; continue; }
+        if (src[i] === '\\') { const esc = src.slice(i, i + 2); out += blankStrings ? esc.replace(/[^\n]/g, ' ') : esc; i += 2; continue; }
         if (c !== '`' && src[i] === '\n') break;
-        out += src[i]; i++;
+        out += blankStrings && src[i] !== '\n' ? ' ' : src[i]; i++;
       }
       if (i < n && src[i] === c) { out += c; i++; }
       prev = c; continue;
@@ -118,11 +120,19 @@ function unconditional(code, body, index) {
   for (let k = body.start; k < index; k++) { if (code[k] === '{') depth++; else if (code[k] === '}') depth--; }
   if (depth !== 0) return false;
   const before = code.slice(body.start, index).trimEnd().replace(/[\w$.\]]+\s*=$/, '').trimEnd();
-  return before === '' || ';{}'.includes(before[before.length - 1]);
+  if (before === '' || ';{}'.includes(before[before.length - 1])) return true;
+  if (!before.endsWith(')')) return false;
+  // A call that ended without a semicolon is a finished statement; parentheses
+  // that are an if, while, for or with head make the call conditional.
+  let d = 0, k = before.length - 1;
+  for (; k >= 0; k--) { if (before[k] === ')') d++; else if (before[k] === '(' && --d === 0) break; }
+  if (k < 0) return false;
+  return !/(?:^|[^\w$])(?:if|while|for|with)$/.test(before.slice(0, k).trimEnd());
 }
 
 export function checkSource(source, { html = false } = {}) {
-  const code = stripComments(html ? scriptsOnly(source) : source);
+  const js = html ? scriptsOnly(source) : source;
+  const code = stripComments(js), bare = stripComments(js, { blankStrings: true });
   if (!/\bTHREE\b|from\s*['"]three|\bWebGLRenderer\b/.test(code)) return null;
   const starts = [0];
   for (let k = 0; k < code.length; k++) if (code[k] === '\n') starts.push(k + 1);
@@ -132,42 +142,54 @@ export function checkSource(source, { html = false } = {}) {
   const has = (re) => re.test(code);
   const first = (re) => { const m = re.exec(code); return m ? m.index : 0; };
 
-  const makesRenderer = /\bnew\s+(?:THREE\.)?WebGLRenderer\s*\(/;
+  // Any namespace: import * as T from 'three' gives new T.WebGLRenderer().
+  const makesRenderer = /\bnew\s+(?:[A-Za-z_$][\w$]*\.)?WebGLRenderer\s*\(/;
   const rendererAt = first(makesRenderer);
   const ownsRenderer = has(makesRenderer);
 
-  for (const m of code.matchAll(/\.setPixelRatio\s*\(([^;\n]*)/g)) {
+  for (const m of bare.matchAll(/\.setPixelRatio\s*\(([^;\n]*)/g)) {
     if (/devicePixelRatio/.test(m[1]) && !/Math\.min|clamp/.test(m[1])) add('dpr-uncapped', m.index);
   }
-  for (const m of code.matchAll(/\b(?:outputEncoding|sRGBEncoding|LinearEncoding|physicallyCorrectLights)\b|\bTHREE\.Geometry\b|\.encoding\s*=(?!=)/g)) add('stale-api', m.index);
+  for (const m of bare.matchAll(/\b(?:outputEncoding|sRGBEncoding|LinearEncoding|physicallyCorrectLights)\b|\bTHREE\.Geometry\b|\.encoding\s*=(?!=)/g)) add('stale-api', m.index);
 
   const resizes = has(/ResizeObserver|['"]resize['"]|\bonresize\b/);
   if (/\.aspect\s*=(?!=)/.test(code) && !has(/updateProjectionMatrix\s*\(/)) add('aspect-without-projection', first(/\.aspect\s*=(?!=)/));
   if (ownsRenderer && has(/\bPerspectiveCamera\b/) && resizes && has(/\.setSize\s*\(/) && !has(/\.aspect\s*=(?!=)/)) add('resize-ignores-aspect', first(/\.setSize\s*\(/));
   if (ownsRenderer && !resizes) add('no-resize', rendererAt);
 
-  const fns = bodies(code), byName = new Map(fns.map((b) => [b.name, b]));
-  const always = [], loopBodies = [];
+  // Bodies and loop calls are read with strings blanked, so a brace or a
+  // function name inside a message cannot shift a body or start a loop.
+  const fns = bodies(bare), byName = new Map(fns.map((b) => [b.name, b]));
+  const always = [], loopBodies = [], loopKeys = new Set();
   for (const b of fns) {
     let self = false;
-    for (const m of code.slice(b.start, b.end).matchAll(new RegExp('requestAnimationFrame\\s*\\(\\s*' + b.name.replace(/\$/g, '\\$') + '\\s*\\)', 'g'))) {
+    for (const m of bare.slice(b.start, b.end).matchAll(new RegExp('requestAnimationFrame\\s*\\(\\s*' + b.name.replace(/\$/g, '\\$') + '\\s*\\)', 'g'))) {
       self = true;
-      if (unconditional(code, b, b.start + m.index)) { always.push({ at: b.start + m.index, renders: /\.render\s*\(/.test(code.slice(b.start, b.end)) }); break; }
+      if (unconditional(bare, b, b.start + m.index)) { if (!loopKeys.has(b.name)) { loopKeys.add(b.name); always.push({ at: b.start + m.index, renders: /\.render\s*\(/.test(bare.slice(b.start, b.end)) }); } break; }
     }
     if (self) loopBodies.push(b);
   }
-  for (const m of code.matchAll(/\.setAnimationLoop\s*\(\s*(null\b|[A-Za-z_$][\w$]*)?/g)) {
-    if (m[1] === 'null') continue;
-    const b = m[1] && byName.get(m[1]);
+  // setAnimationLoop(animate) called again after setAnimationLoop(null) is the
+  // same loop resumed, not a second one: loops are counted once per name.
+  // The argument is read whole: in setAnimationLoop(hidden ? null : animate)
+  // the loop is animate, not the first name in the expression.
+  for (const m of bare.matchAll(/\.setAnimationLoop\s*\(([^;\n]*)/g)) {
+    const arg = m[1], bareName = /^\s*(null|[A-Za-z_$][\w$]*)\s*\)/.exec(arg)?.[1];
+    if (bareName === 'null') continue;
+    const named = bareName || [...arg.matchAll(/[A-Za-z_$][\w$]*/g)].map((x) => x[0]).find((x) => byName.has(x));
+    const key = named || 'inline@' + m.index;
+    if (loopKeys.has(key)) continue;
+    loopKeys.add(key);
+    const b = named && byName.get(named);
     if (b) loopBodies.push(b);
-    always.push({ at: m.index, renders: b ? /\.render\s*\(/.test(code.slice(b.start, b.end)) : true });
+    always.push({ at: m.index, renders: b ? /\.render\s*\(/.test(bare.slice(b.start, b.end)) : true });
   }
   const rendering = always.filter((l) => l.renders);
   if (rendering.length > 1) add('several-render-loops', rendering[1].at);
   if (always.length && !has(/visibilitychange|document\.hidden|IntersectionObserver|setAnimationLoop\s*\(\s*null|cancelAnimationFrame/)) add('loop-never-pauses', always[0].at);
   for (const b of loopBodies) {
-    const text = code.slice(b.start, b.end);
-    for (const m of text.matchAll(/\bnew\s+(?:THREE\.)?(\w+)\s*\(/g)) {
+    const text = bare.slice(b.start, b.end);
+    for (const m of text.matchAll(/\bnew\s+(?:[A-Za-z_$][\w$]*\.)?(\w+)\s*\(/g)) {
       if (/(?:Geometry|Material|Texture|RenderTarget)$|^Mesh$|^WebGLRenderer$/.test(m[1])) add('gpu-alloc-per-frame', b.start + m.index);
       else if (/^(?:Vector[234]|Color|Matrix[34]|Quaternion|Euler|Box3|Sphere|Ray|Raycaster|Plane)$/.test(m[1])) add('per-frame-allocation', b.start + m.index);
     }
@@ -176,7 +198,8 @@ export function checkSource(source, { html = false } = {}) {
   const teardown = /\.domElement\.remove\s*\(|removeChild\s*\(\s*[\w$.]*domElement|\.forceContextLoss\s*\(|\bscene\.clear\s*\(/;
   if (has(teardown) && !has(/\.dispose\s*\(/)) add('teardown-without-dispose', first(teardown));
   if (has(/\bTextureLoader\b/) && !has(/SRGBColorSpace|\.colorSpace\s*=/)) add('texture-colorspace', first(/\bTextureLoader\b/));
-  if (ownsRenderer && !has(/\bcatch\b|isWebGL2?Available/)) add('no-webgl-fallback', rendererAt);
+  // A try block, not any .catch( - a promise catch on fetch is no fallback.
+  if (ownsRenderer && !/\btry\s*\{|isWebGL2?Available/.test(bare)) add('no-webgl-fallback', rendererAt);
   return found.sort((a, b) => a.line - b.line || a.rule.localeCompare(b.rule));
 }
 
@@ -195,31 +218,42 @@ export function checkThree(target) {
   if (!existsSync(root)) throw new Error('no such file or folder: ' + target);
   const isDir = statSync(root).isDirectory();
   const files = isDir ? walk(root) : [root];
-  const checked = [], findings = [];
+  const checked = [], findings = [], skipped = [];
+  const nameOf = (file) => (isDir ? relative(root, file) : relative(process.cwd(), file) || file).replaceAll('\\', '/');
   for (const file of files) {
-    if (statSync(file).size > 2 * 1024 * 1024) continue;
+    // Skips are reported, so "nothing was checked" always says why.
+    if (statSync(file).size > 2 * 1024 * 1024) { skipped.push({ file: nameOf(file), reason: 'over 2 MB, read as a bundle' }); continue; }
     const source = readFileSync(file, 'utf8');
-    if (/\bclass\s+WebGLRenderer\b/.test(source)) continue; // the library itself
+    // The library itself, readable or minified: three sets its REVISION string.
+    if (/\bclass\s+WebGLRenderer\b|\bREVISION\s*=\s*['"]\d{3}/.test(source)) { skipped.push({ file: nameOf(file), reason: 'the three.js library itself' }); continue; }
     const rows = checkSource(source, { html: /\.html?$/i.test(file) });
     if (!rows) continue;
-    const name = (isDir ? relative(root, file) : relative(process.cwd(), file) || file).replaceAll('\\', '/');
+    const name = nameOf(file);
     checked.push(name);
     for (const r of rows) findings.push({ ...r, file: name, why: RULES[r.rule].why, avoid: RULES[r.rule].avoid });
   }
-  return { ok: checked.length > 0 && !findings.some((f) => f.level === 'error'), checked, findings,
+  return { ok: checked.length > 0 && !findings.some((f) => f.level === 'error'), checked, skipped, findings,
     note: 'Source patterns only. Measure the running page (webdesign.mjs quality, scene-budget.mjs) before calling a scene fast.' };
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
-    const args = process.argv.slice(2), json = args.includes('--json'), target = args.find((a) => !a.startsWith('--'));
-    if (!target) throw new Error('usage: three-mistakes.mjs <dir|file> [--json]');
+    const usage = 'usage: three-mistakes.mjs <dir|file> [--json]';
+    const args = process.argv.slice(2), json = args.includes('--json');
+    // A mistyped flag or a second target is a usage error, not something to ignore.
+    const unknown = args.find((a) => a.startsWith('-') && a !== '--json');
+    if (unknown) throw new Error('unknown flag ' + unknown + '\n' + usage);
+    const targets = args.filter((a) => !a.startsWith('-'));
+    if (targets.length !== 1) throw new Error((targets.length ? 'one target at a time\n' : '') + usage);
+    const target = targets[0];
     const result = checkThree(target);
-    if (!result.checked.length) { console.error('three-mistakes: no three.js code found in ' + target + '; nothing was checked.'); process.exitCode = 2; }
-    else if (json) { console.log(JSON.stringify(result, null, 2)); process.exitCode = result.ok ? 0 : 1; }
+    const skips = result.skipped.map((s) => s.file + ' (' + s.reason + ')').join(', ');
+    if (json) { console.log(JSON.stringify(result, null, 2)); process.exitCode = !result.checked.length ? 2 : result.ok ? 0 : 1; }
+    else if (!result.checked.length) { console.error('three-mistakes: no three.js code found in ' + target + '; nothing was checked.' + (skips ? ' Skipped: ' + skips + '.' : '')); process.exitCode = 2; }
     else {
       const errors = result.findings.filter((f) => f.level === 'error').length;
       console.log(`three-mistakes: ${result.checked.length} file(s) with three.js code, ${result.findings.length} finding(s), ${errors} error(s)`);
+      if (skips) console.log('  skipped: ' + skips);
       for (const f of result.findings) console.log(`\n  ${f.level} ${f.rule}  ${f.file}:${f.line}\n    why: ${f.why}\n    instead: ${f.avoid}`);
       console.log('\n' + result.note);
       process.exitCode = result.ok ? 0 : 1;
