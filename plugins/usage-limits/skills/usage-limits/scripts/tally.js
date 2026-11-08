@@ -272,8 +272,9 @@ function money(value) {
 }
 
 // The dollar total is the transcript priced at API list rates. On a
-// subscription nobody is billed that amount, so a long session shown as
-// "about $200" reads as a charge unless the line says what the number is.
+// subscription nobody is billed that amount, so the figure is never hedged as
+// "about" a sum (which reads as an estimate of a bill); it is stated as what it
+// is: the list-price value of the tokens.
 const LIST_PRICE = ' at API list prices';
 
 function count(value, noun) {
@@ -288,6 +289,19 @@ function turnsPhrase(turns, subagentTurns) {
 function totalTokens(tokens) {
   const t = tokens || {};
   return (t.input || 0) + (t.cacheWrite || 0) + (t.cacheRead || 0) + (t.output || 0);
+}
+
+// Every token kind the transcript separates, so input is never hidden inside
+// the total and output is never the only part named. Kinds with nothing in
+// them are left out; the four always add up to the total beside them.
+function tokenBreakdown(tokens) {
+  const t = tokens || {};
+  const parts = [];
+  parts.push(usage.formatTokens(t.input || 0) + ' input');
+  if (t.cacheWrite) parts.push(usage.formatTokens(t.cacheWrite) + ' cache write');
+  if (t.cacheRead) parts.push(usage.formatTokens(t.cacheRead) + ' cache read');
+  parts.push(usage.formatTokens(t.output || 0) + ' output');
+  return parts.join(', ');
 }
 
 // One line, tokens first because that is the question being answered. Every
@@ -308,9 +322,8 @@ function formatTally(session, delta, options) {
   let line =
     'This session: ' + count(session.prompts, 'prompt') + ', ' +
     turnsPhrase(session.turns, session.subagentTurns) + ', ' +
-    usage.formatTokens(totalTokens(tokens)) + ' tokens (' +
-    usage.formatTokens(tokens.cacheRead || 0) + ' cache read, ' +
-    usage.formatTokens(tokens.output || 0) + ' output), about ' + money(session.cost || 0) + LIST_PRICE;
+    usage.formatTokens(totalTokens(tokens)) + ' tokens (' + tokenBreakdown(tokens) + '), ' +
+    money(session.cost || 0) + LIST_PRICE;
   if (Number.isFinite(opts.usdPerPercent) && opts.usdPerPercent > 0) {
     const points = (session.cost || 0) / opts.usdPerPercent;
     if (points >= 1) {
@@ -332,7 +345,8 @@ function formatClosed(session, now) {
   return (
     '[usage-limits] session closed' + (ran ? ' after ' + ran : '') + ': ' +
     count(session.prompts, 'prompt') + ', ' + turnsPhrase(session.turns, session.subagentTurns) + ', ' +
-    usage.formatTokens(totalTokens(session.tokens)) + ' tokens, about ' + money(session.cost || 0) + LIST_PRICE + '.'
+    usage.formatTokens(totalTokens(session.tokens)) + ' tokens (' + tokenBreakdown(session.tokens) + '), ' +
+    money(session.cost || 0) + LIST_PRICE + '.'
   );
 }
 
@@ -379,6 +393,7 @@ module.exports = {
   pricing,
   money,
   totalTokens,
+  tokenBreakdown,
   formatTally,
   formatClosed,
   readHookInput,

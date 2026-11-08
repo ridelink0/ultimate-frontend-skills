@@ -284,7 +284,7 @@ Reach for it whenever the answer to "will this finish" is not obvious.
 The budget line opens the reply; the cost closes it. When a reply completes
 what was asked, or wraps up the session, end it with one plain line:
 
-> Spent this session: 48 turns, 3.1M tokens, about $12.40.
+> Spent this session: 48 turns, 3.1M tokens (5k input, 61k output), $12.40 at API list prices.
 
 The figures come from the `This session:` part of the budget line, so there is
 nothing to run. They are exact as of the start of this turn, and the Stop hook
