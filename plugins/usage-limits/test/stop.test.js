@@ -130,7 +130,8 @@ test('the session end hook prints the closing line and stamps the session', asyn
       transcript_path: box.transcript,
       reason: 'clear',
     });
-    assert.match(out, /^\[usage-limits\] session closed after 2m: 0 prompts, 2 turns, 2k tokens, about \$0\.0/);
+    assert.match(out, /^\[usage-limits\] session closed after 2m: 0 prompts, 2 turns, 2k tokens \(20 input, 2k cache read, 200 output\), \$0\.0\d at API list prices\.$/);
+    assert.doesNotMatch(out, /about \$/, 'the closing line is a list-price figure, not "about" a sum');
     const state = tally.readState();
     assert.strictEqual(state[SESSION].endedAt, NOW);
     assert.strictEqual(state[SESSION].reason, 'clear');
