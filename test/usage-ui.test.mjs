@@ -7,6 +7,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import { join } from 'node:path';
+import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 const require = createRequire(import.meta.url);
@@ -51,4 +52,14 @@ test('no "about $N" text on a large session, before or after it closes', () => {
     assert.doesNotMatch(text, /about \$/);
     assert.match(text, /\$200 at API list prices/);
   }
+});
+
+test('the closing line SKILL.md teaches names every token kind, as the hook line does', () => {
+  const doc = readFileSync(join(root, 'plugins/usage-limits/skills/usage-limits/SKILL.md'), 'utf8');
+  const line = doc.split(/\r?\n/).find((l) => l.startsWith('> Spent this session:'));
+  assert.ok(line, 'SKILL.md carries the example closing line');
+  const shown = /tokens \(([^)]*)\)/.exec(line);
+  assert.ok(shown, 'the example breaks the total down');
+  // Same figures as session(): a breakdown that leaves out cache read cannot add up to 3.1M.
+  assert.equal(shown[1], tally.tokenBreakdown(session().tokens));
 });
