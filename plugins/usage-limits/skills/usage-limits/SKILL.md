@@ -948,6 +948,7 @@ stop.
 | `scripts/lowpower.js` | `status`, `on`, `off`. Restores what it replaced. Claude Code only. |
 | `scripts/recommend.js` | The chooser behind `usage.js --recommend`: posture, then the effort and model commands for each lever. Not meant to be called by hand. |
 | `references/tactics.md` | Every lever that lowers cost, and why it works. |
+| `references/token-efficient.md` | The seven rules `scripts/thrift.js` adds to a prompt that says "be token efficient" (or "save tokens", "fewer tokens"), each with its primary source. |
 | `scripts/panel.js` | The live panel beside the chat: `--open` puts it in a split pane to the right, `--once` prints one frame, `--json` the fields. For the person, not for you; open it only when asked. |
 | `scripts/statusline.js` | `status`, `on`, `off`. Puts the bars under the prompt and restores what was there. |
 | `scripts/feed.js` | The status line command Claude Code runs. Not meant to be called by hand. |
