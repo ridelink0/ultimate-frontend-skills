@@ -105,6 +105,12 @@ function detect(argv, env) {
   if (environment.CLAUDE_PLUGIN_ROOT || environment.CLAUDE_PROJECT_DIR) return CLAUDE;
   // Set by Codex for the processes it launches.
   if (environment.CODEX_HOME || environment.CODEX_CLI_PATH) return CODEX;
+  // Someone pointed Claude Code at a config directory on purpose. That names
+  // Claude as plainly as CODEX_HOME names Codex, and it has to be read before
+  // the disk checks: those look at the real ~/.codex, so an empty or fresh
+  // Claude config directory on a machine that also runs Codex was answered
+  // "Codex" and briefed the other agent's meter.
+  if (environment.CLAUDE_CONFIG_DIR) return CLAUDE;
 
   if (claudeHasSnapshot()) return CLAUDE;
   if (codexHasSessions()) return CODEX;

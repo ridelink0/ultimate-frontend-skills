@@ -27,7 +27,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
-      - run: node --test
+      - run: npm test
       - run: node bin/cli.js --version
   image-research:
     strategy:

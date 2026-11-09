@@ -42,7 +42,7 @@
     "node": ">=18"
   },
   "scripts": {
-    "test": "node --test",
+    "test": "node --require ./tools/test-host-env.js --test",
     "usage": "node bin/cli.js",
     "version": "node tools/sync-version.js && git add .claude-plugin/plugin.json .codex-plugin/plugin.json vscode/package.json"
   },
