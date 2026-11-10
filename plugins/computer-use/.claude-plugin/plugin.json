@@ -1,7 +1,7 @@
 {
   "name": "computer-use",
   "displayName": "Better Computer Use",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "description": "Codex-style computer use for Claude Code. Drives Windows and macOS apps through the accessibility tree instead of screenshots, so it targets exactly, survives display scaling, and costs about 20x fewer tokens; a re-read of a window costs about 25. Runs several steps in one call, in the background if you like, and types into windows behind the one you are using. Knows your input from its own, so you can keep working on the same desktop while it works. Keeps notes across context windows, takes appshots (both Ctrl keys), reads menus and popups, drags, and captures windows behind other windows. WARNING: controls your real computer - read the README.",
   "author": {
     "name": "ridelink0",

@@ -16,7 +16,7 @@
       "category": "design",
       "source": "./",
       "homepage": "https://github.com/ridelink0/ultimate-frontend-skills",
-      "version": "6.10.0"
+      "version": "6.11.0"
     },
     {
       "name": "usage-limits",
@@ -26,7 +26,7 @@
       },
       "source": "./plugins/usage-limits",
       "homepage": "https://github.com/ridelink0/ultimate-frontend-skills/tree/master/plugins/usage-limits",
-      "version": "1.44.0"
+      "version": "1.45.0"
     },
     {
       "name": "image-deep-research",

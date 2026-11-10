@@ -2,6 +2,15 @@
 
 Releases before 6.5.0 are recorded in their tag commits (`git log v6.4.2`) and on the GitHub releases page.
 
+## 6.11.0 - 2026-11-10
+
+- Usage Limits 1.45.0: list-price figures say 'at API list prices' instead of 'about $N'; the session's own effort is read before settings; an explicit CLAUDE_CONFIG_DIR names Claude; relay `cancel --session` cancels only the named relay, `arm` records the session's own folder from its transcript, and the wake starts closed sessions only; 'be token efficient' adds a sourced rule set. Carries the standalone 1.44.1 fix: a usage reading older than SNAPSHOT_TRUST_MS reads unknown, never 'the budget is gone'.
+- Computer Use joins the repository as `plugins/computer-use` with its history kept, released as 0.12.0; it is not yet a selection in this marketplace.
+- Re-sync image-deep-research 1.2.2 from its tagged release: `--commercial` keeps ported and dashed CC licences.
+- `webdesign.mjs three` and a source check for common three.js mistakes; `references/components.md` maps component categories to UFS sections and free libraries; doctrine-coverage tests pin what UFS teaches.
+- Distribution checks audit every package's npm pack list for opaque files and refuse shipped source that approves its own permissions.
+- README lists Gev's public repositories one line each.
+
 ## 6.10.0 - 2026-11-01
 
 - Consolidate UFS, Usage Limits and standalone image research sources with retained histories and separately selected manifests.

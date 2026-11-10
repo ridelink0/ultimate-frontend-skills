@@ -342,3 +342,16 @@ test('pin produces reporting language only, never an instruction to switch', () 
     }
   }
 });
+
+// 2026-11-03: a 100 per cent reading a day old told a desktop session the
+// budget was gone while the account stood at 65 per cent. A stop order needs a
+// reading inside SNAPSHOT_TRUST_MS; an older one is unknown, never gone.
+test('an old reading never says the budget is gone', () => {
+  const trust = brief.SNAPSHOT_TRUST_MS;
+  assert.strictEqual(brief.staleWall('gone', trust), 'unknown');
+  assert.strictEqual(brief.staleWall('gone', 29 * 60 * 60 * 1000), 'unknown');
+  assert.strictEqual(brief.staleWall('gone', trust - 1), 'gone');
+  assert.strictEqual(brief.staleWall('gone', null), 'gone');
+  assert.strictEqual(brief.staleWall('tight', 29 * 60 * 60 * 1000), 'tight');
+  assert.strictEqual(brief.staleWall('roomy', 29 * 60 * 60 * 1000), 'roomy');
+});
