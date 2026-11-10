@@ -158,6 +158,21 @@ test('the version script updates every manifest, not just the first', () => {
   );
 });
 
+test('the marketplace entry carries the package version, author and homepage', () => {
+  const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
+  const manifest = JSON.parse(fs.readFileSync(path.join(root, '.claude-plugin', 'plugin.json'), 'utf8'));
+  const market = JSON.parse(fs.readFileSync(path.join(root, '.claude-plugin', 'marketplace.json'), 'utf8'));
+  const entry = (market.plugins || []).find((p) => p.name === 'usage-limits');
+  assert.ok(entry, 'the marketplace must list usage-limits');
+  assert.strictEqual(entry.version, pkg.version, 'tools/sync-version.js should keep the marketplace entry in step');
+  assert.strictEqual(entry.homepage, manifest.homepage);
+  assert.strictEqual(entry.author && entry.author.name, manifest.author && (manifest.author.name || manifest.author));
+  assert.strictEqual(market.owner && market.owner.name, manifest.author && (manifest.author.name || manifest.author));
+  const script = fs.readFileSync(path.join(root, 'tools', 'sync-version.js'), 'utf8');
+  assert.ok(script.indexOf('marketplace.json') !== -1, 'the version script must sync the marketplace entry');
+  assert.ok(pkg.scripts.version.indexOf('.claude-plugin/marketplace.json') !== -1, 'and stage it');
+});
+
 test('the tarball stays small enough to be uncontroversial', () => {
   const { unpackedSize } = packInfo();
   assert.ok(
