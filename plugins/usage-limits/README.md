@@ -566,8 +566,12 @@ in Claude Code. Legacy relay permission modes are ignored. Interactive runs
 retain native prompts; headless runs deny approvals nobody can answer. Existing
 user settings are left untouched. The relay used to hold one slot, so a second
 session arming on the same night was refused or displaced the first. Each session now has its own record and its own scheduled
-task; status lists them all, relay cancel takes down this session's, and
-relay cancel --all takes down every one.
+task; status lists them all, relay cancel takes down this session's (or the
+only one armed), relay cancel --session ID takes down exactly that one, and
+relay cancel --all takes down every one. With several armed and none named,
+relay cancel cancels nothing and says so. relay arm --session ID records that
+session's own folder, read from its transcript, so the wake resumes it in the
+right project.
 
 **1.37.0 fixed the arm that failed twice on 2026-09-20.** `relay arm` reported
 `Value for '/TR' option cannot be more than 261 character(s)` - schtasks refusing
