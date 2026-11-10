@@ -284,7 +284,7 @@ Reach for it whenever the answer to "will this finish" is not obvious.
 The budget line opens the reply; the cost closes it. When a reply completes
 what was asked, or wraps up the session, end it with one plain line:
 
-> Spent this session: 48 turns, 3.1M tokens, about $12.40.
+> Spent this session: 48 turns, 3.1M tokens (5k input, 120k cache write, 2.9M cache read, 61k output), $12.40 at API list prices.
 
 The figures come from the `This session:` part of the budget line, so there is
 nothing to run. They are exact as of the start of this turn, and the Stop hook
@@ -510,7 +510,7 @@ Do not take that on trust: the report measures it. Under the model table it
 says how much of the output was reasoning and what that cost, for example
 
 ```
-    Of that output, 74k was reasoning (40%, about $1.85), the part effort controls.
+    Of that output, 74k was reasoning (40%, $1.85 at API list prices), the part effort controls.
 ```
 
 That share is the ceiling on what lowering effort can save, so read it before
@@ -948,6 +948,7 @@ stop.
 | `scripts/lowpower.js` | `status`, `on`, `off`. Restores what it replaced. Claude Code only. |
 | `scripts/recommend.js` | The chooser behind `usage.js --recommend`: posture, then the effort and model commands for each lever. Not meant to be called by hand. |
 | `references/tactics.md` | Every lever that lowers cost, and why it works. |
+| `references/token-efficient.md` | The seven rules `scripts/thrift.js` adds to a prompt that says "be token efficient" (or "save tokens", "fewer tokens"), each with its primary source. |
 | `scripts/panel.js` | The live panel beside the chat: `--open` puts it in a split pane to the right, `--once` prints one frame, `--json` the fields. For the person, not for you; open it only when asked. |
 | `scripts/statusline.js` | `status`, `on`, `off`. Puts the bars under the prompt and restores what was there. |
 | `scripts/feed.js` | The status line command Claude Code runs. Not meant to be called by hand. |

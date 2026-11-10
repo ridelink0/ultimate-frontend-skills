@@ -48,3 +48,23 @@ for (const relative of MANIFESTS) {
   fs.writeFileSync(manifest, JSON.stringify(plugin, null, 2) + '\n', 'utf8');
   process.stdout.write(relative + ' ' + before + ' -> ' + version + '\n');
 }
+
+// The marketplace pins the version inside its plugin entry, not at the top
+// level. An entry left behind advertises a release the manifest has moved past.
+const MARKETPLACE = path.join('.claude-plugin', 'marketplace.json');
+const marketFile = path.join(root, MARKETPLACE);
+if (fs.existsSync(marketFile)) {
+  const market = JSON.parse(fs.readFileSync(marketFile, 'utf8'));
+  const entry = (market.plugins || []).find((p) => p.name === 'usage-limits');
+  if (!entry) {
+    throw new Error(MARKETPLACE + ' has no usage-limits entry');
+  }
+  if (entry.version === version) {
+    process.stdout.write(MARKETPLACE + ' already at ' + version + '\n');
+  } else {
+    const before = entry.version;
+    entry.version = version;
+    fs.writeFileSync(marketFile, JSON.stringify(market, null, 2) + '\n', 'utf8');
+    process.stdout.write(MARKETPLACE + ' ' + before + ' -> ' + version + '\n');
+  }
+}

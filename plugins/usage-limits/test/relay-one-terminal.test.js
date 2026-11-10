@@ -181,7 +181,7 @@ test('an open session that is working again gets no second window', () =>
     const result = await wake.run(Date.now(), [], d);
     assert.strictEqual(result.outcome, 'live');
     assert.strictEqual(seen.delivered, 0, 'nothing was launched');
-    assert.match(seen.toasts.join('\n'), /no second window/);
+    assert.deepStrictEqual(seen.toasts, [], 'carried on by itself: nothing needs anybody, so no toast');
     assert.strictEqual(relay.read().armed, null, 'the relay is finished, not left armed');
     assert.strictEqual(relay.read().history.slice(-1)[0].outcome, 'live');
   }));
@@ -197,14 +197,18 @@ test('an open session that starts working during the wait also gets no second wi
     assert.ok(seen.slept > 0 && seen.slept < wake.LIVE_WAIT_MS, 'it waited, and not the whole budget');
   }));
 
-test('an open session that stays quiet for the whole wait gets the one window', () =>
+test('an open session that stays quiet for the whole wait gets one note and no second window', () =>
   withConfig(async (dir) => {
     seed(dir);
     const { deps: d, seen } = deps({ liveSession: () => ({ pid: 4242 }), transcriptActiveSince: () => false });
     const result = await wake.run(Date.now(), [], d);
-    assert.strictEqual(result.outcome, 'resumed');
-    assert.strictEqual(seen.delivered, 1, 'exactly one launch');
+    assert.strictEqual(result.outcome, 'open');
+    assert.strictEqual(seen.delivered, 0, 'an open session is never resumed beside itself');
+    assert.strictEqual(seen.toasts.length, 1, 'exactly one note');
+    assert.match(seen.toasts[0], /still open.*no second window/);
     assert.ok(seen.slept >= wake.LIVE_WAIT_MS, 'it waited the full budget first');
+    assert.strictEqual(relay.read().armed, null, 'finished, not left armed to fire again');
+    assert.strictEqual(relay.read().history.slice(-1)[0].outcome, 'open');
   }));
 
 test('a session closed during the wait gets the one window at once', () =>

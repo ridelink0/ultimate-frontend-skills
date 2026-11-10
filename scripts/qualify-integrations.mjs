@@ -14,7 +14,27 @@ const digest=s=>createHash('sha256').update(s).digest('hex');
 function confined(root,path){const r=relative(realpathSync(root),realpathSync(path));if(r.startsWith('..')||/^[A-Za-z]:/.test(r))throw Error('source path escapes selected root');return path;}
 export function isolatedEnvironment(profile, inherited=process.env){
   profile=resolve(profile);
-  const env={...inherited,HOME:profile,USERPROFILE:profile,CLAUDE_CONFIG_DIR:join(profile,'.claude'),CODEX_HOME:join(profile,'.codex'),XDG_CONFIG_HOME:join(profile,'.config'),XDG_CACHE_HOME:join(profile,'.cache'),XDG_DATA_HOME:join(profile,'.local/share'),APPDATA:join(profile,'AppData/Roaming'),LOCALAPPDATA:join(profile,'AppData/Local'),npm_config_cache:join(profile,'.npm-cache'),npm_config_userconfig:join(profile,'.npmrc'),npm_config_globalconfig:join(profile,'npm-global.conf'),npm_config_prefix:join(profile,'npm-global'),DISABLE_TELEMETRY:'1',DO_NOT_TRACK:'1',CI:'1',NO_COLOR:'1',CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC:'1'};
+  const env = {
+    ...inherited,
+    HOME: profile,
+    USERPROFILE: profile,
+    CLAUDE_CONFIG_DIR: join(profile, '.claude'),
+    CODEX_HOME: join(profile, '.codex'),
+    XDG_CONFIG_HOME: join(profile, '.config'),
+    XDG_CACHE_HOME: join(profile, '.cache'),
+    XDG_DATA_HOME: join(profile, '.local/share'),
+    APPDATA: join(profile, 'AppData/Roaming'),
+    LOCALAPPDATA: join(profile, 'AppData/Local'),
+    npm_config_cache: join(profile, '.npm-cache'),
+    npm_config_userconfig: join(profile, '.npmrc'),
+    npm_config_globalconfig: join(profile, 'npm-global.conf'),
+    npm_config_prefix: join(profile, 'npm-global'),
+    DISABLE_TELEMETRY: '1',
+    DO_NOT_TRACK: '1',
+    CI: '1',
+    NO_COLOR: '1',
+    CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: '1',
+  };
   for(const key of Object.keys(env))if(/(?:API_KEY|TOKEN|SECRET|PASSWORD)|^(?:AWS_|AZURE_|GOOGLE_|GCLOUD_)/i.test(key))delete env[key];
   return env;
 }
@@ -96,5 +116,14 @@ export function qualifyIntegrations({sourceBase,output,install=false,npxCli=join
   return {ok:results.every(r=>r.level===(install?'isolated-install-discovery':'pinned-source')),output,results};
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
-  try{const[sourceBase,output,...flags]=process.argv.slice(2);const result=qualifyIntegrations({sourceBase,output,install:flags.includes('--install')});console.log(JSON.stringify({ok:result.ok,output:result.output,results:result.results.map(({id,level,error})=>({id,level,error}))},null,2));process.exitCode=result.ok?0:1}catch(err){console.error('qualify-integrations: '+err.message);process.exitCode=2}
+  try {
+    const [sourceBase, output, ...flags] = process.argv.slice(2);
+    const result = qualifyIntegrations({ sourceBase, output, install: flags.includes('--install') });
+    const results = result.results.map(({ id, level, error }) => ({ id, level, error }));
+    console.log(JSON.stringify({ ok: result.ok, output: result.output, results }, null, 2));
+    process.exitCode = result.ok ? 0 : 1;
+  } catch (err) {
+    console.error('qualify-integrations: ' + err.message);
+    process.exitCode = 2;
+  }
 }

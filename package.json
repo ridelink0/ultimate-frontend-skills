@@ -79,6 +79,7 @@
     "test": "node --test --test-concurrency=1 test/*.test.mjs",
     "test:fast": "node test/run-fast.mjs",
     "check:distribution": "node scripts/distribution.mjs",
+    "check:readable": "node scripts/distribution.mjs --pack",
     "audit": "node scripts/webdesign.mjs audit",
     "verify": "node scripts/webdesign.mjs verify",
     "awards": "node scripts/webdesign.mjs awards",

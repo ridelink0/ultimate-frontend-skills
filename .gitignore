@@ -17,3 +17,6 @@ examples/*/compare/
 # A knowledge graph a local tool writes over the working tree. Never shipped:
 # a directory-marketplace install copies untracked files too.
 graphify-out/
+
+# Atlias local state
+.atlias/

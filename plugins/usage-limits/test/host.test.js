@@ -81,3 +81,33 @@ test('detection never picks Codex while a Claude snapshot is readable', () => {
     assert.strictEqual(host.detect([], { ANTIGRAVITY_CLI: '1' }), host.GEMINI);
   });
 });
+
+// The 1107 failure. An empty Claude config directory has no snapshot, so
+// detection fell through to the disk and found the real ~/.codex/sessions on a
+// machine that also runs Codex: every sandboxed test was answered "Codex".
+test('an explicit CLAUDE_CONFIG_DIR names Claude before the disk is consulted', () => {
+  const dir = tempDir('emptycfg');
+  withConfigDir(dir, () => {
+    assert.deepStrictEqual(fs.readdirSync(dir), [], 'the config directory really is empty');
+    assert.strictEqual(host.detect([], { CLAUDE_CONFIG_DIR: dir }), host.CLAUDE);
+    // The agents' own variables still outrank it, and the override outranks all.
+    assert.strictEqual(host.detect([], { CLAUDE_CONFIG_DIR: dir, CODEX_HOME: dir }), host.CODEX);
+    assert.strictEqual(host.detect([], { CLAUDE_CONFIG_DIR: dir, ANTIGRAVITY_CLI: '1' }), host.GEMINI);
+    assert.strictEqual(host.detect([], { CLAUDE_CONFIG_DIR: dir, USAGE_LIMITS_HOST: 'codex' }), host.CODEX);
+  });
+});
+
+test('the test preload strips the host variables an agent hands its children', () => {
+  const { spawnSync } = require('child_process');
+  const preload = path.join(__dirname, '..', 'tools', 'test-host-env.js');
+  const { INHERITED } = require(preload);
+  const env = Object.assign({}, process.env);
+  for (const key of INHERITED) env[key] = key === 'USAGE_LIMITS_HOST' ? 'codex' : '1';
+  const out = spawnSync(process.execPath, ['--require', preload, '-e',
+    'process.stdout.write(JSON.stringify(' + JSON.stringify(INHERITED) + '.filter(k => k in process.env)))'],
+  { env, encoding: 'utf8' });
+  assert.strictEqual(out.status, 0, out.stderr);
+  assert.deepStrictEqual(JSON.parse(out.stdout), []);
+  const pkg = require('../package.json');
+  assert.match(pkg.scripts.test, /--require \.\/tools\/test-host-env\.js --test/, 'npm test loads it');
+});

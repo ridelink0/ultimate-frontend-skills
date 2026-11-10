@@ -1044,7 +1044,9 @@ function tierNow(options) {
   }
   if (!effort) {
     try {
-      effort = usage.effortNow(sessionId, env);
+      // The hook's transcript_path is this turn's own file, so it is passed
+      // through: the session's effort is read from it before the setting.
+      effort = usage.effortNow(sessionId, env, { transcriptPath: opts.transcriptPath || null });
     } catch (err) {
       effort = null;
     }

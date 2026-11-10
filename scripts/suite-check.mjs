@@ -81,16 +81,19 @@ export function suiteIssues(root = ROOT) {
 }
 
 export function runSuite(root = ROOT) {
+  // Usage Limits detects its host from the environment the calling agent set;
+  // its preload strips those variables so the result does not depend on who ran
+  // the suite. It is the same preload its own npm test uses.
   const groups = [
-    ['UFS', root, '.test.mjs'],
-    ['Usage Limits', join(root, 'plugins/usage-limits'), '.test.js'],
-    ['Image research', join(root, 'plugins/image-deep-research'), '.test.mjs'],
+    ['UFS', root, '.test.mjs', []],
+    ['Usage Limits', join(root, 'plugins/usage-limits'), '.test.js', ['--require', './tools/test-host-env.js']],
+    ['Image research', join(root, 'plugins/image-deep-research'), '.test.mjs', []],
   ];
-  for (const [label, cwd, suffix] of groups) {
+  for (const [label, cwd, suffix, preload] of groups) {
     const files = readdirSync(join(cwd, 'test')).filter(file => file.endsWith(suffix)).sort().map(file => join('test', file));
     if (!files.length) throw new Error(`${label}: no tests found`);
     console.log(`\n${label}: ${files.length} test files`);
-    const result = spawnSync(process.execPath, ['--test', '--test-concurrency=1', ...files], { cwd, stdio: 'inherit', windowsHide: true });
+    const result = spawnSync(process.execPath, [...preload, '--test', '--test-concurrency=1', ...files], { cwd, stdio: 'inherit', windowsHide: true });
     if (result.error || result.status !== 0) return result.status || 1;
   }
   return 0;

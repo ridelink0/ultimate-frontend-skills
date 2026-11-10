@@ -1,0 +1,42 @@
+name: CI
+
+# Runs the suites that need no real, idle desktop: pure logic, the driver, the
+# build/manifest checks, and the live MCP server started headless over stdio.
+# host-test / mcp-test / batch-test / web-test / verify.mjs / presence-test.mjs
+# drive real windows and a real virtual desktop and are intentionally left for
+# a human on an idle machine (see README's Tests section) - a shared CI runner
+# is never that.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch: {}
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: policy-test
+        run: node tools/policy-test.mjs
+      - name: sessions-test
+        run: node tools/sessions-test.mjs
+      - name: astra-test
+        run: node tools/astra-test.mjs
+      - name: annotations-test
+        run: node tools/annotations-test.mjs
+      - name: fixes-test
+        run: node tools/fixes-test.mjs
+      - name: build-test
+        run: node tools/build-test.mjs
+      - name: syntax check every server and tool file
+        shell: bash
+        run: |
+          set -e
+          for f in server/*.mjs tools/*.mjs hooks/*.mjs; do
+            node --check "$f"
+          done

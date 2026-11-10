@@ -794,7 +794,61 @@ function sessionTranscriptFile(sessionId) {
 // The newest effort this session ran at, with the time it was stamped, so a
 // caller holding a status-line reading can take whichever is newer.
 function liveEffort(sessionId) {
-  const found = sessionTranscriptFile(sessionId);
+  return effortFromTail(sessionTranscriptFile(sessionId));
+}
+
+// The same answer for a transcript named by path - a hook's transcript_path,
+// which is the very file this turn is being written to.
+function transcriptEffort(file) {
+  if (!file) return null;
+  let stat;
+  try {
+    stat = fs.statSync(file);
+  } catch (err) {
+    return null;
+  }
+  return effortFromTail({ file, at: stat.mtimeMs, size: stat.size });
+}
+
+// The effort this session's own status line was last handed by Claude Code,
+// from the slot feed.js keeps per session. It moves the moment /effort or the
+// app's picker does, before the next assistant line is written.
+function statusLineEffort(sessionId) {
+  if (!sessionId) return null;
+  let all;
+  try {
+    all = JSON.parse(fs.readFileSync(path.join(configDir(), 'usage-limits-feed.json'), 'utf8'));
+  } catch (err) {
+    return null;
+  }
+  const slot = all && typeof all === 'object' && !Array.isArray(all) ? all[sessionId] : null;
+  if (!slot || typeof slot.effort !== 'string' || !slot.effort) return null;
+  // effortAt is when Claude Code last handed the slot this effort; a slot
+  // written before that field existed falls back to its redraw time.
+  const at = Number.isFinite(slot.effortAt) ? slot.effortAt : Number.isFinite(slot.at) ? slot.at : 0;
+  return { effort: slot.effort, at };
+}
+
+// What this session itself says it is running at: the newer of its status-line
+// slot and its transcript. The hook's transcript_path is read first when given;
+// the session-id lookup stands in for it otherwise.
+function sessionEffort(sessionId, transcriptPath) {
+  const fromTranscript = (transcriptPath ? transcriptEffort(transcriptPath) : null) || liveEffort(sessionId);
+  const candidates = [
+    { reading: statusLineEffort(sessionId), source: 'status line' },
+    { reading: fromTranscript, source: 'transcript' },
+  ];
+  let best = null;
+  for (const candidate of candidates) {
+    const reading = candidate.reading;
+    if (!reading || !EFFORT_LEVELS.includes(reading.effort)) continue;
+    const at = Number.isFinite(reading.at) ? reading.at : 0;
+    if (!best || at > best.at) best = { effort: reading.effort, at, source: candidate.source };
+  }
+  return best;
+}
+
+function effortFromTail(found) {
   if (!found) return null;
   const from = Math.max(0, found.size - EFFORT_TAIL_BYTES);
   const text = readSlice(found.file, from, found.size).toString('utf8');
@@ -2327,8 +2381,14 @@ function criticalOthers(windows, bindingKey, threshold) {
 //      inherit the environment, so this is live and authoritative.
 //   2. An override recorded here by hand, for the one case nothing can see:
 //      /effort ultracode typed in the UI, which touches neither disk nor env.
-//   3. settings.effortLevel - the persisted default.
-//   4. The transcript - stamped at session start and never re-stamped.
+//      A newer live reading other than xhigh (what ultracode resolves to)
+//      means the session has since moved off it, and that reading wins.
+//   3. The session itself: the newer of its status-line slot and its
+//      transcript. Claude Code re-stamps `effort` on every assistant line, so
+//      a /effort or picker switch shows there on the next answer (session
+//      a574e6c1 on 2026-11-08 reads high, xhigh, high, xhigh, medium).
+//   4. settings.effortLevel - the persisted default for NEW sessions, which a
+//      switch inside this one never touches.
 const EFFORT_LEVELS = ['low', 'medium', 'high', 'xhigh', 'ultracode'];
 
 function effortOverrideFile() {
@@ -2367,13 +2427,17 @@ function writeEffortOverride(level, now) {
   }
 }
 
-function effortNow(sessionId, env) {
+function effortNow(sessionId, env, options) {
+  const opts = options || {};
   const environment = env || process.env;
   const fromEnv = String(environment.CLAUDE_CODE_EFFORT_LEVEL || '').trim().toLowerCase();
   if (EFFORT_LEVELS.includes(fromEnv)) return { effort: fromEnv, source: 'environment', live: true };
 
+  const session = sessionEffort(sessionId, opts.transcriptPath || null);
   const override = readEffortOverride();
-  if (override) return { effort: override.effort, source: 'set by hand', live: true };
+  const movedOff = override && session && session.at > override.at && session.effort !== 'xhigh';
+  if (override && !movedOff) return { effort: override.effort, source: 'set by hand', live: true };
+  if (session) return { effort: session.effort, source: session.source, live: true };
 
   let configured = null;
   try {
@@ -2383,9 +2447,6 @@ function effortNow(sessionId, env) {
   }
   const level = configured && configured.effortLevel;
   if (EFFORT_LEVELS.includes(level)) return { effort: level, source: 'settings', live: false };
-
-  const seen = liveEffort(sessionId);
-  if (seen && EFFORT_LEVELS.includes(seen.effort)) return { effort: seen.effort, source: 'transcript', live: false };
   return null;
 }
 
@@ -3604,6 +3665,18 @@ function statusLine(collected) {
   return (worst && worst.percent >= 90 ? 'LOW  ' : '') + text;
 }
 
+// The reasoning share of output, with its list-price value when the host quotes
+// prices. Like the session line in tally.js, the figure is never hedged as
+// "about" a sum, which reads as an estimate of a bill; it says what it is.
+function reasoningLine(reasoning, money) {
+  if (!reasoning || !(reasoning.tokens > 0)) return null;
+  const priced = money && reasoning.cost !== null && reasoning.cost !== undefined;
+  return '    Of that output, ' + formatTokens(reasoning.tokens) + ' was reasoning (' +
+    Math.round(reasoning.shareOfOutput * 100) + '%' +
+    (priced ? ', ' + formatUSD(reasoning.cost) + ' at API list prices' : '') +
+    '), the part effort controls.';
+}
+
 function render(data) {
   const lines = [];
   // Codex meters an allowance and never quotes a price, so its report has no
@@ -3685,7 +3758,7 @@ function render(data) {
       lines.push('  ' + pad('So far', 15) + 'nothing this session has spent is on record yet.');
     } else {
       lines.push(
-        '  ' + pad('So far', 15) + 'about ' + formatUSD(spent.cost) + ' this session at API list prices, ' +
+        '  ' + pad('So far', 15) + formatUSD(spent.cost) + ' this session at API list prices, ' +
           spent.turns + ' turn' + (spent.turns === 1 ? '' : 's') + (cloudAmount ? ';' : '.')
       );
     }
@@ -3883,15 +3956,8 @@ function render(data) {
       // which makes this the largest number on the report that a setting can
       // actually move. Saying so without measuring it was advice; this is the
       // measurement.
-      const reasoning = data.reasoning;
-      if (reasoning && reasoning.tokens > 0) {
-        lines.push(
-          '    Of that output, ' + formatTokens(reasoning.tokens) + ' was reasoning (' +
-            Math.round(reasoning.shareOfOutput * 100) + '%' +
-            (money && reasoning.cost !== null ? ', about ' + formatUSD(reasoning.cost) : '') +
-            '), the part effort controls.'
-        );
-      }
+      const reasoningText = reasoningLine(data.reasoning, money);
+      if (reasoningText) lines.push(reasoningText);
     }
     lines.push('');
   }
@@ -4373,7 +4439,7 @@ async function main(argv) {
     if (!wanted) {
       const found = effortNow();
       if (!found) return say('No effort reading available.');
-      const guess = found.source === 'settings' || found.source === 'transcript';
+      const guess = found.source === 'settings' || found.source === 'transcript' || found.source === 'status line';
       return say(
         'Effort reads as ' + found.effort + ' (' + found.source + ').' +
           (guess
@@ -4443,6 +4509,9 @@ module.exports = {
   SCAN_MAX_EVENTS,
   sessionTranscriptFile,
   liveEffort,
+  transcriptEffort,
+  statusLineEffort,
+  sessionEffort,
   liveModel,
   transcriptModel,
   sessionModelReader,
@@ -4529,6 +4598,7 @@ module.exports = {
   pickSession,
   verdictLine,
   render,
+  reasoningLine,
   report,
   collect,
   detectPlan,

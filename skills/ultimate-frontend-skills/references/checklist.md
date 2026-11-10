@@ -65,6 +65,17 @@ list is what the audit cannot see.
 - [ ] `look` reports no overlap and no overflow at 1440 and 390.
 - [ ] `<title>`, meta description, favicon and Open Graph tags are all set and
       specific.
+- [ ] Every emitted route has its own title and description, one canonical
+      and an actual social preview image, and every URL in a sitemap, if
+      there is one, is a real route; the full list is
+      `references/workflows.md`, "SEO, rights and sharing".
+- [ ] Text and actions survive on slow hardware and in a throttled browser,
+      each measured and named as what it was; a laptop headless run is not a
+      low-end phone: `references/workflows.md`, "Performance across devices".
+- [ ] No non-exempt tracker or analytics tag runs before required consent,
+      and refusing really stops it; third-party fonts are self-hosted where
+      licensed, or their recipients and purposes documented:
+      `references/security.md`, "Fonts and trackers".
 - [ ] Anchors clear the fixed header (`--nav-h` is being published by
       `motion.js`, or you set `scroll-margin-top` yourself).
 

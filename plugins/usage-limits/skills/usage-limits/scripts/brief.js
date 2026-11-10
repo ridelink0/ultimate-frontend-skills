@@ -1292,8 +1292,9 @@ function briefText(input) {
         'the reset by itself, in place, with its context intact - better than any wake. The wake is the ' +
         'route for a session that is closed by then. Both firing for the same reset would start the work ' +
         'twice and spend the weekly twice, so the wake checks for this session first and opens no second ' +
-        'window while it is open and working again. The CLI does not continue a session that stopped short ' +
-        'of the limit (at a cap); the wake gives such a session a few minutes, then opens it in one window.'
+        'window while it is open at all: it wakes closed sessions only. The CLI does not continue a session ' +
+        'that stopped short of the limit (at a cap); the wake gives such a session a few minutes, then leaves ' +
+        'one note saying to continue it in its own terminal, and opens nothing.'
     );
   }
   if (carry && carry.last) {
@@ -1303,7 +1304,11 @@ function briefText(input) {
           ? 'picked this work back up automatically after the previous reset (' + (carry.last.detail || 'resumed') + '); check what it did before repeating it'
           : carry.last.outcome === 'notified'
             ? 'left a notification after the previous reset rather than starting anything'
-            : 'ended as "' + carry.last.outcome + '"' + (carry.last.detail ? ' - ' + carry.last.detail : '')) +
+            : carry.last.outcome === 'live'
+              ? 'found this session still open and carried across the previous reset in place, so it started nothing'
+              : carry.last.outcome === 'open'
+                ? 'found this session still open but idle after the previous reset, so it opened no second window and left a note'
+                : 'ended as "' + carry.last.outcome + '"' + (carry.last.detail ? ' - ' + carry.last.detail : '')) +
         '.'
     );
   }
@@ -2100,30 +2105,49 @@ async function run(now, hookInput, opts) {
 }
 
 if (require.main === module) {
+  let hookInputSeen = null;
   readHookInput()
     .then(async (input) => {
+      hookInputSeen = input;
       const isGeminiHook = Boolean(
         (input && (input.conversationId || input.invocationNum !== undefined)) ||
         (process.argv.includes('--host') && process.argv[process.argv.indexOf('--host') + 1] === 'gemini') ||
         process.argv.includes('--gemini-hook')
       );
       const text = sayOnce(input && input.session_id, await run(Date.now(), input), Date.now());
-      return { text, isGeminiHook };
+      return { text, isGeminiHook, prompt: input && input.prompt };
     })
     .then(
-      ({ text, isGeminiHook }) => {
+      ({ text, isGeminiHook, prompt }) => {
+        const said = withThriftSafe(text ? withBugcheck(text) : '', prompt);
         if (isGeminiHook) {
           const payload = {
-            injectSteps: text ? [{ ephemeralMessage: withBugcheck(text) }] : []
+            injectSteps: said ? [{ ephemeralMessage: said }] : []
           };
           process.stdout.write(JSON.stringify(payload) + '\n');
         } else {
-          if (text) process.stdout.write(withBugcheck(text) + '\n');
+          if (said) process.stdout.write(said + '\n');
         }
         process.exit(0);
       },
       () => {
-        // A hook that throws must not disrupt the prompt it runs before.
+        // A hook that throws must not disrupt the prompt it runs before. The
+        // rule set does not depend on the reading, so a prompt that asked for
+        // token efficiency still gets it when the brief itself failed.
+        try {
+          const input = hookInputSeen;
+          const said = withThriftSafe('', input && input.prompt);
+          if (said) {
+            const gemini = Boolean(
+              (input && (input.conversationId || input.invocationNum !== undefined)) ||
+              (process.argv.includes('--host') && process.argv[process.argv.indexOf('--host') + 1] === 'gemini') ||
+              process.argv.includes('--gemini-hook')
+            );
+            process.stdout.write((gemini ? JSON.stringify({ injectSteps: [{ ephemeralMessage: said }] }) : said) + '\n');
+          }
+        } catch (err) {
+          // Nothing more to say.
+        }
         process.exit(0);
       }
     );
@@ -2141,7 +2165,17 @@ function withBugcheck(text) {
   return text;
 }
 
-module.exports = { wallFeatures, sweepDebris, withBugcheck, sayOnce, shapeOf, saidFile, REPEAT_MS, staleVersionFor, newerModelFor, cloudCreditFor, relayNewsFor, installedVersion, runningVersion,
+// "Be token efficient" in the prompt: the sourced rule set rides along, even on
+// a prompt where the brief itself stays quiet. A missing module costs nothing.
+function withThriftSafe(text, prompt) {
+  try {
+    return require('./thrift.js').withThrift(text, prompt);
+  } catch (err) {
+    return text || '';
+  }
+}
+
+module.exports = { wallFeatures, sweepDebris, withBugcheck, withThriftSafe, sayOnce, shapeOf, saidFile, REPEAT_MS, staleVersionFor, newerModelFor, cloudCreditFor, relayNewsFor, installedVersion, runningVersion,
   readSaid, standingSaid, markStanding, standingShortFor, STANDING_SHORT, cacheMissWhyFor, missReason, MISS_RECENT_MS,
   DEFAULTS,
   HOOK_BUDGET_MS,

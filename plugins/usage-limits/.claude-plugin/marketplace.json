@@ -1,7 +1,7 @@
 {
   "name": "usage-limits",
   "owner": {
-    "name": "Ridelink",
+    "name": "Gev",
     "url": "https://github.com/ridelink0"
   },
   "description": "Usage limit aware planning for Claude Code.",
@@ -10,6 +10,11 @@
       "name": "usage-limits",
       "source": "./",
       "description": "Puts your remaining Claude Code usage limit into Claude's context before every prompt, so it opens with what fits in the budget instead of starting work that gets cut off. Reports headroom as turns rather than percentages, prices a job before you start it, and detects your plan tier.",
+      "version": "1.44.0",
+      "author": {
+        "name": "Gev"
+      },
+      "homepage": "https://github.com/ridelink0/ultimate-frontend-skills/tree/master/plugins/usage-limits",
       "category": "productivity",
       "tags": [
         "usage",

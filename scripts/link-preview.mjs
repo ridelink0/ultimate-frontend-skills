@@ -20,7 +20,17 @@ function headRange(html){const tags=tokens(html),open=tags.find(t=>t.name==='hea
 const head=html=>{const range=headRange(html);return range?html.slice(range.start,range.end):''};
 const headTokens=html=>tokens(head(html));
 const metaTags=html=>headTokens(html).filter(t=>t.name==='meta').map(t=>{const a=attrs(t.markup);return [String(a.property||a.name||'').toLowerCase(),decode(a.content??'')]});
-function replaceMetadata(html,metadata){const range=headRange(html);if(!range)throw Error('closing head tag required');let content=html.slice(range.start,range.end);for(const token of tokens(content).reverse()){const a=attrs(token.markup);if((token.name==='meta'&&/^(og:|twitter:)/i.test(a.property||a.name||''))||(token.name==='link'&&a.rel?.toLowerCase()==='canonical'))content=content.slice(0,token.start)+content.slice(token.end)}return html.slice(0,range.start)+content+'\n'+metadata+'\n'+html.slice(range.end)}
+function replaceMetadata(html, metadata) {
+  const range = headRange(html);
+  if (!range) throw Error('closing head tag required');
+  let content = html.slice(range.start, range.end);
+  for (const token of tokens(content).reverse()) {
+    const a = attrs(token.markup);
+    const social = token.name === 'meta' && /^(og:|twitter:)/i.test(a.property || a.name || '');
+    if (social || (token.name === 'link' && a.rel?.toLowerCase() === 'canonical')) content = content.slice(0, token.start) + content.slice(token.end);
+  }
+  return html.slice(0, range.start) + content + '\n' + metadata + '\n' + html.slice(range.end);
+}
 const routeFor=(dir,file)=>relative(dir,file).replaceAll('\\','/').split('/').map(encodeURIComponent).join('/').replace(/index\.html$/,'');
 function siteUrl(base){const url=new URL(base);if(url.protocol!=='https:'||url.username||url.password||url.search||url.hash)throw Error('base URL must use HTTPS without credentials, query or fragment');if(!url.pathname.endsWith('/'))url.pathname+='/';return url}
 // Check complete PNG chunks and raster data, not just the 24-byte header.
@@ -89,7 +99,14 @@ export async function buildPreviews(dir, base) {
       if(decoded.exceptionDetails||!Array.isArray(decoded.result?.value))throw Error('card text decoding failed');const [title,description]=decoded.result.value;
       // A line box shorter than the system font's glyphs never passes the fit
       // test, even when shrinking a short title. Reserve the actual font height.
-      const card='<!doctype html><meta charset="utf-8"><style>*{box-sizing:border-box}body{margin:0;width:1200px;height:630px;padding:64px;background:#f1f3f5;color:#1b2530;font:28px system-ui;display:flex;flex-direction:column;justify-content:space-between}h1{font-size:72px;line-height:normal;overflow-wrap:anywhere;max-height:350px;overflow:hidden;margin:24px 0}p{margin:0}</style><p>'+escape(site.hostname)+'</p><h1>'+escape(title)+'</h1><p>'+escape(description.slice(0,130))+'</p>';
+      const card = '<!doctype html><meta charset="utf-8"><style>*{box-sizing:border-box}' +
+        'body{margin:0;width:1200px;height:630px;padding:64px;background:#f1f3f5;color:#1b2530;' +
+        'font:28px system-ui;display:flex;flex-direction:column;justify-content:space-between}' +
+        'h1{font-size:72px;line-height:normal;overflow-wrap:anywhere;max-height:350px;overflow:hidden;margin:24px 0}' +
+        'p{margin:0}</style>' +
+        '<p>' + escape(site.hostname) + '</p>' +
+        '<h1>' + escape(title) + '</h1>' +
+        '<p>' + escape(description.slice(0, 130)) + '</p>';
       session.events.length=0;
       const nav=await session.send('Page.navigate',{url:'data:text/html;charset=utf-8,'+encodeURIComponent(card)});if(nav.errorText)throw Error(nav.errorText);
       // A prior document's load event does not qualify the next card. Tie the

@@ -43,12 +43,17 @@ export const SOURCES = ['openverse', 'commons', 'aic', 'met'];
 // Commons wraps QuickStatements hints in hidden spans (title QS:P1476,...); they are not the title.
 const strip = (html) => String(html || '').replace(/<(span|div)[^>]*display:\s*none[^>]*>[\s\S]*?<\/\1>/gi, '').replace(/<[^>]*>/g, '').replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#0?39;/g, "'").replace(/\s+/g, ' ').trim();
 
-/* True when a licence allows commercial use and modification. */
+/* True when a licence allows commercial use and modification. Commons names
+   a ported licence with its jurisdiction (CC BY-SA 3.0 DE, CC BY 3.0 US,
+   CC BY-SA 3.0 IGO) and sometimes writes it with dashes (CC-BY-SA-4.0); those
+   carry the same permissions as the unported text, so they count. Anything
+   else that is not on the list (NC, ND, PD-US, "migrated", unknown) does not. */
 export function commercialOk(licence) {
-  const l = String(licence || '').toLowerCase();
+  const l = String(licence || '').toLowerCase().replace(/\s+/g, ' ').trim()
+    .replace(/^cc-(?=by)/, 'cc ').replace(/-(\d)/g, ' $1');
   if (!l) return false;
   if (/\b(nc|nd)\b|noncommercial|non-commercial|noderiv|no-deriv/.test(l)) return false;
-  return /^(?:cc0(?:\s+\((?:public domain|met open access)\))?|public domain|pdm|pd|(?:cc[ -])?by(?:-sa)?(?:\s+\d(?:\.\d)?)?)$/.test(l);
+  return /^(?:cc0(?: 1\.0)?(?: \((?:public domain|met open access)\))?|public domain|pdm|pd|(?:cc )?by(?:-sa)?(?: \d(?:\.\d)?(?: (?:[a-z]{2}|igo))?)?)$/.test(l);
 }
 
 export function parseOpenverse(json) {

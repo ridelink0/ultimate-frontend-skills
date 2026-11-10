@@ -1,0 +1,95 @@
+{
+  "name": "computer-use",
+  "displayName": "Better Computer Use",
+  "version": "0.11.0",
+  "description": "Codex-style computer use for Claude Code. Drives Windows and macOS apps through the accessibility tree instead of screenshots, so it targets exactly, survives display scaling, and costs about 20x fewer tokens; a re-read of a window costs about 25. Runs several steps in one call, in the background if you like, and types into windows behind the one you are using. Knows your input from its own, so you can keep working on the same desktop while it works. Keeps notes across context windows, takes appshots (both Ctrl keys), reads menus and popups, drags, and captures windows behind other windows. WARNING: controls your real computer - read the README.",
+  "author": {
+    "name": "ridelink0",
+    "url": "https://github.com/ridelink0"
+  },
+  "homepage": "https://github.com/ridelink0/claude-computer-use",
+  "repository": "https://github.com/ridelink0/claude-computer-use",
+  "license": "MIT",
+  "keywords": [
+    "computer use",
+    "computer-use",
+    "codex computer use",
+    "codex",
+    "desktop automation",
+    "gui automation",
+    "windows automation",
+    "accessibility tree",
+    "ui automation",
+    "screen control",
+    "click",
+    "automate apps",
+    "desktop agent",
+    "macos automation"
+  ],
+  "mcpServers": "./.mcp.json",
+  "userConfig": {
+    "blocked_apps": {
+      "type": "string",
+      "title": "Additional blocked apps",
+      "description": "Comma-separated process names Computer Use must never read or drive, on top of its built-in blocklist. Example: myvault,internal-admin",
+      "required": false
+    },
+    "always_allowed_apps": {
+      "type": "string",
+      "title": "Always-allowed apps",
+      "description": "Comma-separated process names Computer Use may drive without a per-session grant, like Codex always_allowed_app_ids. Example: notepad,mspaint. Blocked and shell tiers stay ungrantable.",
+      "required": false
+    },
+    "coexist_mode": {
+      "type": "string",
+      "title": "Coexistence mode",
+      "required": false,
+      "default": "share",
+      "description": "share = wait for a gap in your typing before using the cursor (recommended). yield = refuse while you are active. take = interrupt you."
+    },
+    "confirm_consequential": {
+      "type": "string",
+      "title": "Ask before send, pay, and delete",
+      "required": false,
+      "default": "on",
+      "description": "on = a control labelled Send, Pay, Place order, Delete and the like is refused once, so Claude has to tell you what it is about to do and get your answer before clicking it. off = no such gate."
+    },
+    "desktop_scope": {
+      "type": "string",
+      "title": "Virtual desktops Claude may work on",
+      "required": false,
+      "default": "all",
+      "description": "all = Claude can see and drive windows on any of your virtual desktops, and a window on another one is labelled as such. current = Claude is confined to the desktop you are looking at; windows on your other desktops are invisible to it and refused if it names one by handle. Either way it can only read a window's frame while that window is on a desktop you are not viewing - Windows does not serve the contents of one."
+    },
+    "user_idle_ms": {
+      "type": "number",
+      "title": "Idle threshold (ms)",
+      "required": false,
+      "default": 1200,
+      "min": 200,
+      "max": 30000,
+      "description": "How long you must be quiet before Computer Use considers the machine free."
+    },
+    "background_at_turn_end": {
+      "type": "string",
+      "title": "Background runs at turn end",
+      "required": false,
+      "default": "stop",
+      "description": "stop = a background run stops after its current step when Claude's turn ends, so nothing keeps acting with nobody reading the results (what Codex does). finish = let it run to the end of its steps."
+    },
+    "appshot_hotkey": {
+      "type": "string",
+      "title": "Appshot hotkey (both Ctrl keys)",
+      "required": false,
+      "default": "on",
+      "description": "on = pressing both Ctrl keys while Computer Use is running files an appshot of the window in front (its text, including text scrolled out of view, plus a picture); the text goes to Claude with your next prompt. off = no hotkey."
+    },
+    "allow_claude_slash_commands": {
+      "type": "string",
+      "title": "Let Claude type slash commands into other Claude Code terminals",
+      "required": false,
+      "default": "off",
+      "description": "off (default) = terminals are read-only to Computer Use. on = a terminal whose title says Claude Code can be granted Claude Code slash commands only: one /command line, then Enter. Nothing else is ever typed there. Risk: that session obeys the command, and some (such as /clear) cannot be undone. Never your own session's terminal."
+    }
+  }
+}

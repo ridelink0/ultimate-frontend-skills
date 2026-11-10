@@ -1,0 +1,42 @@
+{
+  "name": "computer-use",
+  "owner": {
+    "name": "ridelink0",
+    "url": "https://github.com/ridelink0"
+  },
+  "metadata": {
+    "description": "Codex-style computer use for Claude Code",
+    "version": "0.11.0"
+  },
+  "plugins": [
+    {
+      "name": "computer-use",
+      "displayName": "Better Computer Use",
+      "source": "./",
+      "description": "Codex-style computer use for Claude Code. Drives Windows and macOS apps through the accessibility tree instead of screenshots, so it targets exactly, survives display scaling, and costs about 20x fewer tokens; a re-read of a window costs about 25. Runs several steps in one call, in the background if you like, and types into windows behind the one you are using. Knows your input from its own, so you can keep working on the same desktop while it works. Keeps notes across context windows, takes appshots (both Ctrl keys), reads menus and popups, drags, and captures windows behind other windows. WARNING: controls your real computer - read the README.",
+      "version": "0.11.0",
+      "author": {
+        "name": "ridelink0",
+        "url": "https://github.com/ridelink0"
+      },
+      "homepage": "https://github.com/ridelink0/claude-computer-use",
+      "license": "MIT",
+      "keywords": [
+        "computer use",
+        "computer-use",
+        "codex computer use",
+        "codex",
+        "desktop automation",
+        "gui automation",
+        "windows automation",
+        "accessibility tree",
+        "ui automation",
+        "screen control",
+        "click",
+        "automate apps",
+        "desktop agent",
+        "macos automation"
+      ]
+    }
+  ]
+}

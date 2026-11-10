@@ -25,14 +25,57 @@ test('shipped distribution is readable and contains offline packs and privacy', 
 test('distribution rejects disguised executables, invalid UTF8 and lifecycle downloads', () => {
   const dir = mkdtempSync(join(tmpdir(), 'ufs-distribution-'));
   try {
-    writeFileSync(join(dir, 'package.json'), JSON.stringify({ files: ['payload'], scripts: { postinstall: 'fetch-a-binary' } }));
+    writeFileSync(join(dir, 'package.json'), JSON.stringify({ files: ['payload', 'binding.gyp'], scripts: { postinstall: 'fetch-a-binary' } }));
     writeFileSync(join(dir, 'README.md'), 'source'); writeFileSync(join(dir, 'LICENSE'), 'license'); mkdirSync(join(dir, 'payload'));
+    writeFileSync(join(dir, 'binding.gyp'), '{ "targets": [] }\n');
     writeFileSync(join(dir, 'payload', 'hidden.png'), 'MZ executable');
     writeFileSync(join(dir, 'payload', 'invalid.js'), Buffer.from([0xff, 0x00]));
     writeFileSync(join(dir, 'payload', 'native.wasm'), 'source label');
     const r = auditDistribution(dir);
-    for (const word of ['postinstall', 'image extension', 'not UTF-8', 'opaque']) assert.ok(r.errors.some(e => e.includes(word)), word);
+    for (const word of ['postinstall', 'image extension', 'not UTF-8', 'opaque', 'binding.gyp: node-gyp']) assert.ok(r.errors.some(e => e.includes(word)), word);
     assert.ok(auditDistribution(dir, { paths: ['../outside'] }).errors.some(e => e.includes('escapes')));
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+test('distribution keeps a ..name file and refuses a file reached through a linked folder', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'ufs-inside-'));
+  const outside = mkdtempSync(join(tmpdir(), 'ufs-outside-'));
+  try {
+    writeFileSync(join(dir, 'package.json'), JSON.stringify({ files: [] }));
+    writeFileSync(join(dir, 'README.md'), 'source'); writeFileSync(join(dir, 'LICENSE'), 'license');
+    writeFileSync(join(dir, '..notes.md'), 'plain notes\n');
+    writeFileSync(join(outside, 'secret.md'), 'outside the root\n');
+    symlinkSync(outside, join(dir, 'linked'), 'junction');
+    assert.deepEqual(auditDistribution(dir, { paths: ['..notes.md'] }).errors, []);
+    assert.ok(auditDistribution(dir, { paths: ['linked/secret.md'] }).errors.some(e => e.includes('through a link')));
+  } finally { rmSync(dir, { recursive: true, force: true }); rmSync(outside, { recursive: true, force: true }); }
+});
+test('distribution refuses source that approves its own permissions, and allows reading and denying', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'ufs-self-approval-'));
+  const granting = {
+    'accept.mjs': 'settings.skipDangerousModePermissionPrompt = true;',
+    'trust.mjs': 'projects[key].hasTrustDialogAccepted = true;',
+    'trust.json': JSON.stringify({ projects: { x: { hasTrustDialogAccepted: true } } }),
+    'mcp.json': JSON.stringify({ enableAllProjectMcpServers: true }),
+    'mode.json': JSON.stringify({ permissions: { defaultMode: 'bypassPermissions' } }),
+    'launch.mjs': "spawn('claude', ['--resume', id, '--permission-mode', 'bypassPermissions']);",
+    'skip.sh': 'claude --dangerously-skip-permissions -p go',
+    'allow.mjs': "print({ hookSpecificOutput: { hookEventName: 'PreToolUse', permissionDecision: 'allow' } });",
+    'request.json': JSON.stringify({ hooks: { PermissionRequest: [] } }),
+    'rules.mjs': "settings.permissions.allow.push('Bash(*)');",
+    'codex.toml': 'approval_policy = "never"',
+  };
+  const safe = {
+    'read.mjs': 'const trusted = projects[key] && projects[key].hasTrustDialogAccepted === true;',
+    'deny.mjs': "print({ hookSpecificOutput: { permissionDecision: 'deny', permissionDecisionReason: why } });",
+    'note.mjs': '// resuming at four in the morning, with permissionMode bypassPermissions, means a conversation nobody chose',
+  };
+  try {
+    const files = { ...granting, ...safe };
+    writeFileSync(join(dir, 'package.json'), JSON.stringify({ files: Object.keys(files) }));
+    writeFileSync(join(dir, 'README.md'), 'source'); writeFileSync(join(dir, 'LICENSE'), 'license');
+    for (const [name, text] of Object.entries(files)) writeFileSync(join(dir, name), text);
+    const flagged = new Set(auditDistribution(dir).errors.filter(e => e.includes('approve their own actions')).map(e => e.slice(0, e.indexOf(':'))));
+    assert.deepEqual([...flagged].sort(), Object.keys(granting).sort());
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 test('corpus splits without losing rows or allowing manifest path traversal', () => {

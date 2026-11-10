@@ -566,8 +566,12 @@ in Claude Code. Legacy relay permission modes are ignored. Interactive runs
 retain native prompts; headless runs deny approvals nobody can answer. Existing
 user settings are left untouched. The relay used to hold one slot, so a second
 session arming on the same night was refused or displaced the first. Each session now has its own record and its own scheduled
-task; status lists them all, relay cancel takes down this session's, and
-relay cancel --all takes down every one.
+task; status lists them all, relay cancel takes down this session's (or the
+only one armed), relay cancel --session ID takes down exactly that one, and
+relay cancel --all takes down every one. With several armed and none named,
+relay cancel cancels nothing and says so. relay arm --session ID records that
+session's own folder, read from its transcript, so the wake resumes it in the
+right project.
 
 **1.37.0 fixed the arm that failed twice on 2026-09-20.** `relay arm` reported
 `Value for '/TR' option cannot be more than 261 character(s)` - schtasks refusing
@@ -868,18 +872,24 @@ first because that is what people ask:
 
 ```
 [usage-limits] this reply: 6 turns, 210k tokens, $0.95. This session: 9 prompts,
-48 turns, 3.1M tokens (2.9M cache read, 61k output), about $12.40, roughly 31
-points of the 5-hour window. Context is now about 130k tokens.
+48 turns, 3.1M tokens (5k input, 120k cache write, 2.9M cache read, 61k output),
+$12.40 at API list prices, roughly 31 points of the 5-hour window. Context is
+now about 130k tokens.
 ```
 
-It goes to you, not into the context, so it costs the model nothing. It reads
+The dollar figure is the transcript priced at API list rates, and the line says
+so. On a subscription nobody is billed that amount: it is a measure of the
+session's size, not a charge, so it is never hedged as "about" a sum. Input,
+cache write, cache read and output are each named, and add up to the total.
+
+The line goes to you, not into the context, so it costs the model nothing. It reads
 only the bytes of the transcript written since the previous reply, including
 any subagent transcripts under the session's own folder, so it takes a few
 milliseconds however long the session has run. When the session closes, a
 `SessionEnd` hook prints the closing line:
 
 ```
-[usage-limits] session closed after 1h 42m: 9 prompts, 48 turns, 3.1M tokens, about $12.40.
+[usage-limits] session closed after 1h 42m: 9 prompts, 48 turns, 3.1M tokens (5k input, 120k cache write, 2.9M cache read, 61k output), $12.40 at API list prices.
 ```
 
 Claude is also asked to end finished work with the total in its own words, one

@@ -238,7 +238,7 @@ webdesign.mjs packs --install       # get every absent one
 | Pack | Owns when installed |
 |---|---|
 | [emilkowalski/skills](https://github.com/emilkowalski/skills) | UI component motion (`animate`) and the verdict on it (`review-animations`). The line between his numbers and this plugin's is component versus page - `references/skill-packs.md` draws it |
-| [frontend-design](https://github.com/anthropics/claude-code-plugins) (Anthropic, official) | Aesthetic direction at the start of new UI |
+| [frontend-design](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/frontend-design) (Anthropic, official) | Aesthetic direction at the start of new UI |
 | [MickeyAlton33/web-designer-plugin](https://github.com/MickeyAlton33/web-designer-plugin) | Award-winning references as a way of teaching a model what good looks like - the idea this plugin's corpus grew from |
 | [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) `web-design-guidelines` | A broad review checklist, the most-installed design skill in the ecosystem |
 | [addyosmani/web-quality-skills](https://github.com/addyosmani/web-quality-skills) `accessibility` | Accessibility review, from the Chrome team's side |
@@ -282,7 +282,7 @@ it can be seen.
   a URL that was fetched and answered**, each carrying its stack, techniques,
   palette, type, motion and the one craft move worth taking - so it can be
   queried by the problem and rendered into contact sheets. The idea was his.
-- **Anthropic's [frontend-design](https://github.com/anthropics/claude-code-plugins)** -
+- **Anthropic's [frontend-design](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/frontend-design)** -
   when installed it owns aesthetic direction and this plugin defers to it.
 - **[Vercel Labs](https://github.com/vercel-labs/skills)** - the `skills` CLI
   and the open ecosystem the packs above are installed through.
@@ -376,6 +376,27 @@ skip this route: Claude Code would load both copies of each skill, and
 The same works for the sibling plugins: `ridelink0/claude-code-usage-limits`
 and `ridelink0/claude-computer-use`. skills.sh has no submission step - it
 lists what the CLI installs.
+
+## Gev's repositories
+
+Every public repository under [ridelink0](https://github.com/ridelink0), one
+line each. Each answered on GitHub on 2026-11-08 and none is archived; that is
+a link check, not a clean build of each one.
+
+- [ultimate-frontend-skills](https://github.com/ridelink0/ultimate-frontend-skills) - this suite: UFS 6.10.0, Usage Limits 1.44.0 and image-deep-research 1.2.2 in one marketplace.
+- [claude-code-usage-limits](https://github.com/ridelink0/claude-code-usage-limits) - where Usage Limits started; its source now lives in `plugins/usage-limits` here.
+- [image-deep-research](https://github.com/ridelink0/image-deep-research) - upstream of the image research skill vendored in `skills/image-deep-research`.
+- [claude-computer-use](https://github.com/ridelink0/claude-computer-use) - computer use for Claude Code on Windows and macOS through the accessibility tree.
+- [sub-atlias](https://github.com/ridelink0/sub-atlias) - an agent harness for Claude Code, Codex, Antigravity and Gemini CLI, with shared memory and guards.
+- [video-watch](https://github.com/ridelink0/video-watch) - watch video in Claude Code: ffmpeg frames, scene cuts and contact sheets a model can read.
+- [doodle-voyager](https://github.com/ridelink0/doodle-voyager) - a neon-ink space sim in a browser tab with no build step.
+- [awesome-claude-plugins](https://github.com/ridelink0/awesome-claude-plugins) - fork of composio-community/awesome-claude-plugins.
+- [buildwithclaude](https://github.com/ridelink0/buildwithclaude) - fork of davepoon/buildwithclaude.
+- [awesome-claude-skills](https://github.com/ridelink0/awesome-claude-skills) - fork of ComposioHQ/awesome-claude-skills.
+- [awesome-claude-code-toolkit](https://github.com/ridelink0/awesome-claude-code-toolkit) - fork of rohitg00/awesome-claude-code-toolkit.
+- [jqs-acc](https://github.com/ridelink0/jqs-acc) - fork of jqueryscript/awesome-claude-code.
+- [travisvn-acs](https://github.com/ridelink0/travisvn-acs) - fork of travisvn/awesome-claude-skills.
+- [behisecc-acs](https://github.com/ridelink0/behisecc-acs) - fork of BehiSecc/awesome-claude-skills.
 
 ## Use
 

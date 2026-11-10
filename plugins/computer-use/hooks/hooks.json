@@ -1,0 +1,68 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "mcp_tool",
+            "server": "plugin:computer-use:computer-use",
+            "tool": "computer_turn_ended",
+            "input": {
+              "session_id": "${session_id}",
+              "reason": "stop"
+            },
+            "timeout": 20
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/handback.mjs\" \"${CLAUDE_PLUGIN_DATA}\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "StopFailure": [
+      {
+        "hooks": [
+          {
+            "type": "mcp_tool",
+            "server": "plugin:computer-use:computer-use",
+            "tool": "computer_turn_ended",
+            "input": {
+              "session_id": "${session_id}",
+              "reason": "api_error"
+            },
+            "timeout": 20
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/appshot.mjs\" \"${CLAUDE_PLUGIN_DATA}\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "compact|resume",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/recap.mjs\" \"${CLAUDE_PLUGIN_DATA}\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

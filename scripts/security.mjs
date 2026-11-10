@@ -163,8 +163,8 @@ export function headersConfig(dir) {
 /* A Content-Security-Policy that refuses the page's own code is not a
  * security finding, it is a dead feature - and the one an offline suite can
  * never see, because it runs without the served headers. Doodle Voyager
- * shipped exactly that on 2026-09-25: net.js did import('https://esm.sh/...')
- * and createClient(PROJECT) under a policy that allowed neither, while every
+ * shipped exactly that on 2026-09-25: net.js imported a module from esm.sh by
+ * URL and called createClient(PROJECT) under a policy that allowed neither, while every
  * check drove multiplayer through a fake transport. So: collect every
  * absolute URL the code loads, work out which directive governs it, and say
  * when no configured policy lets it through.

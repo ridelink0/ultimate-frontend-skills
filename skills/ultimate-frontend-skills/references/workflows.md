@@ -61,7 +61,12 @@ loops per canvas. Measure before/after with the same page, trace and workload.
 and [resource disposal](https://threejs.org/manual/pages/how-to-dispose-of-objects.html)
 are primary references. `node scripts/scene-budget.mjs measurements.json`
 checks a measured scene record and explains missing evidence; its budgets are
-project defaults, not universal hardware guarantees.
+project defaults, not universal hardware guarantees. Before measuring, run
+`node scripts/webdesign.mjs three <dir|file>` on the source: it names the
+three.js mistakes agents usually write (uncapped DPR, removed APIs, a resize
+that forgets the camera, several render loops, a loop that never pauses,
+teardown without dispose), with why each gets written and what to write
+instead. It is static and per file, not a render check.
 
 Scroll motion: prefer native scrolling, measure nested scrollers and the actual
 scroll container, avoid wheel hijacking, and keep focus changes from scrolling

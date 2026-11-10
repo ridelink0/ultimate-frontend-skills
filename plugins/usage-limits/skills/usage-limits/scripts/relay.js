@@ -273,39 +273,10 @@ function launchDirFor(cwd) {
   }
   return dir;
 }
-function readSettings() {
-  try {
-    return JSON.parse(fs.readFileSync(settingsFile(), 'utf8').replace(/^\uFEFF/, ''));
-  } catch (err) {
-    return null;
-  }
-}
-function settingIs(key, value) {
-  const parsed = readSettings();
-  return Boolean(parsed) && parsed[key] === value;
-}
-function applySetting(key, value) {
-  const file = settingsFile();
-  let raw = null;
-  let parsed = {};
-  try {
-    raw = fs.readFileSync(file, 'utf8');
-    parsed = JSON.parse(raw.replace(/^\uFEFF/, ''));
-  } catch (err) {
-    if (raw !== null) return { changed: false, error: 'settings.json is not readable JSON; left untouched' };
-  }
-  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return { changed: false, error: 'settings.json is not an object; left untouched' };
-  if (parsed[key] === value) return { changed: false };
-  parsed[key] = value;
-  try {
-    fs.mkdirSync(configDir(), { recursive: true });
-    if (raw !== null) fs.writeFileSync(file + '.bak-usage-limits', raw);
-    fs.writeFileSync(file, JSON.stringify(parsed, null, 2) + '\n');
-  } catch (err) {
-    return { changed: false, error: err.message };
-  }
-  return { changed: true, file };
-}
+// There is deliberately no general settings.json writer here. It once existed
+// to pre-answer the bypass-permissions warning; permission and trust answers
+// belong to the user inside Claude Code. The one key this file changes is
+// alwaysThinkingEnabled, and only through the `relay thinking always` command.
 
 function preflightPrompts(cwd, config, options) {
   const file = claudeJsonFile();
@@ -370,7 +341,10 @@ function settings(state) {
     enabled: bool(env.USAGE_LIMITS_RELAY, bool(stored.enabled, DEFAULTS.enabled)),
     at: Math.min(99, Math.max(10, number(env.USAGE_LIMITS_RELAY_AT, number(stored.at, DEFAULTS.at)))),
     graceMinutes: Math.min(180, Math.max(1, number(env.USAGE_LIMITS_RELAY_GRACE, number(stored.graceMinutes, DEFAULTS.graceMinutes)))),
-    mode: pick(env.USAGE_LIMITS_RELAY_MODE, ['notify', 'resume'], pick(stored.mode, ['notify', 'resume'], DEFAULTS.mode)),
+    // The environment may only turn unattended resume OFF. A project's settings
+    // can set env vars, so letting one say "resume" would start agents the user
+    // never asked for; resume is stored only by the `relay mode resume` command.
+    mode: pick(env.USAGE_LIMITS_RELAY_MODE, ['notify'], pick(stored.mode, ['notify', 'resume'], DEFAULTS.mode)),
     thinking: pick(env.USAGE_LIMITS_RELAY_THINKING, ['off', 'resume', 'always'], pick(stored.thinking, ['off', 'resume', 'always'], DEFAULTS.thinking)),
     // Ignore legacy modes: a plugin must never choose its own approvals.
     permissionMode: null,
@@ -1451,9 +1425,10 @@ function arm(input) {
 // due to wake five hours later - with it. Nothing reported that, because from
 // disarm's point of view it did exactly what it was asked.
 //
-// A person typing `relay cancel` means "whatever is armed", so the CLI passes
-// no id and the old behaviour stands. Anything that knows which session it is
-// tidying up should say so.
+// The CLI never calls this without an id unless `relay cancel --all` was
+// typed: it passes the --session id, this session's, or the only one armed,
+// and with several armed and none of them named it refuses. Anything that
+// knows which session it is tidying up should say so.
 function disarm(reason, now, id) {
   const state = read();
   const all = records(state);
@@ -1562,6 +1537,49 @@ function applyAlwaysThinking(on) {
   return { ok: true, file, backup: existed ? file + '.bak-usage-limits' : null };
 }
 
+// The folder a Claude Code session ran in, from the cwd its own transcript
+// records. Only the first 256 KB is read; a cut last line is skipped.
+function sessionCwd(id) {
+  if (!id) return null;
+  let file = null;
+  try {
+    file = require('./wake.js').transcriptFile(id);
+  } catch (err) {
+    return null;
+  }
+  if (!file) return null;
+  let text = '';
+  try {
+    const fd = fs.openSync(file, 'r');
+    try {
+      const buf = Buffer.alloc(256 * 1024);
+      const n = fs.readSync(fd, buf, 0, buf.length, 0);
+      text = buf.toString('utf8', 0, n);
+    } finally {
+      fs.closeSync(fd);
+    }
+  } catch (err) {
+    return null;
+  }
+  for (const line of text.split('\n')) {
+    if (!line.includes('"cwd"')) continue;
+    try {
+      const entry = JSON.parse(line);
+      if (entry && typeof entry.cwd === 'string' && entry.cwd) {
+        // A folder since moved or deleted is no place to resume in.
+        try {
+          return fs.statSync(entry.cwd).isDirectory() ? entry.cwd : null;
+        } catch (err) {
+          return null;
+        }
+      }
+    } catch (err) {
+      // A line cut at the read boundary, or not JSON.
+    }
+  }
+  return null;
+}
+
 // `relay arm [--session <id>] [note text]`: take the current reading, book the
 // wake against the binding window's reset, and store any text given as the
 // continuation. Uses the report rather than the hook's cache, so it costs a
@@ -1575,17 +1593,32 @@ async function armByHand(rest) {
   const binding = data && data.binding;
   if (!binding || !Number.isFinite(binding.resetsAt)) return 'No window with a known reset time to arm against; run /usage and try again.';
   const at = rest.indexOf('--session');
-  const sessionId = at !== -1 && rest[at + 1] ? rest[at + 1] : (data.session && data.session.id) || null;
+  const named = at !== -1 && rest[at + 1] ? rest[at + 1] : null;
+  const sessionId = named || (data.session && data.session.id) || null;
   if (!sessionId) return 'No session id: pass --session <id> (from usage.js --sessions).';
   const text = rest.filter((item, i) => item !== '--session' && !(at !== -1 && i === at + 1)).join(' ').trim();
+  // A named session resumes in its own folder, not wherever this command was
+  // typed: the record's cwd is where the wake runs `claude --resume`, and the
+  // shell's folder sent it to the wrong project (2026-11-09).
+  const current = process.env.CLAUDE_CODE_SESSION_ID || process.env.CLAUDE_SESSION_ID || null;
+  let cwd = process.cwd();
+  // The session's own transcript wins over the shell's folder even for this
+  // session: the Bash tool may have cd'd elsewhere since it started. Only a
+  // named other session with no folder found is refused; otherwise the
+  // shell's folder stands, as before.
+  const own = sessionCwd(sessionId);
+  if (own) cwd = own;
+  else if (named && named !== current && usage.currentHost() === host.CLAUDE) {
+    return 'Could not find the folder session ' + named.slice(0, 8) + ' ran in (no transcript with a cwd, or that folder no longer exists); run relay arm from inside that session or its folder instead.';
+  }
   const result = arm({
     now,
     config,
     sessionId,
     binding,
     resetsAt: binding.resetsAt,
-    cwd: process.cwd(),
-    project: path.basename(process.cwd()),
+    cwd,
+    project: path.basename(cwd),
     hostName: usage.currentHost(),
     work: { hasWork: true, pending: 1, source: 'manual', todos: [], plan: text || null },
   });
@@ -2181,10 +2214,28 @@ function main(argv) {
     return written ? 'Continuation saved for the relay of ' + target.id.slice(0, 8) + ' (' + written + ').' : 'Nothing to save.';
   }
   if (command === 'cancel') {
-    // This session's own relay by default; --all takes every session's down.
-    const me = process.env.CLAUDE_CODE_SESSION_ID || process.env.CLAUDE_SESSION_ID || null;
-    const every = rest.includes('--all') || !me || !armedFor(read(), me);
-    const result = disarm('cancelled by hand', Date.now(), every ? undefined : me);
+    // One relay unless --all: the one --session names, else this session's,
+    // else the only one armed. On 2026-11-09 `cancel --session ID` from a shell
+    // with no session id of its own took every armed relay down, because the
+    // named id was never read and "not this session's" fell through to all.
+    const state = read();
+    const all = records(state);
+    if (!all.length) return 'Nothing was armed.';
+    const list = all.map((r) => r.id.slice(0, 8)).join(', ');
+    const sessionAt = rest.indexOf('--session');
+    const named = sessionAt !== -1 ? rest[sessionAt + 1] || null : null;
+    if (sessionAt !== -1 && !named) return 'No session id after --session.';
+    let id;
+    if (named) {
+      if (!armedFor(state, named)) return 'No relay is armed for ' + named + '; armed: ' + list + '. Nothing was cancelled.';
+      id = named;
+    } else if (!rest.includes('--all')) {
+      const me = process.env.CLAUDE_CODE_SESSION_ID || process.env.CLAUDE_SESSION_ID || null;
+      if (armedFor(state, me)) id = me;
+      else if (all.length === 1) id = all[0].id;
+      else return all.length + ' relays are armed (' + list + ') and none is this session\'s; pass --session <id>, or --all for every one. Nothing was cancelled.';
+    }
+    const result = disarm('cancelled by hand', Date.now(), id);
     if (!result.changed) return 'Nothing was armed.';
     const n = result.records ? result.records.length : 1;
     return n > 1 ? n + ' relays cancelled and their scheduled wakes removed.' : 'Relay cancelled and the scheduled wake removed.';
@@ -2320,7 +2371,7 @@ if (require.main === module) {
 module.exports = { shellClaude, cloud, cloudHandoff, cloudCommand, cloudWarnings, cloudLaunchMode, cloudCli, launchCloud, gitState, CLOUD_ARG_MAX,
   workWithContinuation, reapLost, schedulerMode, sandboxedHome, hiddenAction, headlessAvailable, HEADLESS_HOST, HIDDEN_HOST, BUGCHECK_LINE,
   taskAction, wakeLauncherFile, wakeLauncherScript, writeWakeLauncher, sweepWakeLaunchers, batchArg, describeSpawn, PS_ROUTE_MS, SCHTASKS_MS,
-  records, armedFor, putRecord, dropRecord, preflightPrompts, claudeJsonFile, projectKeys, isHome, launchDirFor, applySetting, settingIs,
+  records, armedFor, putRecord, dropRecord, preflightPrompts, claudeJsonFile, projectKeys, isHome, launchDirFor,
   DEFAULTS,
   MINUTE,
   main,
@@ -2351,6 +2402,7 @@ module.exports = { shellClaude, cloud, cloudHandoff, cloudCommand, cloudWarnings
   winArg,
   remainingMs,
   armByHand,
+  sessionCwd,
   schedule,
   verifyRegistration,
   scheduleWindows,
