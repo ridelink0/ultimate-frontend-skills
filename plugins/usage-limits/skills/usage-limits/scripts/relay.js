@@ -1565,7 +1565,14 @@ function sessionCwd(id) {
     if (!line.includes('"cwd"')) continue;
     try {
       const entry = JSON.parse(line);
-      if (entry && typeof entry.cwd === 'string' && entry.cwd) return entry.cwd;
+      if (entry && typeof entry.cwd === 'string' && entry.cwd) {
+        // A folder since moved or deleted is no place to resume in.
+        try {
+          return fs.statSync(entry.cwd).isDirectory() ? entry.cwd : null;
+        } catch (err) {
+          return null;
+        }
+      }
     } catch (err) {
       // A line cut at the read boundary, or not JSON.
     }
@@ -1595,12 +1602,14 @@ async function armByHand(rest) {
   // shell's folder sent it to the wrong project (2026-11-09).
   const current = process.env.CLAUDE_CODE_SESSION_ID || process.env.CLAUDE_SESSION_ID || null;
   let cwd = process.cwd();
-  if (named && named !== current) {
-    const own = sessionCwd(named);
-    if (own) cwd = own;
-    else if (usage.currentHost() === host.CLAUDE) {
-      return 'Could not find the folder session ' + named.slice(0, 8) + ' ran in (no transcript with a cwd); run relay arm from inside that session or its folder instead.';
-    }
+  // The session's own transcript wins over the shell's folder even for this
+  // session: the Bash tool may have cd'd elsewhere since it started. Only a
+  // named other session with no folder found is refused; otherwise the
+  // shell's folder stands, as before.
+  const own = sessionCwd(sessionId);
+  if (own) cwd = own;
+  else if (named && named !== current && usage.currentHost() === host.CLAUDE) {
+    return 'Could not find the folder session ' + named.slice(0, 8) + ' ran in (no transcript with a cwd, or that folder no longer exists); run relay arm from inside that session or its folder instead.';
   }
   const result = arm({
     now,

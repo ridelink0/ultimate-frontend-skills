@@ -91,6 +91,7 @@ test('sessionCwd reads the folder a session ran in from its own transcript', () 
     const project = path.join(dir, 'projects', 'D--work-other');
     fs.mkdirSync(project, { recursive: true });
     const own = path.join(dir, 'work', 'other project');
+    fs.mkdirSync(own, { recursive: true });
     fs.writeFileSync(path.join(project, 'sess-own.jsonl'), [
       JSON.stringify({ type: 'summary', summary: 'no cwd here' }),
       '{ not json "cwd"',
@@ -98,9 +99,11 @@ test('sessionCwd reads the folder a session ran in from its own transcript', () 
       JSON.stringify({ type: 'user', cwd: path.join(dir, 'later'), sessionId: 'sess-own' }),
     ].join('\n') + '\n');
     fs.writeFileSync(path.join(project, 'sess-none.jsonl'), JSON.stringify({ type: 'summary' }) + '\n');
+    fs.writeFileSync(path.join(project, 'sess-gone.jsonl'), JSON.stringify({ type: 'user', cwd: path.join(dir, 'gone') }) + '\n');
     assert.strictEqual(relay.sessionCwd('sess-own'), own, 'the first recorded cwd, not process.cwd()');
     assert.notStrictEqual(relay.sessionCwd('sess-own'), process.cwd());
     assert.strictEqual(relay.sessionCwd('sess-none'), null);
+    assert.strictEqual(relay.sessionCwd('sess-gone'), null, 'a folder that no longer exists');
     assert.strictEqual(relay.sessionCwd('sess-missing'), null);
     assert.strictEqual(relay.sessionCwd(null), null);
   }));
