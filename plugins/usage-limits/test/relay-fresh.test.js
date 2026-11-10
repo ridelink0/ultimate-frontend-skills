@@ -276,22 +276,23 @@ function deps(over) {
   return { deps: Object.assign(base, over || null), seen };
 }
 
-test('ONE TERMINAL holds with fresh on: an old session working again means no new one, a quiet one gets exactly one', () =>
+test('ONE TERMINAL holds with fresh on: an open session, working or quiet, never gets a new one beside it', () =>
   isolated(async (dir) => {
     seed(dir);
     const { deps: d, seen } = deps({ liveSession: () => ({ pid: 4242 }), transcriptActiveSince: () => true });
     const result = await wake.run(Date.now(), [], d);
     assert.strictEqual(result.outcome, 'live');
     assert.deepStrictEqual(seen.delivered, [], 'no new session beside the one that is working');
-    assert.match(seen.toasts.join('\n'), /no second window/);
+    assert.deepStrictEqual(seen.toasts, [], 'carried on by itself: no toast');
 
-    // Open but quiet for the whole wait: the one new session, and the log says so.
+    // Open but quiet for the whole wait: still no new session, one note, and the log says so.
     seed(dir);
     const quiet = deps({ liveSession: () => ({ pid: 4242 }), transcriptActiveSince: () => false });
     const opened = await wake.run(Date.now(), [], quiet.deps);
-    assert.strictEqual(opened.outcome, 'resumed');
-    assert.strictEqual(quiet.seen.delivered.length, 1);
-    assert.match(fs.readFileSync(relay.logFile(), 'utf8'), /open in process 4242 but idle since the reset; starting a new session in a window/);
+    assert.strictEqual(opened.outcome, 'open');
+    assert.deepStrictEqual(quiet.seen.delivered, [], 'fresh on does not make a second terminal acceptable');
+    assert.strictEqual(quiet.seen.toasts.length, 1);
+    assert.match(fs.readFileSync(relay.logFile(), 'utf8'), /open in process 4242 but idle since the reset; no second window/);
   }));
 
 test('fresh on: the wake delivers the new session\'s prompt and says it is handing over', () =>

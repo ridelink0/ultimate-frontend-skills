@@ -1292,8 +1292,9 @@ function briefText(input) {
         'the reset by itself, in place, with its context intact - better than any wake. The wake is the ' +
         'route for a session that is closed by then. Both firing for the same reset would start the work ' +
         'twice and spend the weekly twice, so the wake checks for this session first and opens no second ' +
-        'window while it is open and working again. The CLI does not continue a session that stopped short ' +
-        'of the limit (at a cap); the wake gives such a session a few minutes, then opens it in one window.'
+        'window while it is open at all: it wakes closed sessions only. The CLI does not continue a session ' +
+        'that stopped short of the limit (at a cap); the wake gives such a session a few minutes, then leaves ' +
+        'one note saying to continue it in its own terminal, and opens nothing.'
     );
   }
   if (carry && carry.last) {
@@ -1303,7 +1304,11 @@ function briefText(input) {
           ? 'picked this work back up automatically after the previous reset (' + (carry.last.detail || 'resumed') + '); check what it did before repeating it'
           : carry.last.outcome === 'notified'
             ? 'left a notification after the previous reset rather than starting anything'
-            : 'ended as "' + carry.last.outcome + '"' + (carry.last.detail ? ' - ' + carry.last.detail : '')) +
+            : carry.last.outcome === 'live'
+              ? 'found this session still open and carried across the previous reset in place, so it started nothing'
+              : carry.last.outcome === 'open'
+                ? 'found this session still open but idle after the previous reset, so it opened no second window and left a note'
+                : 'ended as "' + carry.last.outcome + '"' + (carry.last.detail ? ' - ' + carry.last.detail : '')) +
         '.'
     );
   }

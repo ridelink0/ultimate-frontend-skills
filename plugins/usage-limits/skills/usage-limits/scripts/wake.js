@@ -883,10 +883,8 @@ async function run(now, argv, overrides) {
     let open = deps.liveSession(record.id);
     while (open) {
       if (deps.transcriptActiveSince(record.id, since)) {
-        deps.toast(
-          'Usage limits: carried on in place',
-          (record.project || path.basename(record.cwd)) + ' is still open and working again in its own terminal, so no second window was opened.'
-        );
+        // Carried across in place by the CLI's own continue. Nothing needs
+        // anybody, so nothing is said: the history and the log hold it.
         finish(state, record, 'live', 'the session is open in process ' + open.pid + ' and working again; no second window', now);
         return { outcome: 'live', pid: open.pid };
       }
@@ -894,9 +892,17 @@ async function run(now, argv, overrides) {
       deps.sleep(LIVE_POLL_MS);
       open = deps.liveSession(record.id);
     }
+    // Still open and still quiet. A second `claude --resume` beside it is two
+    // terminals on one conversation, and if the CLI's own continue fires late
+    // the same work starts twice (R8, 2026-11-09). The relay wakes CLOSED
+    // sessions only; an open one is the person's, so it gets one note.
     if (open) {
-      relay.note('wake ' + record.id + ': the session is open in process ' + open.pid + ' but idle since the reset; ' +
-        (freshFor(config) ? 'starting a new session in a window' : 'opening it in a window'), now);
+      deps.toast(
+        'Usage limits: the window has reset',
+        (record.project || path.basename(record.cwd)) + ' is still open in its own terminal but has not carried on. Continue it there; no second window was opened.'
+      );
+      finish(state, record, 'open', 'the session is open in process ' + open.pid + ' but idle since the reset; no second window', now);
+      return { outcome: 'open', pid: open.pid };
     }
   }
 
