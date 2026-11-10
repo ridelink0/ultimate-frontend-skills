@@ -215,7 +215,8 @@ test('inside a cloud container the report never says to run /usage, and says wha
   );
   assert.doesNotMatch(text, /Run \/usage once|No usage snapshot/);
   assert.match(text, /Cloud session {2}a claude\.ai\/code session, billed to the cloud-session credit\n {17}rather than the plan's 5-hour window/);
-  assert.match(text, /So far {9}about \$4\.20 this session at API list prices, 29 turns;/);
+  assert.match(text, /So far {9}\$4\.20 this session at API list prices, 29 turns;/);
+  assert.doesNotMatch(text, /about \$/, 'a list-price figure is never hedged as about $N');
   assert.match(text, /the credit is \$250 across all cloud sessions/);
   assert.match(text, /not readable here/, 'the balance is not in any file, and it says so');
   assert.doesNotMatch(text, /Cloud credit {2}/, 'no advice to start the kind of session this already is');

@@ -3665,6 +3665,18 @@ function statusLine(collected) {
   return (worst && worst.percent >= 90 ? 'LOW  ' : '') + text;
 }
 
+// The reasoning share of output, with its list-price value when the host quotes
+// prices. Like the session line in tally.js, the figure is never hedged as
+// "about" a sum, which reads as an estimate of a bill; it says what it is.
+function reasoningLine(reasoning, money) {
+  if (!reasoning || !(reasoning.tokens > 0)) return null;
+  const priced = money && reasoning.cost !== null && reasoning.cost !== undefined;
+  return '    Of that output, ' + formatTokens(reasoning.tokens) + ' was reasoning (' +
+    Math.round(reasoning.shareOfOutput * 100) + '%' +
+    (priced ? ', ' + formatUSD(reasoning.cost) + ' at API list prices' : '') +
+    '), the part effort controls.';
+}
+
 function render(data) {
   const lines = [];
   // Codex meters an allowance and never quotes a price, so its report has no
@@ -3746,7 +3758,7 @@ function render(data) {
       lines.push('  ' + pad('So far', 15) + 'nothing this session has spent is on record yet.');
     } else {
       lines.push(
-        '  ' + pad('So far', 15) + 'about ' + formatUSD(spent.cost) + ' this session at API list prices, ' +
+        '  ' + pad('So far', 15) + formatUSD(spent.cost) + ' this session at API list prices, ' +
           spent.turns + ' turn' + (spent.turns === 1 ? '' : 's') + (cloudAmount ? ';' : '.')
       );
     }
@@ -3944,15 +3956,8 @@ function render(data) {
       // which makes this the largest number on the report that a setting can
       // actually move. Saying so without measuring it was advice; this is the
       // measurement.
-      const reasoning = data.reasoning;
-      if (reasoning && reasoning.tokens > 0) {
-        lines.push(
-          '    Of that output, ' + formatTokens(reasoning.tokens) + ' was reasoning (' +
-            Math.round(reasoning.shareOfOutput * 100) + '%' +
-            (money && reasoning.cost !== null ? ', about ' + formatUSD(reasoning.cost) : '') +
-            '), the part effort controls.'
-        );
-      }
+      const reasoningText = reasoningLine(data.reasoning, money);
+      if (reasoningText) lines.push(reasoningText);
     }
     lines.push('');
   }
@@ -4593,6 +4598,7 @@ module.exports = {
   pickSession,
   verdictLine,
   render,
+  reasoningLine,
   report,
   collect,
   detectPlan,

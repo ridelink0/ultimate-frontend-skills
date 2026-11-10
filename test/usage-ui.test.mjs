@@ -54,6 +54,23 @@ test('no "about $N" text on a large session, before or after it closes', () => {
   }
 });
 
+const usage = require(join(root, 'plugins/usage-limits/skills/usage-limits/scripts/usage.js'));
+
+test('the reasoning line states a list-price value, never "about $N", and SKILL.md shows the same line', () => {
+  const reasoning = { tokens: 74000, shareOfOutput: 0.4, cost: 1.85 };
+  const priced = usage.reasoningLine(reasoning, true);
+  assert.equal(priced, '    Of that output, 74k was reasoning (40%, $1.85 at API list prices), the part effort controls.');
+  assert.doesNotMatch(priced, /about \$/);
+  // A host that quotes no price (Codex) and an unpriced model both drop the money clause.
+  assert.equal(usage.reasoningLine(reasoning, false), '    Of that output, 74k was reasoning (40%), the part effort controls.');
+  assert.equal(usage.reasoningLine({ ...reasoning, cost: null }, true), '    Of that output, 74k was reasoning (40%), the part effort controls.');
+  assert.equal(usage.reasoningLine({ tokens: 0, shareOfOutput: 0, cost: 0 }, true), null);
+  assert.equal(usage.reasoningLine(null, true), null);
+  const doc = readFileSync(join(root, 'plugins/usage-limits/skills/usage-limits/SKILL.md'), 'utf8');
+  assert.doesNotMatch(doc, /about \$\d/, 'SKILL.md hedges no figure as about $N');
+  assert.ok(doc.split(/\r?\n/).includes(priced), 'SKILL.md carries the line the report prints');
+});
+
 test('the closing line SKILL.md teaches names every token kind, as the hook line does', () => {
   const doc = readFileSync(join(root, 'plugins/usage-limits/skills/usage-limits/SKILL.md'), 'utf8');
   const line = doc.split(/\r?\n/).find((l) => l.startsWith('> Spent this session:'));

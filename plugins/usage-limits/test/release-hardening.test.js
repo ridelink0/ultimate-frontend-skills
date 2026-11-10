@@ -110,6 +110,16 @@ test('work fit never promises coverage for missing, stale or shared measurements
   }
 });
 
+test('at an exhausted limit the brief asks for silence apart from the handoff', () => {
+  const standing = brief.briefText({ binding: { label: '5-hour', percentUsed: 1 }, pressure: 'roomy', turnsLeft: 100 });
+  assert.match(standing, /At an exhausted limit, stop normal narration and continuation claims; emit only the saved handoff if one is required\./);
+  assert.match(standing, /Never infer that a request fits from a percentage alone/);
+  const gone = brief.briefText({ binding: { label: '5-hour', percentUsed: 100 }, pressure: 'gone' });
+  assert.match(gone, /nothing further will run/);
+  assert.match(gone, /write the handoff/);
+  assert.doesNotMatch(gone, /When this reply completes what was asked/, 'no cost closing once nothing further runs');
+});
+
 test('same-tier account switches discard old estimates and pre-switch transcript spend', () => isolated(async (dir) => {
   const previousHost = usage.currentHost();
   usage.setHost('claude');

@@ -510,7 +510,7 @@ Do not take that on trust: the report measures it. Under the model table it
 says how much of the output was reasoning and what that cost, for example
 
 ```
-    Of that output, 74k was reasoning (40%, about $1.85), the part effort controls.
+    Of that output, 74k was reasoning (40%, $1.85 at API list prices), the part effort controls.
 ```
 
 That share is the ceiling on what lowering effort can save, so read it before
