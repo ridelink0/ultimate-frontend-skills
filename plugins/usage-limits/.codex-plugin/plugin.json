@@ -1,6 +1,6 @@
 {
   "name": "usage-limits",
-  "version": "1.44.0",
+  "version": "1.45.0",
   "description": "Reports how much of your Codex usage limit is left as turns of work rather than a percentage, prices a job before you start it, and counts the other agents sharing the same budget.",
   "author": {
     "name": "Gev",

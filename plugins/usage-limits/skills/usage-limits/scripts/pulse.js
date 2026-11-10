@@ -366,7 +366,7 @@ async function run(now, hookInput) {
 
   const config = brief.settings();
   const runwayMs = brief.RUNWAY_MENTION_MS;
-  const pressure = brief.pressure(binding, now, config, turnsLeft);
+  const pressure = brief.staleWall(brief.pressure(binding, now, config, turnsLeft), data.snapshotAgeMs);
 
   // The mode's own mid-turn re-cost, on its own throttle slot.
   //

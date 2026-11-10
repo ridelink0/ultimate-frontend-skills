@@ -4,6 +4,19 @@ Every released version, newest first, on the tag of the same name. Dates are the
 release commit's own. Anything marked UNVERIFIED was not exercised on real
 hardware at the time it shipped.
 
+## 0.12.0 - 2026-11-10
+
+The release that ships with the merged suite, where this source also lives as
+`plugins/computer-use`.
+
+- `journal find`: a `/.../g` or `/.../y` pattern no longer skips every other
+  matching entry, and a pattern with an upper-case flag such as `/x/I` is read
+  as a regular expression instead of failing.
+- `test/tools.test.mjs` names every tool, and `package.json` is the package
+  manifest for the `claude-computer-use` npm package. That package keeps its own
+  version line (published as 1.0.1); this entry is the plugin's.
+- The README carries the M8ven trust-index badge.
+
 ## 0.11.0 - 2026-09-28
 
 Items 1-3 of `docs/TODO-astra.md`: the parts of Codex's confirmation policy

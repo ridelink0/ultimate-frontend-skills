@@ -478,6 +478,17 @@ function pacingMatters(window, now) {
   return (now - window.windowStart) / window.spanMs >= PACE_MIN_ELAPSED;
 }
 
+// The wall needs a current reading. A snapshot past SNAPSHOT_TRUST_MS is the
+// last real reading, not this one: the login file the live fetch reads goes
+// unrenewed in the Claude desktop app, so a 100 per cent reading a day old went
+// on telling sessions "the budget is gone, nothing further will run" on an
+// account Gev read at 65 per cent (2026-11-03). Saying stop on an old number
+// halts real work; carrying on past a real wall costs nothing, because the API
+// itself refuses the next call. So an old reading is unknown, never gone.
+function staleWall(p, snapshotAgeMs) {
+  return p === 'gone' && Number.isFinite(snapshotAgeMs) && snapshotAgeMs >= SNAPSHOT_TRUST_MS ? 'unknown' : p;
+}
+
 // Not whether to speak, which is always, but how hard to lean on it.
 function pressure(window, now, config, turnsLeft) {
   if (!window || window.percentUsed === null || window.stale) return 'unknown';
@@ -1994,7 +2005,7 @@ async function run(now, hookInput, opts) {
   const offering = advice.ok && !advice.alreadyOffered;
   if (offering) mode.adviceOffer(advice.id, sessionId, now);
 
-  const pressureNow = pressure(binding, now, config, Number.isFinite(yourTurnsLeft) ? yourTurnsLeft : turnsLeftNow);
+  const pressureNow = staleWall(pressure(binding, now, config, Number.isFinite(yourTurnsLeft) ? yourTurnsLeft : turnsLeftNow), Number.isFinite(view.snapshotAgeMs) ? view.snapshotAgeMs + Math.max(0, now - (view.at || now)) : null);
   const cloudCredit = pressureNow === 'tight' || pressureNow === 'gone' ? cloudCreditFor(sessionId, wall.cloudCredit, now) : null;
   // Fast mode changes what the window's figures mean, so a toggle is a change
   // worth saying even when nothing else has moved.
@@ -2187,6 +2198,7 @@ module.exports = { wallFeatures, sweepDebris, withBugcheck, withThriftSafe, sayO
   PACE_MIN_SPAN_MS,
   PACE_MIN_ELAPSED,
   pressure,
+  staleWall,
   sessionSpend,
   describeWindow,
   summariseOthers,
