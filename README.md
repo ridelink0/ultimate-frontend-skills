@@ -383,7 +383,7 @@ Every public repository under [ridelink0](https://github.com/ridelink0), one
 line each. Each answered on GitHub on 2026-11-08 and none is archived; that is
 a link check, not a clean build of each one.
 
-- [ultimate-frontend-skills](https://github.com/ridelink0/ultimate-frontend-skills) - this suite: UFS 6.10.0, Usage Limits 1.44.0 and image-deep-research 1.2.0 in one marketplace.
+- [ultimate-frontend-skills](https://github.com/ridelink0/ultimate-frontend-skills) - this suite: UFS 6.10.0, Usage Limits 1.44.0 and image-deep-research 1.2.2 in one marketplace.
 - [claude-code-usage-limits](https://github.com/ridelink0/claude-code-usage-limits) - where Usage Limits started; its source now lives in `plugins/usage-limits` here.
 - [image-deep-research](https://github.com/ridelink0/image-deep-research) - upstream of the image research skill vendored in `skills/image-deep-research`.
 - [claude-computer-use](https://github.com/ridelink0/claude-computer-use) - computer use for Claude Code on Windows and macOS through the accessibility tree.
