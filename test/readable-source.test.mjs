@@ -15,8 +15,8 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 // Images are the one non-text payload allowed. Each was opened by hand; a new
 // one fails here until someone looks at it and lists it.
 const IMAGES = {
-  '.': ['.claude-plugin/icon.png', 'plugins/image-deep-research/.claude-plugin/icon.png'],
-  'plugins/usage-limits': [],
+  '.': ['.claude-plugin/icon.png', 'plugins/image-deep-research/.claude-plugin/icon.png', 'plugins/usage-limits/.claude-plugin/icon.png'],
+  'plugins/usage-limits': ['.claude-plugin/icon.png'],
   'plugins/image-deep-research': ['.claude-plugin/icon.png'],
 };
 
