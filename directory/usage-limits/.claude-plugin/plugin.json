@@ -1,0 +1,22 @@
+{
+  "name": "usage-limits",
+  "version": "1.46.0",
+  "author": {
+    "name": "Gev",
+    "url": "https://github.com/ridelink0"
+  },
+  "homepage": "https://github.com/ridelink0/claude-code-usage-limits",
+  "repository": "https://github.com/ridelink0/ultimate-frontend-skills",
+  "license": "MIT",
+  "keywords": [
+    "usage",
+    "limits",
+    "budget",
+    "cost",
+    "tokens",
+    "planning",
+    "effort"
+  ],
+  "description": "Usage Limits, directory edition. Plan Claude Code work to fit inside the 5-hour and weekly usage limits: size a job in turns, say whether it fits before starting, order the work so a cutoff costs little, and work cheaply when the budget is tight. Markdown only: no hooks, no scripts, no credential reads. The full edition, with live readings and the cost of each reply, is on GitHub.",
+  "icon": "./icon.png"
+}

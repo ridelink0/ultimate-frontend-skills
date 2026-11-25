@@ -1,0 +1,131 @@
+# Skill packs on the bench
+
+The 2026-11-01 additions and exact source/license evidence are in
+`../data/integrations-2026-11-01.json`. The ten entries cover UI UX Pro Max,
+Anthropic webapp testing, Expo, Trail of Bits, Remotion, Supabase, Vue, Vite/Vitest,
+frontend state and Stitch handoff. They are optional, explicitly selected
+source integrations. Upstream build/host certification is recorded separately;
+source availability alone is not a functional claim. Do not auto-disable an
+overlapping plugin or overwrite user permission settings. Choose one owner for
+each domain, and install only the named skills rather than a whole repository.
+
+Third-party skills the user may have installed through the open skills
+ecosystem (`npx skills add <owner/repo>`, the `skills` CLI by Vercel Labs,
+v1.5.26 at the time of writing). None of them ship inside this plugin. When one
+is installed it is treated the way `frontend-design` is treated in
+`plugins.md`: it owns its domain, this plugin defers inside that domain, and
+the seam is silent. When it is not installed, this plugin's own references
+stand in and the model never interrupts a build to say "go and install X".
+
+`webdesign.mjs tools` (full edition only) reports which of these are present. The CLI installs to
+`./.claude/skills/<name>` (project) or `~/.claude/skills/<name>` (global), as
+symlinks to a canonical copy by default; `.agents/skills/` is the
+agent-neutral location the same tool also writes. All three are checked.
+
+Everything below was read from the packs' own files on 2026-09-14. Install
+counts are from `npx skills find` the same day and will have moved.
+
+## emilkowalski/skills - MIT, 11 skills
+
+Emil Kowalski's design-engineering practice, codified. The relevant ones for a
+website build, in the order a build meets them:
+
+| Skill | What it owns when installed | This plugin's own fallback |
+|---|---|---|
+| `animate` | Any **UI component** animation: button press, dropdown, tooltip, modal, drawer, toast, accordion, tab indicator, hold-to-confirm, drag-to-dismiss. It carries a decision gate ("should this animate at all") and a RECIPES.md of built implementations. Start from its recipe, not from a blank file. | `references/motion.md` for page choreography; `references/ui.md` for the component's states |
+| `review-animations` | The **verdict** on motion code, against STANDARDS.md. Run it before `webdesign.mjs verify` (full edition only) on any page with component motion; it catches what a render check cannot see, like `ease-in` on an entrance. | `references/checklist.md`, then your own eyes at 2-5x duration |
+| `find-animation-opportunities` | Where a page **should** move and does not - and, more usefully, where it should not and does. Use it once, after the copy is written and before choreography. | Rule 8 in SKILL.md: motion earns its place |
+| `animation-vocabulary` | Turning "make it feel more alive" into a named technique with a number attached. Reach for it when a brief describes motion in adjectives. | `references/awards.md`, the technique taxonomy |
+| `apple-design` | Apple's motion and interface principles translated for the web. Right when the register is a **product** and the brand wants to read as engineered. Wrong for editorial, cinema and argument registers. | The `ink` preset and `references/three.md` |
+| `pick-ui-library` | Which library for a **UI task**: base-ui for accessible primitives, cmdk for command palettes, Sonner for toasts, motion for springs and layout animation, NumberFlow for animating numbers, Virtuoso for long lists. | `references/stack.md`, which covers the page-level and 3D libraries these do not |
+| `prototype` | Several genuinely different versions of one UI piece behind a switcher. Use it for a component decision, not a page. | `awards --pick`, three references that disagree |
+| `emil-design-eng` | The umbrella: philosophy plus the animation decision framework plus component principles. The other skills are its parts; load this one when the whole practice is wanted. | This file, and SKILL.md |
+
+Not relevant to a website build and not listed as handoffs: `animate-expo`
+(React Native), `write-swift`, `ask-sonner` (only when Sonner is actually in
+the project).
+
+### Where the two systems disagree, and which one wins where
+
+They were written for different registers and both are right inside their own.
+The line is **component versus page**.
+
+| Question | `animate` says | This plugin says | Resolution |
+|---|---|---|---|
+| Default entrance curve | `cubic-bezier(0.23, 1, 0.32, 1)`, a strong ease-out | `cubic-bezier(0.16, 1, 0.3, 1)`, expo-out | Same family, same intent. Use Emil's on components, this plugin's on page reveals. Never mix both on one element. |
+| Forbidden curve | Never `ease-in` on UI | Entrances decelerate, exits accelerate; never `ease-in-out` on a reveal | Compatible. `ease-in` is forbidden on entrances everywhere. |
+| UI duration ceiling | Under 300 ms; dropdowns 150-250, modals 200-500 | Page reveals run longer, deliberately | Components take Emil's numbers. A hero reveal is not a component. |
+| Stagger | **30-80 ms** between items; longer feels slow | Characters 12-25, words 30-50, lines 60-90, **cards 80-120** | The one genuine gap. A list of UI items (menu, results, chips) takes 30-80. An editorial grid of cards, arriving as a composition, takes 80-120. Ask which the thing is. Past 12 items both agree: group fade. |
+| What to animate | `transform` and `opacity` only; `clip-path` sanctioned; `height` tolerated for accordions | `translate3d`, never `left`/`top`; one rAF loop | Identical rule, two phrasings. |
+| `scale(0)` | Never; start at 0.9-0.97 | Not stated | Adopt Emil's rule outright. It is correct and this plugin had no position. |
+| Reduced motion | A gentler variant, not zero: keep opacity and colour, drop transform motion | Measured as a requirement; `core.css` fallback uses `1ms`, not `0` | Compatible, and Emil's phrasing is the better instruction. |
+| Springs | For drag, gesture, anything interruptible; bounce 0.1-0.3, rarely | Not covered | Adopt. Springs are a component concern this plugin never needed to hold. |
+
+Two of Emil's rules are adopted into this plugin's own practice whether or not
+his pack is installed, because they were simply missing here: **never
+`scale(0)`** as an entrance, and **reduced motion is a gentler variant, not
+zero**. Credit where it is due.
+
+## Other packs worth the same handshake
+
+Found with `npx skills find`, each read before being listed. Install counts are
+the ecosystem's, not an endorsement.
+
+| Pack | Owns when installed | Notes |
+|---|---|---|
+| `vercel-labs/agent-skills@web-design-guidelines` | A house checklist for web design review. 633K installs, the most-installed design skill there is. | Broad and opinionated in places this plugin already has a position on (grounds, type). Where they disagree on taste, this plugin's `tells.md` stands - it is the more specific document. Where they disagree on a fact, check. |
+| `addyosmani/web-quality-skills@accessibility` | Accessibility review, from the Chrome team's side. | Complements `references/craft.md`. Run it as a second reviewer on forms and navigation. |
+| `ibelick/ui-skills@fixing-accessibility` | Fixing, not just finding, accessibility defects. | Hand off the fix when the finding is a component pattern; keep the fix here when it is a page-level landmark or contrast problem. |
+| `cloudai-x/threejs-skills` (`fundamentals`, `geometry`, `shaders`, `animation`) | three.js as a general subject. | `references/three.md` is narrower and deeper on the one case this plugin cares about, the scroll-driven product page. Use the pack for anything outside that - a game, a data visualisation, a shader study. |
+| `vercel/components.build@building-components` | Building React components to a standard. | Framework work. This plugin's chassis is class names and plain HTML; the handoff is at the React boundary. |
+| `heygen-com/hyperframes@hyperframes-animation` | 417K installs, the most-installed animation skill. | UNVERIFIED: not read in this pass. Listed because a model will see it in `skills find animation` above Emil's and should know it is a different tool for a different job (video-frame composition), not a competitor to `animate`. |
+
+## Added 20 September 2026 with `packs add`
+
+Registered from their repos by `webdesign.mjs packs` (full edition only), which reads the skills, the licence and the commit; the notes on each are in docs/research/2026-09-20-packs.md. A vendored copy (`packs vendor <id>`) is the improved fork and lists its changes in UFS-NOTES.md.
+
+| Pack | Owns when installed | Licence |
+|---|---|---|
+| `Leonxlnx/taste-skill` | Named taste directions - minimalist, brutalist, soft - and a redesign pass on an existing UI, at component grain. Leonxlnx, MIT. | MIT |
+| `pbakaus/impeccable` | Polishing a UI that already exists: 24 commands (audit, critique, polish, typeset, colorize, harden) that own the review-and-refine loop. Paul Bakaus, Apache-2.0. | Apache-2.0 |
+| `microsoft/playwright-cli` | Driving a real browser from the terminal - clicks, forms, logins, multi-step flows and Playwright tests. Microsoft, Apache-2.0. | Apache-2.0 |
+| `bergside/awesome-design-skills` | A registry of 67 single-aesthetic directions (glassmorphism, riso, neobrutalism, terracotta, sega) for naming a look the four house presets do not have. bergside, MIT. | MIT |
+| `viettranx/3dviz-pro-max` | Expressive three.js scenes, explainers and interactive models - authored looks, runnable rigs, a capture script. viettranx, MIT. | MIT |
+
+### The three plugin-kind packs: what to take, what to avoid
+
+`packs vendor` only copies skills packs, so these three stay the author's and install through `claude plugin`. Read on 2026-09-20 from their repos (docs/research/2026-09-20-packs.md has the long form). When one is installed it owns its column; when it is absent, the middle column is what this plugin already does instead.
+
+| Pack | What UFS takes from it | What to avoid |
+|---|---|---|
+| `Leonxlnx/taste-skill` (MIT, 13 skills) | The countable pre-flight checks: eyebrow labels at most one per three sections, hero headline two lines and subtext twenty words, one intent per CTA. The rule that a page must not repeat the palette family of the one before it. The VARIANCE/MOTION/DENSITY dials as a way of describing a preset in three numbers. The italic-descender rule: `leading-none` clips y g j p q in italic display type. | Its default stack (React server components, Tailwind v4, `motion/react`) - it contradicts its own framework-agnostic claim and this plugin's plain-HTML chassis. Its banned-palette lists are asserted without a dataset; check them against `tells.md` rather than adopting them whole. The main SKILL.md is about 35,000 tokens in one file with no reference split; when it is installed, let it load itself, do not also load its text here. |
+| `pbakaus/impeccable` (Apache-2.0, one skill, 24 commands) | The Persuade / Operate / Read / Experience vocabulary for what a surface is for, orthogonal to the visual direction. "Verify in bounded passes, not a loop" for `verify`. Its citation pattern for vendored work: name it, license it, NOTICE.md. When installed it owns the whole revise-an-existing-surface domain (critique, audit, polish, bolder, quieter, harden, onboard); hand that off and keep the build. | Every command shells out to a downloaded, version-pinned binary - do not copy that mechanism into this zero-dependency plugin. Its paid catalogue is held in a private companion repo; nothing here should depend on it. Do not let its auto-trigger description (a run-on of every review synonym) decide who owns a fresh build: it is a reviser, this plugin builds. |
+| `viettranx/3dviz-pro-max` (MIT, one skill; anatomy meshes CC BY-SA, fonts OFL) | The "Honest limits" section format - what is proved, what is not, with numbers. "Never describe an unobserved frame" as a hard rule for `look`, `quality` and `parity`. The construction-routing table (reuse / adapt / author / external asset / combine, each row naming what to preserve) as a shape for `imagery.md`. Its Blender-to-three.js handoff note as a second opinion beside `references/blender.md`. When installed it owns 3D scenes that are not a scroll-driven product page: environments, characters, anatomy, molecules, mechanisms, data. | It is a scene skill, not a page skill: typography, layout and page choreography stay here. The repository is 2,100+ files with a path deep enough to break `git clone` on Windows without `core.longpaths`. Its flagship demo GIF predates the skill and is disclosed as such; do not cite it as the skill's output. Its marketplace install route is marked untested by its own authors. |
+
+The two skills-kind packs registered the same day, `microsoft/playwright-cli` and `bergside/awesome-design-skills`, are vendored under `packs/`; each copy's `UFS-NOTES.md` lists what was changed and why.
+
+## How to detect, and what not to do
+
+> Full edition only: this step runs a script that the directory edition does not ship. Do it by hand from the references, or tell the user it needs the full edition.
+
+reports every installed pack it recognises, with the one line of what changes
+because of it. Detection reads the three skill directories and resolves
+symlinks, because the CLI's default install is a symlink to a canonical copy
+and a check that only looks for real directories reports every pack as absent.
+
+A plugin-kind pack (`frontend-design`, `web-designer`, `taste-skill`,
+`impeccable`, `3dviz-pro-max`) counts as installed on either host: Claude
+Code's `~/.claude/plugins/installed_plugins.json`, or an `enabled = true`
+table under `[plugins."<name>@<marketplace>"]` in `~/.codex/config.toml`.
+`packs --install` never spawns a binary that is not on the machine. On a
+Codex host without the `claude` CLI it prints the `[marketplaces.*]` and
+`[plugins.*]` block to paste into `config.toml` and reports `printed`;
+without `npx` it prints the `npx skills add` command the same way. Where
+Codex puts a `skills` CLI install is UNVERIFIED; `.agents/skills`, which the
+CLI writes, is among the directories checked.
+
+Do not copy a pack's files into a project. They are the user's, installed at
+the user's scope, and they update through the CLI; a copy drifts. Do not
+recommend installing one mid-build. If a build would clearly benefit and the
+pack is absent, finish the build with this plugin's own references and mention
+the pack in the two-sentence handover, once, by its install command.

@@ -86,6 +86,7 @@
     "bench": "node scripts/webdesign.mjs tools",
     "corpus": "node scripts/webdesign.mjs awards --build",
     "check:suite": "node scripts/suite-check.mjs",
-    "test:suite": "node scripts/suite-check.mjs --test"
+    "test:suite": "node scripts/suite-check.mjs --test",
+    "build:directory": "node tools/directory-edition.mjs"
   }
 }

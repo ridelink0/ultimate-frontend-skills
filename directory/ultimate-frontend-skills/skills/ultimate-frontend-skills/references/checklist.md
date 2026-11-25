@@ -1,0 +1,155 @@
+# Before you ship
+
+Run `webdesign.mjs audit` (full edition only) first - it catches the mechanical failures. This
+list is what the audit cannot see.
+
+## Content
+
+- [ ] Every word is about the real subject. No placeholder survives, and nothing
+      reads like it could sit on a competitor's page unchanged.
+- [ ] The headline makes a claim, not a category. "Roofs that survive a Gulf
+      hurricane" beats "Quality roofing solutions".
+- [ ] The paragraph under the headline adds a fact rather than restating it.
+- [ ] Numbers are real numbers. If you do not have one, cut the stat rather than
+      inventing it.
+- [ ] No "unleash", "elevate", "seamless", "empower", "revolutionize",
+      "cutting-edge", "in today's fast-paced world", "not just X, it's Y".
+- [ ] Every claim a business could be held to is one the business actually made.
+      Never invent a licence number, a certification, an award, a review, or a
+      years-in-business figure - use a clearly-marked placeholder and say so.
+
+## Type
+
+- [ ] The display face is not Instrument Serif or Playfair Display.
+- [ ] One serif family carries the page; the sans appears only in labels, nav and
+      buttons.
+- [ ] The hero is three lines, not one. `max-width: 16ch` is doing its job.
+- [ ] Display line-height is below 1.0 and tracking is negative.
+- [ ] Exactly one italic phrase on the page, on a verb or an abstract noun.
+- [ ] Uppercase labels are tracked +0.14em or more; nothing lowercase is tracked.
+
+## Colour
+
+- [ ] No `#fff`, no `#000`, no zero-chroma grey anywhere.
+- [ ] The accent appears on at most three elements.
+- [ ] `--accent-h` came from the hero image, not from taste.
+- [ ] Body text on the dark sections is `--bone-300`, not `--bone-100`.
+
+## Composition
+
+- [ ] At least one section is deliberately asymmetric.
+- [ ] Section padding varies with content weight - not every section identical.
+- [ ] Nothing is centred that did not earn it.
+- [ ] There is one signature element, and only one.
+- [ ] Radii are tiered by role, and no nested pair is equal.
+
+## Motion
+
+- [ ] With JavaScript disabled, the whole page is visible and readable.
+- [ ] With `prefers-reduced-motion: reduce`, nothing translates or parallaxes and
+      nothing is hidden. Test it: DevTools > Rendering > Emulate CSS media.
+- [ ] Every scrubbed animation uses `linear` and a fill mode.
+- [ ] `animation-timeline` is declared *after* the `animation` shorthand.
+- [ ] No animation moves layout - transform and opacity only.
+
+## The floor
+
+- [ ] Exactly one `<h1>`; heading levels do not skip.
+- [ ] Every image has `alt`, `width` and `height`. The hero has
+      `fetchpriority="high"`; everything below it has `loading="lazy"`.
+- [ ] Keyboard: tab through the whole page. Every focus stop is visible, and the
+      skip link works.
+- [ ] Every form control has a real label.
+- [ ] Readable at 360px wide, and at 200% browser zoom.
+- [ ] No horizontal scrollbar at any width.
+- [ ] `look` reports no overlap and no overflow at 1440 and 390.
+- [ ] `<title>`, meta description, favicon and Open Graph tags are all set and
+      specific.
+- [ ] Every emitted route has its own title and description, one canonical
+      and an actual social preview image, and every URL in a sitemap, if
+      there is one, is a real route; the full list is
+      `references/workflows.md`, "SEO, rights and sharing".
+- [ ] Text and actions survive on slow hardware and in a throttled browser,
+      each measured and named as what it was; a laptop headless run is not a
+      low-end phone: `references/workflows.md`, "Performance across devices".
+- [ ] No non-exempt tracker or analytics tag runs before required consent,
+      and refusing really stops it; third-party fonts are self-hosted where
+      licensed, or their recipients and purposes documented:
+      `references/security.md`, "Fonts and trackers".
+- [ ] Anchors clear the fixed header (`--nav-h` is being published by
+      `motion.js`, or you set `scroll-margin-top` yourself).
+
+## If it is a game
+
+The floor above still applies to every screen. These are the ones a game fails
+that a page cannot, and each one came from an owner playing a build whose whole
+suite was green. The full pass is `references/games.md`, section "Before you
+call a game done: the play pass".
+
+- [ ] Stylised surfaces: the light whitens the texture and the shading and
+      hatching survive. Nothing is clipped to pure white.
+- [ ] Every effect the player feels in their body - motion blur, camera shake,
+      flash - has its own control that reaches a real zero, independent of the
+      quality preset.
+- [ ] Exactly one piece of music is audible at a time, and everything audible
+      shares one bus - including any `<video>` or `<audio>` element, which
+      bypasses the mix unless it is routed in with `createMediaElementSource`.
+- [ ] Die in every hazard. Each death leaves you somewhere playable.
+- [ ] Every feature the owner asked for has been seen in a played session, not
+      only read in the code.
+- [ ] Someone has played it with the controls in their hands and run the play
+      pass, before the owner did.
+- [ ] Accessibility, the Game Accessibility Guidelines' basic tier: subtitles
+      for all important speech, on before any sound plays; controls that can
+      be remapped; no information carried by colour alone; a choice of
+      difficulty.
+- [ ] Before a portal: `webdesign.mjs games` (full edition only) is clean.
+
+## Then look at it
+
+`webdesign.mjs look` (full edition only) renders the page at 1440 and 390 in a real
+browser, reports what only a rendered page can show - text over text, content
+past the viewport, contrast against the actually-painted background, collapsed
+elements, broken images - and writes a PNG at each width. **Read the PNGs.**
+
+Nothing static catches a layer covering half the composition, a headline sitting
+on a wordmark, or a colour that turned to mud once painted. All of those pass a
+source audit cleanly. Looking is the check.
+
+Open it. Not the code - the page. At 360px and at 1600px. If you can drive a
+browser, drive it and take a screenshot.
+
+Ask the two questions that matter:
+
+1. If you removed the photograph, would anything be left? If not, the type and
+   layout are not carrying their weight.
+2. Chanel's rule: what is the one thing you would remove? Remove it.
+
+## Then say almost nothing
+
+Two plain sentences and the file paths. No palette, no type scale, no rationale,
+no design vocabulary. Build it, hand it over, stop.
+
+## One command for all of it
+
+`webdesign.mjs verify` (full edition only) runs the
+audit, one browser pass covering rendering and the quality budgets, the
+security scan and, with a design reference, the parity check, then reports one
+verdict: findings by severity (`error`, `warning`, `low`, `note`), each named
+once with the widths and motion modes it was seen at, and one exit code, 1
+exactly when audit, render/quality or security would have exited 1 alone.
+`--json` gives the same result as data, marked `"schema": "ufs-verify/1"`.
+Failures that belong to the machine (a proxy's TLS on a third-party font, the
+browser's own favicon request) are listed as `env`, outside every count and
+the exit code; `references/visual-debug.md` says which. A URL target has no source, so its
+audit and security sections come back `skipped`, as does a design reference
+that cannot be read or rendered: never a verdict from a check that never ran.
+
+Security before any deploy: `webdesign.mjs security` (full edition only) reads
+the source for what must never leave a laptop (keys, `.env`, a served `.git`,
+source maps), personal data sent over GET or http, unpinned CDN scripts, the
+header configuration and quiet disclosures, and exits 1 on high only. A secret
+is "remove and rotate", never "remove". After the deploy, the curl checks in
+`references/security.md` are what tell you the headers arrived and
+`/.git/HEAD` is a 404: never call a site secure because the command printed
+nothing.

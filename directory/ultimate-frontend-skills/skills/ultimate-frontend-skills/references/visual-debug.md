@@ -1,0 +1,203 @@
+# Review the rendered website
+
+Run from the installed plugin directory with Node 22+ and Chrome, Edge or Chromium:
+    
+> Full edition only: this step runs a script that the directory edition does not ship. Do it by hand from the references, or tell the user it needs the full edition.
+
+Debug captures desktop/mobile at top, middle and bottom, then each interaction,
+both with normal and reduced motion. It writes PNGs, review.html and review.json.
+The local preview uses an isolated loopback port and closes when capture ends.
+Video extraction additionally requires FFmpeg and ffprobe on PATH.
+
+An actions file is a JSON array:
+
+    [
+      {"type":"click","selector":"button.menu-toggle"},
+      {"type":"expect-visible","selector":"nav.mobile-menu"},
+      {"type":"expect-text","selector":"nav.mobile-menu","text":"Contact"},
+      {"type":"focus","selector":"a.contact"}
+    ]
+
+Supported actions: click, hover, focus, type, expect-visible, expect-text. Selectors
+must come from the actual page. Use test data and test environments for actions
+that submit or change data. Each action is replayed for every viewport and motion
+mode. A failed action is an error, even when a later screenshot looks fine.
+
+## Gated pages and game screens
+
+A render check of a key screen checks the key screen. HQ's board sat behind
+one, and until the key went in every screenshot and every overlap, contrast
+and layout finding was about the lock (2026-09-24). Type through it:
+
+    [
+      {"type":"type","selector":"#key","textFromEnv":"SITE_KEY","key":"Enter","wait":5000},
+      {"type":"expect-visible","selector":"#board"}
+    ]
+
+`type` focuses the field, inserts the text and, with `"key":"Enter"`, presses
+Enter. Any step can carry `"wait"` in milliseconds (up to 30000) before the
+probe runs; a gate that asks a server needs it. `textFromEnv` names an environment variable so the secret never sits in
+the actions file, and the typed text is never written to review.json. Use a
+test room or test account, never the real one. Each step is followed by a
+full probe and a screenshot, so the board is measured, not just reached.
+
+A game keeps its whole interface in fixed layers over one canvas. `look` and
+`debug` measure text in a pinned layer against other text in the same layer
+(a fixed header over scrolled content is still not an overlap), and a canvas
+inside a closed overlay - a map or a menu nobody opened - is a note, not a
+"zero visible size" error. Pass `--game` for the laptop and desktop widths a
+keyboard-and-mouse game is played at.
+
+## A machine with no GPU
+
+A VM, a CI runner or a remote desktop often has no usable GPU, and there a
+browser's WebGL context can be lost the moment it is made. Every WebGL page
+then reads back as one flat colour, which is the browser's failure, not the
+page's. `look`, `debug` and `verify` test WebGL on the browser they launch; if
+it is dead they relaunch on the software renderer (SwiftShader) and print
+`note  WebGL ran on the software renderer`. If no WebGL works at all, a canvas
+is a note naming the browser ("not checked: this browser has no working
+WebGL"), never a flat-fill warning against the page. A page that loses its own
+context is told exactly that. A machine with a working GPU is not touched.
+
+The page should do the same for its visitors. Probe before loading the 3D
+code: `document.createElement('canvas').getContext('webgl2')`, and if it is
+null show the screen without the 3D and say nothing in the console; if it
+works, release the probe with `WEBGL_lose_context` so it does not hold a
+context the renderer needs. HQ's key screen does exactly this, and it is why
+the key screen stays clean on a machine with no GPU.
+
+## A container, a CI image, or root
+
+The render check looks for a browser in this order: `ATELIER_BROWSER`, the
+installed Chrome, Edge or Chromium, and on Linux then the Chromium that
+Playwright downloaded (`$PLAYWRIGHT_BROWSERS_PATH`, `~/.cache/ms-playwright`,
+`/opt/pw-browsers`, each `chromium-<revision>/chrome-linux/chrome`, newest
+revision first). Run as root, the browser starts with `--no-sandbox`, which
+Chrome requires there; anyone else keeps the sandbox. `UFS_NO_SANDBOX=1` asks
+for it without root, for a container where the sandbox cannot start for
+another reason.
+
+Some failures belong to the machine, not the page, and are reported as
+**env**: under their own heading after the widths, in `env[]` of
+`verify --json`, and never in the error or warning counts or the exit code.
+
+- A TLS, tunnel or proxy failure (`net::ERR_CERT_*`, `ERR_TUNNEL_*`,
+  `ERR_PROXY_*`) to another origin. Behind a proxy that re-signs TLS, Google
+  Fonts and every CDN fail this way while loading fine everywhere else.
+- A 404 for `/favicon.ico` when the page declares no icon: the browser asked
+  for it, the page did not.
+- Any failure to a host named in `UFS_ENV_HOSTS` (comma or space separated):
+  a third party you know is unreachable from where the check runs.
+
+A request to the page's own origin is never env, whatever it failed with, and
+a third-party failure of any other kind (a 404 on a CDN, a name that does not
+resolve) is still an error. Read the env list anyway: a font that could not
+load here means the screenshots show the fallback face, not the design.
+
+`verify --json` carries `"schema": "ufs-verify/1"`; a script reading it can
+check that before trusting the shape. The test suite's browser tests skip
+with a reason when no browser is found, and fail instead when
+`UFS_REQUIRE_BROWSER=1` or `CI` is set.
+
+## Required AI review
+
+1. Run the source audit and project tests. Run debug on the actual built website.
+2. Open the PNGs using the host's image-viewing tool: Claude Code Read for local
+   images, Codex view_image or an available browser screenshot tool. An HTML
+   gallery is also provided for human review. Reading JSON alone is insufficient.
+3. Inspect every affected viewport, scroll and interaction state. Check text
+   clipping, occlusion, sticky headers, menus, focal point, image crops, spacing,
+   fallback content, focus state and motion continuity. Compare reference frames
+   in timestamp order. For sky scenes inspect lighting; for product scenes inspect
+   rotation and separation; for landscapes inspect foreground/background movement.
+4. Fix defects and repeat. Record the screenshot filenames actually opened,
+   states exercised, findings fixed and any untested states. If the host cannot
+   view images, report visual review as blocked; do not mark it passed.
+5. A clean automated report means no detected errors in those sampled states.
+   It does not establish design quality, reference fidelity, accessibility
+   conformance, full keyboard coverage or animation smoothness.
+
+Console exceptions and HTTP/network failures are captured after interactions too.
+Canvas size and uniform-pixel checks supply clues, not a verdict: WebGL buffers can
+read blank after compositing, and solid-color canvases can be intentional. Inspect
+the screenshot and fallback. Reduced motion must retain readable content.
+Cross-origin frames, native dialogs, drag gestures and typing are not automated by
+this command; cover them with the host browser tools when applicable.
+
+Keep captures local unless publication is requested and their content is suitable
+for sharing. Do not commit authenticated pages, personal data or reference videos.
+
+## Measuring the running page
+
+`webdesign.mjs quality` (full edition only) (or `debug --measure`) measures what a
+screenshot cannot show. Run it before saying a page is finished, and read it
+alongside the pictures rather than instead of them.
+
+| Flag | What it does |
+| --- | --- |
+| `--widths 1440,390` | which viewports to measure |
+| `--record MS` | how long to watch frames for (default 1600) |
+| `--travel PX` | how far to scroll when measuring parallax (default 700) |
+| `--expect-depth` | the page is supposed to have planes; say so if it has none |
+| `--json` | the raw numbers as well as the verdicts |
+
+What each finding means, and what to do about it:
+
+- **"canvas painted once and never changed"** under normal motion. If it is
+  meant to be alive, it is not. Check the render loop is running and that the
+  element is on screen; an off-screen canvas is paused on purpose.
+- **"canvas still animating under prefers-reduced-motion"**. This is an error,
+  not a preference. Draw one frame and stop.
+- **"N declared planes all move at the same rate"**. The parallax is in the
+  markup and not on the screen. The engine is not attached, or the transform is
+  being overwritten.
+- **"loaded and never used"**. Delete the script tag, or use the library.
+- **"N distinct type sizes"**. Sizes that differ by one or two pixels are not
+  steps in a scale; collapse them.
+- **"largest type on the page is Npx"**. The house style opens at display
+  scale. A hero that tops out at 32px is not a hero.
+- **"frames cost N ms each (no vsync headless)"**. Read the worst frame, not
+  the rate: headless is uncapped, so the rate flatters. Nothing important is
+  judged on frame rate for exactly that reason - see the jank finding below,
+  which counts work instead.
+- **"scrolling forces N layouts per scroll event"**. Measured across one real
+  driven scroll, not a teleport. A scroll handler that reads a geometry
+  property (`getBoundingClientRect`, `offsetTop`, `scrollHeight`) and then
+  writes a style in the same pass forces a synchronous layout per element per
+  event. Two signals have to agree, and both are properties of the code rather
+  than of the machine: the layout count per event, and geometry reads on most
+  of the gesture's scroll events. The detail line leads with the second -
+  "geometry read on 5 of 5 scroll events at app.js:184" - then the layout and
+  forced-layout figures, then the file and invoker the browser attributed the
+  long frame to when it reported one. One expensive burst inside the gesture
+  (a lazy `IntersectionObserver` that measures once and disconnects) reads on
+  one event out of twenty and is deliberately not reported. Fix by reading
+  everything first and writing afterwards, or by moving the write into a
+  custom property the compositor can handle.
+- **"N long animation frames during the scroll"**. A warning, never an error on
+  its own: on a loaded machine any page can produce one, and on a fast one a
+  genuinely thrashing page produces none, because long-animation-frame reports
+  only frames over 50 ms. It is supporting detail for the layout count above,
+  never a gate on it.
+- **"layout shift X (budget 0.1)"**. The detail line now names the elements
+  that actually moved and how far, taken from the browser's own layout-shift
+  sources. The element named is where the reserved space is missing.
+- **"N looping animations still running under prefers-reduced-motion"**. Only
+  ever reported from the pass that NAVIGATED with the media emulated, so a
+  page that reads `matchMedia` once at boot is never falsely accused. Wrap the
+  animation in `@media (prefers-reduced-motion: reduce)`, or check the media
+  before starting it.
+- **"clicking X threw"** / **"X moved out from under the pointer"** /
+  **"no visible focus indicator on X"**. Every interactive element on the page
+  is clicked and tabbed to (capped at 16, links that navigate are skipped).
+  The focus check compares outline, box-shadow, border, background, colour,
+  filter and transform between focused and unfocused, so `outline:none` with a
+  box-shadow ring is correctly silent. Only a shift whose source rect contained
+  the click point is reported - a panel opening below is not a defect.
+- **"request never resolved after Nms"**. A same-origin script, stylesheet,
+  font or image that produced neither a response nor a failure. It is invisible
+  to every other check because there is no 404 and no error to see.
+
+A page that passes every budget can still be wrong. The budgets catch the
+failures that a still frame hides; the still frames catch everything else.

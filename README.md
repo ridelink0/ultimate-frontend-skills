@@ -377,6 +377,22 @@ The same works for the sibling plugins: `ridelink0/claude-code-usage-limits`
 and `ridelink0/claude-computer-use`. skills.sh has no submission step - it
 lists what the CLI installs.
 
+### The plugin directory editions
+
+Anthropic's plugin directory takes plugins that are Markdown, JSON and images
+only, with no hooks and no scripts. `directory/ultimate-frontend-skills/` and
+`directory/usage-limits/` are those editions, generated from this repository by
+`npm run build:directory` and checked by `test/directory-edition.test.mjs`.
+Submit the subfolder, not the repository root.
+
+The UFS directory edition keeps the house style, every reference, the award
+corpus and the copy-in chassis, motion runtime and section library (carried as
+Markdown for Claude to write into the site). It has no scaffolder, audit,
+render check, verify, award query tool, Blender, image or video tools, and
+says so instead of claiming a check ran. The Usage Limits directory edition
+plans the work from the numbers `/usage` shows, which Claude asks you for; it
+has no live reading, no cost line after each reply, no low power and no relay.
+
 ## Gev's repositories
 
 Every public repository under [ridelink0](https://github.com/ridelink0), one

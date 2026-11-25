@@ -1,0 +1,553 @@
+# sections.html
+
+Copy-in file for the site, not code that runs in Claude. Write the block
+below, unchanged, into the site as `sections.html`.
+
+```html
+<!-- ultimate-frontend-skills section library. Blocks are delimited by "@section <id> | <note>".
+     Copy a block, then replace every word of the placeholder copy with the real
+     subject. Placeholder copy left in a shipped page is a bug.
+
+     Scaffold copy is marked [[like this]]: every instruction to the writer,
+     every stand-in (First service, Wordmark, Name, role), and the demo's own
+     specifics that no real page says by accident: the bridge's dates and
+     numerals, the watch's parts, the drawing's caption and dimension. A numeral with data-count is marked in its text only;
+     the audit checks the attribute against the text it replaces. The
+     scaffolder strips the brackets; copying by hand, replace the whole marked
+     piece, brackets included. The audit reads its list of scaffold copy from
+     these marks, so a piece added here unmarked is a piece it cannot catch.
+     Unmarked: interface copy that is right on any site (the skip link, form
+     labels and errors, the 404) and one- or two-word eyebrows and labels
+     that fit any subject.
+
+     The italic accent phrase appears once, in hero-split, on purpose. It is the
+     house voice and also the most imitated headline device on the web, so it is
+     rationed to ONE per page and the audit fails the build at two. -->
+
+<!-- @section head | <head> contents: meta, fonts, stylesheets -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SITE NAME - [[one clause that says what this is]]</title>
+<meta name="description" content="[[One sentence, 140-160 characters, written for a person.]]">
+<meta name="theme-color" content="#f2efe7">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2316140f'/><text x='16' y='23' font-family='Georgia,serif' font-size='20' fill='%23f2efe7' text-anchor='middle'>A</text></svg>">
+<meta property="og:title" content="SITE NAME">
+<meta property="og:description" content="[[Same sentence as the description.]]">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Instrument+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="core.css">
+<link rel="stylesheet" href="site.css">
+<!-- @end -->
+
+
+<!-- @section nav | fixed header, transparent over the hero, frosted after it -->
+<!-- COPYING THIS BY HAND? The skip link below points at the main landmark,
+     and the scaffolder is what wraps the page in a main element whose id is
+     "main". Taking blocks out of this file yourself means writing that wrapper
+     yourself too - a main element, id main, around every section after the
+     nav and before the footer - or the first thing a keyboard user presses
+     goes nowhere. The skip link, this nav and the footer stay outside it: a
+     skip link inside its own target skips nothing. It is also the page's only
+     main landmark, so a screen reader cannot skip the header without it. -->
+<a class="sr-skip" href="#main">Skip to content</a>
+<nav class="nav" aria-label="Primary">
+  <a class="nav__brand" href="#top">Brand Name</a>
+  <ul class="nav__links">
+    <li><a href="#work">Work</a></li>
+    <li><a href="#method">Method</a></li>
+    <li><a href="#detail">Detail</a></li>
+  </ul>
+  <a class="btn btn--ghost nav__cta" href="#contact" data-magnetic="0.18">Get in touch</a>
+  <!-- The phone navigation. <details> rather than a dialog: it is a disclosure,
+       not a modal, and it is the only version that still opens with JavaScript
+       off. summary carries the button semantics and the expanded state itself,
+       so there is no aria-expanded to keep in sync and nothing to get wrong. -->
+  <details class="nav__menu">
+    <summary aria-label="Menu">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path class="nav__bar1" d="M3 7h18"/><path class="nav__bar2" d="M3 12h18"/><path class="nav__bar3" d="M3 17h18"/>
+      </svg>
+    </summary>
+    <div class="nav__panel">
+      <ul>
+        <li><a href="#work">Work</a></li>
+        <li><a href="#method">Method</a></li>
+        <li><a href="#detail">Detail</a></li>
+      </ul>
+      <a class="btn btn--ghost" href="#contact">Get in touch</a>
+    </div>
+  </details>
+</nav>
+<!-- @end -->
+
+
+<!-- @section hero-photo | full-bleed photograph, centred display type, staggered 2nd line -->
+<header class="hero" id="top">
+  <div class="hero__media">
+    <img src="img/hero.jpg" alt="" width="2400" height="1600" fetchpriority="high" decoding="async">
+  </div>
+  <div class="hero__scrim"></div>
+  <div class="hero__inner wrap on-media">
+    <p class="eyebrow">[[A date, or a place]]</p>
+    <h1 class="t-hero" style="margin-top:var(--s-5)">
+      [[First half of the claim]]<span class="display__b">[[and the turn]]</span>
+    </h1>
+    <p class="lead center" style="margin-top:var(--s-6);max-width:34rem">
+      [[One sentence under the headline.]] [[It should add a fact, not repeat the headline.]]
+    </p>
+  </div>
+</header>
+<!-- @end -->
+
+
+<!-- @section hero-split | type left, object right - the product hero -->
+<header class="hero section" id="top" style="min-height:92svh">
+  <div class="wrap grid" style="align-items:center;row-gap:var(--s-8)">
+    <div style="grid-column:content-start / span 5" class="stack">
+      <p class="eyebrow">[[Reference 1908]]</p>
+      <h1 class="t-hero">[[Descent is gravity. <em class="it">Ascent</em> is arithmetic.]]</h1>
+      <p class="prose prose--tight">
+        [[Two or three sentences of plain, unexcited fact about the object.]] [[No adjectives that
+        a spec sheet would not use.]] [[This is where the confidence comes from.]]
+      </p>
+      <p><a class="btn" href="#detail">See the detail</a></p>
+    </div>
+    <figure style="grid-column:span 7 / content-end" class="r r--settle">
+      <img src="img/object.png" alt="[[Description of the object]]" width="1400" height="1400"
+           data-tilt="10" fetchpriority="high">
+    </figure>
+  </div>
+</header>
+<!-- @end -->
+
+
+<!-- @section hero-layered | photograph cut into planes (webdesign.mjs cut); subjects rest on the bottom edge, sky lags, type at page speed -->
+<header class="hero" id="top">
+  <div class="layers" style="position:absolute;inset:0;z-index:-1">
+    <img class="layer layer--bg" src="img/scene.jpg" alt="" data-px="-70"
+         style="width:100%;height:120%;object-fit:cover;margin-top:-10%"
+         width="2400" height="1600" fetchpriority="high">
+    <div class="layer layer--mid" data-px="120" style="display:grid;place-items:center">
+      <span class="wordmark">[[Wordmark]]</span>
+    </div>
+    <!-- foreground: a transparent PNG cut-out, or hand-drawn SVG so no asset is needed -->
+    <svg class="layer layer--fg" data-px="-24" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMax slice"
+         aria-hidden="true" style="width:100%;height:100%">
+      <path d="M0 800 L0 470 L240 470 L600 250 L960 470 L1200 470 L1200 800 Z" fill="#12100d"/>
+    </svg>
+  </div>
+  <div class="hero__scrim"></div>
+  <div class="hero__inner wrap on-media">
+    <h1 class="t-hero" style="font-size:var(--step-5)">[[The line that reframes the place]]</h1>
+  </div>
+</header>
+<!-- @end -->
+
+
+<!-- @section index | table of contents with dot leaders -->
+<nav class="wrap" aria-label="Contents" style="padding-block:var(--s-9)">
+  <ol class="index">
+    <li><span class="index__n">[1]</span><span class="index__dots"></span><a class="index__label link" href="#one">Introduction</a></li>
+    <li><span class="index__n">[2]</span><span class="index__dots"></span><a class="index__label link" href="#two">[[The first chapter]]</a></li>
+    <li><span class="index__n">[3]</span><span class="index__dots"></span><a class="index__label link" href="#three">[[The second chapter]]</a></li>
+    <li><span class="index__n">[4]</span><span class="index__dots"></span><a class="index__label link" href="#four">[[The third chapter]]</a></li>
+  </ol>
+</nav>
+<!-- @end -->
+
+
+<!-- @section manifesto | eyebrow + two-line serif statement + one narrow paragraph -->
+<section class="section" id="method">
+  <div class="wrap grid">
+    <div style="grid-column:content-start / span 4">
+      <p class="eyebrow">The method</p>
+    </div>
+    <div style="grid-column:span 7 / content-end" class="stack r r--mask">
+      <h2>[[Drawn before it was made.]]</h2>
+      <p class="prose">
+        [[Two short paragraphs.]] [[Say the thing that is actually true about how the work is done,
+        including the part a competitor would leave out.]] [[Specifics beat adjectives every time.]]
+      </p>
+      <p class="prose">
+        [[Second paragraph, shorter than the first.]] [[End on a fact, not a promise.]]
+      </p>
+    </div>
+  </div>
+</section>
+<!-- @end -->
+
+
+<!-- @section blueprint | hand-drawn technical SVG + copy. Replace the path with the real object. -->
+<section class="section" id="detail">
+  <div class="wrap grid" style="align-items:center;row-gap:var(--s-7)">
+    <div style="grid-column:content-start / span 4" class="stack">
+      <p class="eyebrow">Construction</p>
+      <h2>[[Every line has a reason.]]</h2>
+      <p class="prose">[[Describe the geometry, the tolerance, the material.]] [[Numbers here read as proof.]]</p>
+    </div>
+    <figure style="grid-column:span 7 / content-end" class="r r--settle">
+      <svg viewBox="0 0 640 420" role="img" aria-label="[[Technical drawing of the object]]"
+           style="width:100%;color:var(--fg)">
+        <g fill="none" stroke="currentColor" stroke-width="1" vector-effect="non-scaling-stroke">
+          <!-- construction lines: dashed, half opacity -->
+          <g opacity=".32" stroke-dasharray="4 5">
+            <path d="M60 210h520M320 40v340"/>
+            <circle cx="320" cy="210" r="150"/>
+          </g>
+          <!-- the object outline: solid, full weight -->
+          <circle cx="320" cy="210" r="120"/>
+          <circle cx="320" cy="210" r="104"/>
+          <circle cx="320" cy="210" r="16"/>
+          <path d="M320 106v22M320 292v22M216 210h22M402 210h22"/>
+          <path d="M440 172l38-18 12 26-38 18z"/>
+          <!-- dimension line with ticks and arrowheads -->
+          <g opacity=".62">
+            <path d="M200 372h240M200 366v12M440 366v12"/>
+            <path d="M206 372l10-4v8zM434 372l-10-4v8z" fill="currentColor" stroke="none"/>
+          </g>
+        </g>
+        <text x="320" y="392" text-anchor="middle" font-family="ui-sans-serif,system-ui"
+              font-size="10" letter-spacing="1.6" fill="currentColor" opacity=".62">[[40.0 MM]]</text>
+      </svg>
+      <figcaption>[[Figure 1 - plan view, 1:1]]</figcaption>
+    </figure>
+  </div>
+</section>
+<!-- @end -->
+
+
+<!-- @section exploded | dark section; layers pull apart on scroll (2D parallax = depth) -->
+<section class="section" data-tone="dark" id="inside">
+  <div class="wrap grid" style="align-items:center;row-gap:var(--s-8)">
+    <div style="grid-column:content-start / span 4" class="stack r r--mask">
+      <p class="eyebrow">Inside</p>
+      <h2>[[Nine parts. Nothing decorative.]]</h2>
+      <p class="prose">[[Each one is here because the thing does not work without it.]]</p>
+    </div>
+
+    <div style="grid-column:span 7 / content-end" class="exploded">
+      <!-- Each .part is one component. data-px separates them as the page scrolls.
+           Swap the <svg> for a transparent PNG render when you have one. -->
+      <svg class="part" data-px="-90" style="top:4%"  viewBox="0 0 400 120" aria-hidden="true">
+        <ellipse cx="200" cy="60" rx="170" ry="46" fill="none" stroke="#cfc9bd" stroke-width="1.5" opacity=".85"/>
+      </svg>
+      <svg class="part" data-px="-30" style="top:26%" viewBox="0 0 400 120" aria-hidden="true">
+        <ellipse cx="200" cy="60" rx="150" ry="40" fill="#1c1a16" stroke="#8e887c" stroke-width="1.5"/>
+      </svg>
+      <svg class="part" data-px="30"  style="top:48%" viewBox="0 0 400 120" aria-hidden="true">
+        <ellipse cx="200" cy="60" rx="150" ry="40" fill="#12100d" stroke="#6f6a5f" stroke-width="1.5"/>
+        <ellipse cx="200" cy="60" rx="52"  ry="14" fill="none" stroke="#6f6a5f" stroke-width="1"/>
+      </svg>
+      <svg class="part" data-px="90"  style="top:70%" viewBox="0 0 400 120" aria-hidden="true">
+        <ellipse cx="200" cy="60" rx="168" ry="45" fill="none" stroke="#544f46" stroke-width="1.5"/>
+      </svg>
+
+      <p class="callout" style="top:12%;right:-2%;color:var(--fg-muted)" data-side="left"><span>[[Crystal]]</span></p>
+      <p class="callout" style="top:52%;left:-4%;color:var(--fg-muted)"><span>[[Movement]]</span></p>
+    </div>
+  </div>
+</section>
+<!-- @end -->
+
+
+<!-- @section stats | two or three numerals in the display face -->
+<section class="section section--tight">
+  <div class="wrap">
+    <ul class="stats stagger">
+      <li class="stat r r--mask"><p class="stat__n"><span data-count="1566">[[1566]]</span></p><p class="stat__label">[[Original bridge completed]]</p></li>
+      <li class="stat r r--mask r-2"><p class="stat__n"><span data-count="2005">[[2005]]</span></p><p class="stat__label">[[Inscribed by UNESCO]]</p></li>
+      <li class="stat r r--mask r-3"><p class="stat__n"><span data-count="21" data-count-suffix="m">[[21m]]</span></p><p class="stat__label">[[Height above the river]]</p></li>
+    </ul>
+    <p class="caption" style="margin-top:var(--s-5)">Source: <cite>[[Where these numbers come from]]</cite></p>
+  </div>
+</section>
+<!-- @end -->
+
+
+<!-- @section cards-rail | frosted cards on a photographic ground -->
+<section class="hero section" style="min-height:auto;padding-block:var(--s-10)">
+  <div class="hero__media"><img src="img/scene.jpg" alt="" loading="lazy" width="2400" height="1400" data-px="-30"></div>
+  <div class="hero__scrim"></div>
+  <div class="wrap on-media" style="position:relative">
+    <p class="eyebrow">Nearby</p>
+    <h2 style="margin-top:var(--s-3)">[[Four streets, one afternoon.]]</h2>
+    <ul class="cards cards--rail" style="margin-top:var(--s-7)">
+      <li class="card card--glass">
+        <p class="eyebrow" style="color:rgb(255 255 255 / .72)">[[Bazaar street]]</p>
+        <h3 style="margin-top:var(--s-3)">[[Kujundziluk]]</h3>
+        <p class="caption" style="margin-top:var(--s-2);color:rgb(255 255 255 / .82)">
+          [[Coppersmiths, souvenirs, and the old cobbled lane by the bridge.]]</p>
+      </li>
+      <li class="card card--glass">
+        <p class="eyebrow" style="color:rgb(255 255 255 / .72)">[[Viewpoint]]</p>
+        <h3 style="margin-top:var(--s-3)">[[Koski Mehmed Pasha]]</h3>
+        <p class="caption" style="margin-top:var(--s-2);color:rgb(255 255 255 / .82)">
+          [[A minaret view back toward the water.]]</p>
+      </li>
+      <li class="card card--glass">
+        <p class="eyebrow" style="color:rgb(255 255 255 / .72)">[[Ottoman house]]</p>
+        <h3 style="margin-top:var(--s-3)">[[Muslibegovic]]</h3>
+        <p class="caption" style="margin-top:var(--s-2);color:rgb(255 255 255 / .82)">
+          [[Courtyard, shaded rooms, and a garden that still works.]]</p>
+      </li>
+    </ul>
+  </div>
+</section>
+<!-- @end -->
+
+
+<!-- @section services | hairline-separated rows; the editorial answer to a card grid -->
+<section class="section" id="work">
+  <div class="wrap">
+    <p class="eyebrow">What we do</p>
+    <ul class="steps" style="margin-top:var(--s-6)">
+      <li class="r">
+        <h3>[[First service]]</h3>
+        <p class="prose">[[One or two lines.]] [[Name the actual deliverable and the constraint it solves.]]</p>
+      </li>
+      <li class="r">
+        <h3>[[Second service]]</h3>
+        <p class="prose">[[Different enough from the first that a reader can tell them apart.]]</p>
+      </li>
+      <li class="r">
+        <h3>[[Third service]]</h3>
+        <p class="prose">[[Stop at three or four.]] [[A longer list reads as a lack of focus.]]</p>
+      </li>
+    </ul>
+  </div>
+</section>
+<!-- @end -->
+
+
+<!-- @section steps | numbered process, 01 / 02 / 03 - only if order really matters -->
+<section class="section" data-tone="dark">
+  <div class="wrap grid">
+    <div style="grid-column:content-start / span 4"><p class="eyebrow">How it goes</p></div>
+    <ol class="steps" style="grid-column:span 7 / content-end">
+      <li><h3>Look</h3><p class="prose">[[What happens first, in one sentence.]]</p></li>
+      <li><h3>Plan</h3><p class="prose">[[What happens next.]]</p></li>
+      <li><h3>Build</h3><p class="prose">[[And then this.]]</p></li>
+      <li><h3>Leave</h3><p class="prose">[[How it ends, and what the reader is left holding.]]</p></li>
+    </ol>
+  </div>
+</section>
+<!-- @end -->
+
+
+<!-- @section quote | one pull quote, set large, no quotation-mark ornament -->
+<section class="section section--tight">
+  <figure class="wrap wrap--text center">
+    <blockquote><p class="t-hero" style="font-size:var(--step-4)">
+      [[A sentence someone actually said, kept short enough to read in one breath.]]
+    </p></blockquote>
+    <figcaption style="margin-top:var(--s-5)">[[Name, role]]</figcaption>
+  </figure>
+</section>
+<!-- @end -->
+
+
+<!-- @section spec | specification table -->
+<section class="section" id="spec">
+  <div class="wrap grid">
+    <div style="grid-column:content-start / span 4"><p class="eyebrow">Specification</p></div>
+    <table class="spec" style="grid-column:span 7 / content-end">
+      <tbody>
+        <tr><th scope="row">Material</th><td>[[Say the grade, not the adjective.]]</td></tr>
+        <tr><th scope="row">Dimensions</th><td>[[40.0 x 12.4 mm]]</td></tr>
+        <tr><th scope="row">Finish</th><td>[[Brushed, with polished chamfers]]</td></tr>
+        <tr><th scope="row">Warranty</th><td>[[Five years, transferable]]</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+<!-- @end -->
+
+
+<!-- @section gallery | horizontal scroll gallery with captions -->
+<section class="section section--tight">
+  <div class="wrap"><p class="eyebrow">Selected work</p></div>
+  <ul class="cards--rail" style="margin-top:var(--s-6);padding-inline:var(--gutter)">
+    <li><figure><div class="frame"><img src="img/1.jpg" alt="" loading="lazy" width="1200" height="900"></div>
+      <figcaption>[[Project one, 2026]]</figcaption></figure></li>
+    <li><figure><div class="frame"><img src="img/2.jpg" alt="" loading="lazy" width="1200" height="900"></div>
+      <figcaption>[[Project two, 2026]]</figcaption></figure></li>
+    <li><figure><div class="frame"><img src="img/3.jpg" alt="" loading="lazy" width="1200" height="900"></div>
+      <figcaption>[[Project three, 2025]]</figcaption></figure></li>
+  </ul>
+</section>
+<!-- @end -->
+
+
+<!-- @section faq | accordion, native details/summary -->
+<section class="section" id="questions">
+  <div class="wrap grid">
+    <div style="grid-column:content-start / span 4"><p class="eyebrow">Questions</p></div>
+    <div class="faq" style="grid-column:span 7 / content-end">
+      <details name="faq" open>
+        <summary>[[The question a real person asks first]]</summary>
+        <p class="prose">[[A direct answer.]] [[No hedging, no sales voice.]]</p>
+      </details>
+      <details name="faq">
+        <summary>[[The one they ask when they are close to deciding]]</summary>
+        <p class="prose">[[Answer it honestly, including the caveat.]]</p>
+      </details>
+    </div>
+  </div>
+</section>
+<!-- @end -->
+
+
+<!-- @section contact | form, editorial fields, no boxes -->
+<section class="section" id="contact">
+  <div class="wrap grid" style="row-gap:var(--s-8)">
+    <div style="grid-column:content-start / span 4" class="stack">
+      <p class="eyebrow">Get in touch</p>
+      <h2>Tell us what you need.</h2>
+      <p class="prose">[[A phone number, an address, and hours.]] [[Real ones.]]</p>
+    </div>
+    <form style="grid-column:span 7 / content-end" class="stack" name="contact" method="POST"
+          data-netlify="true" netlify-honeypot="company">
+      <input type="hidden" name="form-name" value="contact">
+      <p hidden><label>Leave blank <input type="text" name="company" tabindex="-1" autocomplete="off"></label></p>
+      <div class="field"><label for="f-name">Name</label><input type="text" id="f-name" name="name" required autocomplete="name" aria-describedby="f-name-err"><p class="field__error" id="f-name-err">Add your name so the reply has somewhere to go.</p></div>
+      <div class="field"><label for="f-mail">Email</label><input id="f-mail" name="email" type="email" required autocomplete="email" aria-describedby="f-mail-err"><p class="field__error" id="f-mail-err">That does not look like an email address. Check for a missing @ or a stray space.</p></div>
+      <div class="field"><label for="f-msg">What is happening</label><textarea id="f-msg" name="message" rows="4" required aria-describedby="f-msg-err"></textarea><p class="field__error" id="f-msg-err">A sentence is enough. Say what you need and when.</p></div>
+      <p><button class="btn" type="submit">Send it</button></p>
+      <p class="caption">[[Replies within two working days.]] <a href="/privacy">How your details are handled</a>.</p>
+    </form>
+  </div>
+</section>
+<!-- @end -->
+
+
+<!-- @section cta | closing band, one action only -->
+<section class="section" data-tone="dark">
+  <div class="wrap wrap--text center stack">
+    <h2>[[One last sentence worth acting on.]]</h2>
+    <p><a class="btn" href="#contact" data-magnetic="0.2">[[The single action]]</a></p>
+  </div>
+</section>
+<!-- @end -->
+
+
+<!-- @section footer | quiet, hairline, no link soup -->
+<footer class="section section--tight" style="padding-block:var(--s-7)">
+  <hr class="rule">
+  <div class="wrap" style="display:flex;flex-wrap:wrap;gap:var(--s-5);justify-content:space-between;
+       align-items:baseline;padding-top:var(--s-6)">
+    <p class="caption">&copy; 2026 Brand Name</p>
+    <ul style="display:flex;gap:var(--s-5);list-style:none;padding:0" class="caption">
+      <li><a class="link" href="#top">Back to top</a></li>
+    </ul>
+  </div>
+</footer>
+<!-- @end -->
+
+
+<!-- @section foot | scripts, last thing before </body> -->
+<div class="grain" aria-hidden="true"></div>
+<script src="motion.js" defer></script>
+<!-- The scaffolder adds gradient.js / depth.js / three.js + exploded.js
+     here, but only when the page actually contains one. -->
+<!-- @end -->
+
+
+<!-- @section not-found | the 404, written by the scaffolder as 404.html; honest, short, two ways out -->
+<section class="section" id="not-found" aria-labelledby="nf-title">
+  <div class="wrap" style="max-width:40rem;padding-block:var(--s-9)">
+    <p class="eyebrow">404</p>
+    <h1 id="nf-title" class="t-hero" style="max-width:16ch">There is nothing at this address.</h1>
+    <p class="lede">The link may be old, or the page may have moved. Nothing here is broken on your side.</p>
+    <p style="display:flex;flex-wrap:wrap;gap:var(--s-4);margin-top:var(--s-6)">
+      <a class="btn" href="./">Back to the start</a>
+      <a class="btn btn--ghost" href="./#contact">Get in touch</a>
+    </p>
+  </div>
+</section>
+<!-- @end -->
+
+
+<!-- @section hero-gradient | animated WebGL colour field behind the type; no photograph needed -->
+<header class="hero" id="top">
+  <canvas class="gradient" data-gradient="#0b1226,#2c3a56,#a5735a,#e8ac66"
+          data-speed="0.10" data-scale="1.5" aria-hidden="true"></canvas>
+  <!-- The field moves for as long as the page is open, so it can be stopped
+       (WCAG 2.2.2). motion.js wires every [data-pause] button. -->
+  <button class="pause on-media" type="button" data-pause aria-pressed="false"
+          style="position:absolute;inset:auto var(--gutter) var(--s-5) auto;z-index:2">Pause motion</button>
+  <div class="hero__scrim"></div>
+  <div class="hero__inner wrap center on-media">
+    <p class="eyebrow">[[Eyebrow, in small caps]]</p>
+    <h1 class="r r--mask" style="margin-top:var(--s-5)">
+      [[First half of the claim]]<span class="display__b">[[and the turn.]]</span>
+    </h1>
+    <p class="lead center" style="margin-top:var(--s-6)">
+      [[One sentence that adds a fact rather than repeating the headline.]]
+    </p>
+  </div>
+</header>
+<!-- @end -->
+
+
+<!-- @section hero-depth | three photographic planes: background lags, middle at page speed, foreground leads -->
+<header class="hero" id="top">
+  <div class="depth" style="position:absolute;inset:0;z-index:-2" aria-hidden="true">
+    <img class="plane" data-depth="-0.55" src="img/bg.jpg"  width="2400" height="1600" alt="" fetchpriority="high">
+    <img class="plane" data-depth="0.15"  src="img/mid.png" width="1800" height="1200" alt="">
+    <img class="plane" data-depth="0.85"  src="img/fg.png"  width="2000" height="1333" alt="">
+  </div>
+  <div class="hero__scrim"></div>
+  <div class="hero__inner wrap center on-media">
+    <p class="eyebrow">[[Place, or date]]</p>
+    <h1 class="r r--mask" style="margin-top:var(--s-5)">[[The line that reframes it.]]</h1>
+  </div>
+</header>
+<!-- @end -->
+
+
+<!-- @section exploded-3d | a made thing taken apart in three.js: parts as shapes and materials, or a GLB; the list is the fallback -->
+<section class="section" data-tone="dark" id="inside" data-explode-track>
+  <div class="wrap grid" style="align-items:center;row-gap:var(--s-9)">
+    <div style="grid-column:content-start / span 4" class="stack r r--mask">
+      <p class="eyebrow eyebrow--ruled">Inside</p>
+      <h2>[[Six parts, and four of them are invisible once it is finished.]]</h2>
+      <p class="prose">[[Scroll and they come apart.]] [[Say what each one is for.]]</p>
+    </div>
+    <div style="grid-column:span 7 / content-end" class="exploded" data-spread="0.5" data-turn="1.1" data-axis="x">
+      <ol class="exploded__list">
+        <li data-shape="ring" data-r="1.08" data-r2="0.86" data-h="0.16" data-bevel="0.05" data-material="ceramic" data-y="0.36">[[Unidirectional bezel]]</li>
+        <li data-shape="dome" data-r="0.82" data-h="0.10" data-material="glass" data-y="0.30">[[Sapphire crystal]]</li>
+        <li data-shape="hands" data-r="0.62" data-material="steel" data-y="0.23">[[Hands]]</li>
+        <li data-shape="box" data-w="0.05" data-h="0.02" data-d="0.14" data-repeat="12" data-ring="0.66" data-material="lume" data-y="0.205">[[Hour markers]]</li>
+        <li data-shape="disc" data-r="0.78" data-h="0.02" data-material="lacquer" data-y="0.19">[[Dial]]</li>
+        <li data-shape="disc" data-r="0.72" data-h="0.14" data-material="brushed" data-y="0.06">[[Movement]]</li>
+        <li data-shape="ring" data-r="1.0" data-r2="0.80" data-h="0.36" data-material="steel" data-y="0.0">[[Middle case]]</li>
+        <li data-shape="disc" data-r="0.9" data-h="0.05" data-material="steel" data-y="-0.22">[[Caseback]]</li>
+        <li data-shape="chain" data-count="5" data-w="0.86" data-h="0.11" data-d="0.30" data-start="1.02" data-material="brushed" data-y="-0.30">[[Bracelet]]</li>
+      </ol>
+    </div>
+  </div>
+</section>
+<!-- @end -->
+
+
+<!-- @section hero-fable | the launch-page hero: a WebGL sky you can re-light with three dots, staggered serif title, dot-leader contents -->
+<header class="hero" id="top">
+  <div class="sky" data-sky data-moods="Noon:#7ea9de|Night:#1a2237|Morning:#dcc4b3"></div>
+  <div class="hero__scrim"></div>
+  <div class="hero__inner wrap center on-media">
+    <p class="eyebrow">[[A date, or a place]]</p>
+    <h1 class="r r--mask" style="margin-top:var(--s-5)">
+      [[First half of the claim]]<span class="display__b">[[and the turn.]]</span>
+    </h1>
+    <ol class="index" style="margin-top:var(--s-8);margin-inline:auto">
+      <li><span class="index__n">[1]</span><span class="index__dots"></span><a class="index__label link" href="#method">Introduction</a></li>
+      <li><span class="index__n">[2]</span><span class="index__dots"></span><a class="index__label link" href="#work">What changed</a></li>
+      <li><span class="index__n">[3]</span><span class="index__dots"></span><a class="index__label link" href="#contact">Where to start</a></li>
+    </ol>
+  </div>
+</header>
+<!-- @end -->
+```

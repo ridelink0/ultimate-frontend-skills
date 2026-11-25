@@ -1,0 +1,78 @@
+{
+  "schema": {
+    "features": "one entry per ufs-tells/1 feature id; the ids are stable, the numbers are not",
+    "why": "why the threshold sits where it does",
+    "source": "where the tell and, where it has one, the number come from (URL)",
+    "note": "the numbers are hand-set starting points. Fitted weights from human labels replace them here, with no code change (scripts/tells-render.mjs reads this file)."
+  },
+  "checked": "2026-09-29",
+  "features": {
+    "cream-ground": {
+      "L_min": 0.90, "C_min": 0.005, "C_max": 0.04, "H_min": 60, "H_max": 100,
+      "why": "The largest-area opaque background among html, body, main and the first section, in OKLCH. L 0.90 and up is a paper ground; C 0.005 to 0.04 is tinted but not coloured (white is under 0.005); H 60 to 100 is the warm yellow-orange band. Bone (#f2efe7, oklch 0.952 0.011 91) and frontend-design's #F4F1EA both sit inside it.",
+      "source": "https://github.com/pbakaus/impeccable"
+    },
+    "perma-dark": {
+      "L_max": 0.25,
+      "why": "The same ground at OKLCH L 0.25 or below, with no prefers-color-scheme: light rule anywhere in the page's readable stylesheets: dark with no way out.",
+      "source": "https://github.com/ravidsrk/slop-detect"
+    },
+    "cluster-1": {
+      "accent_H_min": 20, "accent_H_max": 60, "accent_C_min": 0.08,
+      "why": "frontend-design's first cluster: a cream ground, a serif display and a terracotta or clay accent (near #D97757, OKLCH H about 41). The accent is any colour a visible element renders in text, background or border at C 0.08 or more with H 20 to 60.",
+      "source": "https://github.com/anthropics/skills/blob/main/skills/frontend-design/SKILL.md"
+    },
+    "cluster-2": {
+      "C_min": 0.15, "hue_gap": 30,
+      "why": "frontend-design's second cluster: near-black with one acid-green or vermilion accent. perma-dark, and the colours at C 0.15 or more fall in one hue group (hues within 30 degrees of a neighbour are one group).",
+      "source": "https://github.com/anthropics/skills/blob/main/skills/frontend-design/SKILL.md"
+    },
+    "template-chrome": {
+      "caps_max_px": 14, "caps_tracking_em": 0.08, "mono_max_chars": 40, "min_total": 4,
+      "why": "frontend-design's fifth cluster, counted: text at 14 px or less set in uppercase with 0.08em or more of tracking; short labels (40 characters or fewer, pseudo-element counters included) in a monospace face; meta strings joined with ' · '; link and button text ending in an arrow. Four or more in all fires it: slop-detect's all_caps_labels needs two, and one tracked nav label plus one caption is not yet a kit.",
+      "source": "https://github.com/anthropics/skills/blob/main/skills/frontend-design/SKILL.md"
+    },
+    "overused-face": {
+      "why": "The first family named in the computed font-family of the first h1, the body and the first button is on SLOP_FONTS (scripts/audit.mjs), which since 2026-09-29 includes impeccable 4.1.0's Instrument Sans, Plus Jakarta Sans, Mona Sans, Open Sans and Geist Mono. The family the stack asks for, loaded or not: the tells run blocks every other origin, so a Google Fonts face never loads here, and it is the choice that is the tell. Whether it loaded is recorded beside it.",
+      "source": "https://github.com/pbakaus/impeccable"
+    },
+    "accent-word": {
+      "weight_delta": 200, "colour_delta": 0.03,
+      "why": "A descendant of an h1 that differs from the rest of it in colour (OKLab distance over 0.03), in style (italic), in face, in weight (200 or more) or with gradient-clipped text, while the rest of the h1 still has text. frontend-design lists accenting a single headline word as a default.",
+      "source": "https://github.com/anthropics/skills/blob/main/skills/frontend-design/SKILL.md"
+    },
+    "decorative-numbering": {
+      "why": "Three or more siblings, each a heading or holding one, prefixed 01, 02, 03 in order: in the text, in a ::before string or a decimal-leading-zero counter, or as the list marker. Zero-padded only; a plain 1, 2, 3 in a real step list is not the tell.",
+      "source": "https://github.com/pbakaus/impeccable"
+    },
+    "stat-banner": {
+      "min_siblings": 3, "size_ratio": 2, "max_chars": 12,
+      "why": "Three or more siblings whose largest text is a number (12 characters or fewer, a unit or + allowed) set at twice the body size or more. slop-detect's stat_banner clusters three or more numerals at 28 px and up.",
+      "source": "https://github.com/ravidsrk/slop-detect"
+    },
+    "uniform-radius": {
+      "min_boxes": 6, "min_w": 120, "min_h": 80,
+      "why": "Six or more boxes of at least 120 by 80 px sharing one non-zero border-radius and one box-shadow: frontend-design's SaaS card kit, one radius on everything and the same soft shadow under each.",
+      "source": "https://github.com/anthropics/skills/blob/main/skills/frontend-design/SKILL.md"
+    },
+    "marquee": {
+      "why": "A rule in the page's stylesheets that runs an infinite animation whose keyframes translate on x, a running infinite animation that does, or a <marquee>. The stylesheet counts even with no element using it: impeccable's CSS scan fires on the rule, and a chassis that ships the rule ships the device.",
+      "source": "https://github.com/pbakaus/impeccable"
+    },
+    "centred-share": {
+      "tolerance": 0.02, "share_min": 0.5, "min_blocks": 5,
+      "why": "The share of text blocks whose every line is centred within 2% of the viewport width of the page axis (and that are text-align: center, or shrink-wrapped so alignment cannot matter). Half or more, over at least five blocks, is a centred stack; slop-detect's centered_hero checks only the h1.",
+      "source": "https://github.com/ravidsrk/slop-detect"
+    },
+    "section-waterfall": {
+      "min_match": 0.6,
+      "why": "The page's top-level blocks, each matched to the library section whose classes and ids it carries (IDF-weighted, 0.6 or more), run in exactly DEFAULT_SECTIONS: the scaffold's order, left as it came. The generic SaaS order is W5 and the audit's check.",
+      "source": "https://github.com/ridelink0/ultimate-frontend-skills/blob/main/skills/ultimate-frontend-skills/references/tells.md"
+    },
+    "display-tracking": {
+      "min_px": 28, "fire_at_em": -0.05,
+      "why": "Records the tightest letter-spacing on display text (28 px and up) in em. It fires at -0.05em or tighter, slop-detect's crushed_tracking line; the chassis's -0.02 to -0.035em does not. audit.mjs still warns when a stylesheet has no negative tracking at all, so the two disagree below -0.05 only in intent; which way the human labels lean decides it.",
+      "source": "https://github.com/ravidsrk/slop-detect"
+    }
+  }
+}

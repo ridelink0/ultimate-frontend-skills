@@ -1,0 +1,9 @@
+{
+  "format": "ufs-awards-parts-v1",
+  "count": 454,
+  "parts": [
+    "awards-merged/part-01.json",
+    "awards-merged/part-02.json",
+    "awards-merged/part-03.json"
+  ]
+}
