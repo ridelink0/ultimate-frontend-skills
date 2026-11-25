@@ -11,3 +11,5 @@ this one. If more than one window is open and the project named does not look
 like this one, run `--sessions` and pick the right id.
 
 Report the numbers and stop. Do not start other work as part of this command.
+
+In Codex, `${CLAUDE_PLUGIN_ROOT}` is empty: use the usage-limits plugin folder (the one holding `.codex-plugin/`) in its place, and add `--host codex`.

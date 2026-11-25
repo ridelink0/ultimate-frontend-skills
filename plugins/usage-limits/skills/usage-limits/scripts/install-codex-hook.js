@@ -4,33 +4,28 @@
 // Installs the budget line into Codex.
 //
 // Claude Code lets a plugin ship its own hooks, so installing the plugin is all
-// there is to it. Codex is not there yet, and it is worth writing down exactly
-// how far it gets, because the answer is not obvious from the outside:
+// there is to it. Current Codex does the same: a plugin's
+// .codex-plugin/plugin.json can name a hooks file, and this plugin's names
+// hooks/codex-hooks.json, which passes --host codex to every script. (Earlier
+// Codex builds reported `plugin_hooks` as removed, which is why this script
+// exists at all.)
 //
-//   - Codex has the whole hook engine. The binary carries UserPromptSubmit,
-//     SessionStart, PreToolUse and the rest, and `codex features list` reports
-//     `hooks` as stable and enabled.
-//   - A plugin cannot ship one. `plugin_hooks` is reported as `removed`, so a
-//     `hooks` field in .codex-plugin/plugin.json is accepted and ignored.
-//   - On codex-cli 0.151.0-alpha.7.2 nothing fired hooks from anywhere. On
-//     0.153.4 the user-level ~/.codex/hooks.json does run them, but only after
-//     a one-time review: the terminal UI opens with "Hooks need review - hooks
-//     can run outside the sandbox after you trust them", and the choices are
-//     "Trust all and continue" or "Continue without trusting (hooks won't
-//     run)". The trust is persisted as a hash of the hooks, so a hook this
-//     script rewrites has to be trusted again. The desktop app never shows
-//     that review, which is why a machine using only the app can have the
-//     hooks installed for weeks and never once run them.
+// Two things are still true on every build:
 //
-// So the hooks are written, and `status` says whether anything has ever run
-// them. But the trust review is the user's to accept, deliberately - this
-// script does not forge a trust hash to get round a safety prompt - and until
-// it is accepted the hooks are inert. AGENTS.md is what works regardless:
-// Codex reads it at the top of every session in scope, which is the one
-// always-on instruction channel. It cannot carry live numbers the way a hook
-// can, so instead it tells Codex to go and read them at the start of a piece
-// of work - and, since the effort setting is what actually empties a Codex
-// window, to look at that.
+//   - Codex runs a hook that is not managed by policy only after the user has
+//     reviewed and trusted it: /hooks in the terminal, Settings > Hooks or
+//     "Review hooks" in the desktop app. Trust is a hash of the hook, so a
+//     hook this script rewrites has to be trusted again. That review is the
+//     user's to accept, deliberately - this script does not forge a trust hash
+//     to get round a safety prompt - and until it is accepted the hooks are
+//     inert.
+//   - AGENTS.md works regardless: Codex reads it at the top of every session
+//     in scope. It cannot carry live numbers the way a hook can, so it tells
+//     Codex to go and read them at the start of a piece of work.
+//
+// So `on` writes the AGENTS.md block always, and writes ~/.codex/hooks.json
+// only when the plugin is not installed in Codex, because with both every hook
+// ran twice.
 //
 // Both halves are marked and reversible, and neither touches anything else in
 // the files it edits.
@@ -69,6 +64,11 @@ const EVENTS = [
   // and returns nothing costs a few milliseconds, and a matcher that misses a
   // renamed tool costs the window.
   { event: 'PreToolUse', script: 'pulse.js', status: 'Checking usage limits', matcher: '.*' },
+  // What the reply and the session cost. Without these two the Codex install
+  // briefed the budget and never once told you what a reply had spent.
+  { event: 'Stop', script: 'stop.js', status: 'Adding up this reply' },
+  // Codex caps SessionEnd at three seconds; the incremental read fits.
+  { event: 'SessionEnd', script: 'sessionend.js', status: 'Adding up this session', timeout: 3 },
 ];
 const EVENT = EVENTS[0].event;
 // Ten seconds is the same budget the Claude hook gets. The brief caches the
@@ -77,6 +77,44 @@ const TIMEOUT_SECONDS = 10;
 
 function hooksFile() {
   return path.join(host.codexHome(), 'hooks.json');
+}
+
+// Whether Codex has this plugin installed and switched on. Current Codex loads
+// a plugin's own hooks (the plugin's .codex-plugin/plugin.json names
+// hooks/codex-hooks.json), so writing the same hooks into ~/.codex/hooks.json
+// as well ran every one of them twice: two budget lines, two cost lines.
+function pluginInstalled() {
+  const cache = path.join(host.codexHome(), 'plugins', 'cache');
+  let markets = [];
+  try {
+    markets = fs.readdirSync(cache);
+  } catch (err) {
+    return null;
+  }
+  let config = '';
+  try {
+    config = fs.readFileSync(path.join(host.codexHome(), 'config.toml'), 'utf8');
+  } catch (err) {
+    config = '';
+  }
+  for (const market of markets) {
+    if (!host.exists(path.join(cache, market, 'usage-limits'))) continue;
+    const id = 'usage-limits@' + market;
+    // [plugins."usage-limits@market"] followed, before the next table, by
+    // enabled = false switches it off.
+    const at = config.indexOf('[plugins."' + id + '"]');
+    if (at !== -1) {
+      const rest = config.slice(at).split(/\r?\n/).slice(1);
+      let off = false;
+      for (const line of rest) {
+        if (/^\s*\[/.test(line)) break;
+        if (/^\s*enabled\s*=\s*false\b/.test(line)) off = true;
+      }
+      if (off) continue;
+    }
+    return id;
+  }
+  return null;
 }
 
 // Whether Codex has ever actually run one of these hooks. Each writes a small
@@ -92,9 +130,9 @@ function everRan() {
 }
 
 const TRUST_STEP =
-  'Codex runs hooks from this file only after a one-time review. Start `codex` in a\n' +
-  '  terminal once and choose "Trust all and continue"; the desktop app never shows\n' +
-  '  that review. Rewriting the hooks changes their hash, so `on` means reviewing again.';
+  'Codex runs hooks only after you review and trust them: type /hooks in Codex, or\n' +
+  '  use Settings > Hooks (or "Review hooks") in the desktop app. Rewriting the hooks\n' +
+  '  changes their hash, so `on` means reviewing again.';
 
 function briefScript(name) {
   return path.join(__dirname, name || 'brief.js');
@@ -319,7 +357,16 @@ function status() {
   const stale = rows.filter((row) => row.found && row.found.command !== row.wanted);
 
   const lines = [];
-  if (!missing.length) lines.push('Installed in ' + hooksFile() + '.');
+  const plugin = pluginInstalled();
+  if (plugin) {
+    lines.push(
+      'The ' + plugin + ' plugin is installed in Codex and brings its own hooks' +
+        (missing.length === rows.length ? '.' : '; the copy in ' + hooksFile() + ' runs them a second time, so run `on` to take it out.')
+    );
+  }
+  if (plugin && missing.length === rows.length) {
+    // Nothing of ours in hooks.json is the right state when the plugin is on.
+  } else if (!missing.length) lines.push('Installed in ' + hooksFile() + '.');
   else if (missing.length === rows.length) {
     lines.push('Not installed. Run `on` to add it to ' + hooksFile() + '.');
   } else {
@@ -356,8 +403,9 @@ function status() {
   }
 
   return {
-    installed: !missing.length && agents,
-    hooksInstalled: !missing.length,
+    installed: (!missing.length || Boolean(plugin)) && agents,
+    plugin,
+    hooksInstalled: !missing.length || Boolean(plugin),
     agentsInstalled: agents,
     partial: Boolean(missing.length && missing.length < rows.length),
     broken: false,
@@ -370,9 +418,44 @@ function status() {
   };
 }
 
-function enable() {
+function enable(options) {
+  const opts = options || {};
   const { config, broken } = readHooks();
   if (broken) return { ok: false, text: status().text };
+
+  const plugin = opts.force ? null : pluginInstalled();
+  if (plugin) {
+    if (agentsMalformed()) {
+      return {
+        ok: false,
+        text:
+          'The usage-limits markers in ' + agentsFile() + ' are not a matched pair.\n' +
+          'Nothing was changed. Delete that block by hand and run `on` again.',
+      };
+    }
+    // Take out any copy written by an earlier `on`, so nothing runs twice.
+    let removed = false;
+    for (const one of EVENTS) {
+      if (!find(config, one.event)) continue;
+      const rest = withoutOurs(config.hooks[one.event]);
+      if (rest.length) config.hooks[one.event] = rest;
+      else delete config.hooks[one.event];
+      removed = true;
+    }
+    if (removed) writeHooks(config);
+    enableAgents();
+    return {
+      ok: true,
+      plugin,
+      text:
+        'The ' + plugin + ' plugin is installed in Codex and brings its own hooks, so\n' +
+        '  none were written to ' + hooksFile() + (removed ? ' (an older copy there was taken out)' : '') + '.\n' +
+        '  Codex runs a plugin\'s hooks once you trust them: type /hooks in Codex,\n' +
+        '  or use Settings > Hooks in the desktop app.\n' +
+        '  ' + agentsFile() + ' has the marked block that works with or without the hooks.\n' +
+        'Start a new thread for it to take effect. Run `off` to remove the block.',
+    };
+  }
 
   for (const one of EVENTS) {
     const rest = withoutOurs(config.hooks[one.event]);
@@ -381,7 +464,7 @@ function enable() {
         {
           type: 'command',
           command: command(one.script),
-          timeout: TIMEOUT_SECONDS,
+          timeout: one.timeout || TIMEOUT_SECONDS,
           statusMessage: one.status,
         },
       ],
@@ -453,10 +536,12 @@ const HELP = `install-codex-hook - make Codex check the budget without being ask
   node install-codex-hook.js on       install into AGENTS.md and hooks.json
   node install-codex-hook.js off      take both out again
 
-Codex will not load hooks from a plugin, and on current builds it does not run
-them from ~/.codex/hooks.json or config.toml either, though the engine is there.
-So this installs two things: a marked block in ~/.codex/AGENTS.md, which is what
-actually works today, and the hooks themselves for when that lands.
+Installed as a Codex plugin, usage-limits brings its own hooks, and \`on\` then
+writes only a marked block in ~/.codex/AGENTS.md, so nothing runs twice. Without
+the plugin, \`on\` also writes the hooks into ~/.codex/hooks.json: the budget
+before each prompt and during long turns, and what each reply and the session
+cost. Either way Codex runs hooks only after you trust them in /hooks (or
+Settings > Hooks in the desktop app). \`on --force\` writes hooks.json anyway.
 
 Claude Code needs none of this. Installing the plugin is enough there.
 `;
@@ -473,7 +558,7 @@ function main(argv) {
     return result.broken ? 1 : 0;
   }
   if (command_ === 'on' || command_ === 'install') {
-    const result = enable();
+    const result = enable({ force: (argv || []).includes('--force') });
     process.stdout.write(result.text + '\n');
     return result.ok ? 0 : 1;
   }

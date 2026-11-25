@@ -88,3 +88,5 @@ Two rules that hold in every mode:
 2. **A mode never lowers the quality of the work.** The savings come from
    ceremony - speculative reads, re-reads, preamble, subagents nobody needed -
    and never from doing the job less well.
+
+In Codex, `${CLAUDE_PLUGIN_ROOT}` is empty: use the usage-limits plugin folder (the one holding `.codex-plugin/`) in its place, and add `--host codex`.

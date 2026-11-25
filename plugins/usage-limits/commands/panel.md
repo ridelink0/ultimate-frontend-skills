@@ -12,3 +12,5 @@ prints the command to run in a second pane instead; pass that on to me.
 
 Tell me in one line what happened and stop. Do not start other work as part
 of this command.
+
+In Codex, `${CLAUDE_PLUGIN_ROOT}` is empty: use the usage-limits plugin folder (the one holding `.codex-plugin/`) in its place, and add `--host codex`.

@@ -9,8 +9,10 @@ it below as ARGUMENTS; in Codex it is the rest of the message). With no
 target, verify the current directory.
 
 `${CLAUDE_PLUGIN_ROOT}` is this plugin's folder. Codex runs this command as a
-skill and leaves that variable empty; there, use the folder that holds
-`.codex-plugin/`, three levels above this file.
+skill and leaves that variable empty; there, put the plugin folder in its
+place in every command. The plugin's session note names it ("ultimate-frontend-skills
+is installed at ..."); without the note, it is the folder that holds
+`.codex-plugin/` under `~/.codex/plugins/cache/`.
 
 ```
 node "${CLAUDE_PLUGIN_ROOT}/scripts/webdesign.mjs" verify <dir|url> [--widths 1440,390] [--design <seeded canvas>.html]

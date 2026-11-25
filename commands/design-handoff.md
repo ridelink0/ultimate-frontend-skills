@@ -17,5 +17,7 @@ node "${CLAUDE_PLUGIN_ROOT}/scripts/webdesign.mjs" verify <built dir|url> --desi
 A design that was rebuilt in the house style shows up there as an ERROR naming the type sizes and colours that are absent from it. Hand a seeded canvas page (or a plain HTML rendering of the design), not a bare `.dc.html` - that is not a renderable page and parity refuses it.
 
 `${CLAUDE_PLUGIN_ROOT}` is this plugin's folder. Codex runs this command as a
-skill and leaves that variable empty; there, use the folder that holds
-`.codex-plugin/`, three levels above this file.
+skill and leaves that variable empty; there, put the plugin folder in its
+place in every command. The plugin's session note names it ("ultimate-frontend-skills
+is installed at ..."); without the note, it is the folder that holds
+`.codex-plugin/` under `~/.codex/plugins/cache/`.

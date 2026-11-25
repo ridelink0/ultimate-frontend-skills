@@ -2,6 +2,12 @@
 
 Releases before 6.5.0 are recorded in their tag commits (`git log v6.4.2`) and on the GitHub releases page.
 
+## 6.12.0 - 2026-11-25
+
+- Codex: the plugin brings its own Codex hooks (`hooks/codex-hooks.json`, named in `.codex-plugin/plugin.json`). A SessionStart hook says where the plugin is installed, because Codex leaves `${CLAUDE_PLUGIN_ROOT}` empty in the commands the skills and slash commands give, and every one of them failed there as `node "/scripts/webdesign.mjs"`. The skill and all 22 commands now say to put the plugin folder in its place, and where to find it without the note. Codex runs the hooks once they are trusted in /hooks.
+- Usage Limits 1.46.0: under Codex the cost line after each reply and when the session ends was never printed; it now reads Codex rollouts and says turns, tokens and how far the 5-hour and weekly windows moved. Codex hooks ship with the plugin, and the user-level install no longer runs them twice.
+- `directory/`: editions of UFS and Usage Limits for Anthropic's plugin directory, built by `tools/directory-edition.mjs`: Markdown and JSON only, no hooks, no scripts, no credential reads.
+
 ## 6.11.0 - 2026-11-10
 
 - Usage Limits 1.45.0: list-price figures say 'at API list prices' instead of 'about $N'; the session's own effort is read before settings; an explicit CLAUDE_CONFIG_DIR names Claude; relay `cancel --session` cancels only the named relay, `arm` records the session's own folder from its transcript, and the wake starts closed sessions only; 'be token efficient' adds a sourced rule set. Carries the standalone 1.44.1 fix: a usage reading older than SNAPSHOT_TRUST_MS reads unknown, never 'the budget is gone'.

@@ -166,6 +166,7 @@ function apply(session, event, sidechain, delta) {
 // the totals and what this call added, which is what the reply just finished
 // cost. Mutates `all`, which the caller writes back.
 function update(all, sessionId, transcriptPath, now, options) {
+  if (usage.isCodex()) return updateCodex(all, sessionId, transcriptPath, now, options);
   const opts = options || {};
   const project = path.basename(path.dirname(transcriptPath));
 
@@ -227,6 +228,176 @@ function update(all, sessionId, transcriptPath, now, options) {
     };
   }
   return { session, delta, created };
+}
+
+/* ------------------------------------------------------------- Codex ---- */
+
+// Codex writes no assistant records with a usage block. Its rollout carries
+// the spend as `token_count` events, one per model request, with the account's
+// meter beside it, and the model in force in the `turn_context` before them.
+// Reading that file with the Claude reader above found nothing at all, so on
+// Codex the reply line and the closing line never appeared.
+//
+// There are no list prices for the models Codex runs in this plugin, so the
+// Codex line gives no dollar figure. What it gives instead is the unit the
+// subscription is actually metered in: how far the 5-hour and weekly windows
+// moved while the session ran. The meter is the account's, so another session
+// running beside this one moves it too; the line says "moved while it ran",
+// never "this session used".
+function codexMeterApply(session, delta, meter) {
+  if (!meter) return;
+  let readings;
+  try {
+    readings = require('./codex.js').readingsOf(meter);
+  } catch (err) {
+    return;
+  }
+  if (!session.meter || typeof session.meter !== 'object') session.meter = {};
+  if (!session.points || typeof session.points !== 'object') session.points = {};
+  for (const reading of readings) {
+    const before = session.meter[reading.key];
+    session.meter[reading.key] = { percent: reading.percent, resetsAt: reading.resetsAt, label: reading.label };
+    // The first reading is a baseline, and a reading after a reset starts a
+    // new window: what it shows was spent by whoever ran since the reset, not
+    // necessarily by this session, so neither counts.
+    if (!before || before.resetsAt !== reading.resetsAt) continue;
+    const moved = reading.percent - before.percent;
+    if (!(moved > 0)) continue;
+    session.points[reading.key] = (session.points[reading.key] || 0) + moved;
+    delta.points[reading.key] = (delta.points[reading.key] || 0) + moved;
+  }
+}
+
+function codexPromptFrom(entry) {
+  return Boolean(
+    entry && entry.type === 'event_msg' && entry.payload && entry.payload.type === 'user_message' &&
+      typeof entry.payload.message === 'string' && entry.payload.message.trim()
+  );
+}
+
+function updateCodex(all, sessionId, transcriptPath, now, options) {
+  const codex = require('./codex.js');
+  const opts = options || {};
+  const project = opts.cwd ? path.basename(opts.cwd) : path.basename(path.dirname(transcriptPath));
+
+  let session = all[sessionId];
+  const created = !isSession(session);
+  if (created) {
+    session = emptySession(project, opts.cwd);
+    all[sessionId] = session;
+  }
+  if (!session.project) session.project = project;
+  if (opts.cwd) session.cwd = opts.cwd;
+  if (!session.cursors || typeof session.cursors !== 'object') session.cursors = {};
+  if (!session.codex || typeof session.codex !== 'object') session.codex = { model: null, effort: null, total: null };
+
+  const delta = { turns: 0, subagentTurns: 0, tokens: 0, cost: 0, points: {} };
+  const key = path.resolve(transcriptPath);
+  const read = readNewLines(transcriptPath, session.cursors[key]);
+  if (read.reset) session.codex.total = null;
+
+  for (const line of read.lines) {
+    if (!line) continue;
+    const context = codex.contextFrom(line);
+    if (context) {
+      session.codex.model = context.model || session.codex.model;
+      session.codex.effort = context.effort || session.codex.effort;
+      continue;
+    }
+    if (line.indexOf('"user_message"') !== -1) {
+      let entry = null;
+      try {
+        entry = JSON.parse(line);
+      } catch (err) {
+        entry = null;
+      }
+      if (codexPromptFrom(entry)) session.prompts += 1;
+      continue;
+    }
+    if (line.indexOf('"token_count"') === -1) continue;
+    let entry = null;
+    try {
+      entry = JSON.parse(line);
+    } catch (err) {
+      continue;
+    }
+    const payload = entry && entry.payload;
+    if (!payload || payload.type !== 'token_count') continue;
+    // A token_count with no usage is a meter update on its own: still worth
+    // reading for the window, never a turn.
+    const info = payload.info || null;
+    const total = info && info.total_token_usage ? Number(info.total_token_usage.total_tokens) : NaN;
+    // Codex writes the same token_count again when only the meter changed.
+    // The running total is what says whether a request happened in between.
+    const fresh = info && info.last_token_usage && !(Number.isFinite(total) && total === session.codex.total);
+    if (Number.isFinite(total)) session.codex.total = total;
+    if (fresh) {
+      const event = codex.eventFrom(line, transcriptPath, project, session.codex);
+      if (event) {
+        const usageNow = info.last_token_usage;
+        event.context = Number(usageNow.input_tokens) || null;
+        // Codex's own weighting, kept for the drift ledger; never shown as money.
+        apply(session, event, false, delta);
+      }
+    }
+    codexMeterApply(session, delta, payload.rate_limits);
+  }
+  session.cursors[key] = read.next;
+  session.host = 'codex';
+  session.updatedAt = now;
+  if (!created && (delta.turns || delta.subagentTurns)) {
+    session.lastReply = { turns: delta.turns, subagentTurns: 0, tokens: delta.tokens, cost: delta.cost, points: delta.points };
+  }
+  return { session, delta, created };
+}
+
+function pointsPhrase(points, meter) {
+  const keys = Object.keys(points || {}).filter((k) => points[k] > 0);
+  if (!keys.length) return null;
+  // The short window first, then the weekly, then anything else.
+  const order = (k) => (k === 'five_hour' ? 0 : k === 'seven_day' ? 1 : 2);
+  keys.sort((a, b) => order(a) - order(b));
+  return keys
+    .map((k) => {
+      const value = points[k];
+      const label = (meter && meter[k] && meter[k].label) || k.replace(/_/g, ' ');
+      const amount = value < 1 ? 'under 1 point' : Math.round(value) + (Math.round(value) === 1 ? ' point' : ' points');
+      return 'the ' + label + ' window moved ' + amount;
+    })
+    .join(', ');
+}
+
+function formatCodexTally(session, delta) {
+  const change = delta || {};
+  const parts = [];
+  if ((change.turns || 0) > 0) {
+    const moved = pointsPhrase(change.points, session.meter);
+    parts.push('this reply: ' + turnsPhrase(change.turns, 0) + ', ' + usage.formatTokens(change.tokens || 0) + ' tokens' +
+      (moved ? '; ' + moved : '') + '.');
+  }
+  const tokens = session.tokens || {};
+  const moved = pointsPhrase(session.points, session.meter);
+  parts.push(
+    'This session: ' + count(session.prompts, 'prompt') + ', ' + turnsPhrase(session.turns, 0) + ', ' +
+      usage.formatTokens(totalTokens(tokens)) + ' tokens (' + tokenBreakdown(tokens) + ')' +
+      (moved ? '; ' + moved + ' while it ran' : '') + '.'
+  );
+  if (Number.isFinite(session.context) && session.context > 0) {
+    parts.push('Context is now about ' + usage.formatTokens(session.context) + ' tokens.');
+  }
+  return '[usage-limits] ' + parts.join(' ');
+}
+
+function formatCodexClosed(session, now) {
+  const end = Number.isFinite(session.endedAt) ? session.endedAt : now;
+  const ran = Number.isFinite(session.firstAt) ? usage.formatDuration(Math.max(0, end - session.firstAt)) : null;
+  const moved = pointsPhrase(session.points, session.meter);
+  return (
+    '[usage-limits] session closed' + (ran ? ' after ' + ran : '') + ': ' +
+    count(session.prompts, 'prompt') + ', ' + turnsPhrase(session.turns, 0) + ', ' +
+    usage.formatTokens(totalTokens(session.tokens)) + ' tokens (' + tokenBreakdown(session.tokens) + ')' +
+    (moved ? '; ' + moved + ' while it ran' : '') + '.'
+  );
 }
 
 // Newest sessions first, and the remembered ids carried across.
@@ -307,6 +478,7 @@ function tokenBreakdown(tokens) {
 // One line, tokens first because that is the question being answered. Every
 // clause whose number is not known is left out rather than shown as a dash.
 function formatTally(session, delta, options) {
+  if (session && session.host === 'codex') return formatCodexTally(session, delta);
   const opts = options || {};
   const change = delta || {};
   const parts = [];
@@ -340,6 +512,7 @@ function formatTally(session, delta, options) {
 }
 
 function formatClosed(session, now) {
+  if (session && session.host === 'codex') return formatCodexClosed(session, now);
   const end = Number.isFinite(session.endedAt) ? session.endedAt : now;
   const ran = Number.isFinite(session.firstAt) ? usage.formatDuration(Math.max(0, end - session.firstAt)) : null;
   return (
@@ -388,6 +561,8 @@ module.exports = {
   readNewLines,
   subagentFiles,
   update,
+  updateCodex,
+  pointsPhrase,
   trim,
   sessions,
   pricing,

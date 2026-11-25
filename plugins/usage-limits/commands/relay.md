@@ -82,3 +82,5 @@ Computer Use refuses to send input to a shell on purpose, and the relay uses it
 only to tell whether somebody is at the keyboard.
 
 Report the answer and stop. Do not start other work as part of this command.
+
+In Codex, `${CLAUDE_PLUGIN_ROOT}` is empty: use the usage-limits plugin folder (the one holding `.codex-plugin/`) in its place, and add `--host codex`.

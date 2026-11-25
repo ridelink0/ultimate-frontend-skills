@@ -41,7 +41,10 @@ working in. Run them from there, or prefix them with the skill's path.
 
 This works the same in Claude Code and in Codex. The host is detected from the
 environment; add `--host codex` or `--host claude` if a machine has both
-installed and the wrong one is picked. Everything below applies to both unless
+installed and the wrong one is picked. Under Codex, always add `--host codex`.
+Where a command below or in a slash command says `${CLAUDE_PLUGIN_ROOT}`, Codex
+leaves that variable empty: use the usage-limits plugin folder instead (the one
+holding `.codex-plugin/`, two levels above this file), never the literal text. Everything below applies to both unless
 it says otherwise.
 
 It prints the real percentages and reset times from the CLI's own cache, plus
@@ -849,25 +852,28 @@ happened to write. It starts a short-lived `codex app-server`, takes about a
 second, and is the Codex equivalent of running `/usage` in Claude Code. Use it
 when the report says the snapshot is old, not routinely.
 
-The difference that matters: **the budget line is not automatic until you say
-so.** Claude Code lets a plugin ship hooks, so it gets one on install. Codex
-does not load hooks from a plugin (`plugin_hooks` is a removed feature), and it
-runs the ones in `~/.codex/hooks.json` only after a one-time review it shows
-when `codex` starts in a terminal: "Hooks need review - Trust all and
-continue". The desktop app never shows that review, so a machine using only
-the app can have the hooks installed for weeks and never run them once.
+The difference that matters: **Codex runs hooks only once they are trusted.**
+Installed as a Codex plugin, usage-limits brings its own hooks
+(`hooks/codex-hooks.json`, named in `.codex-plugin/plugin.json`): the budget
+before each prompt and during long turns, and after each reply a line saying
+what the reply and the session cost, in tokens and in how far the 5-hour and
+weekly windows moved. Codex skips every hook that is not managed by policy
+until the user reviews it: `/hooks` in the terminal, or Settings > Hooks (or
+"Review hooks") in the desktop app. Never trust hooks on the user's behalf.
 `install-codex-hook.js status` says whether they have ever run.
 
-What replaces it is an instruction, installed by:
+What works with or without the hooks is an instruction, installed by:
 
 ```
-node scripts/install-codex-hook.js on
+node scripts/install-codex-hook.js on --host codex
 ```
 
 That writes a marked block into `~/.codex/AGENTS.md` saying to run the report at
-the start of a substantial piece of work, and it stages the hooks for the build
-that runs them. `status` says what is installed, `off` removes both, and neither
-touches anything else in those files.
+the start of a substantial piece of work. When the plugin is not installed in
+Codex it also writes the same hooks into `~/.codex/hooks.json`; when it is, it
+leaves that file alone, because both would run every hook twice. `status` says
+what is installed, `off` removes it, and neither touches anything else in
+those files.
 
 So under Codex, read the budget deliberately rather than waiting to be told it.
 Once at the start of a piece of work, and again if the job grows or starts

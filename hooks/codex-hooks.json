@@ -1,0 +1,11 @@
+{
+  "description": "ultimate-frontend-skills for Codex. At the start of a session, says where the plugin is installed, because Codex leaves CLAUDE_PLUGIN_ROOT empty in the commands the skills give. Before a prompt that is clearly about building or restyling a web page, points at the skill. Codex runs these only after you trust them in /hooks.",
+  "hooks": {
+    "SessionStart": [
+      { "hooks": [ { "type": "command", "command": "node \"${PLUGIN_ROOT}/hooks/codex-root.mjs\"", "timeout": 5 } ] }
+    ],
+    "UserPromptSubmit": [
+      { "hooks": [ { "type": "command", "command": "node \"${PLUGIN_ROOT}/hooks/nudge.mjs\"", "timeout": 5 } ] }
+    ]
+  }
+}

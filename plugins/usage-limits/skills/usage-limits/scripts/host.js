@@ -105,6 +105,10 @@ function detect(argv, env) {
   if (environment.CLAUDE_PLUGIN_ROOT || environment.CLAUDE_PROJECT_DIR) return CLAUDE;
   // Set by Codex for the processes it launches.
   if (environment.CODEX_HOME || environment.CODEX_CLI_PATH) return CODEX;
+  // Set by Codex in the shells its tools open. Without these a command the
+  // model ran from a Codex skill fell through to the disk checks, found
+  // ~/.claude.json on a machine with both, and reported Claude's budget.
+  if (environment.CODEX_THREAD_ID || environment.CODEX_SANDBOX || environment.CODEX_SANDBOX_NETWORK_DISABLED) return CODEX;
   // Set by Claude Code in the shells its Bash tool opens. Without it, a
   // hand-run `relay.js arm` from a Claude Code shell fell through to the disk
   // checks, found ~/.codex/sessions and answered Codex: "No window with a
@@ -133,6 +137,14 @@ function detectFromHook(argv, env, input) {
   const environment = env || process.env;
   if (args.includes('--host') || normalise(environment.USAGE_LIMITS_HOST)) return detect(args, environment);
   if (input && typeof input === 'object' && input.turn_id !== undefined && input.turn_id !== null) return CODEX;
+  // SessionStart and SessionEnd carry no turn_id. Their transcript does say
+  // whose it is: Codex names its rollouts rollout-<time>-<id>.jsonl, and
+  // Claude Code names a transcript after the session id alone.
+  if (input && typeof input === 'object' && typeof input.transcript_path === 'string' &&
+      /^rollout-.*\.jsonl$/i.test(path.basename(input.transcript_path))) return CODEX;
+  // PLUGIN_ROOT is Codex's own name for the plugin folder; Claude Code sets
+  // only CLAUDE_PLUGIN_ROOT, and always beside CLAUDE_PROJECT_DIR.
+  if (environment.PLUGIN_ROOT && !environment.CLAUDE_PROJECT_DIR && !environment.CLAUDECODE) return CODEX;
   return detect(args, environment);
 }
 

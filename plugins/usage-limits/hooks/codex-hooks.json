@@ -1,0 +1,23 @@
+{
+  "description": "usage-limits for Codex: the budget before each prompt and during long turns, the ceiling on fan-out calls, and what each reply and the session cost. Every script is told it runs under Codex, so it reads Codex's meter and rollout rather than Claude Code's. Codex runs these only after you trust them in /hooks.",
+  "hooks": {
+    "UserPromptSubmit": [
+      { "hooks": [ { "type": "command", "command": "node \"${PLUGIN_ROOT}/skills/usage-limits/scripts/brief.js\" --host codex", "timeout": 10, "statusMessage": "Checking usage limits" } ] }
+    ],
+    "PostToolUse": [
+      { "hooks": [ { "type": "command", "command": "node \"${PLUGIN_ROOT}/skills/usage-limits/scripts/pulse.js\" --host codex", "timeout": 10, "statusMessage": "Checking usage limits" } ] }
+    ],
+    "SubagentStop": [
+      { "hooks": [ { "type": "command", "command": "node \"${PLUGIN_ROOT}/skills/usage-limits/scripts/pulse.js\" --host codex", "timeout": 10, "statusMessage": "Checking usage limits" } ] }
+    ],
+    "PreToolUse": [
+      { "matcher": ".*", "hooks": [ { "type": "command", "command": "node \"${PLUGIN_ROOT}/skills/usage-limits/scripts/pulse.js\" --host codex", "timeout": 10, "statusMessage": "Checking usage limits" } ] }
+    ],
+    "Stop": [
+      { "hooks": [ { "type": "command", "command": "node \"${PLUGIN_ROOT}/skills/usage-limits/scripts/stop.js\" --host codex", "timeout": 10, "statusMessage": "Adding up this reply" } ] }
+    ],
+    "SessionEnd": [
+      { "hooks": [ { "type": "command", "command": "node \"${PLUGIN_ROOT}/skills/usage-limits/scripts/sessionend.js\" --host codex", "timeout": 3 } ] }
+    ]
+  }
+}

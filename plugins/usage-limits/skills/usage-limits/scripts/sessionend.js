@@ -27,7 +27,10 @@ async function run(now, hookInput) {
   activity.mark('idle', sessionId, null, now);
 
   if (String(process.env.USAGE_LIMITS_TALLY || '').toLowerCase() === 'off') return '';
-  usage.setHost(host.detect(process.argv.slice(2), process.env));
+  // From the hook's own payload: Codex runs a plugin's hooks with
+  // CLAUDE_PLUGIN_ROOT set, and plain detect() took that for Claude Code and
+  // read the Codex rollout with the Claude reader, which found no turns at all.
+  usage.setHost(host.detectFromHook(process.argv.slice(2), process.env, hookInput));
 
   const transcript = hookInput && hookInput.transcript_path ? hookInput.transcript_path : null;
   if (!sessionId || !transcript) return '';
@@ -38,7 +41,9 @@ async function run(now, hookInput) {
   session.reason = typeof hookInput.reason === 'string' ? hookInput.reason : null;
   tally.writeState(tally.trim(all));
 
-  return tally.formatClosed(session, now);
+  const line = tally.formatClosed(session, now);
+  // Codex reads a hook's stdout as JSON; a bare line there is not shown.
+  return usage.isCodex() ? JSON.stringify({ systemMessage: line }) : line;
 }
 
 if (require.main === module) {
