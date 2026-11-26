@@ -229,7 +229,7 @@ render exists - each of those is the low-effort version.
 | Three references that disagree with each other | `webdesign.mjs awards` (full edition only), then `study --awards "<technique>"` to render them. `awards --techniques` lists what the corpus can be searched by |
 | Visual research on a style, a palette, a font in the wild | `webdesign.mjs study` (full edition only) renders a curated batch into contact sheets; the `image-deep-research` skill for anything it does not cover (open, licensed image search with verified URLs, moodboards) |
 | Photographs | Unsplash, Pexels, Wikimedia, museum IIIF - `references/imagery.md` has the URL formats and licences. Verify every hotlink with a HEAD request |
-| Detailed PBR textures and real environment lighting, free | `webdesign.mjs assets` (full edition only) and `assets hdri <slug>` - CC0, no key. `references/image-gen.md` wires the maps into the material |
+| Detailed PBR textures and real environment lighting, free | `webdesign.mjs assets` (full edition only) and `assets hdri <slug>` - CC0, no key. the full edition's image-generation reference (not in this edition) wires the maps into the material |
 | A generated image, when no photograph exists | `webdesign.mjs assets` (full edition only) - it detects what this machine can do and never invents a key. Remember a generated image cannot be relit |
 | Geometry primitives cannot carry - knurling, guilloché, a movement bridge | `webdesign.mjs blender` (full edition only), then `data-model` on the exploded list. `references/blender.md`; skip it when primitives would do |
 | To know what else is installed and what changes because of it | `webdesign.mjs tools` (full edition only) - and `references/plugins.md` for the handoffs |

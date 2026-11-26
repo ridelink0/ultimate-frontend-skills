@@ -26,3 +26,9 @@ Frontend Skills repository; edit the sources, not these files.
 ## Licence
 
 MIT. See LICENSE. Privacy: PRIVACY.md.
+
+## Install
+
+In Claude Code:
+
+    /plugin install usage-limits --marketplace ridelink0/ultimate-frontend-skills
