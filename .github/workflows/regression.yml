@@ -95,6 +95,13 @@ jobs:
               console.log('browser for the test run:', bin);
             });
           "
+      # test/directory-edition.test.mjs runs claude plugin validate on the
+      # directory editions and skips when the CLI is missing, and the no-skip
+      # guard below then fails the job, which is what turned 6.12.0 red. The
+      # validate command needs no sign-in, so install the CLI and let it run.
+      - name: install the Claude Code CLI
+        shell: bash
+        run: npm install -g @anthropic-ai/claude-code && claude --version
       # The quick pass first (npm run test:fast: every file, browser checks
       # skipped), so a failure outside the browser half shows in seconds.
       - name: npm run test:fast
