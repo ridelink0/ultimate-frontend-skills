@@ -1,7 +1,7 @@
 # Generated imagery that does not read as generated
 
 Compiled 2026-09-20. This file is deliberately scoped away from
-`skills/ultimate-frontend-skills/references/image-gen.md`, which was read in
+`skills/ultimate-frontend-skills/the full edition's image-generation reference (not in this edition), which was read in
 full before writing this document. That file already owns: CC0 material/HDRI
 sourcing (Poly Haven, ambientCG), wiring PBR maps into three.js, environment
 lighting (`RoomEnvironment` vs. real HDRIs), the generation-provider ranking
@@ -12,7 +12,7 @@ light direction, or use it as a flat/parallax plane only). None of that is
 repeated here. This file covers the part that source doesn't: what specifically
 makes a generated *photograph-style or illustration-style* image look
 generated, and the concrete prompting/post-processing/sourcing fixes -
-including for flat illustration and icon sets, which `image-gen.md` does not
+including for flat illustration and icon sets, which the full edition's image-generation reference (not in this edition) does not
 address at all.
 
 Every claim below is sourced. Where a claim comes from a single blog or
@@ -178,7 +178,7 @@ are exactly what generation models reproduce most confidently, which is why
 it's simultaneously "huge in web design right now" (per one 2026 design-tools
 roundup) and a well-known AI/generic-template tell.
 **Fix**: covered in Part 4 (illustration and icon sets), which is not
-addressed in `image-gen.md` at all.
+addressed in the full edition's image-generation reference (not in this edition) at all.
 
 ### 11. Glossy 3D icon sets
 **What it looks like**: a row of feature icons rendered as glossy,
@@ -336,7 +336,7 @@ for closing the gap on an image that is otherwise structurally sound.
 
 ## Part 4 - Illustration and icon sets that don't look like the default
 
-`image-gen.md` does not cover flat illustration or icon-set generation at
+the full edition's image-generation reference (not in this edition) does not cover flat illustration or icon-set generation at
 all; this section fills that gap specifically for app and website UI work.
 
 ### Why the default isometric-blob/glossy-3D style happens
@@ -385,7 +385,7 @@ result of everyone drawing from the same small set of named presets.
    where the AI-tell cost of getting it wrong is highest and where a real
    designer's system - one considered, reusable icon grid, one considered
    palette, one hand's line quality - still reliably outperforms generation,
-   per the same craft logic `image-gen.md` applies to lit 3D surfaces
+   per the same craft logic the full edition's image-generation reference (not in this edition) applies to lit 3D surfaces
    ("a surface that has to be lit wants a measured material" - the
    illustration equivalent is "a system that has to stay coherent across
    fifty screens wants a designed one").
@@ -400,7 +400,7 @@ result of everyone drawing from the same small set of named presets.
 | An editorial photo of an unnamed person/scene where the brief needs a specific mood/angle no stock library has | **Generate, carefully** | Full prompt template (Part 2): named camera/lens/aperture/film stock, explicit imperfection cue, explicit off-center composition, `--style raw`; then grade/grain/crop in post (Part 3). |
 | A "diverse team" or generic lifestyle scene for a corporate/marketing page | **No, or generate against the cliche list, never toward it** | Per tell #9, prompting harder does not fix this - use a real photo of your actual team/customers, or if generating, deliberately avoid all twelve documented default tropes rather than trying to prompt around them. |
 | A product-line or team-headshot set that must look consistently lit | **Generate, with a locked light rig** | The "lighting lock" prompt block (Part 2), same camera/light/background repeated verbatim, vary only the subject; grade the whole set together afterward. |
-| A textured surface that will sit inside a lit 3D scene | **No - use image-gen.md's material pipeline instead** | Poly Haven / ambientCG measured PBR materials; a generated image has its lighting baked in and cannot be relit (`image-gen.md`, "The relighting problem"). |
+| A textured surface that will sit inside a lit 3D scene | **No - use the full edition's image-generation reference (not in this edition)'s material pipeline instead** | Poly Haven / ambientCG measured PBR materials; a generated image has its lighting baked in and cannot be relit (the full edition's image-generation reference (not in this edition), "The relighting problem"). |
 | A flat illustration or icon system that appears on many screens/brand touchpoints | **No for the brand system; maybe for one-off internal use** | Commission a real illustrator/designer for anything brand-facing (Part 4, point 6); if generating for an internal or placeholder need only, use named line-weight/palette/reference constraints, never the vendor default preset. |
 | Text that must be legible in the final image (a sign, a label, a book cover referenced by the copy) | **No** | Composite real typography afterward; do not rely on a generator to render legible glyphs (tell #4 is architectural, not a prompting gap). |
 | A hands-prominent shot (handshake, holding a product, wearing rings) | **Avoid, or crop tightly, or composite a real photographed hand** | Hands remain unreliable across all current generators for complex poses (Part 1, tell #5); this is the single highest-risk subject for a visible tell. |
@@ -457,7 +457,7 @@ result of everyone drawing from the same small set of named presets.
   incidental; and whenever the brief is "a diverse team/customer base" and a
   real one is available to photograph - in every one of these cases the
   realism risk, and in several of them the emerging legal-disclosure risk,
-  outweighs the convenience of generation. `image-gen.md`'s own hierarchy
+  outweighs the convenience of generation. the full edition's image-generation reference (not in this edition)'s own hierarchy
   applies unchanged underneath all of this: Unsplash/Pexels/Wikimedia/museum
   IIIF for a real photograph, Poly Haven/ambientCG for anything that must be
   lit, generation only for "an illustration or plate that does not exist as a
@@ -505,7 +505,7 @@ result of everyone drawing from the same small set of named presets.
 - Schneller Legal, "AI Disclosure Requirements from August 2026" - https://schneller.legal/en/deepfakes-and-the-new-disclosure-requirement-what-users-legal-entities-and-individuals-of-ai-systems-need-to-know-from-august-2026/
 - Disclosa, "Do you need to disclose AI-generated image in the United States? (2026)" - https://disclosa.com/guides/image/us-federal
 - Oakgen.ai, "Free Stock Photo Sites That Don't Look Cheap: 2026 Guide" (Unsplash/Pexels/Pixabay AI-exclusion policies) - https://oakgen.ai/blog/free-stock-photo-alternatives-2026
-- `C:\Users\OWNER\cinematic-web-design\skills\ultimate-frontend-skills\references\image-gen.md` (read in full before writing this document; covers CC0 materials/HDRIs, three.js wiring, generation-provider ranking, and the relighting problem - not duplicated here).
+- `C:\Users\OWNER\cinematic-web-design\skills\ultimate-frontend-skills\references\the full edition's image-generation reference (not in this edition) (read in full before writing this document; covers CC0 materials/HDRIs, three.js wiring, generation-provider ranking, and the relighting problem - not duplicated here).
 
 ## From the 2026-09-28 research
 

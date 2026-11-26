@@ -145,6 +145,8 @@ export function buildUfs() {
     write(files, `skills/ultimate-frontend-skills/${assetMd(rel)}`, assetToMarkdown(path.join(skillSrc, rel), rel));
   }
   copyTree(files, path.join(skillSrc, 'references'), 'skills/ultimate-frontend-skills/references', {
+    // Anthropic Software Directory Policy 4B: no AI image generation guidance in this edition.
+    skip: (name) => name === 'image-gen.md',
     transform: (src) => src.endsWith('.md') ? inert(rewriteAssetPaths(readText(src), converted)) : fs.readFileSync(src),
   });
   copyTree(files, path.join(skillSrc, 'data'), 'skills/ultimate-frontend-skills/data');
@@ -169,11 +171,17 @@ export function buildUfs() {
   copyTree(files, path.join(HAND, 'ufs', 'commands'), 'commands');
   write(files, 'README.md', readText(path.join(HAND, 'ufs', 'README.md')));
   write(files, 'PRIVACY.md', readText(path.join(HAND, 'ufs', 'PRIVACY.md')));
+  for (const [rel, body] of files) {
+    if (rel.endsWith('.md') && typeof body === 'string' && body.includes('image-gen.md')) {
+      files.set(rel, body.replace(/`?(?:references\/)?image-gen\.md`?/g, "the full edition's image-generation reference (not in this edition)"));
+    }
+  }
   write(files, 'LICENSE', readText(path.join(ROOT, 'LICENSE')));
   write(files, 'icon.png', fs.readFileSync(path.join(ROOT, '.claude-plugin', 'icon.png')));
   write(files, '.claude-plugin/plugin.json', manifest(path.join(ROOT, '.claude-plugin', 'plugin.json'), {
     description: 'Ultimate Frontend Skills, directory edition. Build cinematic, editorial websites, app screens and game start screens the way an award-winning studio does: a pinned art direction, a corpus of award-winning reference sites to decide against, and a copy-in CSS chassis, motion runtime and section library that Claude writes into the site. Markdown and JSON only: no hooks, no scripts. The full edition, with the scaffolder, audit, render check and verify, is on GitHub.',
     homepage: 'https://github.com/ridelink0/ultimate-frontend-skills/tree/master/directory/ultimate-frontend-skills',
+    keywords: JSON.parse(readText(path.join(ROOT, '.claude-plugin', 'plugin.json'))).keywords.filter((k) => k !== 'image generation'),
     icon: './icon.png',
   }));
   return files;

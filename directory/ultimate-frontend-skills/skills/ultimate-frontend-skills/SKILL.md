@@ -82,7 +82,7 @@ to install something mid-build (`references/plugins.md`).
 | Footage someone shot | `references/editing.md`, then `edit probe/scenes/transcribe/captions/cut/deliver` |
 
 Copy on all of them: `references/copy-tells.md`. Generated pictures:
-`references/image-tells.md`, then `image-gen.md`. Identity, icons, colour roles
+`references/image-tells.md`, then the full edition's image-generation reference (not in this edition). Identity, icons, colour roles
 and contrast: `references/graphic-design.md`.
 
 ## Fix three things before you type
@@ -190,7 +190,7 @@ Read one only when you need it.
 | `references/ui.md`, `references/craft.md` | Components and their states; what a senior does unasked |
 | `references/components.md` | Sixteen component categories (hero to pricing, AI chat, forums, shaders) mapped to UFS sections and free, licensed libraries |
 | `references/three.md`, `references/blender.md` | Real-time 3D; when Blender is the answer |
-| `references/image-gen.md`, `references/imagery.md` | Generated and photographic imagery |
+| the full edition's image-generation reference (not in this edition), `references/imagery.md` | Generated and photographic imagery |
 | `references/stack.md` | Which library for which job, pinned versions, the tools by need |
 | `references/typography.md`, `references/graphic-design.md` | Type; identity, icons, colour roles, contrast |
 | `references/motion.md` | Reveals, page transitions, springs, parallax, the exploded view |

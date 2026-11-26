@@ -187,7 +187,7 @@ Metal reads as metal because of what it reflects, not because of its colour.
 
 CC0, no key, no attribution required. `RoomEnvironment` is the zero-download
 option and is good enough for a lot of pages; an HDRI is the upgrade, and it is
-a real download so budget for it. `references/image-gen.md` has the maps-to-
+a real download so budget for it. the full edition's image-generation reference (not in this edition) has the maps-to-
 material-slot wiring, the file-size budgets, and the licence discipline.
 
 ### Generated imagery
@@ -199,7 +199,7 @@ key. The honest limitation, stated once so you do not design around a thing
 that is not true: **a generated image has its lighting baked in and cannot be
 relit.** It can be a background plate, a texture, a cut-out entity or a flat
 albedo you derive maps from. It cannot be an object in a lit 3D scene that
-responds to the scene's light. `references/image-gen.md` has the three
+responds to the scene's light. the full edition's image-generation reference (not in this edition) has the three
 workarounds and which one to use when.
 
 **Gate:** every asset exists on disk, is under budget, and its licence is one
