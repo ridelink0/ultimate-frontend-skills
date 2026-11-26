@@ -46,9 +46,12 @@ test('the full plugin does not load the directory editions', () => {
 });
 
 test('claude plugin validate passes the directory profile when it is installed', (t) => {
-  const has = spawnSync('claude', ['--version'], { encoding: 'utf8' });
+  // On Windows the CLI is a .cmd shim, which Node only starts through a shell.
+  const shell = process.platform === 'win32';
+  const has = spawnSync('claude', ['--version'], { encoding: 'utf8', shell });
   if (has.status !== 0) return t.skip('claude CLI not installed');
   for (const name of ['ultimate-frontend-skills', 'usage-limits']) {
-    execFileSync('claude', ['plugin', 'validate', '--profile', 'directory', '--strict', path.join(ROOT, 'directory', name)], { stdio: 'pipe' });
+    const dir = path.join(ROOT, 'directory', name);
+    execFileSync('claude', ['plugin', 'validate', '--profile', 'directory', '--strict', shell ? `"${dir}"` : dir], { stdio: 'pipe', shell });
   }
 });
